@@ -1,0 +1,10 @@
+{
+  "minimum_training_markets": 30,
+  "candidates": [
+    {"volatility_floor": 0.00001},
+    {"volatility_floor": 0.00002}
+  ],
+  "folds": [
+    {"train": ["../data/training-session.jsonl"], "test": ["../data/holdout-session.jsonl"]}
+  ]
+}

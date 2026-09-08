@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: btc15
+      POSTGRES_PASSWORD: local-development-only
+      POSTGRES_DB: btc15
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["btc15-db:/var/lib/postgresql/data"]
+volumes:
+  btc15-db:
