@@ -35,20 +35,27 @@ def test_managed_clean_restart_preserves_run(store, config, tmp_path, raw, serie
 
 def test_stop_drains_and_releases_writer(store, config, tmp_path, raw, series, monkeypatch):
     fake_client(monkeypatch, raw, series)
-    fake_socket(monkeypatch, [dict(type="ticker", msg={}) for _ in range(50)])
 
     async def run():
         stop = asyncio.Event()
-        asyncio.get_running_loop().call_later(0.15, stop.set)
-        return await runner.collect(
-            Settings(data_dir=str(tmp_path)),
-            config,
-            store,
-            paper=True,
-            managed_run="stopped",
-            record_all=True,
-            stop_event=stop,
-        )
+
+        def payloads():
+            yield from (dict(type="ticker", msg={}) for _ in range(50))
+            # The next recv begins only after the previous frame was enqueued.
+            # Stop after delivery, not after a machine-speed-dependent 150 ms.
+            stop.set()
+
+        fake_socket(monkeypatch, payloads())
+        async with asyncio.timeout(10):
+            return await runner.collect(
+                Settings(data_dir=str(tmp_path)),
+                config,
+                store,
+                paper=True,
+                managed_run="stopped",
+                record_all=True,
+                stop_event=stop,
+            )
 
     asyncio.run(run())
     rows = list(read_events(next((tmp_path / "raw").glob("*.jsonl"))))

@@ -60,6 +60,13 @@ The daily loss threshold blocks entries based on realized daily P&L; it is not a
 
 One entry attempt is permitted per market/run. Passive quotes discount the ask within configured spread/edge bounds and snap to valid ticks; there is no automatic chase/reprice loop. Exits consider executable take-profit, hard stop (default entry price times 0.75), probability/hold-value invalidation, or official settlement. Slippage, latency, liquidity and missing data can prevent an exit; full loss remains possible. [Paper trading](PAPER_TRADING.md) describes the matching assumptions.
 
+Entry permission and existing-position management use separate safety gates.
+Disabling entries or latching the risk kill switch does not disable an otherwise
+safe configured exit. A missing/quality-blocked model allows only price-based
+stops/take-profit, not an invented probability-invalidation signal. Stale inputs,
+clock/feed problems, unverified fees and contract quarantine still block sells.
+See [position-management policy](POSITION_MANAGEMENT.md) for the complete matrix.
+
 ## Configuration precedence and reproducibility
 
 CLI startup uses, in order:

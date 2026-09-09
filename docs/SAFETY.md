@@ -22,6 +22,17 @@ The CLI currently loads/validates strategy configuration before dispatching `hal
 
 For a planned stop, prefer **Shut down safely** or the managed service's SIGINT/SIGTERM path. Settings → Enable entries is for a new session, not an immediate emergency stop. A tab closing, missing network or PC sleep is not a confirmed coordinated shutdown.
 
+## Existing-position management after an entry stop
+
+An entry halt or inactive entry policy does not by itself suppress ordinary exits
+from filled inventory. Price-based stops/take-profit can operate during model
+warmup or unavailability, but only with healthy current reference/book data,
+verified fees, clock/processing checks, an active exchange and a tradable contract.
+Probability-based exits still require a usable model. A stop is not guaranteed,
+no position is force-liquidated, and the risk halt remains latched after selling.
+Contract-state quarantine (`HALTED`/`ERROR`) is not bypassed. See the explicit
+[permission matrix and recovery limits](POSITION_MANAGEMENT.md).
+
 ## Back up before updating
 
 First obtain a clean stop/acknowledgement where possible. Preserve the exact code revision, frozen strategy config, database, raw tapes and any operational logs. Keep credentials protected separately. On SQLite, use a consistent database backup rather than copying only an active `.db` while its WAL is changing. One example after stopping all writers is:

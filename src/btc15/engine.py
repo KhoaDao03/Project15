@@ -458,19 +458,33 @@ class Engine:
             if transition_decision and state in ("ENTRY_WINDOW", "NO_TRADE"):
                 self.state(ticker, "EVALUATING", now, op)
                 self.state(ticker, decision["decision"], now, op)
-            healthy = not extras or extras == ["EXISTING_ENTRY"]
-            healthy = healthy and not q["reasons"]
             # Recheck after model computation: receipt-time freshness alone cannot
             # authorize fills or exits while a live collector is draining a backlog.
             execution_now = self.clock() if self.clock else now
-            healthy = bool(
-                healthy
+            inputs_fresh = bool(
+                book.valid
                 and self.ticks
                 and 0 <= execution_now - now <= min(c.reference_max_age, c.book_max_age)
                 and 0 <= execution_now - self.ticks[-1].received <= c.reference_max_age
                 and 0 <= execution_now - book.received <= c.book_max_age
                 and -c.max_clock_skew <= execution_now - self.ticks[-1].source <= c.reference_max_age
                 and -c.max_clock_skew <= execution_now - book.source_time <= c.book_max_age
+            )
+            # Entry policy and model quality must not disable safe risk reduction.
+            # Unknown health reasons still fail closed; only these known policy/model
+            # conditions are allowed through the position-management gate.
+            entry_healthy = bool(
+                self.execute
+                and c.enabled
+                and (not extras or extras == ["EXISTING_ENTRY"])
+                and not q["reasons"]
+                and inputs_fresh
+            )
+            management_healthy = bool(
+                inputs_fresh
+                and market.tradable(execution_now)
+                and all(r in ("MODEL_INACTIVE", "KILL_SWITCH", "EXISTING_ENTRY") for r in extras)
+                and all(r in ("WARMUP", "SHOCK", "REFERENCE_GAP", "MODEL_UNAVAILABLE") for r in q["reasons"])
             )
             if resting and resting.active:
                 revalidated = {
@@ -480,23 +494,25 @@ class Engine:
                 revalidated["decision"] = "NO_TRADE" if revalidated["reasons"] else "TRADE_CANDIDATE"
                 if resting.side != decision["side"]:
                     revalidated["decision"] = "NO_TRADE"
-                self.executor.revalidate(market, revalidated, now, healthy)
-                if kind == "trade" and msg.get("market_ticker") == ticker and healthy:
+                self.executor.revalidate(market, revalidated, now, entry_healthy)
+                if kind == "trade" and msg.get("market_ticker") == ticker and entry_healthy:
                     self.executor.trade(market, msg, now)
                 if (
                     kind in ("orderbook_snapshot", "orderbook_delta")
                     and msg.get("market_ticker") == ticker
-                    and healthy
+                    and entry_healthy
                 ):
                     self.executor.aggressive(market, book, now)
             if (
                 position
-                and p
-                and healthy
+                and management_healthy
                 and kind in ("orderbook_snapshot", "orderbook_delta")
                 and msg.get("market_ticker") == ticker
             ):
-                self.executor.monitor(market, book, p, now, event_id)
+                # Price-based exits do not need a probability. Never use a missing
+                # or quality-blocked model to invent a probability-based exit.
+                exit_probability = p if not q["reasons"] else {}
+                self.executor.monitor(market, book, exit_probability, execution_now, event_id)
             if decision["decision"] == "TRADE_CANDIDATE" and record_decision:
                 submit_now = self.clock() if self.clock else now
                 fresh = (
@@ -511,7 +527,7 @@ class Engine:
                         decision,
                         op,
                         submit_now,
-                        fresh and healthy,
+                        fresh and entry_healthy,
                         **({"entry_evidence": body} if not self.record_evaluations else {}),
                     )
                     if self.execute

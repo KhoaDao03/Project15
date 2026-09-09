@@ -1,6 +1,7 @@
 """Conservative paper matching; no network writes."""
 
 import copy
+import math
 import uuid
 from dataclasses import asdict, dataclass, field
 from decimal import ROUND_CEILING, ROUND_FLOOR, InvalidOperation
@@ -404,7 +405,12 @@ class PaperExecutor:
         pos.max_favorable = max(pos.max_favorable, mark)
         pos.max_adverse = min(pos.max_adverse, mark)
         c = self.config
-        conservative = probability["conservative_" + pos.side]
+        # The engine may authorize price-only risk reduction while its model is
+        # warming up or unavailable. Missing/invalid probability is not a zero.
+        conservative = probability.get("conservative_" + pos.side) if probability else None
+        model_available = (
+            type(conservative) in (int, float) and math.isfinite(conservative) and 0 <= conservative <= 1
+        )
         try:
             target = market.snap(c.take_profit, up=True) if c.take_profit is not None else None
         except ValueError:
@@ -422,8 +428,11 @@ class PaperExecutor:
             else "TAKE_PROFIT"
             if target is not None and bid >= target
             else "INVALIDATION"
-            if conservative < c.exit_probability
-            or conservative - (bid - fee_bound(bid, c) - c.slippage) < c.min_hold_ev
+            if model_available
+            and (
+                conservative < c.exit_probability
+                or conservative - (bid - fee_bound(bid, c) - c.slippage) < c.min_hold_ev
+            )
             else ""
         )
         if not reason:
