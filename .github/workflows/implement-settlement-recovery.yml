@@ -54,6 +54,7 @@ jobs:
               'docs/SETTLEMENT_RECOVERY.md': '29909998828d1a55b2403eccb441aecdb0a2d861',
               '/tmp/executor_methods.txt': 'af2279f6fc6fc1e3ae09472ea3fa472aa630fc8a',
               '/tmp/recovery_patch.py': 'd388ff6f807f00650cee081ce3c5740d65aa6d91',
+              '/tmp/recovery_boundaries.py': 'eaac46b8fd0cc8cb487de81af63a48670edc941c',
           }
           for name, sha in files.items():
               request = urllib.request.Request(
@@ -89,6 +90,7 @@ jobs:
       - name: Apply scoped recovery and run targeted tests
         run: |
           python3 /tmp/recovery_patch.py
+          python3 /tmp/recovery_boundaries.py
           python3 - <<'PY'
           from pathlib import Path
           p = Path('.github/workflows/documentation-validation.yml')
