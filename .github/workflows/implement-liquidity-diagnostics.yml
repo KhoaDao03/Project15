@@ -48,7 +48,7 @@ jobs:
           from pathlib import Path
           files = {
               '/tmp/liquidity_patch.py': 'e2b5d7fa3f84532141aec68dd68487b3e9509d66',
-              '/tmp/liquidity_scope.py': 'f0af826c108e3d24b9ec5c513f5cb74e63a0dcf8',
+              '/tmp/liquidity_scope.py': 'e86d9e3688dad53c1a0b786ee7c7647772b1cd22',
               'tests/test_exit_liquidity_diagnostics.py': '51711aacf925e0ff1b6e455c453b2e93e65a9350',
           }
           for name, sha in files.items():
@@ -83,15 +83,15 @@ jobs:
         run: |
           python3 /tmp/liquidity_patch.py
           python3 /tmp/liquidity_scope.py
-          uv run --no-sync ruff check --select I --fix src/btc15/engine.py src/btc15/execution.py src/btc15/strategies/settlement_edge/rules.py tests/test_exit_liquidity_diagnostics.py
-          uv run --no-sync ruff format src/btc15/engine.py src/btc15/execution.py src/btc15/strategies/settlement_edge/rules.py tests/test_exit_liquidity_diagnostics.py
+          uv run --no-sync ruff check --select I --fix src/btc15/engine.py src/btc15/execution.py src/btc15/dashboard.py src/btc15/strategies/settlement_edge/rules.py tests/test_exit_liquidity_diagnostics.py
+          uv run --no-sync ruff format src/btc15/engine.py src/btc15/execution.py src/btc15/dashboard.py src/btc15/strategies/settlement_edge/rules.py tests/test_exit_liquidity_diagnostics.py
           uv run --no-sync ruff check src tests
           uv run --no-sync pytest -q tests/test_exit_liquidity_diagnostics.py --tb=short
       - name: Full regression and safety-scope validation
         run: |
           uv run --no-sync pytest -q
           uv run --no-sync ruff check src tests
-          uv run --no-sync ruff format --check src/btc15/engine.py src/btc15/execution.py src/btc15/strategies/settlement_edge/rules.py tests/test_exit_liquidity_diagnostics.py
+          uv run --no-sync ruff format --check src/btc15/engine.py src/btc15/execution.py src/btc15/dashboard.py src/btc15/strategies/settlement_edge/rules.py tests/test_exit_liquidity_diagnostics.py
           uv run --no-sync python -m compileall -q src tests
           node --check src/btc15/static/app.js
           uv build
@@ -116,7 +116,7 @@ jobs:
         run: |
           test "$(git ls-remote origin refs/heads/fix/fractional-passive-fills | cut -f1)" = "$(git rev-parse HEAD)"
           git rm .github/workflows/implement-liquidity-diagnostics.yml
-          git add src/btc15/execution.py src/btc15/engine.py src/btc15/strategies/settlement_edge/rules.py src/btc15/static/app.js src/btc15/static/index.html tests/test_exit_liquidity_diagnostics.py docs/PAPER_TRADING.md docs/TROUBLESHOOTING.md
+          git add src/btc15/execution.py src/btc15/engine.py src/btc15/dashboard.py src/btc15/strategies/settlement_edge/rules.py src/btc15/static/app.js src/btc15/static/index.html tests/test_exit_liquidity_diagnostics.py docs/PAPER_TRADING.md docs/TROUBLESHOOTING.md
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'fix: track observed exit replenishment and explain submission refusals'
