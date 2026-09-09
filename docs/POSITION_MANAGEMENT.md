@@ -103,4 +103,38 @@ post-computation expiry, same-market book-event routing, latency, duplicate even
 halted checkpoint resume, rollback/retry and reopened database history/P&L.
 These offline tests are not an authenticated live-feed or profitability validation.
 
+### Executed verification on September 9, 2026
+
+Implementation commit: `c46d349bcf634afcdff48da8926dad3422a09eb2`.
+[Completed implementation validation](https://github.com/KhoaDao03/Project15/actions/runs/34402299244)
+(job `102636860780`) installed the unchanged locked environment on Ubuntu 24.04 /
+Python 3.12.3, tested the working tree, then committed and published that tested
+code. The completed log was inspected. The temporary write-enabled workflow
+removed itself; ordinary validation workflows remain read-only.
+
+- Baseline reproduction: 36 selected regression cases failed against the old shared
+  gate as expected, with zero setup/collection errors.
+- Targeted suite: **156 passed**, comprising 151 new position-management cases and
+  five existing operation tests.
+- Full offline suite: **362 passed**, with two existing Starlette/httpx and AnyIO
+  deprecation warnings.
+- Ruff lint, formatting of the four changed Python files, Python compilation,
+  JavaScript syntax, source/wheel builds, diff-whitespace checks and protected-file
+  comparisons all passed. No separate static type checker is configured or claimed.
+
+The first implementation attempt passed all 151 new cases but its full suite
+exposed a timing-dependent shutdown test: it stopped after a fixed 0.15 seconds,
+before the fake socket delivered all 50 expected messages on that runner. In
+`tests/test_operation.py`, shutdown now starts after all 50 frames are delivered,
+with a 10-second failure timeout. The recorded-frame count, final disconnect and
+writer-release assertions are unchanged. Production collector/shutdown code was
+not modified. The complete suite was then rerun successfully; the failed attempt
+did not publish runtime changes.
+
+These measurements precede the documentation-only commit recording them. Later
+PR/branch runs should be checked against their own exact head SHA; this historical
+result is not a substitute for final-commit CI. No authenticated feed, actual
+market recording, PostgreSQL execution, full browser-rendering test or deployed
+laptop process was exercised by this change.
+
 See [Safety](SAFETY.md), [Strategy](STRATEGY.md) and [Validation](VALIDATION.md).
