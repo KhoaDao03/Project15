@@ -9,19 +9,27 @@ the requested scope; AGENTS.md supplies engineering guidance.
 
 ## Components and flow
 
-One Python service owns collection and paper execution. FastAPI serves a read-only
-local dashboard; the CLI runs discovery, collection, replay, exports, and analytics.
+One Python service owns collection and paper execution. FastAPI serves a local
+dashboard with research views and validated next-session strategy settings; the CLI runs discovery, collection, replay, exports, and analytics.
 NumPy provides seeded settlement Monte Carlo, SQLAlchemy provides PostgreSQL and
 SQLite development persistence, PyArrow provides compressed Parquet, and HTTPX,
 websockets and cryptography implement the external API boundary. These dependencies
 serve explicit requirements; no distributed queue or frontend build system is needed.
 
 Kalshi REST metadata → strict BTC15 contract validator → settlement specification.
-Authenticated WebSocket → durable raw journal → Parquet chunks → normalized
+Authenticated WebSocket receipt → bounded queue → ordered worker → durable raw journal → Parquet chunks → normalized
 reference/book/trade events → causal features/volatility → settlement simulation →
 quality and conservative probability → persisted opportunity → signal → risk →
 paper execution → positions → official result → analytics and trade packets.
 Historical replay uses the same service and execution model in receive order.
+REST refresh runs independently from socket receipt. Rollover updates each market
+subscription in place, preserving the BRTI connection. Books are retained while
+strike metadata is pending; a transport reconnect still requires fresh snapshots.
+Model features/probabilities are reused within one source-tick/second while
+executable book checks remain current;
+opportunity snapshots are coalesced between evaluation deadlines unless the decision
+changes. Queue depth and processing lag are measured. Paper execution actions use
+atomic ledger/checkpoint commits with rollback and explicit operator resume.
 
 ## State machine
 
@@ -80,3 +88,18 @@ crypto metadata reports exchange_index=2; discovery reads it from the series.
 Rounding ties at exactly half a cent are not resolved by the wording: predictions
 bracket half-even and half-up, and mark the ambiguity rather than claim verification.
 See SETTLEMENT_MODEL.md and IMPLEMENTATION_REVIEW.md for sources and limitations.
+
+
+## Strategy configuration boundary
+
+The current algorithm is grouped under `strategies/settlement_edge/` with separate
+configuration, model and rules modules. The engine and paper executor remain
+shared. See [strategy organization and controls](STRATEGY.md#code-organization).
+
+Dashboard configuration writes replace `DATA_DIR/strategy.json` atomically after
+validation. CLI startup prefers an explicit `--config` file, then this saved file,
+then built-in defaults. A running engine retains its frozen `Strategy` object.
+The mutable saved file is not historical evidence: run/evaluation snapshots and
+checkpoint configuration versions remain authoritative for replay and resume.
+An entry-disabled configuration blocks both entry selection and paper submission;
+it does not bypass settlement, exits, risk checks or the live guard.

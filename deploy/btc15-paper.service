@@ -1,0 +1,19 @@
+[Unit]
+Description=BTC15 autonomous paper research (no real orders)
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Project15
+Environment=TRADING_MODE=PAPER
+Environment=ENABLE_LIVE_TRADING=false
+Environment=DATA_DIR=%h/Project15/data/production-paper
+Environment=DATABASE_URL=sqlite:///%h/Project15/data/production-paper/paper.db
+Environment=LOG_LEVEL=WARNING
+ExecStart=%h/Project15/.venv/bin/btc15 paper-service --run-id production-paper --min-free-gb 10
+Restart=no
+TimeoutStopSec=60
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

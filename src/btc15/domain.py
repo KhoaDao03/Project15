@@ -209,8 +209,8 @@ class Book:
 
     def snapshot(self, msg, received, source_time=None):
         # Collector explicitly requests use_yes_price=true; convert NO levels once here.
-        self.yes = {D(p): D(q) for p, q in msg["yes_dollars_fp"] if D(q) > 0}
-        self.no = {1 - D(p): D(q) for p, q in msg["no_dollars_fp"] if D(q) > 0}
+        self.yes = {D(p): D(q) for p, q in (msg.get("yes_dollars_fp") or []) if D(q) > 0}
+        self.no = {1 - D(p): D(q) for p, q in (msg.get("no_dollars_fp") or []) if D(q) > 0}
         self.received, self.source_time, self.valid = received, source_time or received, True
         self.validate()
 
@@ -223,6 +223,9 @@ class Book:
         book = self.yes if side == "yes" else self.no
         p = D(msg["price_dollars"]) if side == "yes" else 1 - D(msg["price_dollars"])
         q = book.get(p, D(0)) + D(msg["delta_fp"])
+        if not p.is_finite() or not 0 < p < 1 or not q.is_finite():
+            self.valid = False
+            raise ValueError("Invalid book level")
         if q < 0:
             self.valid = False
             raise ValueError("Negative book depth")
@@ -232,7 +235,8 @@ class Book:
             book.pop(p, None)
         self.received = received
         self.source_time = msg.get("ts_ms", received * 1000) / 1000
-        self.validate()
+        # The snapshot validated unchanged levels; only this level was modified.
+        self.validate_spread()
 
     def validate(self):
         if any(
@@ -240,6 +244,9 @@ class Book:
         ):
             self.valid = False
             raise ValueError("Invalid book level")
+        self.validate_spread()
+
+    def validate_spread(self):
         if self.yes and self.no and max(self.yes) + max(self.no) >= 1:
             self.valid = False
             raise ValueError("Crossed or locked book")
@@ -253,8 +260,8 @@ class Book:
         return sorted((float(1 - p), float(q)) for p, q in other.items())
 
     def ask(self, side):
-        levels = self.asks(side)
-        return levels[0][0] if levels else None
+        other = self.no if side == "yes" else self.yes
+        return float(1 - max(other)) if other else None
 
     def summary(self):
         yb, nb, ya, na = self.bid("yes"), self.bid("no"), self.ask("yes"), self.ask("no")

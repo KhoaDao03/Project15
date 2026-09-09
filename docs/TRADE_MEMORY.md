@@ -29,3 +29,29 @@ Limitations: process-quality letter grading is not implemented; counts and grade
 must not equate a winning outcome with sound reasoning. Replay charts do not yet
 render all requested entry/exit/window overlays. Fee/slippage estimates and actual
 simulated fees are distinct; they should not be silently substituted in analysis.
+
+
+## Dashboard views
+
+**Opportunity memory** groups evaluations by market, newest market activity first.
+Each expandable group shows matching evaluations, skipped entries, passed entry
+checks, latest evaluation time and run count. Counts cover all matching records
+before pagination. Expanding loads that market's evaluation cards, with additional
+pages available. Mode, run, search and decision filters apply to groups and cards.
+History stays still while reading; **Refresh history** loads newer records.
+
+**View explanation** shows reasons and saved inputs before charts. Technical data
+is expandable, and JSON remains accessible. The timeline covers the whole market
+within that run, so not every event belongs to the selected evaluation. Passing
+entry checks does not prove an order or fill; **Completed trades** shows results.
+
+`GET /api/records?group_by_market=true` returns market summaries and a total
+matching evaluation count. `market=TICKER` selects an exact market for its
+paginated records. The underlying immutable evaluations are unchanged.
+
+**Results & accuracy** uses completed trades for realized P&L, win rate and
+drawdown. Calibration uses the last eligible entry-window prediction per
+run/market with a recorded official settlement, even without a trade. Fill rate
+uses orders and fills; skipped-entry counts use evaluations. A selected run with
+no recorded settlements has no calibration observations. Small samples do not
+establish predictive accuracy or profitability.

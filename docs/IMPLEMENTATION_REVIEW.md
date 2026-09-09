@@ -1,3 +1,8 @@
+> Historical initial implementation review. The follow-up hardening work supersedes
+> the implementation-gap and readiness claims below. See
+> [RESEARCH_HARDENING.md](RESEARCH_HARDENING.md) and [VALIDATION.md](VALIDATION.md)
+> for current changes and measured evidence. Initial findings are retained for audit.
+
 # Implementation review — 2026-09-08
 
 This is a working research V1 built in an initially empty repository. It does not
@@ -82,8 +87,11 @@ These are explicit gaps, not claims of completed production functionality.
 
 ## C. Significant assumptions
 
-`config/defaults.json` is the complete list of effective configurable assumptions;
-`config.py` validates it. None is represented as optimal.
+`strategies/settlement_edge/config.py` defines and validates the built-in
+assumptions; `config/defaults.json` is an explicitly selectable example. Effective
+CLI settings come from `--config`, then `DATA_DIR/strategy.json`, then built-in
+defaults. The Strategies UI saves settings for new sessions only. None is
+represented as optimal. See [the strategy guide](STRATEGY.md).
 
 - Zero log drift, independent Gaussian increments, maximum past RV/EWMA sigma,
   1e-5 volatility floor, .97 EWMA decay, 300-second warmup, 4,000 seeded paths.

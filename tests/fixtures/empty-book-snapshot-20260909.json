@@ -1,0 +1,9 @@
+{
+  "msg": {
+    "market_id": "f0d59eea-9f6f-4861-b2a0-1b2eddbcd5b5",
+    "market_ticker": "KXBTC15M-26SEP082015-15"
+  },
+  "seq": 2,
+  "sid": 3,
+  "type": "orderbook_snapshot"
+}

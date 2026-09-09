@@ -1,179 +1,555 @@
 import asyncio
 import json
-import logging
+import shutil
 import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import httpx
 import websockets
 
 from .api import KalshiClient, subscriptions
+from .domain import dumps
 from .engine import Engine
 from .storage import RawRecorder
 
-log = logging.getLogger("btc15")
+
+def stop_entries(engine, now):
+    """Stop new entries and cancel pending remainders without liquidating positions."""
+    for member in getattr(engine, "engines", [engine]):
+        member.execute = False
+        member.entries_active = False
+        for ticker in list(member.executor.orders):
+            if member.executor.orders[ticker].active:
+                member.executor.cancel(ticker, now, "safe_shutdown")
 
 
-async def collect(settings, config, store, paper=False, duration=None):
+async def collect(
+    settings,
+    config,
+    store,
+    paper=False,
+    duration=None,
+    resume=None,
+    *,
+    stop_event=None,
+    managed_run=None,
+    min_free_bytes=0,
+    multi_model=False,
+):
+    """Independent receipt/metadata tasks; one ordered durable analysis worker."""
     settings.guard()
     if settings.mode != "PAPER":
         raise ValueError("Collector requires PAPER mode")
-    # This release refuses to reset risk by restarting over unresolved paper positions.
-    if paper:
-        closed = {r["opportunity_id"] for r in store.list(kind="trade_result", mode="PAPER", limit=None)}
-        buys = {
-            r["opportunity_id"]
-            for r in store.list(kind="fill", mode="PAPER", limit=None)
-            if r["body"]["action"] == "buy"
-        }
-        if buys - closed:
-            raise RuntimeError(
-                "Unresolved prior paper positions: replay their journal in an isolated database before recovery"
-            )
+    if duration is not None and duration <= 0:
+        raise ValueError("Positive capture duration required")
     client = KalshiClient(settings)
-    # Validate credentials before creating a run or recorder.
-    client.headers("GET", "/trade-api/ws/v2")
     owner = str(uuid.uuid4())
-    store.acquire("collector", owner)
-    recorder = RawRecorder(Path(settings.data_dir) / "raw")
-    engine = Engine(store, config, "PAPER", execute=paper, clock=time.time)
-    if paper:
-        for r in store.list(kind="order", mode="PAPER", limit=None):
-            if r["body"].get("status") == "submitted":
-                day = engine.executor.risk.day(r["timestamp"])
-                day["trades"] += 1
-                day["exposure"] += r["body"].get("risk_reserved", r["body"]["quantity"])
-        for r in store.list(kind="trade_result", mode="PAPER", limit=None):
-            pnl = r["body"]["net_pnl"]
-            engine.executor.risk.realized += pnl
-            engine.executor.risk.day(r["timestamp"])["pnl"] += pnl
-    store.add(
-        "raw_source",
-        {"journal": str(recorder.directory / (recorder.session + ".jsonl"))},
-        engine.run_id,
-        "PAPER",
-        time.time(),
-    )
-    started = time.monotonic()
-    connection = str(uuid.uuid4())
-    last_metadata = 0.0
+    acquired = False
+    recorder = None
+    clean_shutdown = False
+    entries_stopped = False
+    pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="btc15-recorder")
+    loop = asyncio.get_running_loop()
 
-    def record(payload):
-        row = recorder.append(payload, time.time(), time.monotonic_ns(), connection)
-        return engine.ingest(row)
-
-    async def metadata():
-        series, markets = await client.discover()
-        fee_changes = {}
-        for event_ticker in sorted({m["event_ticker"] for m in markets}):
-            fee_changes[event_ticker] = [
-                r
-                async for r in client.pages(
-                    "events/fee_changes", "event_fee_changes", {"event_ticker": event_ticker}
-                )
-            ]
-        status = await client.get("exchange/status")
-        record(
-            dict(
-                type="metadata",
-                msg=dict(
-                    series=series,
-                    markets=markets,
-                    exchange_status=status,
-                    clock_skew=client.last_clock_skew,
-                    fee_changes=fee_changes,
-                ),
-            )
-        )
-        # Closed markets disappear from discovery; retrieve their authoritative results.
-        for ticker, market in list(engine.markets.items()):
-            if time.time() >= market.close_time and store.state(engine.run_id, ticker) != "CLOSED":
-                raw = (await client.get("markets/" + ticker, {"exchange_index": market.exchange_index}))[
-                    "market"
-                ]
-                if raw.get("status") == "finalized" and raw.get("result") in ("yes", "no"):
-                    record(dict(type="settlement", msg=dict(market_ticker=ticker, result=raw["result"])))
-        return [m["ticker"] for m in markets if m.get("ticker") in engine.markets]
+    async def work(fn, *args):
+        return await loop.run_in_executor(pool, fn, *args)
 
     try:
-        backoff = 1
-        while duration is None or time.monotonic() - started < duration:
-            connection = str(uuid.uuid4())
-            try:
-                tickers = await metadata()
-                last_metadata = time.monotonic()
-                if not tickers:
-                    record(dict(type="stale", msg={"reason": "no_valid_market"}))
-                    await asyncio.sleep(5)
-                    continue
-                async with websockets.connect(
-                    settings.ws_url,
-                    additional_headers=client.headers("GET", "/trade-api/ws/v2"),
-                    ping_interval=20,
-                    ping_timeout=20,
-                    max_queue=4096,
-                ) as ws:
-                    record(dict(type="connected", msg={"tickers": tickers}))
-                    for subscription in subscriptions(tickers):
-                        await ws.send(json.dumps(subscription))
-                    backoff = 1
-                    heartbeat = time.monotonic()
-                    while duration is None or time.monotonic() - started < duration:
-                        if (Path(settings.data_dir) / "HALT").exists():
-                            engine.executor.risk.halted = True
-                            record(dict(type="stale", msg={"reason": "kill_switch"}))
-                        if time.monotonic() - last_metadata >= 30:
-                            current = await metadata()
-                            last_metadata = time.monotonic()
-                            if current != tickers:
-                                break  # New connection provides fresh book snapshots for rollover.
-                        if time.monotonic() - heartbeat >= 1:
-                            record(dict(type="heartbeat", msg={}))
-                            recorder.flush()
-                            heartbeat = time.monotonic()
-                            status = dict(
-                                connected=True,
-                                run_id=engine.run_id,
-                                mode="PAPER",
-                                paper_execution=paper,
-                                live_enabled=False,
-                                clock_ok=engine.clock_ok,
-                                exchange_open=engine.exchange_open,
-                                reference_age=time.time() - engine.ticks[-1].received
-                                if engine.ticks
-                                else None,
-                                markets=list(engine.markets),
-                                positions={k: vars(v) for k, v in engine.executor.positions.items()},
-                                exposure=sum(engine.executor.risk.reserved.values()),
-                                daily=engine.executor.risk.day(time.time()),
-                                halted=engine.executor.risk.halted,
-                            )
-                            store.add("status", status, engine.run_id, "PAPER", time.time())
-                        try:
-                            raw = await asyncio.wait_for(ws.recv(), timeout=1)
-                        except TimeoutError:
-                            continue
-                        if not record(json.loads(raw)):
-                            break  # Any sequence/schema failure forces a fresh snapshot.
-                record(dict(type="disconnect", msg={"reason": "rollover_or_recovery"}))
-            except (OSError, httpx.HTTPError, websockets.WebSocketException, ValueError, RuntimeError) as exc:
-                record(dict(type="disconnect", msg={"error": type(exc).__name__, "detail": str(exc)}))
-                await asyncio.sleep(backoff)
-                backoff = min(30, backoff * 2)
-    finally:
-        record(dict(type="disconnect", msg={"reason": "shutdown"}))
+        client.headers("GET", "/trade-api/ws/v2")
+        store.acquire("collector", owner)
+        acquired = True
+        if managed_run:
+            if not paper or resume:
+                raise ValueError("Managed runs require paper execution without explicit resume")
+            previous = store.list(kind="run", run_id=managed_run, limit=1)
+            if previous:
+                if previous[0]["mode"] != "PAPER" or not previous[0]["body"]["execute"]:
+                    raise ValueError("Managed run must refer to an executing PAPER run")
+                resume = managed_run
+        if multi_model and paper and not resume:
+            closed = {r["opportunity_id"] for r in store.list(kind="trade_result", mode="PAPER", limit=None)}
+            buys = {
+                r["opportunity_id"]
+                for r in store.list(kind="fill", mode="PAPER", limit=None)
+                if r["body"]["action"] == "buy"
+            }
+            if buys - closed:
+                raise RuntimeError("Unresolved paper positions: resume their original model group")
+
+        from .models import ModelGroup
+
+        engine_type = ModelGroup if multi_model else Engine
+        engine = engine_type(
+            store,
+            config,
+            "PAPER",
+            run_id=resume or managed_run,
+            execute=paper,
+            clock=time.time,
+            resume=bool(resume),
+        )
+        if paper and not resume:
+            closed = {r["opportunity_id"] for r in store.list(kind="trade_result", mode="PAPER", limit=None)}
+            buys = {
+                r["opportunity_id"]
+                for r in store.list(kind="fill", mode="PAPER", limit=None)
+                if r["body"]["action"] == "buy"
+            }
+            if buys - closed:
+                raise RuntimeError("Unresolved paper positions: use paper --resume RUN_ID")
+            (engine.restore_daily_history() if multi_model else engine.executor.restore_daily_history())
+        if paper:
+            # Even a run with no fills must be resumable after a clean service restart.
+            (
+                engine.checkpoint()
+                if multi_model
+                else store.checkpoint(engine.run_id, engine.executor.snapshot())
+            )
+        recorder = RawRecorder(Path(settings.data_dir) / "raw", chunk_size=2000)
         store.add(
-            "status",
-            dict(connected=False, mode="PAPER", run_id=engine.run_id, live_enabled=False),
+            "raw_source",
+            {"journal": str(recorder.directory / (recorder.session + ".jsonl"))},
             engine.run_id,
             "PAPER",
             time.time(),
         )
-        recorder.close()
-        store.release("collector", owner)
-        await client.close()
-    return engine.run_id
+        if multi_model:
+            for child in engine.engines[1:]:
+                store.add(
+                    "raw_source",
+                    {
+                        "journal": str(recorder.directory / (recorder.session + ".jsonl")),
+                        "parent_run": engine.run_id,
+                    },
+                    child.run_id,
+                    "PAPER",
+                    time.time(),
+                )
+        queue = asyncio.Queue(maxsize=20000)
+        overflow_rows = []
+        reconnect = asyncio.Event()
+        stop = stop_event if stop_event is not None else asyncio.Event()
+        metadata_ready = asyncio.Event()
+        connection = str(uuid.uuid4())
+        tickers = []
+        tracked = {
+            r["market"]: r["body"]["raw"] for r in store.list(kind="market", run_id=engine.run_id, limit=None)
+        }
+        connected = False
+        started = time.monotonic()
+        maximum_queue = 0
+        last_status = 0
+        last_display = 0
+        display_reference = None
+        receipt_reference = None
+        display_tickers = {}
+
+        def emit(payload):
+            nonlocal maximum_queue, receipt_reference
+            row = dict(
+                id=str(uuid.uuid4()),
+                received=time.time(),
+                monotonic_ns=time.monotonic_ns(),
+                connection_id=connection,
+                payload=dumps(payload),
+            )
+            if overflow_rows:
+                overflow_rows.append(row)
+                raise RuntimeError("Recorder queue overflow; capture stopped")
+            try:
+                queue.put_nowait(row)
+            except asyncio.QueueFull as e:
+                overflow_rows.append(row)
+                stop.set()
+                raise RuntimeError("Recorder queue capacity exceeded; capture stopped") from e
+            maximum_queue = max(maximum_queue, queue.qsize())
+            if payload.get("type") == "cfbenchmarks_value_5hz":
+                msg = payload.get("msg", {})
+                if msg.get("index_id") == "BRTI":
+                    receipt_reference = dict(
+                        value=msg.get("value_usd"),
+                        received=row["received"],
+                        source_ts_ms=msg.get("source_ts_ms"),
+                    )
+
+        def process_batch(rows):
+            nonlocal last_status, last_display, display_reference, entries_stopped
+            if multi_model and not stop.is_set():
+                engine.apply_activation(store)
+            recorder.append_rows(rows)  # Durable before any decision; original receipt times preserved.
+            valid = True
+            for row in rows:
+                if stop.is_set() and not entries_stopped:
+                    stop_entries(engine, row["received"])
+                    entries_stopped = True
+                if not engine.executor.risk.halted and (Path(settings.data_dir) / "HALT").exists():
+                    (engine.halt(row["received"]) if multi_model else engine.executor.halt(row["received"]))
+                valid = engine.ingest(row) and valid
+                payload = json.loads(row["payload"])
+                if payload.get("type") == "cfbenchmarks_value_5hz":
+                    msg = payload.get("msg", {})
+                    display_reference = dict(
+                        value=msg.get("value_usd"),
+                        received=row["received"],
+                        source_ts_ms=msg.get("source_ts_ms"),
+                    )
+                elif payload.get("type") == "ticker":
+                    msg = payload.get("msg", {})
+                    display_tickers[msg.get("market_ticker")] = msg
+            now = time.time()
+            if time.monotonic() - last_display >= 0.05 or not connected:
+                markets = []
+                for ticker, market in engine.markets.items():
+                    if not market.tradable(now):
+                        continue
+                    book = engine.books[ticker]
+                    fresh = connected and book.valid and 0 <= now - book.received <= config.book_max_age
+                    markets.append(
+                        dict(
+                            ticker=ticker,
+                            title=market.title,
+                            close_time=market.raw["close_time"],
+                            status=market.status,
+                            floor_strike=market.spec.strike,
+                            book=book.summary() if fresh else {},
+                            book_received=book.received,
+                            fresh=fresh,
+                            volume_fp=display_tickers.get(ticker, {}).get(
+                                "volume_fp", market.raw.get("volume_fp")
+                            ),
+                        )
+                    )
+                store.publish_market_display(
+                    dict(
+                        run_id=engine.run_id,
+                        published_at=now,
+                        connected=connected,
+                        clock_ok=engine.clock_ok,
+                        markets=markets,
+                        reference_5hz=display_reference,
+                        processing_lag=(time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9,
+                    )
+                )
+                last_display = time.monotonic()
+            if now - last_status >= 1 or not connected:
+                store.add(
+                    "status",
+                    dict(
+                        connected=connected,
+                        run_id=engine.run_id,
+                        mode="PAPER",
+                        paper_execution=paper,
+                        live_enabled=False,
+                        models=[
+                            dict(
+                                run_id=e.run_id,
+                                model=e.executor.model_identity,
+                                entries_active=e.entries_active,
+                                halted=e.executor.risk.halted,
+                                open_positions=len(e.executor.positions),
+                                realized_pnl=e.executor.risk.realized,
+                            )
+                            for e in (engine.engines if multi_model else [engine])
+                        ],
+                        clock_ok=engine.clock_ok,
+                        exchange_open=engine.exchange_open,
+                        reference_age=now - engine.ticks[-1].received if engine.ticks else None,
+                        processing_lag=(time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9,
+                        maximum_queue=maximum_queue,
+                        markets=list(engine.markets),
+                        positions={k: vars(v) for k, v in engine.executor.positions.items()},
+                        exposure=sum(engine.executor.risk.reserved.values()),
+                        daily=engine.executor.risk.day(now),
+                        halted=engine.executor.risk.halted,
+                    ),
+                    engine.run_id,
+                    "PAPER",
+                    now,
+                )
+                recorder.flush()
+                last_status = now
+            return valid
+
+        async def consume():
+            while True:
+                first = await queue.get()
+                if first is None:
+                    break
+                rows = [first]
+                finished = False
+                while len(rows) < 256:
+                    try:
+                        item = queue.get_nowait()
+                    except asyncio.QueueEmpty:
+                        break
+                    if item is None:
+                        finished = True
+                        break
+                    rows.append(item)
+                if not await work(process_batch, rows):
+                    reconnect.set()
+                if finished:
+                    break
+
+        async def refresh():
+            nonlocal tickers
+            while not stop.is_set():
+                try:
+                    series, markets = await client.discover()
+                    changes = {}
+                    for event in sorted({m["event_ticker"] for m in markets}):
+                        changes[event] = [
+                            r
+                            async for r in client.pages(
+                                "events/fee_changes", "event_fee_changes", {"event_ticker": event}
+                            )
+                        ]
+                    series_changes = (
+                        await client.get(
+                            "series/fee_changes", {"series_ticker": "KXBTC15M", "show_historical": True}
+                        )
+                    ).get("series_fee_change_arr", [])
+                    status = await client.get("exchange/status")
+                    emit(
+                        dict(
+                            type="metadata",
+                            msg=dict(
+                                series=series,
+                                markets=markets,
+                                fee_changes=changes,
+                                series_fee_changes=series_changes,
+                                exchange_status=status,
+                                clock_skew=client.last_clock_skew,
+                            ),
+                        )
+                    )
+                    current = sorted(m["ticker"] for m in markets)
+                    tickers = current
+                    for m in markets:
+                        tracked[m["ticker"]] = m
+                    for ticker, m in list(tracked.items()):
+                        from .domain import timestamp
+
+                        if time.time() >= timestamp(m["close_time"]):
+                            raw = (
+                                await client.get("markets/" + ticker, {"exchange_index": m["exchange_index"]})
+                            )["market"]
+                            if raw.get("status") == "finalized" and raw.get("result") in ("yes", "no"):
+                                emit(
+                                    dict(
+                                        type="settlement",
+                                        msg=dict(market_ticker=ticker, result=raw["result"]),
+                                    )
+                                )
+                                del tracked[ticker]
+                    metadata_ready.set()
+                except (httpx.HTTPError, OSError, ValueError, KeyError) as exc:
+                    emit(
+                        dict(
+                            type="stale",
+                            msg={"reason": "metadata_refresh_failed", "error": type(exc).__name__},
+                        )
+                    )
+                try:
+                    await asyncio.wait_for(stop.wait(), timeout=15)
+                except TimeoutError:
+                    pass
+
+        async def receive():
+            nonlocal connection, connected
+            await metadata_ready.wait()
+            backoff = 1
+            while not stop.is_set():
+                connection = str(uuid.uuid4())
+                reconnect.clear()
+                try:
+                    async with websockets.connect(
+                        settings.ws_url,
+                        additional_headers=client.headers("GET", "/trade-api/ws/v2"),
+                        ping_interval=20,
+                        ping_timeout=20,
+                        max_queue=2048,
+                    ) as ws:
+                        connected = True
+                        emit(dict(type="connected", msg={"tickers": tickers}))
+                        for subscription in subscriptions(tickers):
+                            await ws.send(json.dumps(subscription))
+                        backoff = 1
+                        market_sids = {}
+                        subscribed_markets = set(tickers)
+                        request_id = 10
+                        while not stop.is_set() and not reconnect.is_set():
+                            if len(market_sids) == 3 and set(tickers) != subscribed_markets:
+                                desired = set(tickers)
+                                for action, changed in (
+                                    ("add_markets", desired - subscribed_markets),
+                                    ("delete_markets", subscribed_markets - desired),
+                                ):
+                                    if changed:
+                                        for sid in market_sids.values():
+                                            command = dict(
+                                                id=request_id,
+                                                cmd="update_subscription",
+                                                params=dict(
+                                                    sid=sid, market_tickers=sorted(changed), action=action
+                                                ),
+                                            )
+                                            emit(dict(type="subscription_update_requested", msg=command))
+                                            await ws.send(json.dumps(command))
+                                            request_id += 1
+                                subscribed_markets = desired
+                            try:
+                                raw = await asyncio.wait_for(ws.recv(), timeout=1)
+                            except TimeoutError:
+                                continue
+                            try:
+                                payload = json.loads(raw)
+                            except (ValueError, UnicodeError):
+                                emit(dict(type="error", msg=dict(reason="invalid_json", raw=str(raw))))
+                                raise ValueError("Malformed WebSocket frame; raw error retained")
+                            emit(payload)
+                            if payload.get("type") == "subscribed":
+                                msg = payload.get("msg", {})
+                                if msg.get("channel") in ("orderbook_delta", "trade", "ticker"):
+                                    market_sids[msg["channel"]] = msg["sid"]
+                            if payload.get("type") == "error":
+                                # No retry loop concealing denied entitlements/subscriptions.
+                                raise PermissionError(
+                                    "Kalshi rejected a WebSocket subscription; see raw error record"
+                                )
+                except (httpx.HTTPError, OSError, websockets.WebSocketException) as exc:
+                    if isinstance(exc, PermissionError):
+                        raise
+                    if getattr(getattr(exc, "response", None), "status_code", None) in (401, 403):
+                        raise PermissionError("Kalshi rejected WebSocket authentication") from exc
+                    emit(dict(type="disconnect", msg={"error": type(exc).__name__}))
+                    try:
+                        await asyncio.wait_for(stop.wait(), timeout=backoff)
+                    except TimeoutError:
+                        pass
+                    backoff = min(30, backoff * 2)
+                finally:
+                    connected = False
+                    emit(dict(type="disconnect", msg={"reason": "reconnect_or_shutdown"}))
+
+        async def reference_display():
+            # UI-only receipt projection. Execution continues to use the ordered,
+            # durable 1 Hz stream and its processing-time freshness guards.
+            async def publish(body):
+                task = asyncio.create_task(asyncio.to_thread(store.publish_market_display, body, "reference"))
+                try:
+                    await asyncio.shield(task)
+                except asyncio.CancelledError:
+                    await task
+                    raise
+
+            try:
+                while not stop.is_set():
+                    await publish(
+                        dict(
+                            run_id=engine.run_id,
+                            connected=connected,
+                            published_at=time.time(),
+                            reference_5hz=receipt_reference,
+                        ),
+                    )
+                    await asyncio.sleep(0.2)
+            finally:
+                await publish(
+                    dict(
+                        run_id=engine.run_id,
+                        connected=False,
+                        published_at=time.time(),
+                        reference_5hz=receipt_reference,
+                    ),
+                )
+
+        async def clock():
+            while not stop.is_set():
+                if store.list(kind="shutdown_request", run_id=owner, mode="PAPER", limit=1):
+                    stop.set()
+                    break
+                if min_free_bytes and shutil.disk_usage(settings.data_dir).free < min_free_bytes:
+                    raise OSError("Free disk space below service reserve; capture stopped")
+                emit(dict(type="heartbeat", msg={}))
+                if duration is not None and time.monotonic() - started >= duration:
+                    stop.set()
+                    break
+                await asyncio.sleep(0.5)
+
+        async with asyncio.TaskGroup() as group:
+            worker = group.create_task(consume())
+            producers = [
+                group.create_task(refresh()),
+                group.create_task(receive()),
+                group.create_task(clock()),
+                group.create_task(reference_display()),
+            ]
+            await stop.wait()
+            # Bounded cancellation also interrupts slow HTTP refresh/socket waits.
+            for task in producers:
+                task.cancel()
+            await asyncio.gather(*producers, return_exceptions=True)
+            emit(dict(type="disconnect", msg={"reason": "shutdown"}))
+            await queue.put(None)
+            await worker
+        if paper:
+            with store.transaction():
+                for member in engine.engines if multi_model else [engine]:
+                    store.checkpoint(member.run_id, member.executor.snapshot())
+        clean_shutdown = True
+        return engine.run_id
+    finally:
+        try:
+            try:
+                if acquired and "engine" in locals() and not clean_shutdown:
+                    await work(stop_entries, engine, time.time())
+            finally:
+                if recorder:
+                    # Preserve frames already received even when analysis or a producer fails.
+                    pending = []
+                    if "queue" in locals():
+                        while not queue.empty():
+                            row = queue.get_nowait()
+                            if row is not None:
+                                pending.append(row)
+                    pending.extend(overflow_rows if "overflow_rows" in locals() else [])
+                    try:
+                        if pending:
+                            await work(recorder.append_rows, pending)
+                    finally:
+                        await work(recorder.close)
+        except BaseException:
+            clean_shutdown = False
+            raise
+        finally:
+            try:
+                await client.close()
+            except BaseException:
+                clean_shutdown = False
+                raise
+            finally:
+                try:
+                    if acquired:
+                        with store.transaction():
+                            if clean_shutdown:
+                                members = engine.engines if multi_model else [engine]
+                                store.add(
+                                    "shutdown_complete",
+                                    dict(
+                                        run_id=engine.run_id,
+                                        open_positions=sum(len(e.executor.positions) for e in members),
+                                        runs=[e.run_id for e in members],
+                                    ),
+                                    owner,
+                                    "PAPER",
+                                    time.time(),
+                                )
+                            store.release("collector", owner)
+                finally:
+                    pool.shutdown(wait=True)
 
 
 def backtest(path, config, store, parent_run=None):

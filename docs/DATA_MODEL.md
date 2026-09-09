@@ -34,3 +34,12 @@ Limitations: per-event fsync is deliberately durable but needs throughput testin
 current dashboard aggregation loads selected records in memory; raw journals and
 Parquet duplicate storage; lifecycle retention/compaction needs an operator policy;
 initial schema has no migration tool. There are no unreviewed data-deletion jobs.
+
+## Recoverable paper projections
+
+`paper_checkpoints` stores the latest mutable accounting projection by run ID.
+Execution ledger records remain immutable; each execution action commits its
+records, claims, state transitions and checkpoint together. The checkpoint includes
+positions, orders, fee carry, daily risk, duplicate trade IDs and consumed exit depth.
+`resume` records append the code/config provenance of explicit restarts. Checkpoints
+from legacy runs are not manufactured from incomplete state.

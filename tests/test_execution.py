@@ -4,8 +4,8 @@ import pytest
 
 from btc15.config import Settings
 from btc15.execution import LiveTrader, PaperExecutor, live_payload
-from btc15.model import Tick
-from btc15.strategy import FeeAccumulator, Risk, evaluate
+from btc15.strategies.settlement_edge.model import Tick
+from btc15.strategies.settlement_edge.rules import FeeAccumulator, Risk, evaluate
 
 
 def ready(store, market, now, config):

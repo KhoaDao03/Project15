@@ -4,7 +4,7 @@ from dataclasses import replace
 import pytest
 
 from btc15.domain import Book, D, SettlementSpecification, order_direction, parse_market
-from btc15.model import Tick, features, probability, quality
+from btc15.strategies.settlement_edge.model import Tick, features, probability, quality
 
 
 def test_current_contract_fixture(market, raw):

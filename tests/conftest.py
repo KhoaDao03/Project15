@@ -1,4 +1,6 @@
 import json
+import os
+import uuid
 from pathlib import Path
 
 import pytest
@@ -30,9 +32,27 @@ def config():
 
 @pytest.fixture
 def store(tmp_path):
-    s = Store("sqlite:///" + str(tmp_path / "test.db"))
-    yield s
-    s.engine.dispose()
+    url = os.getenv("BTC15_TEST_DATABASE_URL")
+    if url:
+        from sqlalchemy import create_engine
+
+        schema = "test_" + uuid.uuid4().hex
+        admin = create_engine(url)
+        with admin.begin() as c:
+            c.exec_driver_sql('CREATE SCHEMA "' + schema + '"')
+        separator = "&" if "?" in url else "?"
+        s = Store(url + separator + "options=-csearch_path%3D" + schema)
+        try:
+            yield s
+        finally:
+            s.engine.dispose()
+            with admin.begin() as c:
+                c.exec_driver_sql('DROP SCHEMA "' + schema + '" CASCADE')
+            admin.dispose()
+    else:
+        s = Store("sqlite:///" + str(tmp_path / "test.db"))
+        yield s
+        s.engine.dispose()
 
 
 @pytest.fixture

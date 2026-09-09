@@ -11,8 +11,10 @@ from pathlib import Path
 
 from .domain import Book, dumps, parse_market, timestamp
 from .execution import PaperExecutor
-from .model import Tick, features, probability, quality
-from .strategy import evaluate
+from .strategies.momentum import Momentum, ObservationCache, observations
+from .strategies.momentum import evaluate as evaluate_momentum
+from .strategies.settlement_edge.model import Tick, features, probability, quality
+from .strategies.settlement_edge.rules import evaluate
 
 log = logging.getLogger("btc15")
 VERSIONS = dict(
@@ -21,7 +23,7 @@ VERSIONS = dict(
 
 
 class Engine:
-    def __init__(self, store, config, mode="PAPER", run_id=None, execute=True, clock=None):
+    def __init__(self, store, config, mode="PAPER", run_id=None, execute=True, clock=None, resume=False):
         if mode not in ("PAPER", "BACKTEST"):
             raise ValueError("Research modes only")
         self.store, self.config, self.mode = store, config, mode
@@ -29,16 +31,25 @@ class Engine:
         self.execute, self.clock = execute, clock
         self.markets, self.books, self.last_evaluation, self.latest = {}, {}, {}, {}
         self.ticks = []
+        self._causal_reference = (None, 0)
         self.sequences = {}
         self.connection = None
         self.healthy = False
         self.clock_ok = False
         self.exchange_open = False
-        self.fees_ok = False
         self.fee_changes = {}
+        self.series_fees = {}
+        self.series_fee_changes = None
         self.last_received = -float("inf")
+        self._model_cache = {}
+        self._pending_settlement = set()
+        self._observations = ObservationCache()
+        self._decision_keys = {}
+        self._last_op = {}
         self.last_mono = None
         self.last_wall = None
+        self.entries_active = True
+        self.shared_calculations = {}
         self.executor = PaperExecutor(store, self.run_id, mode, config)
         try:
             commit = subprocess.check_output(
@@ -64,18 +75,40 @@ class Engine:
             "working_tree_dirty": dirty,
             "source_hash": source_hash,
         }
-        self.store.add(
-            "run",
-            dict(
-                config=asdict(config),
-                versions=self.versions,
-                execute=execute,
-                source_snapshot=source_snapshot,
-            ),
-            self.run_id,
-            mode,
-            time.time(),
-        )
+        if resume:
+            checkpoint = store.load_checkpoint(self.run_id)
+            if not checkpoint:
+                raise ValueError(
+                    "No atomic checkpoint for this run; legacy open positions require forensic recovery"
+                )
+            self.executor.restore(checkpoint)
+            for record in store.list(kind="market", run_id=self.run_id, limit=None):
+                m = parse_market(record["body"]["raw"], record["body"]["series"])
+                self.markets[m.ticker] = m
+                self.books[m.ticker] = Book()
+            for ticker in list(self.executor.orders):
+                self.executor.cancel(ticker, time.time(), "operator_resume_no_downtime_fills")
+            store.add(
+                "resume",
+                {"source_hash": source_hash, "config_version": config.version},
+                self.run_id,
+                mode,
+                time.time(),
+            )
+        else:
+            self.store.add(
+                "run",
+                dict(
+                    config=asdict(config),
+                    model=self.executor.model_identity,
+                    versions=self.versions,
+                    execute=execute,
+                    source_snapshot=source_snapshot,
+                ),
+                self.run_id,
+                mode,
+                time.time(),
+            )
 
     def state(self, market, target, now, op=""):
         self.store.transition(self.run_id, self.mode, market, target, now, op)
@@ -94,7 +127,15 @@ class Engine:
     def ingest(self, row):
         now = row["received"]
         if now < self.last_received:
-            raise ValueError("Receive order moved backwards")
+            if self.last_mono is not None and row.get("monotonic_ns", 0) / 1e9 <= self.last_mono:
+                raise ValueError("Receive order moved backwards")
+            self.clock_ok = False
+            self.healthy = False
+            for ticker in list(self.executor.orders):
+                self.executor.cancel(ticker, now, "wall_clock_reversal")
+            self.error("CLOCK_REVERSAL", now, detail=str(now - self.last_received))
+            # Monotonic receipt still establishes causal order. Apply the frame so the
+            # book stays consistent; reconnecting would create an avoidable data gap.
         self.last_received = now
         payload = row["payload"]
         if isinstance(payload, str):
@@ -127,7 +168,8 @@ class Engine:
         try:
             if kind == "metadata":
                 series = msg["series"]
-                self.fees_ok = series.get("fee_type") == "quadratic" and series.get("fee_multiplier") == 1
+                self.series_fees = series
+                self.series_fee_changes = msg.get("series_fee_changes")
                 self.fee_changes = msg.get("fee_changes", {})
                 self.clock_ok = abs(msg.get("clock_skew", float("inf"))) <= self.config.max_clock_skew
                 self.exchange_open = msg.get("exchange_status", {}).get("trading_active") is True
@@ -136,7 +178,10 @@ class Engine:
                         market = parse_market(raw, series)
                     except (ValueError, KeyError, TypeError) as exc:
                         ticker = raw.get("ticker", "")
-                        if raw.get("floor_strike") is None and raw.get("status") != "active":
+                        if raw.get("floor_strike") is None:
+                            # Keep the subscribed book warm while strike publication is pending.
+                            # Activation must not require reconnecting the reference feeds.
+                            self.books.setdefault(ticker, Book())
                             self.store.add("pending_market", raw, self.run_id, self.mode, now, ticker)
                             continue
                         self.error("INVALID_MARKET", now, ticker, str(exc))
@@ -173,6 +218,8 @@ class Engine:
                 tick = Tick(float(raw["time"]) / 1000, now, float(raw["value"]))
                 if tick.source > now + self.config.max_clock_skew:
                     raise ValueError("Future reference tick")
+                if self.ticks and tick.source == self.ticks[-1].source and tick.price == self.ticks[-1].price:
+                    return True
                 if self.ticks and tick.source <= self.ticks[-1].source:
                     raise ValueError("Reference duplicate or reversal")
                 self.ticks.append(tick)
@@ -197,7 +244,8 @@ class Engine:
             elif kind == "settlement":
                 self.settle(msg["market_ticker"], msg["result"], now)
             # 5 Hz/ticker frames remain in raw storage; never counted as 1 Hz settlement samples.
-            self.process(now, row["id"], kind, msg)
+            if kind not in ("cfbenchmarks_value_5hz", "ticker", "subscribed", "ok"):
+                self.process(now, row["id"], kind, msg)
         except (ValueError, KeyError, TypeError, OverflowError) as exc:
             self.invalidate(now, "invalid_data")
             self.error("INVALID_DATA", now, detail=str(exc))
@@ -210,26 +258,42 @@ class Engine:
             return
         if now < market.close_time or result not in ("yes", "no"):
             raise ValueError("Premature settlement")
-        if not self.store.claim(self.run_id, "settlement:" + ticker):
-            return
-        self.store.add("settlement", dict(result=result), self.run_id, self.mode, now, ticker)
         self.executor.settle(market, result, now)
+
+    def causal_ticks(self, now):
+        # Ingest replaces the reference list on every accepted tick. Cache the
+        # eligibility bound, not event time, so future ticks and clock reversals
+        # still use the exact causal filter.
+        previous, eligible_at = self._causal_reference
+        if previous is not self.ticks:
+            eligible_at = max((max(t.source, t.received) for t in self.ticks), default=0)
+            self._causal_reference = (self.ticks, eligible_at)
+        if now >= eligible_at:
+            return self.ticks
+        return [t for t in self.ticks if t.source <= now and t.received <= now]
 
     def process(self, now, event_id, kind, msg):
         c = self.config
+        for key in list(self.shared_calculations):
+            if key[0] != now:
+                del self.shared_calculations[key]
         for ticker, market in list(self.markets.items()):
+            if ticker in self._pending_settlement:
+                continue
             state = self.store.state(self.run_id, ticker)
             if state in ("CLOSED", "ERROR", "HALTED"):
                 continue
             if now >= market.close_time:
-                self.executor.cancel(ticker, now, "entry_window_closed")
-                if self.store.state(self.run_id, ticker) != "SETTLEMENT_PENDING":
+                order = self.executor.orders.get(ticker)
+                if order and order.active:
+                    self.executor.cancel(ticker, now, "entry_window_closed")
+                if state != "SETTLEMENT_PENDING":
                     self.state(ticker, "SETTLEMENT_PENDING", now)
+                self._pending_settlement.add(ticker)
                 continue
             book = self.books[ticker]
             resting = self.executor.orders.get(ticker)
             position = self.executor.positions.get(ticker)
-            in_window = 0 < market.close_time - now <= c.entry_window_start
             due = now - self.last_evaluation.get(ticker, 0) >= c.evaluation_interval
             # Resting orders are revalidated on every material reference/book/trade event.
             material = kind in (
@@ -243,10 +307,21 @@ class Engine:
                 "stale",
                 "disconnect",
             )
-            if not in_window or not (due or ((resting and resting.active) or position) and material):
+            # Show research evaluations throughout an active market. The strategy
+            # still rejects entries outside its configured trading window.
+            quote_update = (
+                kind in ("orderbook_snapshot", "orderbook_delta") and msg.get("market_ticker") == ticker
+            )
+            if not market.tradable(now) or not (
+                due or quote_update or ((resting and resting.active) or position) and material
+            ):
                 continue
-            self.last_evaluation[ticker] = now
+
             extras = []
+            if self.clock and not 0 <= self.clock() - now <= min(c.reference_max_age, c.book_max_age):
+                extras.append("PROCESSING_LAG")
+            if not self.entries_active:
+                extras.append("MODEL_INACTIVE")
             if not self.healthy:
                 extras.append("FEED_UNHEALTHY")
             if not self.clock_ok:
@@ -254,30 +329,104 @@ class Engine:
             if not self.exchange_open:
                 extras.append("EXCHANGE_PAUSED")
             changes = self.fee_changes.get(market.event_ticker)
-            verified = self.fees_ok and changes is not None
-            if changes:
-                effective = sorted(
-                    (r for r in changes if timestamp(r["scheduled_ts"]) <= now),
-                    key=lambda r: r["scheduled_ts"],
+            schedule = dict(self.series_fees)
+            verified = changes is not None and self.series_fee_changes is not None
+            for change in sorted(self.series_fee_changes or [], key=lambda r: timestamp(r["scheduled_ts"])):
+                if timestamp(change["scheduled_ts"]) <= now:
+                    schedule.update(change)
+            for change in sorted(changes or [], key=lambda r: timestamp(r["scheduled_ts"])):
+                if timestamp(change["scheduled_ts"]) <= now:
+                    for name in ("fee_type", "fee_multiplier"):
+                        if change.get(name + "_override") is not None:
+                            schedule[name] = change[name + "_override"]
+            verified = (
+                verified
+                and schedule.get("fee_type") in ("quadratic", "quadratic_with_maker_fees")
+                and schedule.get("fee_multiplier") == 1
+            )
+            if verified:
+                self.executor.maker_rates[ticker] = (
+                    0 if schedule["fee_type"] == "quadratic" else c.maker_fee_rate
                 )
-                if effective:
-                    change = effective[-1]
-                    verified = (
-                        verified
-                        and change.get("fee_type_override") in (None, "quadratic")
-                        and change.get("fee_multiplier_override") in (None, 1)
-                    )
             if not verified:
                 extras.append("UNVERIFIED_FEES")
             if self.executor.risk.halted:
                 extras.append("KILL_SWITCH")
             if resting or position:
                 extras.append("EXISTING_ENTRY")
+            cached = self._model_cache.get(ticker)
+            model_recomputed = (
+                cached is None
+                or now < cached[0]
+                or now - cached[0] >= c.evaluation_interval
+                or cached[1] != market.spec
+                or isinstance(c, Momentum)
+                and material
+                and (quote_update or resting or position)
+                and now - cached[0] >= min(1.0, c.evaluation_interval)
+            )
+            if model_recomputed:
+                try:
+                    # Model parameters, not entry thresholds, determine cache compatibility.
+                    calculation_key = (
+                        now,
+                        market.spec,
+                        tuple(
+                            (name, getattr(c, name))
+                            for name in (
+                                "paths",
+                                "seed",
+                                "ewma_decay",
+                                "volatility_floor",
+                                "shock_threshold",
+                                "extreme_sigma",
+                                "calibration_penalty",
+                                "warmup_seconds",
+                                "bollinger_period",
+                                "bollinger_std",
+                                "rsi_period",
+                                "stochastic_period",
+                                "atr_period",
+                            )
+                        ),
+                    )
+                    shared = self.shared_calculations.get(calculation_key)
+                    if shared is None:
+                        f = features(self.ticks, now, c)
+                        p = probability(market.spec, self.ticks, now, f["sigma"], c)
+                        self.shared_calculations[calculation_key] = (f, p)
+                    else:
+                        f, p = shared
+                    cached = (now, market.spec, f, p, None)
+                except ValueError as exc:
+                    cached = (now, market.spec, {}, {}, str(exc))
+                self._model_cache[ticker] = cached
+            model_time, _, f, p, model_error = cached
             try:
-                f = features(self.ticks, now, c)
-                q = quality(f, self.ticks, book, now, c)
-                p = probability(market.spec, self.ticks, now, f["sigma"], c)
-                decision = evaluate(market, book, self.ticks[-1], f, p, q, now, c, extras)
+                if model_error is not None:
+                    raise ValueError(model_error)
+                if isinstance(c, Momentum):
+                    observation_key = (
+                        now,
+                        "momentum",
+                        c.confirmation_minutes,
+                        c.volatility_history_minutes,
+                        c.volatility_min_samples,
+                        c.volatility_boundaries,
+                    )
+                    observed = self.shared_calculations.get(observation_key)
+                    if observed is None:
+                        observed = self._observations.get(self.ticks, now, c, observations)
+                        self.shared_calculations[observation_key] = observed
+                    f = {**f, **observed}
+                decision_ticks = self.ticks
+                if isinstance(c, Momentum):
+                    decision_ticks = self.causal_ticks(now)
+                    if not decision_ticks:
+                        raise ValueError("No causal reference for momentum decision")
+                q = quality(f, decision_ticks, book, now, c)
+                rule = evaluate_momentum if isinstance(c, Momentum) else evaluate
+                decision = rule(market, book, decision_ticks[-1], f, p, q, now, c, extras)
             except ValueError as exc:
                 f, p, q = {}, {}, dict(score=0, reasons=["MODEL_UNAVAILABLE"])
                 decision = dict(
@@ -293,30 +442,79 @@ class Engine:
             ):
                 decision["decision"] = "NO_TRADE"
                 decision["reasons"].append(dict(code="RISK_LIMIT"))
-            op = str(uuid.uuid4())
-            body = {
-                **decision,
-                "features": f,
-                "probability": p,
-                "quality": q,
-                "book": book.summary(),
-                "config": asdict(c),
-                "versions": self.versions,
-                "settlement_spec": asdict(market.spec),
-                "ticker": ticker,
-                "mode": self.mode,
-                "timestamp": now,
-            }
-            self.store.add("opportunity", body, self.run_id, self.mode, now, ticker, op, record_id=op)
-            self.latest[ticker] = body
-            if state in ("WARMUP", "MONITORING"):
+            signature = (
+                decision["decision"],
+                decision.get("side"),
+                decision.get("expected_fill_price"),
+                tuple(r["code"] for r in decision["reasons"]),
+            )
+            record_decision = (
+                model_recomputed
+                or due
+                or kind == "cfbenchmarks_value"
+                or self._decision_keys.get(ticker) != signature
+            )
+            self._decision_keys[ticker] = signature
+            if record_decision:
+                self.last_evaluation[ticker] = now
+                op = str(uuid.uuid4())
+                body = {
+                    **decision,
+                    "features": f,
+                    "model": self.executor.model_identity,
+                    "snapshot_id": event_id,
+                    "snapshot_timestamp": now,
+                    "event_ticker": market.event_ticker,
+                    "market_open_timestamp": market.open_time,
+                    "market_close_timestamp": market.close_time,
+                    "book_timestamp": book.source_time,
+                    "book_received": book.received,
+                    "probability": p,
+                    "quality": q,
+                    "book": book.summary(),
+                    "config": asdict(c),
+                    "versions": self.versions,
+                    "settlement_spec": asdict(market.spec),
+                    "fee_schedule": schedule,
+                    "fees_verified": verified,
+                    "ticker": ticker,
+                    "mode": self.mode,
+                    "timestamp": now,
+                    "model_evaluated_at": model_time,
+                    "model_age_seconds": now - model_time,
+                }
+                if isinstance(c, Momentum):
+                    body["reasons"] = [
+                        {**r, "code": ("POSITION_ALREADY_OPEN" if position else "DUPLICATE_EVENT")}
+                        if r["code"] == "EXISTING_ENTRY"
+                        else r
+                        for r in decision["reasons"]
+                    ]
+                self.store.add("opportunity", body, self.run_id, self.mode, now, ticker, op, record_id=op)
+                self.latest[ticker] = body
+                self._last_op[ticker] = op
+            else:
+                op = self._last_op[ticker]
+            if record_decision and state in ("WARMUP", "MONITORING"):
                 self.state(ticker, "ENTRY_WINDOW", now, op)
                 state = "ENTRY_WINDOW"
-            if state in ("ENTRY_WINDOW", "NO_TRADE"):
+            if record_decision and state in ("ENTRY_WINDOW", "NO_TRADE"):
                 self.state(ticker, "EVALUATING", now, op)
                 self.state(ticker, decision["decision"], now, op)
             healthy = not extras or extras == ["EXISTING_ENTRY"]
             healthy = healthy and not q["reasons"]
+            # Recheck after model computation: receipt-time freshness alone cannot
+            # authorize fills or exits while a live collector is draining a backlog.
+            execution_now = self.clock() if self.clock else now
+            healthy = bool(
+                healthy
+                and self.ticks
+                and 0 <= execution_now - now <= min(c.reference_max_age, c.book_max_age)
+                and 0 <= execution_now - self.ticks[-1].received <= c.reference_max_age
+                and 0 <= execution_now - book.received <= c.book_max_age
+                and -c.max_clock_skew <= execution_now - self.ticks[-1].source <= c.reference_max_age
+                and -c.max_clock_skew <= execution_now - book.source_time <= c.book_max_age
+            )
             if resting and resting.active:
                 revalidated = {
                     **decision,
@@ -342,7 +540,7 @@ class Engine:
                 and msg.get("market_ticker") == ticker
             ):
                 self.executor.monitor(market, book, p, now, event_id)
-            if decision["decision"] == "TRADE_CANDIDATE":
+            if decision["decision"] == "TRADE_CANDIDATE" and record_decision:
                 submit_now = self.clock() if self.clock else now
                 fresh = (
                     self.ticks

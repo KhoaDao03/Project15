@@ -76,6 +76,7 @@ def generate(path, start=1788901200.0):
                 clock_skew=0,
                 exchange_status={"trading_active": True},
                 fee_changes={market["event_ticker"]: []},
+                series_fee_changes=[],
                 synthetic=True,
             ),
         ),

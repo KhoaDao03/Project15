@@ -1,6 +1,8 @@
 """Calibration is measured separately from execution P&L."""
 
 from collections import Counter, defaultdict
+from datetime import datetime, timezone
+from math import fsum
 
 import numpy as np
 
@@ -31,8 +33,66 @@ def calibration(predictions):
     )
 
 
+def daily_block_interval(observations, minimum_days=20, samples=2000):
+    """Resample whole UTC days, retaining dependence between intraday markets."""
+    blocks = defaultdict(list)
+    for when, value in observations:
+        day = datetime.fromtimestamp(when, timezone.utc).date().isoformat()
+        blocks[day].append(value)
+    result = dict(
+        method="UTC-day cluster bootstrap",
+        days=len(blocks),
+        samples=samples,
+        minimum_days=minimum_days,
+        confidence=0.95,
+        interval=None,
+        status="INSUFFICIENT_INDEPENDENT_DAYS",
+    )
+    if len(blocks) < minimum_days:
+        return result
+    values = [blocks[k] for k in sorted(blocks)]
+    sums = np.array([sum(v) for v in values])
+    counts = np.array([len(v) for v in values])
+    rng = np.random.default_rng(15)
+    means = []
+    for _ in range(samples):
+        index = rng.integers(0, len(values), len(values))
+        means.append(float(sums[index].sum() / counts[index].sum()))
+    result.update(status="ESTIMATED", interval=list(map(float, np.quantile(means, [0.025, 0.975]))))
+    return result
+
+
 def metrics(store, mode="PAPER", run_id=None):
     ops = store.list("opportunity", run_id, mode, limit=None)
+    identities = {
+        (
+            r["body"].get("model", {}).get("model_id", "settlement-edge"),
+            r["body"].get("model", {}).get("model_version", "v1"),
+            r["body"].get("versions", {}).get("config"),
+        )
+        for r in ops
+    }
+    if run_id is None and len(identities) > 1:
+        from .models import comparison
+
+        result = metrics(store, mode, "__no_pooled_model_results__")
+        result.update(
+            run_id=None,
+            mixed_models=True,
+            model_comparison=comparison(store, mode),
+            trades=None,
+            wins=None,
+            losses=None,
+            net_pnl=None,
+            gross_pnl=None,
+            fees=None,
+            max_drawdown=None,
+        )
+        result["limitations"].insert(
+            0,
+            "Multiple model/config versions: select a run or use model-comparison; pooled results are suppressed",
+        )
+        return result
     results = store.list("trade_result", run_id, mode, limit=None)
     settlements = {
         (r["run_id"], r["market"]): r["body"]["result"]
@@ -100,6 +160,13 @@ def metrics(store, mode="PAPER", run_id=None):
     return dict(
         mode=mode,
         run_id=run_id,
+        dataset_audits=[
+            r["body"].get("dataset_audit") for r in store.list("experiment", run_id, mode, limit=None)
+        ],
+        failed_experiments=[
+            dict(run_id=r["run_id"], **r["body"])
+            for r in store.list("experiment_failed", run_id, mode, limit=None)
+        ],
         opportunities=len(ops),
         trades=len(results),
         wins=len(wins),
@@ -127,6 +194,12 @@ def metrics(store, mode="PAPER", run_id=None):
         exit_reasons=dict(reasons),
         rejections=dict(rejections),
         calibration=calibration(pairs),
+        uncertainty=dict(
+            brier=daily_block_interval(
+                [(r["timestamp"], (pair[0] - pair[1]) ** 2) for r, pair in last.values()]
+            ),
+            pnl_per_trade=daily_block_interval([(r["timestamp"], r["body"]["net_pnl"]) for r in results]),
+        ),
         all_prediction_calibration=calibration(all_predictions),
         calibration_groups={k: calibration(v) for k, v in grouped.items()},
         pnl_groups={k: dict(n=len(v), net_pnl=sum(v)) for k, v in by_group.items()},
@@ -135,6 +208,66 @@ def metrics(store, mode="PAPER", run_id=None):
         limitations=[
             "Uncalibrated model",
             "Synthetic/demo runs are not evidence of edge",
-            "Across-market dependence remains; confidence intervals require block bootstrap",
+            "Day-block intervals assume dependence between days is negligible; require at least 20 days",
         ],
+    )
+
+
+def lifetime_performance(results, fills):
+    """Realized trade-close metrics and remaining filled inventory at entry cost."""
+    ordered = sorted(results, key=lambda row: (row["timestamp"], row["id"]))
+    pnls = [row["body"]["net_pnl"] for row in ordered]
+    wins = sum(p > 0 for p in pnls)
+    losses = sum(p < 0 for p in pnls)
+    profit = fsum(p for p in pnls if p > 0)
+    loss = -fsum(p for p in pnls if p < 0)
+    equity = peak = drawdown = 0.0
+    streak = longest_win = longest_loss = 0
+    for pnl in pnls:
+        equity += pnl
+        peak = max(peak, equity)
+        drawdown = max(drawdown, peak - equity)
+        if pnl > 0:
+            streak = streak + 1 if streak > 0 else 1
+        elif pnl < 0:
+            streak = streak - 1 if streak < 0 else -1
+        else:
+            streak = 0  # A break-even trade ends either streak.
+        longest_win = max(longest_win, streak)
+        longest_loss = max(longest_loss, -streak)
+
+    def trade_key(row):
+        return row["run_id"], row["market"], row["opportunity_id"]
+
+    closed = {trade_key(row) for row in results}
+    inventory = {}
+    for row in sorted(fills, key=lambda row: (row["timestamp"], row["id"])):
+        key = trade_key(row)
+        if key in closed:
+            continue
+        body = row["body"]
+        quantity, cost = inventory.get(key, (0.0, 0.0))
+        if body["action"] == "buy":
+            quantity += body["quantity"]
+            cost += body["quantity"] * body["price"] + body["fee"]
+        elif body["action"] == "sell" and quantity > 0:
+            remaining = max(0.0, quantity - body["quantity"])
+            cost *= remaining / quantity
+            quantity = remaining
+        inventory[key] = quantity, cost
+    return dict(
+        net_pnl=fsum(pnls),
+        completed_trades=len(pnls),
+        wins=wins,
+        losses=losses,
+        breakeven_trades=len(pnls) - wins - losses,
+        win_rate=wins / len(pnls) if pnls else None,
+        average_pnl=fsum(pnls) / len(pnls) if pnls else None,
+        profit_factor=profit / loss if loss else None,
+        max_drawdown=drawdown,
+        current_streak=streak,
+        longest_win_streak=longest_win,
+        longest_loss_streak=longest_loss,
+        open_exposure=fsum(cost for quantity, cost in inventory.values() if quantity > 0),
+        open_trades=sum(quantity > 0 for quantity, _ in inventory.values()),
     )

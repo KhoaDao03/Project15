@@ -1,8 +1,11 @@
 """Append-only research memory and durable raw event recording."""
 
 import json
+import math
 import os
 import uuid
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -17,6 +20,7 @@ from sqlalchemy import (
     Table,
     Text,
     UniqueConstraint,
+    bindparam,
     create_engine,
     event,
     insert,
@@ -52,6 +56,9 @@ claims = Table(
     "claims", metadata, Column("run_id", String), Column("key", String), UniqueConstraint("run_id", "key")
 )
 leases = Table("leases", metadata, Column("key", String, primary_key=True), Column("owner", String))
+market_display = Table(
+    "market_display", metadata, Column("key", String, primary_key=True), Column("body", Text, nullable=False)
+)
 
 TRANSITIONS = {
     "DISCOVER_MARKET": {"VALIDATE_MARKET"},
@@ -74,11 +81,37 @@ TRANSITIONS = {
 }
 
 
+checkpoints = Table(
+    "paper_checkpoints",
+    metadata,
+    Column("run_id", String, primary_key=True),
+    Column("body", Text, nullable=False),
+)
+
+
 class Store:
+    def publish_market_display(self, body, key="current"):
+        # One replaceable UI projection, separate from immutable research records.
+        with self.transaction() as c:
+            result = c.execute(
+                update(market_display).where(market_display.c.key == key).values(body=dumps(body))
+            )
+            if not result.rowcount:
+                c.execute(insert(market_display).values(key=key, body=dumps(body)))
+
+    def read_market_display(self, key="current"):
+        with self.transaction() as c:
+            body = c.execute(select(market_display.c.body).where(market_display.c.key == key)).scalar()
+            return json.loads(body) if body else None
+
     def __init__(self, url):
         if url.startswith("sqlite:///") and not url.endswith(":memory:"):
             Path(url.removeprefix("sqlite:///")).parent.mkdir(parents=True, exist_ok=True)
         self.engine = create_engine(url)
+        self._state_query = select(states.c.state).where(
+            states.c.run_id == bindparam("run"), states.c.market == bindparam("ticker")
+        )
+        self._connection = ContextVar("btc15_transaction", default=None)
         if self.engine.dialect.name == "sqlite":
 
             @event.listens_for(self.engine, "connect")
@@ -106,6 +139,32 @@ class Store:
                     "FOR EACH ROW EXECUTE FUNCTION btc15_immutable()"
                 )
 
+    @contextmanager
+    def transaction(self):
+        existing = self._connection.get()
+        if existing is not None:
+            yield existing
+            return
+        with self.engine.begin() as connection:
+            token = self._connection.set(connection)
+            try:
+                yield connection
+            finally:
+                self._connection.reset(token)
+
+    def checkpoint(self, run_id, body):
+        with self.transaction() as c:
+            result = c.execute(
+                update(checkpoints).where(checkpoints.c.run_id == run_id).values(body=dumps(body))
+            )
+            if not result.rowcount:
+                c.execute(insert(checkpoints).values(run_id=run_id, body=dumps(body)))
+
+    def load_checkpoint(self, run_id):
+        with self.transaction() as c:
+            body = c.execute(select(checkpoints.c.body).where(checkpoints.c.run_id == run_id)).scalar()
+            return json.loads(body) if body else None
+
     def add(self, kind, body, run_id, mode, now, market="", opportunity_id="", record_id=None, conn=None):
         rid = record_id or str(uuid.uuid4())
         row = dict(
@@ -121,29 +180,45 @@ class Store:
         if conn is not None:
             conn.execute(insert(records).values(**row))
         else:
-            with self.engine.begin() as c:
+            with self.transaction() as c:
                 c.execute(insert(records).values(**row))
         return rid
 
-    def list(self, kind=None, run_id=None, mode=None, market=None, opportunity_id=None, limit=10000):
+    def list(
+        self,
+        kind=None,
+        run_id=None,
+        mode=None,
+        market=None,
+        opportunity_id=None,
+        limit=10000,
+        newest_first=False,
+    ):
         q = select(records)
         for key, val in dict(
             kind=kind, run_id=run_id, mode=mode, market=market, opportunity_id=opportunity_id
         ).items():
             if val is not None:
                 q = q.where(records.c[key] == val)
-        with self.engine.connect() as c:
-            rows = c.execute(q.order_by(records.c.timestamp, records.c.id).limit(limit)).mappings()
+        with self.transaction() as c:
+            order = (
+                (records.c.timestamp.desc(), records.c.id.desc())
+                if newest_first
+                else (records.c.timestamp, records.c.id)
+            )
+            rows = c.execute(q.order_by(*order).limit(limit)).mappings()
             return [{**r, "body": json.loads(r["body"])} for r in rows]
 
     def state(self, run_id, market):
+        existing = self._connection.get()
+        if existing is not None:
+            return existing.execute(self._state_query, dict(run=run_id, ticker=market)).scalar()
+        # Reads need no commit, but must still see an enclosing transaction's writes.
         with self.engine.connect() as c:
-            return c.execute(
-                select(states.c.state).where(states.c.run_id == run_id, states.c.market == market)
-            ).scalar()
+            return c.execute(self._state_query, dict(run=run_id, ticker=market)).scalar()
 
     def transition(self, run_id, mode, market, target, now, opportunity_id=""):
-        with self.engine.begin() as c:
+        with self.transaction() as c:
             row = (
                 c.execute(select(states).where(states.c.run_id == run_id, states.c.market == market))
                 .mappings()
@@ -180,24 +255,36 @@ class Store:
             )
 
     def claim(self, run_id, key):
-        try:
-            with self.engine.begin() as c:
-                c.execute(insert(claims).values(run_id=run_id, key=key))
-            return True
-        except IntegrityError:
-            return False
+        # Conflict-safe insertion participates in the outer transaction on both databases.
+        # SQLite's legacy transaction mode can commit a standalone SAVEPOINT prematurely.
+        from sqlalchemy.dialects.postgresql import insert as pg_insert
+        from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+
+        constructor = sqlite_insert if self.engine.dialect.name == "sqlite" else pg_insert
+        with self.transaction() as c:
+            result = c.execute(
+                constructor(claims)
+                .values(run_id=run_id, key=key)
+                .on_conflict_do_nothing(index_elements=["run_id", "key"])
+                .returning(claims.c.key)
+            )
+            return result.scalar_one_or_none() is not None
 
     def acquire(self, key, owner):
         try:
-            with self.engine.begin() as c:
+            with self.transaction() as c:
                 c.execute(insert(leases).values(key=key, owner=owner))
         except IntegrityError as e:
             raise RuntimeError(
                 "A writer owns this database. After a crash inspect the lease before manual recovery."
             ) from e
 
+    def writer_owner(self):
+        with self.transaction() as c:
+            return c.execute(select(leases.c.owner).where(leases.c.key == "collector")).scalar()
+
     def release(self, key, owner):
-        with self.engine.begin() as c:
+        with self.transaction() as c:
             c.execute(leases.delete().where(leases.c.key == key, leases.c.owner == owner))
 
 
@@ -230,13 +317,16 @@ class RawRecorder:
             connection_id=connection_id,
             payload=dumps(payload),
         )
-        self.journal.write(dumps(row) + "\n")
+        self.append_rows([row])
+        return row
+
+    def append_rows(self, rows):
+        self.journal.writelines(dumps(row) + "\n" for row in rows)
         self.journal.flush()
         os.fsync(self.journal.fileno())
-        self.buffer.append(row)
+        self.buffer.extend(rows)
         if len(self.buffer) >= self.chunk_size:
             self.flush()
-        return row
 
     def flush(self):
         if not self.buffer:
@@ -251,32 +341,38 @@ class RawRecorder:
         self.chunk += 1
 
     def close(self):
-        self.flush()
-        self.journal.close()
+        try:
+            self.flush()
+        finally:
+            self.journal.close()
 
 
 def read_events(path):
+    """Stream rows; physical order is authoritative, never timestamp-sort a tape."""
     path = Path(path)
-    # Choose journal OR parquet. Never silently double-count both copies.
-    if path.suffix == ".parquet":
-        rows = pq.read_table(path).to_pylist()
-    else:
-        rows = []
-        with path.open() as f:
-            for i, line in enumerate(f, 1):
-                try:
-                    rows.append(json.loads(line))
-                except json.JSONDecodeError as e:
-                    raise ValueError(f"Corrupt journal line {i}; repair explicitly before replay") from e
-    seen = set()
-    previous = -float("inf")
-    for row in rows:
-        if row["id"] in seen:
-            continue
-        seen.add(row["id"])
-        if row["received"] < previous:
-            raise ValueError("Nonmonotonic receive timestamps; replay cannot reorder history")
-        previous = row["received"]
+
+    def source():
+        if path.suffix == ".parquet":
+            parquet = pq.ParquetFile(path)
+            for batch in parquet.iter_batches(batch_size=4096):
+                yield from batch.to_pylist()
+        else:
+            with path.open() as f:
+                for i, line in enumerate(f, 1):
+                    try:
+                        yield json.loads(line)
+                    except json.JSONDecodeError as e:
+                        raise ValueError(f"Corrupt journal line {i}; repair explicitly before replay") from e
+
+    previous = None
+    for row in source():
+        if not math.isfinite(row["received"]):
+            raise ValueError("Invalid receive timestamp")
+        if previous and row["received"] < previous["received"]:
+            if row.get("monotonic_ns", 0) <= previous.get("monotonic_ns", 0):
+                raise ValueError("Receive and monotonic order moved backwards")
+            # A real host wall-clock adjustment is retained and audited by the engine.
+        previous = row
         payload = row["payload"]
         yield {**row, "payload": json.loads(payload) if isinstance(payload, str) else payload}
 

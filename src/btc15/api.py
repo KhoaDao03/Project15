@@ -21,6 +21,8 @@ class KalshiClient:
                 Path(settings.private_key_path).read_bytes(), password=None
             )
         self.last_clock_skew = None
+        self._read_lock = asyncio.Lock()
+        self._next_read = 0.0
 
     def headers(self, method, path):
         if self.key is None or not self.settings.api_key_id:
@@ -40,6 +42,13 @@ class KalshiClient:
 
     async def get(self, path, params=None, authenticated=False):
         for attempt in range(4):
+            # Budget our client at 50 read tokens/second, including retries.
+            # Ordinary reads cost 10; CF passthrough reads cost 50.
+            async with self._read_lock:
+                await asyncio.sleep(max(0, self._next_read - time.monotonic()))
+                self._next_read = time.monotonic() + (
+                    1.0 if path.lstrip("/").startswith("cfbenchmarks/") else 0.2
+                )
             signed_path = urlparse(self.settings.rest_url).path + "/" + path.lstrip("/")
             headers = self.headers("GET", signed_path) if authenticated else {}
             start = time.time()

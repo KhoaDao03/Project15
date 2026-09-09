@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import ROUND_CEILING, ROUND_FLOOR
 
-from .domain import D
+from ...domain import D
 
 
 @dataclass
@@ -53,6 +53,7 @@ def evaluate(market, book, tick, features, probability, quality, now, config, ex
         if not okay:
             reasons.append(dict(code=code, actual=actual, required=required))
 
+    check("STRATEGY_DISABLED", config.enabled)
     check("MARKET_OPEN", market.tradable(now), market.status, "active")
     check(
         "ENTRY_WINDOW",

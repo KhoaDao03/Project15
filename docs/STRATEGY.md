@@ -39,3 +39,77 @@ except constants validated as contract semantics. Do not treat these settings as
 optimal. No experiment updates running paper or live configuration. The required
 improvement sequence remains collect → hypothesis → replay → held-out validation
 → paper validation → review → explicit approval before a live change.
+
+
+## Code organization
+
+The implemented algorithm is **BTC15 Settlement Edge** (`settlement_edge`):
+
+| File | Responsibility |
+| --- | --- |
+| `src/btc15/strategies/settlement_edge/config.py` | Validated `Strategy` settings and configuration version |
+| `src/btc15/strategies/settlement_edge/model.py` | Reference features, volatility, settlement probability and quality |
+| `src/btc15/strategies/settlement_edge/rules.py` | Entry evaluation, fees, sizing, risk and passive pricing |
+| `src/btc15/engine.py` | Shared causal event processing and recorded decisions |
+| `src/btc15/execution.py` | Shared paper orders, fills, positions and checkpoints |
+
+`btc15.config.Strategy` remains the public configuration import. Only one algorithm
+is implemented. The folder layout gives future algorithms a clear location;
+adding one still requires engine integration, UI support and validation. There is
+no dynamic plugin loader or simultaneous multi-strategy execution.
+
+## Edit settings in the dashboard
+
+1. Open **Strategies** in the sidebar.
+2. Set **Enable entries in new sessions** and edit the entry/risk fields.
+   Expand **Advanced model, execution and risk settings** for other parameters.
+   Probability fields use fractions: `0.95` means 95%. Prices and net value are
+   dollars per contract. Leave take-profit blank to disable that exit threshold.
+3. Select **Save for new sessions**. Invalid settings are rejected. A successful
+   save atomically replaces `DATA_DIR/strategy.json`, default `data/strategy.json`.
+4. Start a new session to use the saved configuration. Restart a dashboard that
+   owns collection to update that collector. Saving does not start paper execution.
+
+Settings are shared across dashboard modes and dashboards using the same
+`DATA_DIR`; the Mode and Run filters do not choose separate settings files.
+Running sessions keep their configuration. Historical records are not rewritten.
+The page compares saved settings with that dashboard's startup configuration,
+not with every external collector or paper service.
+
+The enable switch defaults to true. When false, the strategy records skipped
+entries with `STRATEGY_DISABLED`, and paper submission also rejects new entries.
+Reference collection, evaluations and position-management logic remain available.
+It is a next-session setting, not an emergency stop for a running process; see
+[the kill switch](SAFETY.md#operating-the-kill-switch).
+
+## Configuration precedence and reproducibility
+
+CLI startup chooses settings in this order:
+
+1. An explicit global `--config PATH` argument.
+2. `DATA_DIR/strategy.json`, if present.
+3. The built-in `Strategy` defaults.
+
+A JSON file may contain partial overrides; omitted fields use built-in defaults.
+An explicit file replaces the saved file as the input rather than merging with it.
+`config/defaults.json` is an example and is loaded only when explicitly selected.
+Use `uv run btc15 config` to inspect the effective settings for your environment.
+
+```bash
+uv run btc15 config > config/session.json
+uv run btc15 --config config/session.json paper
+# Resume that run using the same frozen settings:
+uv run btc15 --config config/session.json paper --resume RUN_ID
+```
+
+A changed UI configuration must not be used to resume a run whose checkpoint
+requires the original version. The new `enabled=true` default preserves legacy
+configuration hashes; `enabled=false` changes the version. Every new run and
+recorded evaluation still carries its effective configuration and version.
+
+`GET /api/strategy` returns saved settings (or startup settings before the first
+save), their version and the dashboard startup version. `PUT /api/strategy`
+accepts a JSON settings object, validates it and saves it for new sessions. It
+requires JSON and rejects a supplied foreign Origin. This is a local dashboard
+control, not an authenticated multi-user administration service. Neither endpoint
+activates live execution or changes an existing run.
