@@ -272,6 +272,25 @@ class Engine:
                     else:
                         self.markets[market.ticker] = market
                     self.books.setdefault(market.ticker, Book())
+                    if market.status in (
+                        "inactive",
+                        "closed",
+                        "determined",
+                        "disputed",
+                        "amended",
+                        "finalized",
+                    ):
+                        self.executor.pause_market(market, now, market.status, source="metadata")
+                        self.books[market.ticker].valid = False
+                    elif self.executor.resume_market(
+                        market,
+                        now,
+                        request_started_at=msg.get("request_started_at"),
+                        source=msg.get("source"),
+                        clock_ok=self.clock_ok,
+                    ):
+                        # Active metadata does not revalidate quotes from the paused period.
+                        self.books[market.ticker].valid = False
 
                     if self.store.state(self.run_id, market.ticker) is None:
                         for state in ("DISCOVER_MARKET", "VALIDATE_MARKET", "WARMUP"):
@@ -327,9 +346,15 @@ class Engine:
                     elif event in ("metadata_updated", "close_date_updated"):
                         self.executor.quarantine(self.markets[ticker], now, "LIFECYCLE_METADATA_CHANGED", msg)
                         self.books[ticker].valid = False
-                    elif event in ("closed", "deactivated", "price_level_structure_updated", "determined"):
+                    elif event in (
+                        "closed",
+                        "deactivated",
+                        "activated",
+                        "price_level_structure_updated",
+                        "determined",
+                    ):
+                        self.executor.pause_market(self.markets[ticker], now, event)
                         self.books[ticker].valid = False
-                        self.executor.cancel(ticker, now, event)
             elif kind == "settlement":
                 self.settle(msg["market_ticker"], msg["result"], now, evidence=msg.get("evidence"))
             # 5 Hz/ticker frames remain in raw storage; never counted as 1 Hz settlement samples.
@@ -397,6 +422,8 @@ class Engine:
                 continue
 
             extras = []
+            if ticker in self.executor.venue_pauses:
+                extras.append("VENUE_PAUSED")
             if self.clock and not 0 <= self.clock() - now <= min(c.reference_max_age, c.book_max_age):
                 extras.append("PROCESSING_LAG")
             if not self.entries_active:

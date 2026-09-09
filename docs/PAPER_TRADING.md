@@ -127,3 +127,13 @@ remains readable; it is not retroactively assigned a guessed cause. No strategy
 thresholds, presets, risk budgets, fees, dependencies or real-trading permissions
 are changed. Increased eligible simulated exit volume is not proof that an actual
 venue order would fill, and the changes do not establish profitability.
+
+
+## Persistent venue pause
+
+A fresh quote cannot undo an exchange deactivation. Venue restrictions are saved
+in the paper checkpoint and block both entries and pre-expiry exits. After a
+pause or activation hint, a parser-valid active REST observation from a request
+started after that notification, followed by a fresh book, is required. See
+[market-pause handling](MARKET_PAUSE.md). Settlement and metadata recovery remain
+separate; never delete a checkpoint or clear a risk halt to bypass a venue pause.

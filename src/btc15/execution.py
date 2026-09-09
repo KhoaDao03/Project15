@@ -84,12 +84,14 @@ class PaperExecutor:
         self.exit_consumed = {}
         self.maker_rates = {}
         self.contracts, self.quarantines = {}, {}
+        self.venue_pauses = {}
 
     def snapshot(self):
         return dict(
             maker_rates=self.maker_rates,
             contracts=self.contracts,
             quarantines=self.quarantines,
+            venue_pauses=self.venue_pauses,
             config_version=self.config.version,
             mode=self.mode,
             orders={k: asdict(v) for k, v in self.orders.items()},
@@ -113,6 +115,7 @@ class PaperExecutor:
         self.maker_rates = data.get("maker_rates", {})
         self.contracts = data.get("contracts", {})
         self.quarantines = data.get("quarantines", {})
+        self.venue_pauses = data.get("venue_pauses", {})
         self.orders = {}
         for k, v in data["orders"].items():
             f = v.pop("fees")
@@ -137,6 +140,76 @@ class PaperExecutor:
         self.risk.halted = True
         for ticker in list(self.orders):
             self.cancel(ticker, now, "kill_switch")
+
+    @atomic
+    def pause_market(self, market, now, event, *, source="lifecycle"):
+        """Persist a venue restriction independently of replaceable quote validity."""
+        if not math.isfinite(now):
+            raise ValueError("Invalid venue pause time")
+        ticker = market.ticker
+        if self.store.state(self.run_id, ticker) == "CLOSED":
+            return
+        previous = self.venue_pauses.get(ticker)
+        # Neither a later activation hint nor an old message can release a terminal
+        # restriction. Legitimate changed-close recovery uses the metadata path.
+        if previous and (
+            now <= previous["since"]
+            or previous["event"] in ("closed", "determined", "disputed", "amended", "finalized")
+        ):
+            return
+        self.contracts.setdefault(ticker, asdict(market))
+        self.cancel(ticker, now, "venue_" + event)
+        pause = dict(
+            event=event,
+            since=now,
+            source=source,
+            contract_hash=contract_hash(restore_market(self.contracts[ticker])),
+        )
+        self.venue_pauses[ticker] = pause
+        order = self.orders.get(ticker)
+        self.record("market_pause", pause, now, ticker, order.opportunity_id if order else "")
+
+    @atomic
+    def resume_market(self, market, now, *, request_started_at, source, clock_ok):
+        """Require a new active REST observation, never a quote or activation hint.
+
+        A poll started before the most recent pause/activation notification is
+        in-flight evidence and cannot authorize resumption. The engine invalidates
+        the old book on success, so matching still awaits a post-confirmation book.
+        """
+        ticker = market.ticker
+        pause = self.venue_pauses.get(ticker)
+        if not pause:
+            return False
+        if (
+            pause["event"] not in ("deactivated", "inactive", "activated", "price_level_structure_updated")
+            or ticker in self.quarantines
+            or self.store.state(self.run_id, ticker) in ("HALTED", "ERROR", "CLOSED", "SETTLEMENT_PENDING")
+            or source != "kalshi_rest"
+            or not clock_ok
+            or type(request_started_at) not in (int, float)
+            or not math.isfinite(request_started_at)
+            or not pause["since"] < request_started_at <= now
+            or not market.tradable(now)
+            or contract_hash(market) != pause["contract_hash"]
+        ):
+            return False
+        order = self.orders.get(ticker)
+        self.record(
+            "market_resume",
+            dict(
+                pause=pause,
+                source=source,
+                request_started_at=request_started_at,
+                contract_hash=contract_hash(market),
+                status=market.status,
+            ),
+            now,
+            ticker,
+            order.opportunity_id if order else "",
+        )
+        del self.venue_pauses[ticker]
+        return True
 
     def restore_daily_history(self):
         for r in self.store.list(kind="order", mode="PAPER", limit=None):
@@ -215,6 +288,12 @@ class PaperExecutor:
             return reject("STRATEGY_DISABLED", "Strategy entries are disabled")
         if market.ticker in self.quarantines:
             return reject("METADATA_QUARANTINED", "Contract metadata requires settlement recovery")
+        if market.ticker in self.venue_pauses:
+            return reject(
+                "VENUE_PAUSED",
+                "Market trading is paused or awaiting fresh venue confirmation",
+                pause=self.venue_pauses[market.ticker],
+            )
         if decision["decision"] != "TRADE_CANDIDATE":
             return reject(
                 "SIGNAL_NOT_CANDIDATE",
@@ -387,6 +466,7 @@ class PaperExecutor:
             and order.active
             and (
                 not healthy
+                or market.ticker in self.venue_pauses
                 or decision["decision"] != "TRADE_CANDIDATE"
                 or now - order.created >= self.config.max_wait
                 or market.close_time - now <= self.config.no_new_entry
@@ -401,7 +481,12 @@ class PaperExecutor:
             raise ValueError("Stale paper order reference")
         if not D(price).is_finite() or not 0 < price < 1 or price > order.limit:
             raise ValueError("Fill violates order price")
-        if not order.active or now < order.eligible or order.market in self.quarantines:
+        if (
+            not order.active
+            or now < order.eligible
+            or order.market in self.quarantines
+            or order.market in self.venue_pauses
+        ):
             return
         if not D(quantity).is_finite() or D(quantity) <= 0 or D(quantity) % D(".01"):
             raise ValueError("Invalid fill quantity")
@@ -472,7 +557,13 @@ class PaperExecutor:
             return
         self.seen_trades.add(tid)
         order = self.orders.get(market.ticker)
-        if not order or not order.active or not self.config.passive or now < order.eligible:
+        if (
+            not order
+            or not order.active
+            or not self.config.passive
+            or now < order.eligible
+            or market.ticker in self.venue_pauses
+        ):
             return
         source = msg.get("ts_ms", 0) / 1000
         if (
@@ -517,6 +608,7 @@ class PaperExecutor:
             not continuous
             or ticker not in self.positions
             or ticker in self.quarantines
+            or ticker in self.venue_pauses
             or not book.valid
             or not math.isfinite(source_time)
             or not 0 <= now - book.received <= self.config.book_max_age
@@ -533,7 +625,13 @@ class PaperExecutor:
     @atomic
     def aggressive(self, market, book, now):
         order = self.orders.get(market.ticker)
-        if self.config.passive or not order or not order.active or now < order.eligible:
+        if (
+            self.config.passive
+            or not order
+            or not order.active
+            or now < order.eligible
+            or market.ticker in self.venue_pauses
+        ):
             return
         # Called only on a new book event. IOC: unfilled remainder is cancelled.
         for price, quantity in book.asks(order.side):
@@ -549,7 +647,13 @@ class PaperExecutor:
     @atomic
     def monitor(self, market, book, probability, now, event_id):
         pos = self.positions.get(market.ticker)
-        if not pos or market.ticker in self.quarantines or not book.valid or not market.tradable(now):
+        if (
+            not pos
+            or market.ticker in self.quarantines
+            or market.ticker in self.venue_pauses
+            or not book.valid
+            or not market.tradable(now)
+        ):
             return
         bid = book.bid(pos.side)
         if bid is None or now - book.received > self.config.book_max_age:
@@ -831,6 +935,7 @@ class PaperExecutor:
             self.state(ticker, "SETTLEMENT_PENDING", now)
             self.state(ticker, "CLOSED", now)
         self.quarantines.pop(ticker, None)
+        self.venue_pauses.pop(ticker, None)
         return "SETTLED"
 
 

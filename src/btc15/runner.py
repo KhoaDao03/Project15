@@ -256,6 +256,7 @@ async def collect(
                         maximum_queue=maximum_queue,
                         markets=list(engine.markets),
                         positions={k: vars(v) for k, v in engine.executor.positions.items()},
+                        venue_pauses=dict(engine.executor.venue_pauses),
                         settlement_recovery={
                             k: v
                             for k, v in engine.executor.quarantines.items()
@@ -311,6 +312,9 @@ async def collect(
             nonlocal tickers
             while not stop.is_set():
                 try:
+                    # Fence the request before any network await. An in-flight active
+                    # response started before a lifecycle pause cannot release it.
+                    metadata_request_started_at = time.time()
                     series, markets = await client.discover()
                     changes = {}
                     for event in sorted({m["event_ticker"] for m in markets}):
@@ -332,6 +336,8 @@ async def collect(
                             msg=dict(
                                 series=series,
                                 markets=markets,
+                                source="kalshi_rest",
+                                request_started_at=metadata_request_started_at,
                                 fee_changes=changes,
                                 series_fee_changes=series_changes,
                                 exchange_status=status,
