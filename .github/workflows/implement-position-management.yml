@@ -55,7 +55,7 @@ jobs:
           files = {
               'tests/test_position_management.py': '73acdd14d913c373e225fa1e157ce937736b4a4c',
               'docs/POSITION_MANAGEMENT.md': '4642c5e498d63ff4fb88d5b5e6d38ace1661c0cc',
-              str(Path(os.environ['RUNNER_TEMP']) / 'management_patch.py'): '887b21f5bd7c7c2df874e17bb93bb8072abf7f00',
+              str(Path(os.environ['RUNNER_TEMP']) / 'management_patch.py'): 'a32ee1d201ba99ea8999649f46ad98dfeaef984e',
           }
           for name, sha in files.items():
               request = urllib.request.Request(
@@ -97,15 +97,15 @@ jobs:
       - name: Apply scoped engine and executor correction
         run: |
           python3 "$RUNNER_TEMP/management_patch.py"
-          uv run --no-sync ruff format src/btc15/engine.py src/btc15/execution.py tests/test_position_management.py
+          uv run --no-sync ruff format src/btc15/engine.py src/btc15/execution.py tests/test_position_management.py tests/test_operation.py
           uv run --no-sync ruff check src tests
-          uv run --no-sync pytest -q tests/test_position_management.py
+          uv run --no-sync pytest -q tests/test_position_management.py tests/test_operation.py
 
       - name: Verify full suite, build, syntax and scope
         run: |
           uv run --no-sync pytest -q
           uv run --no-sync ruff check src tests
-          uv run --no-sync ruff format --check src/btc15/engine.py src/btc15/execution.py tests/test_position_management.py
+          uv run --no-sync ruff format --check src/btc15/engine.py src/btc15/execution.py tests/test_position_management.py tests/test_operation.py
           uv run --no-sync python -m compileall -q src tests
           node --check src/btc15/static/app.js
           uv build
@@ -119,7 +119,7 @@ jobs:
         run: |
           test "$(git ls-remote origin refs/heads/fix/fractional-passive-fills | cut -f1)" = "$(git rev-parse HEAD)"
           git rm .github/workflows/implement-position-management.yml
-          git add src/btc15/engine.py src/btc15/execution.py tests/test_position_management.py docs/POSITION_MANAGEMENT.md docs/SAFETY.md docs/STRATEGY.md
+          git add src/btc15/engine.py src/btc15/execution.py tests/test_position_management.py tests/test_operation.py docs/POSITION_MANAGEMENT.md docs/SAFETY.md docs/STRATEGY.md
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'fix: separate entry policy from safe existing-position management'
