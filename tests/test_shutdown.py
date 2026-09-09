@@ -152,6 +152,7 @@ def test_flush_failure_never_acknowledges_clean_shutdown(store, config, tmp_path
                 store,
                 paper=True,
                 managed_run="failed-flush",
+                record_all=True,
                 duration=0.1,
             )
         )

@@ -123,7 +123,9 @@ def test_dashboard_owns_collection_lifecycle(store, monkeypatch):
 
     async def collect(settings, config, actual_store, **kwargs):
         assert actual_store is store
-        assert not kwargs.get("paper", False)
+        assert kwargs["paper"] is True
+        assert kwargs["managed_run"] == "dashboard-paper"
+        assert kwargs["min_free_bytes"] == 10 * 1024**3
         assert kwargs["multi_model"] is True
         calls.append("started")
         await kwargs["stop_event"].wait()

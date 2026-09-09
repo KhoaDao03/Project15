@@ -1,5 +1,6 @@
 """Append-only research memory and durable raw event recording."""
 
+import gzip
 import json
 import math
 import os
@@ -12,8 +13,10 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 from sqlalchemy import (
+    JSON,
     Column,
     Float,
+    Index,
     Integer,
     MetaData,
     String,
@@ -21,8 +24,10 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     bindparam,
+    cast,
     create_engine,
     event,
+    func,
     insert,
     select,
     update,
@@ -43,6 +48,17 @@ records = Table(
     Column("opportunity_id", String, index=True),
     Column("timestamp", Float, index=True),
     Column("body", Text, nullable=False),
+)
+history_indexes = (
+    Index(
+        "ix_records_kind_mode_run_time",
+        records.c.kind,
+        records.c.mode,
+        records.c.run_id,
+        records.c.timestamp,
+        records.c.id,
+    ),
+    Index("ix_records_kind_mode_time", records.c.kind, records.c.mode, records.c.timestamp, records.c.id),
 )
 states = Table(
     "states",
@@ -90,6 +106,106 @@ checkpoints = Table(
 
 
 class Store:
+    def run_summaries(self, mode, limit=None):
+        def field(*path):
+            if self.engine.dialect.name == "sqlite":
+                return func.json_extract(records.c.body, "$." + ".".join(path))
+            return func.json_extract_path_text(cast(records.c.body, JSON), *path)
+
+        query = select(
+            records.c.id,
+            records.c.run_id,
+            records.c.mode,
+            records.c.timestamp,
+            field("model").label("model"),
+            field("versions", "config").label("config"),
+        )
+        query = (
+            query.where(records.c.kind == "run", records.c.mode == mode)
+            .order_by(records.c.timestamp.desc(), records.c.id.desc())
+            .limit(limit)
+        )
+        with self.engine.connect() as c:
+            return [
+                dict(
+                    id=r.id,
+                    run_id=r.run_id,
+                    kind="run",
+                    mode=r.mode,
+                    timestamp=r.timestamp,
+                    body=dict(
+                        model=json.loads(r.model) if isinstance(r.model, str) else r.model,
+                        versions=dict(config=r.config),
+                    ),
+                )
+                for r in c.execute(query)
+            ]
+
+    def latest_evaluations(self, run_ids, mode):
+        if not run_ids:
+            return {}
+        result = {}
+        with self.engine.connect() as c:
+            for (body,) in c.execute(
+                select(market_display.c.body).where(
+                    market_display.c.key.in_([f"evaluation:{r}" for r in run_ids])
+                )
+            ):
+                row = json.loads(body)
+                if row["mode"] == mode:
+                    result[row["run_id"]] = row
+            missing = set(run_ids) - result.keys()
+            if missing:
+                ranked = (
+                    select(
+                        records.c.id,
+                        func.row_number()
+                        .over(
+                            partition_by=records.c.run_id,
+                            order_by=(records.c.timestamp.desc(), records.c.id.desc()),
+                        )
+                        .label("rank"),
+                    )
+                    .where(
+                        records.c.kind == "opportunity", records.c.mode == mode, records.c.run_id.in_(missing)
+                    )
+                    .subquery()
+                )
+                query = select(records).join(ranked, records.c.id == ranked.c.id).where(ranked.c.rank == 1)
+                for row in c.execute(query).mappings():
+                    result[row["run_id"]] = {**row, "body": json.loads(row["body"])}
+        return result
+
+    def trade_revision(self, mode):
+        with self.engine.connect() as c:
+            return tuple(
+                c.execute(
+                    select(records.c.kind, func.count())
+                    .where(records.c.mode == mode, records.c.kind.in_(("fill", "trade_result")))
+                    .group_by(records.c.kind)
+                    .order_by(records.c.kind)
+                ).all()
+            )
+
+    def publish_record(self, kind, body, run_id, mode, now, market="", opportunity_id=""):
+        row = dict(
+            id=opportunity_id or f"{kind}:{run_id}",
+            kind=kind,
+            body=body,
+            run_id=run_id,
+            mode=mode,
+            timestamp=now,
+            market=market,
+            opportunity_id=opportunity_id,
+        )
+        self.publish_market_display(row, f"{kind}:{run_id}")
+
+    def latest_evaluation(self, run_id, mode):
+        live = self.read_market_display(f"evaluation:{run_id}") if run_id else None
+        if live and live["mode"] == mode:
+            return [live]
+        return self.list(kind="opportunity", mode=mode, run_id=run_id, limit=1, newest_first=True)
+
     def publish_market_display(self, body, key="current"):
         # One replaceable UI projection, separate from immutable research records.
         with self.transaction() as c:
@@ -120,6 +236,8 @@ class Store:
                 dbapi.execute("PRAGMA busy_timeout=5000")
 
         metadata.create_all(self.engine)
+        for index in history_indexes:
+            index.create(self.engine, checkfirst=True)
         # Enforce immutable history even outside the application.
         with self.engine.begin() as conn:
             if self.engine.dialect.name == "sqlite":
@@ -207,7 +325,23 @@ class Store:
                 else (records.c.timestamp, records.c.id)
             )
             rows = c.execute(q.order_by(*order).limit(limit)).mappings()
-            return [{**r, "body": json.loads(r["body"])} for r in rows]
+            result = [{**r, "body": json.loads(r["body"])} for r in rows]
+            if kind == "status":
+                projected = c.execute(
+                    select(market_display.c.body).where(market_display.c.key.like("status:%"))
+                )
+                for (body,) in projected:
+                    row = json.loads(body)
+                    if all(
+                        val is None or row[key] == val
+                        for key, val in dict(
+                            mode=mode, run_id=run_id, market=market, opportunity_id=opportunity_id
+                        ).items()
+                    ):
+                        result.append(row)
+                result.sort(key=lambda r: (r["timestamp"], r["id"]), reverse=newest_first)
+                result = result[:limit] if limit is not None else result
+            return result
 
     def state(self, run_id, market):
         existing = self._connection.get()
@@ -217,7 +351,7 @@ class Store:
         with self.engine.connect() as c:
             return c.execute(self._state_query, dict(run=run_id, ticker=market)).scalar()
 
-    def transition(self, run_id, mode, market, target, now, opportunity_id=""):
+    def transition(self, run_id, mode, market, target, now, opportunity_id="", *, record_history=True):
         with self.transaction() as c:
             row = (
                 c.execute(select(states).where(states.c.run_id == run_id, states.c.market == market))
@@ -243,16 +377,17 @@ class Store:
                     raise RuntimeError("Concurrent state transition")
             else:
                 c.execute(insert(states).values(run_id=run_id, market=market, state=target, version=0))
-            self.add(
-                "transition",
-                dict(previous=old, state=target),
-                run_id,
-                mode,
-                now,
-                market,
-                opportunity_id,
-                conn=c,
-            )
+            if record_history:
+                self.add(
+                    "transition",
+                    dict(previous=old, state=target),
+                    run_id,
+                    mode,
+                    now,
+                    market,
+                    opportunity_id,
+                    conn=c,
+                )
 
     def claim(self, run_id, key):
         # Conflict-safe insertion participates in the outer transaction on both databases.
@@ -347,6 +482,52 @@ class RawRecorder:
             self.journal.close()
 
 
+class CompactRecorder:
+    """One compressed input tape, without derived evaluations or a Parquet mirror.
+
+    Each fsynced batch is a complete gzip member so cleanly written batches remain
+    readable after a crash. A torn final batch is detected, not silently ignored.
+    """
+
+    def __init__(self, directory):
+        self.directory = Path(directory)
+        self.directory.mkdir(parents=True, exist_ok=True)
+        self.session = str(uuid.uuid4())
+        self.path = self.directory / f"{self.session}.jsonl.gz"
+        self.journal = self.path.open("xb")
+
+    def append_rows(self, rows):
+        data = b"".join(
+            (
+                json.dumps(
+                    {
+                        **row,
+                        "payload": json.loads(row["payload"])
+                        if isinstance(row["payload"], str)
+                        else row["payload"],
+                    },
+                    separators=(",", ":"),
+                    allow_nan=False,
+                )
+                + "\n"
+            ).encode()
+            for row in rows
+        )
+        if data:
+            self.journal.write(gzip.compress(data, compresslevel=1, mtime=0))
+            self.flush()
+
+    def flush(self):
+        self.journal.flush()
+        os.fsync(self.journal.fileno())
+
+    def close(self):
+        try:
+            self.flush()
+        finally:
+            self.journal.close()
+
+
 def read_events(path):
     """Stream rows; physical order is authoritative, never timestamp-sort a tape."""
     path = Path(path)
@@ -357,7 +538,7 @@ def read_events(path):
             for batch in parquet.iter_batches(batch_size=4096):
                 yield from batch.to_pylist()
         else:
-            with path.open() as f:
+            with gzip.open(path, "rt") if path.suffix == ".gz" else path.open() as f:
                 for i, line in enumerate(f, 1):
                     try:
                         yield json.loads(line)

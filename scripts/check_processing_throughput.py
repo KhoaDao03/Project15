@@ -18,6 +18,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("journal")
 parser.add_argument("--limit", type=int, default=60000)
 parser.add_argument("--warm-history", action="store_true")
+parser.add_argument("--trades-only", action="store_true", help="Measure paper retention without raw archives")
 args = parser.parse_args()
 rows = list(itertools.islice(read_events(args.journal), args.limit))
 if len(rows) < 2:
@@ -26,7 +27,9 @@ with tempfile.TemporaryDirectory(prefix="btc15-throughput-") as directory:
     store = Store("sqlite:///" + directory + "/test.db")
     for model in [Momentum(), volatility_model()]:
         activate(store, register(store, model), True)
-    group = ModelGroup(store, Strategy(), mode="BACKTEST", execute=True)
+    group = ModelGroup(
+        store, Strategy(), mode="BACKTEST", execute=True, record_evaluations=not args.trades_only
+    )
     if args.warm_history:
         start = math.floor(rows[0]["received"])
         for engine in group.engines:
@@ -35,15 +38,17 @@ with tempfile.TemporaryDirectory(prefix="btc15-throughput-") as directory:
             ]
     for row in rows:
         row["payload"] = json.dumps(row["payload"])
-    recorder = RawRecorder(Path(directory) / "raw")
+    recorder = None if args.trades_only else RawRecorder(Path(directory) / "raw")
     started = time.perf_counter()
     for offset in range(0, len(rows), 256):
         batch = rows[offset : offset + 256]
-        recorder.append_rows(batch)
+        if recorder:
+            recorder.append_rows(batch)
         group.apply_activation(store)
         for row in batch:
             group.ingest(row)
-    recorder.close()
+    if recorder:
+        recorder.close()
     elapsed = time.perf_counter() - started
     span = rows[-1]["received"] - rows[0]["received"]
     print(
@@ -55,7 +60,12 @@ with tempfile.TemporaryDirectory(prefix="btc15-throughput-") as directory:
                 realtime_headroom=span / elapsed,
                 warm_history=args.warm_history,
                 models=len(group.engines),
-                raw_events=sum(1 for _ in read_events(recorder.directory / (recorder.session + ".jsonl"))),
+                raw_events=sum(1 for _ in read_events(recorder.directory / (recorder.session + ".jsonl")))
+                if recorder
+                else 0,
+                recording="trades_only" if args.trades_only else "full",
+                saved_evaluations=len(store.list(kind="opportunity", limit=None)),
+                fills=len(store.list(kind="fill", limit=None)),
             )
         )
     )

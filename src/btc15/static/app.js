@@ -147,7 +147,8 @@ marketStream.onmessage=event=>{
   livePrices=!!(data.fresh&&s?.markets?.length);
   const receipt=data.reference;
   const ref=receipt?.reference_5hz;
-  const freshReference=receipt?.connected&&data.server_time-receipt.published_at>=0&&data.server_time-receipt.published_at<2&&ref&&data.server_time-ref.received>=0&&data.server_time-ref.received<2&&ref.value!=null&&Number.isFinite(Number(ref.value))&&ref.source_ts_ms!=null&&data.server_time-Number(ref.source_ts_ms)/1000>=0&&data.server_time-Number(ref.source_ts_ms)/1000<2;
+  // Display only: tolerate up to 500 ms of source clock lead; local freshness stays strict.
+  const freshReference=receipt?.connected&&data.server_time-receipt.published_at>=0&&data.server_time-receipt.published_at<2&&ref&&data.server_time-ref.received>=0&&data.server_time-ref.received<2&&ref.value!=null&&Number.isFinite(Number(ref.value))&&ref.source_ts_ms!=null&&data.server_time-Number(ref.source_ts_ms)/1000>=-0.5&&data.server_time-Number(ref.source_ts_ms)/1000<2;
   if(!livePrices)clearLiveQuotes();
   updateLiveReference(freshReference?Number(ref.value):null);
   $('live-reference').textContent=freshReference?money(ref.value):'—';

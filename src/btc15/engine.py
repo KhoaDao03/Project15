@@ -23,12 +23,24 @@ VERSIONS = dict(
 
 
 class Engine:
-    def __init__(self, store, config, mode="PAPER", run_id=None, execute=True, clock=None, resume=False):
+    def __init__(
+        self,
+        store,
+        config,
+        mode="PAPER",
+        run_id=None,
+        execute=True,
+        clock=None,
+        resume=False,
+        record_evaluations=True,
+    ):
         if mode not in ("PAPER", "BACKTEST"):
             raise ValueError("Research modes only")
         self.store, self.config, self.mode = store, config, mode
         self.run_id = run_id or str(uuid.uuid4())
         self.execute, self.clock = execute, clock
+        self.record_evaluations = record_evaluations
+        self.raw_archive = record_evaluations
         self.markets, self.books, self.last_evaluation, self.latest = {}, {}, {}, {}
         self.ticks = []
         self._causal_reference = (None, 0)
@@ -90,7 +102,11 @@ class Engine:
                 self.executor.cancel(ticker, time.time(), "operator_resume_no_downtime_fills")
             store.add(
                 "resume",
-                {"source_hash": source_hash, "config_version": config.version},
+                {
+                    "source_hash": source_hash,
+                    "config_version": config.version,
+                    "recording": "full" if record_evaluations else "trades_only",
+                },
                 self.run_id,
                 mode,
                 time.time(),
@@ -103,6 +119,7 @@ class Engine:
                     model=self.executor.model_identity,
                     versions=self.versions,
                     execute=execute,
+                    recording="full" if record_evaluations else "trades_only",
                     source_snapshot=source_snapshot,
                 ),
                 self.run_id,
@@ -111,7 +128,15 @@ class Engine:
             )
 
     def state(self, market, target, now, op=""):
-        self.store.transition(self.run_id, self.mode, market, target, now, op)
+        self.store.transition(
+            self.run_id,
+            self.mode,
+            market,
+            target,
+            now,
+            op,
+            record_history=self.record_evaluations or market in self.executor.orders,
+        )
 
     def error(self, code, now, market="", detail=""):
         self.store.add("health", dict(code=code, detail=detail), self.run_id, self.mode, now, market)
@@ -463,6 +488,7 @@ class Engine:
                     "features": f,
                     "model": self.executor.model_identity,
                     "snapshot_id": event_id,
+                    "raw_archive": self.raw_archive,
                     "snapshot_timestamp": now,
                     "event_ticker": market.event_ticker,
                     "market_open_timestamp": market.open_time,
@@ -490,15 +516,19 @@ class Engine:
                         else r
                         for r in decision["reasons"]
                     ]
-                self.store.add("opportunity", body, self.run_id, self.mode, now, ticker, op, record_id=op)
+                if self.record_evaluations:
+                    self.store.add("opportunity", body, self.run_id, self.mode, now, ticker, op, record_id=op)
                 self.latest[ticker] = body
                 self._last_op[ticker] = op
             else:
                 op = self._last_op[ticker]
-            if record_decision and state in ("WARMUP", "MONITORING"):
+            transition_decision = record_decision and (
+                self.record_evaluations or decision["decision"] == "TRADE_CANDIDATE"
+            )
+            if transition_decision and state in ("WARMUP", "MONITORING"):
                 self.state(ticker, "ENTRY_WINDOW", now, op)
                 state = "ENTRY_WINDOW"
-            if record_decision and state in ("ENTRY_WINDOW", "NO_TRADE"):
+            if transition_decision and state in ("ENTRY_WINDOW", "NO_TRADE"):
                 self.state(ticker, "EVALUATING", now, op)
                 self.state(ticker, decision["decision"], now, op)
             healthy = not extras or extras == ["EXISTING_ENTRY"]
@@ -548,7 +578,15 @@ class Engine:
                     and 0 <= submit_now - book.received <= c.book_max_age
                 )
                 order = (
-                    self.executor.submit(market, book, decision, op, submit_now, fresh and healthy)
+                    self.executor.submit(
+                        market,
+                        book,
+                        decision,
+                        op,
+                        submit_now,
+                        fresh and healthy,
+                        **({"entry_evidence": body} if not self.record_evaluations else {}),
+                    )
                     if self.execute
                     else None
                 )

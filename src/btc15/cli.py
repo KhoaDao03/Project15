@@ -62,9 +62,14 @@ def main():
     p.add_argument("opportunity_id")
     p.add_argument("--output", default="data/trade_packets")
     p = commands.add_parser("dashboard")
-    p.add_argument(
+    dashboard_mode = p.add_mutually_exclusive_group()
+    dashboard_mode.add_argument(
         "--no-collect", action="store_true", help="Serve the dashboard without starting collection"
     )
+    dashboard_mode.add_argument(
+        "--observe-only", action="store_true", help="Collect and evaluate without simulated orders"
+    )
+    p.add_argument("--run-id", default="dashboard-paper", help="Named PAPER run to start or resume")
     p.add_argument("--port", type=int, default=8000)
     p = commands.add_parser("walk-forward")
     p.add_argument("manifest")
@@ -242,7 +247,14 @@ def main():
 
         from .dashboard import create_app
 
-        app = create_app(store, collect_live=not args.no_collect, settings=settings, config=config)
+        app = create_app(
+            store,
+            collect_live=not args.no_collect,
+            settings=settings,
+            config=config,
+            paper_execution=not args.observe_only,
+            run_id=args.run_id,
+        )
         server = uvicorn.Server(
             uvicorn.Config(
                 app,

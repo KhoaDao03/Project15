@@ -64,8 +64,8 @@ The **Strategies** page saves entry, risk, model and execution settings for new
 sessions. `btc15 paper` loads `DATA_DIR/strategy.json` unless a global `--config`
 file is supplied. Disabling entries blocks candidate selection and paper order
 submission while keeping evaluation and position-management logic available.
-Saving or enabling does not start the paper executor; dashboard-owned collection
-continues to be collection-only.
+Saving or enabling does not start a stopped process. Dashboard startup defaults
+to paper execution for Settlement Edge and all active momentum strategies.
 
 For checkpoint resume, use the original configuration even if UI settings have
 changed: `btc15 --config config/session.json paper --resume RUN_ID`. Do not create
@@ -91,12 +91,23 @@ settings are retained and the persistent HALT switch is not set by routine shutd
 The button affects the collector sharing this dashboard's database, irrespective of
 the selected history run or display mode. Live trading remains disabled.
 
-Dashboard startup now evaluates Settlement Edge and all active momentum configurations
-on the same ordered BRTI and order-book events. `btc15 dashboard --port 8001` starts
-observation only; it does not resume paper portfolios. To resume paper execution,
-start `btc15 model-paper --run-id momentum-paper` and use
-`btc15 dashboard --no-collect --port 8001` alongside it. Only one collector can own
-the database at a time. Strategy cards distinguish current evaluations, waiting/stale
-evaluations, and stopped strategies; they also identify observation versus paper
-execution. Momentum candle confirmation and volatility warmup still apply even
-when incoming data is current.
+Dashboard startup now starts or resumes the named `dashboard-paper` group with
+paper execution enabled. Use `btc15 dashboard --port 8001` after a clean shutdown
+to resume the same checkpoints. `--run-id GROUP_ID` selects another existing paper
+group (with its original configuration) or creates a new one when no unresolved
+positions remain. Membership and configuration are pinned for each named group;
+activation of another model requires a new group after resolving old exposure.
+
+`--observe-only` runs collection and evaluations without simulated orders.
+`--no-collect` serves a viewing dashboard for an external collector or paper runner.
+These flags are mutually exclusive. Startup retains the writer lease, configuration,
+checkpoint and unresolved-position checks, and requires 10 GiB of free disk space.
+A crash lease is never stolen. Missing credentials leave the dashboard available
+with a feed setup message; they do not create simulated data. Warmup, entry rules,
+risk limits and execution freshness checks still apply. Real-money trading remains
+blocked regardless of dashboard mode.
+
+Paper sessions now use [trade evidence plus compact inputs](TRADE_RECORDING.md):
+live evaluations and status are replaceable; first-fill evidence and execution/recovery
+records are retained. A shared compressed input tape preserves prices, books, quotes,
+trades and timing for replay, without duplicate JSONL/Parquet archives.

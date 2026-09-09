@@ -60,6 +60,55 @@ no dynamic plugin loader or simultaneous multi-strategy execution.
 
 ## Edit settings in the dashboard
 
+### Moderate Settlement Edge paper preset
+
+`config/settlement-edge-paper-moderate.json` is a frozen paper experiment requested
+on 2026-09-09. It changes only these original entry thresholds:
+
+| Setting | Original control | Moderate paper |
+| --- | --- | --- |
+| Start accepting entries before close | 480 seconds | 600 seconds |
+| Minimum entry ask | $0.85 | $0.80 |
+| Minimum net edge and minimum net EV | $0.03 each | $0.02 each |
+
+Both edge fields gate the same value after the conservative probability adjustment,
+estimated fees and slippage, so both must change together. The lower price floor
+admits cheaper favored contracts while still requiring conservative probability
+at least 0.90. The wider window adds two minutes; entries still stop with 120
+seconds remaining. Quality, warmup, calibration penalty, fresh-feed checks, spread,
+liquidity, passive execution, sizing and loss limits retain their original values.
+The built-in defaults remain available as the original control.
+
+The local saved settings in `data/strategy.json` select this preset for new
+sessions. The existing `dashboard-paper` checkpoint requires its original config;
+start a new group after a clean shutdown and resolution of any open exposure:
+
+```bash
+uv run btc15 --config config/settlement-edge-paper-moderate.json dashboard --run-id dashboard-paper-moderate --port 8001
+```
+
+To resume the original local group, explicitly supply its frozen configuration:
+
+```bash
+uv run btc15 --config data/runtime/settlement-edge-paper-20260909.json dashboard --run-id dashboard-paper --port 8001
+```
+
+This preset is an assumption for paper observation, not calibrated or optimized
+on historical returns. More eligible quotes need not produce passive fills or
+better results. Review new trades and realized losses before further relaxation.
+
+Local validation replayed 1,123,175 recorded input events from the last
+`dashboard-paper` capture through the causal engine with execution disabled.
+On 1,007,670 paired entry checks, the control admitted zero quotes; the preset
+admitted 1,462 checks in **one market**. These are correlated quote updates, not
+1,462 trade opportunities or fills. Net edge was the most frequent rejection
+under the original settings. The diagnostic and its script are retained locally
+as `data/runtime/settlement-edge-moderate-gate-review.json` and
+`data/runtime/settlement_edge_gate_review.py`. This was an entry-gate diagnostic,
+not a fill simulation, dataset-quality audit or held-out performance test.
+
+### Saving settings
+
 1. Open **Strategies** in the sidebar.
 2. Set **Enable entries in new sessions** and edit the entry/risk fields.
    Expand **Advanced model, execution and risk settings** for other parameters.

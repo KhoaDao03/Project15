@@ -81,6 +81,7 @@ class ModelGroup:
         clock=None,
         resume=False,
         model_keys=None,
+        record_evaluations=True,
     ):
         known = definitions(store)
         if resume:
@@ -94,13 +95,17 @@ class ModelGroup:
         if len({m["key"] for m in members}) != len(members):
             raise ValueError("Duplicate model keys")
         with store.transaction():
-            self.control = Engine(store, config, mode, run_id, execute, clock, resume)
+            self.control = Engine(
+                store, config, mode, run_id, execute, clock, resume, record_evaluations=record_evaluations
+            )
             self.engines = [self.control]
             for member in members:
                 c = Momentum(**member["config"])
                 register(store, c)
                 child_id = self.control.run_id + "/" + member["key"]
-                child = Engine(store, c, mode, child_id, execute, clock, resume)
+                child = Engine(
+                    store, c, mode, child_id, execute, clock, resume, record_evaluations=record_evaluations
+                )
                 self.engines.append(child)
             if not resume:
                 store.add("model_group", dict(members=members), self.run_id, mode, time.time())

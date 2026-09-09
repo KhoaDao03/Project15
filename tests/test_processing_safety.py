@@ -168,7 +168,9 @@ def test_overflow_preserves_rejected_frame_and_never_acknowledges_clean_stop(
 
     monkeypatch.setattr(runner.asyncio, "Queue", FullOnMarker)
     with pytest.raises(ExceptionGroup):
-        asyncio.run(runner.collect(Settings(data_dir=str(tmp_path)), config, store, paper=True))
+        asyncio.run(
+            runner.collect(Settings(data_dir=str(tmp_path)), config, store, paper=True, record_all=True)
+        )
     rows = list(read_events(next((tmp_path / "raw").glob("*.jsonl"))))
     assert any(row["payload"] == marker for row in rows)
     assert not store.list("shutdown_complete")

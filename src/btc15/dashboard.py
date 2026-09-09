@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import tempfile
+import threading
 import time
 from contextlib import asynccontextmanager
 from dataclasses import asdict
@@ -22,13 +23,23 @@ from .storage import Store
 from .strategies.momentum import Momentum
 
 
-def create_app(store=None, *, collect_live=False, settings=None, config=None):
+def create_app(
+    store=None,
+    *,
+    collect_live=False,
+    settings=None,
+    config=None,
+    paper_execution=True,
+    run_id="dashboard-paper",
+):
     store = store or Store(Settings.env().database_url)
     strategy_path = Path((settings or Settings.env()).data_dir) / "strategy.json"
     session_config = config or Strategy.load(strategy_path if strategy_path.exists() else None)
     feed_error = None
     shutdown_task = None
     shutdown_state = dict(status="idle", message="")
+    performance_cache = {}
+    performance_lock = threading.Lock()
 
     @asynccontextmanager
     async def lifespan(app):
@@ -44,7 +55,14 @@ def create_app(store=None, *, collect_live=False, settings=None, config=None):
                     nonlocal feed_error
                     try:
                         await collect(
-                            actual_settings, session_config, store, stop_event=stop, multi_model=True
+                            actual_settings,
+                            session_config,
+                            store,
+                            paper=paper_execution,
+                            managed_run=run_id if paper_execution else None,
+                            min_free_bytes=10 * 1024**3 if paper_execution else 0,
+                            stop_event=stop,
+                            multi_model=True,
                         )
                     except Exception as exc:
                         feed_error = (
@@ -243,7 +261,7 @@ def create_app(store=None, *, collect_live=False, settings=None, config=None):
 
     @app.get("/api/runs")
     def runs(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$")):
-        return store.list(kind="run", mode=mode, limit=100, newest_first=True)
+        return store.run_summaries(mode, limit=100)
 
     @app.get("/api/strategies")
     def strategies(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$")):
@@ -260,7 +278,9 @@ def create_app(store=None, *, collect_live=False, settings=None, config=None):
             if definition["active"]:
                 include(identity(Momentum(**definition["config"])), True)
         # Show active configurations only; historical records remain available by run.
-        for run in store.list(kind="run", mode=mode, limit=None, newest_first=True):
+        summaries = store.run_summaries(mode)
+        latest = store.latest_evaluations([r["run_id"] for r in summaries], mode)
+        for run in summaries:
             body = run["body"]
             model = body.get("model") or {
                 **identity(session_config),
@@ -271,23 +291,33 @@ def create_app(store=None, *, collect_live=False, settings=None, config=None):
             if entry is None:
                 continue
             entry["runs"].append(dict(run_id=run["run_id"], timestamp=run["timestamp"]))
-            rows = store.list(kind="opportunity", mode=mode, run_id=run["run_id"], limit=1, newest_first=True)
+            rows = [latest[run["run_id"]]] if run["run_id"] in latest else []
             if rows and (entry["record"] is None or rows[0]["timestamp"] > entry["record"]["timestamp"]):
                 entry["record"] = rows[0]
-        results = store.list(kind="trade_result", mode=mode, limit=None)
-
-        fills = store.list(kind="fill", mode=mode, limit=None)
-        by_run = {}
-        fills_by_run = {}
-        for result in results:
-            by_run.setdefault(result["run_id"], []).append(result)
-        for fill in fills:
-            fills_by_run.setdefault(fill["run_id"], []).append(fill)
-        for entry in entries.values():
-            entry["lifetime"] = lifetime_performance(
-                [result for run in entry["runs"] for result in by_run.get(run["run_id"], [])],
-                [fill for run in entry["runs"] for fill in fills_by_run.get(run["run_id"], [])],
-            )
+        membership = tuple((key, tuple(r["run_id"] for r in entry["runs"])) for key, entry in entries.items())
+        with performance_lock:
+            revision = (store.trade_revision(mode), membership)
+            cached = performance_cache.get(mode)
+            if cached is None or cached[0] != revision:
+                results = store.list(kind="trade_result", mode=mode, limit=None)
+                fills = store.list(kind="fill", mode=mode, limit=None)
+                by_run, fills_by_run = {}, {}
+                for result in results:
+                    by_run.setdefault(result["run_id"], []).append(result)
+                for fill in fills:
+                    fills_by_run.setdefault(fill["run_id"], []).append(fill)
+                per_model = {
+                    key: lifetime_performance(
+                        [result for run in entry["runs"] for result in by_run.get(run["run_id"], [])],
+                        [fill for run in entry["runs"] for fill in fills_by_run.get(run["run_id"], [])],
+                    )
+                    for key, entry in entries.items()
+                }
+                cached = (revision, lifetime_performance(results, fills), per_model)
+                performance_cache[mode] = cached
+            total = cached[1]
+            for key, entry in entries.items():
+                entry["lifetime"] = cached[2][key]
         now = time.time()
         statuses = store.list(kind="status", mode=mode, newest_first=True, limit=1)
         status = statuses[0] if statuses else None
@@ -312,7 +342,7 @@ def create_app(store=None, *, collect_live=False, settings=None, config=None):
             rows=list(entries.values()),
             mode=mode,
             server_time=now,
-            lifetime=lifetime_performance(results, fills),
+            lifetime=total,
         )
 
     @app.get("/api/evaluation")
@@ -325,7 +355,7 @@ def create_app(store=None, *, collect_live=False, settings=None, config=None):
             if latest and any(m["run_id"] == run_id for m in latest[0]["body"].get("models", [])):
                 status = latest[0]
         selected = run_id or (status["run_id"] if status and mode == "PAPER" else None)
-        rows = store.list(kind="opportunity", mode=mode, run_id=selected, limit=1, newest_first=True)
+        rows = store.latest_evaluation(selected, mode)
         row = rows[0] if rows else None
         fresh = bool(status and 0 <= now - status["timestamp"] < 5 and status["body"].get("connected"))
         age = now - row["timestamp"] if row else None

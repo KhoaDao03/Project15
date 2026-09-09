@@ -12,7 +12,7 @@ import websockets
 from .api import KalshiClient, subscriptions
 from .domain import dumps
 from .engine import Engine
-from .storage import RawRecorder
+from .storage import CompactRecorder, RawRecorder
 
 
 def stop_entries(engine, now):
@@ -37,9 +37,12 @@ async def collect(
     managed_run=None,
     min_free_bytes=0,
     multi_model=False,
+    record_all=None,
 ):
     """Independent receipt/metadata tasks; one ordered durable analysis worker."""
     settings.guard()
+    record_all = not paper if record_all is None else record_all
+    Path(settings.data_dir).mkdir(parents=True, exist_ok=True)
     if settings.mode != "PAPER":
         raise ValueError("Collector requires PAPER mode")
     if duration is not None and duration <= 0:
@@ -89,6 +92,7 @@ async def collect(
             execute=paper,
             clock=time.time,
             resume=bool(resume),
+            record_evaluations=record_all,
         )
         if paper and not resume:
             closed = {r["opportunity_id"] for r in store.list(kind="trade_result", mode="PAPER", limit=None)}
@@ -107,26 +111,25 @@ async def collect(
                 if multi_model
                 else store.checkpoint(engine.run_id, engine.executor.snapshot())
             )
-        recorder = RawRecorder(Path(settings.data_dir) / "raw", chunk_size=2000)
-        store.add(
-            "raw_source",
-            {"journal": str(recorder.directory / (recorder.session + ".jsonl"))},
-            engine.run_id,
-            "PAPER",
-            time.time(),
+        recorder = (
+            RawRecorder(Path(settings.data_dir) / "raw", chunk_size=2000)
+            if record_all
+            else CompactRecorder(Path(settings.data_dir) / "raw")
         )
-        if multi_model:
-            for child in engine.engines[1:]:
-                store.add(
-                    "raw_source",
-                    {
-                        "journal": str(recorder.directory / (recorder.session + ".jsonl")),
-                        "parent_run": engine.run_id,
-                    },
-                    child.run_id,
-                    "PAPER",
-                    time.time(),
-                )
+        journal = recorder.directory / (recorder.session + ".jsonl") if record_all else recorder.path
+        for member in engine.engines if multi_model else [engine]:
+            member.raw_archive = True
+            store.add(
+                "raw_source",
+                {
+                    "journal": str(journal),
+                    "format": "jsonl" if record_all else "jsonl.gz",
+                    "parent_run": engine.run_id,
+                },
+                member.run_id,
+                "PAPER",
+                time.time(),
+            )
         queue = asyncio.Queue(maxsize=20000)
         overflow_rows = []
         reconnect = asyncio.Event()
@@ -178,7 +181,8 @@ async def collect(
             nonlocal last_status, last_display, display_reference, entries_stopped
             if multi_model and not stop.is_set():
                 engine.apply_activation(store)
-            recorder.append_rows(rows)  # Durable before any decision; original receipt times preserved.
+            if recorder:
+                recorder.append_rows(rows)  # Input capture is durable before analysis.
             valid = True
             for row in rows:
                 if stop.is_set() and not entries_stopped:
@@ -234,13 +238,15 @@ async def collect(
                 )
                 last_display = time.monotonic()
             if now - last_status >= 1 or not connected:
-                store.add(
+                save_status = store.add if record_all else store.publish_record
+                save_status(
                     "status",
                     dict(
                         connected=connected,
                         run_id=engine.run_id,
                         mode="PAPER",
                         paper_execution=paper,
+                        recording="full" if record_all else "trades_with_compact_inputs",
                         live_enabled=False,
                         models=[
                             dict(
@@ -268,7 +274,21 @@ async def collect(
                     "PAPER",
                     now,
                 )
-                recorder.flush()
+                if recorder:
+                    recorder.flush()
+                if not record_all:
+                    for member in engine.engines if multi_model else [engine]:
+                        if member.latest:
+                            latest = max(member.latest.values(), key=lambda b: b["timestamp"])
+                            store.publish_record(
+                                "evaluation",
+                                latest,
+                                member.run_id,
+                                member.mode,
+                                latest["timestamp"],
+                                latest["ticker"],
+                                member._last_op[latest["ticker"]],
+                            )
                 last_status = now
             return valid
 

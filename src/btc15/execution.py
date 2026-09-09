@@ -24,6 +24,7 @@ class PaperOrder:
     remaining: float
     active: bool = True
     fees: FeeAccumulator = field(default_factory=FeeAccumulator)
+    entry_evidence: dict | None = None
 
 
 @dataclass
@@ -158,7 +159,7 @@ class PaperExecutor:
         self.store.transition(self.run_id, self.mode, market, target, now, op)
 
     @atomic
-    def submit(self, market, book, decision, opportunity_id, now, freshness_ok):
+    def submit(self, market, book, decision, opportunity_id, now, freshness_ok, *, entry_evidence=None):
         if not self.config.enabled:
             return None
         c = self.config
@@ -214,12 +215,13 @@ class PaperExecutor:
             queue,
             quantity,
             fees=FeeAccumulator(c.fee_balance_precision),
+            entry_evidence=copy.deepcopy(entry_evidence),
         )
         self.orders[market.ticker] = order
         self.record(
             "order",
             dict(
-                **{k: v for k, v in asdict(order).items() if k != "fees"},
+                **{k: v for k, v in asdict(order).items() if k not in ("fees", "entry_evidence")},
                 status="submitted",
                 theoretical_price=ask,
                 passive=c.passive,
@@ -238,6 +240,7 @@ class PaperExecutor:
         if not order or not order.active:
             return
         order.active = False
+        order.entry_evidence = None
         self.record(
             "order",
             dict(id=order.id, status="cancelled", reason=reason, remaining=order.remaining),
@@ -279,6 +282,19 @@ class PaperExecutor:
         quantity = float(min(D(quantity), D(order.remaining)).quantize(D(".01")))
         if quantity <= 0:
             return
+        if order.entry_evidence is not None:
+            evidence = order.entry_evidence
+            self.store.add(
+                "opportunity",
+                evidence,
+                self.run_id,
+                self.mode,
+                evidence["timestamp"],
+                order.market,
+                order.opportunity_id,
+                record_id=order.opportunity_id,
+            )
+            order.entry_evidence = None
         fee = order.fees.charge(
             price,
             quantity,

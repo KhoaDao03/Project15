@@ -24,7 +24,12 @@ def test_managed_clean_restart_preserves_run(store, config, tmp_path, raw, serie
     assert len(store.list(kind="run", run_id="managed")) == 1
     assert len(store.list(kind="resume", run_id="managed")) == 1
     assert store.load_checkpoint("managed") is not None
-    assert len(list((tmp_path / "raw").glob("*.jsonl"))) == 2
+    assert len(list((tmp_path / "raw").glob("*.jsonl.gz"))) == 2
+    assert not list((tmp_path / "raw").glob("*.parquet"))
+    assert len(store.list(kind="raw_source")) == 2
+    assert (
+        store.list(kind="status", run_id="managed")[-1]["body"]["recording"] == "trades_with_compact_inputs"
+    )
     assert not store.list(kind="fill")
 
 
@@ -41,6 +46,7 @@ def test_stop_drains_and_releases_writer(store, config, tmp_path, raw, series, m
             store,
             paper=True,
             managed_run="stopped",
+            record_all=True,
             stop_event=stop,
         )
 
