@@ -97,6 +97,7 @@ jobs:
           assert s.count(old) == 1
           p.write_text(s.replace(old, old + " 'SETTLEMENT_RECOVERY',"))
           PY
+          uv run --no-sync ruff check --select I --fix tests/test_settlement_recovery.py
           uv run --no-sync ruff format src/btc15/recovery.py src/btc15/engine.py src/btc15/execution.py src/btc15/storage.py src/btc15/runner.py src/btc15/cli.py src/btc15/operation.py tests/test_settlement_recovery.py
           uv run --no-sync ruff check src tests
           uv run --no-sync pytest -q tests/test_settlement_recovery.py --tb=short
