@@ -1,0 +1,93 @@
+name: Validate and publish single-strategy scope
+
+on:
+  push:
+    branches: [fix/fractional-passive-fills]
+    paths:
+      - .github/single_strategy_core.py
+      - .github/single_strategy_tail.py
+      - .github/workflows/single-strategy-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: single-strategy-implementation
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    if: github.repository == 'KhoaDao03/Project15' && github.ref == 'refs/heads/fix/fractional-passive-fills'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TRADING_MODE: PAPER
+      ENABLE_LIVE_TRADING: 'false'
+      KALSHI_API_KEY_ID: ''
+      KALSHI_PRIVATE_KEY_PATH: ''
+      DATA_DIR: data/ci-single-strategy
+      DATABASE_URL: sqlite:///data/ci-single-strategy.db
+    steps:
+      - name: Check out exact source without stored credentials
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          [[ "$EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git init .
+          git remote add origin https://github.com/KhoaDao03/Project15.git
+          git fetch --depth=1 origin "$EXPECTED_SHA"
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git fetch --depth=1 origin b4f291105b2f1bbb8f025b82f922abe9b22084f4
+          test -z "$(git diff --name-only b4f291105b2f1bbb8f025b82f922abe9b22084f4 HEAD -- src tests config scripts)"
+          find src tests scripts .github -type f | sort
+      - name: Install existing locked dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/btc15-tools"
+          "$RUNNER_TEMP/btc15-tools/bin/pip" install uv==0.8.13
+          echo "$RUNNER_TEMP/btc15-tools/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/btc15-tools/bin/uv" sync --locked --extra dev
+      - name: Capture pre-refactor Settlement Edge behavior
+        run: |
+          cat .github/single_strategy_core.py .github/single_strategy_tail.py > /tmp/apply-single-strategy.py
+          python3 /tmp/apply-single-strategy.py prepare
+          uv run --no-sync python /tmp/settlement-oracle.py --output /tmp/settlement-before.json
+      - name: Apply scoped changes with source and import assertions
+        run: |
+          python3 /tmp/apply-single-strategy.py
+          git add -N src tests scripts docs README.md
+          git diff --stat
+          mapfile -t changed < <(git diff --name-only --diff-filter=ACM -- '*.py')
+          uv run --no-sync ruff check --fix "${changed[@]}"
+          uv run --no-sync ruff format "${changed[@]}"
+      - name: Verify identical strategy behavior and complete regression suite
+        run: |
+          uv run --no-sync python scripts/verify_settlement_behavior.py --output /tmp/settlement-after.json --compare /tmp/settlement-before.json
+          uv run --no-sync pytest -q
+      - name: Verify lint, syntax, configuration preservation and packaging
+        run: |
+          uv run --no-sync ruff check src tests scripts
+          mapfile -t changed < <(git diff --name-only --diff-filter=ACM -- '*.py')
+          uv run --no-sync ruff format --check "${changed[@]}"
+          uv run --no-sync python -m compileall -q src tests scripts
+          node --check src/btc15/static/app.js
+          git diff --exit-code -- src/btc15/strategies/settlement_edge config pyproject.toml uv.lock src/btc15/api.py src/btc15/domain.py src/btc15/config.py
+          git diff --check
+          uv build
+      - name: Publish only tested source changes to the existing branch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          test "$(git ls-remote origin refs/heads/fix/fractional-passive-fills | cut -f1)" = "$EXPECTED_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src tests scripts docs README.md
+          git diff --cached --stat
+          git commit -m 'refactor: focus bot and dashboard on BTC15 Settlement Edge'
+          AUTH=$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $AUTH" push origin HEAD:refs/heads/fix/fractional-passive-fills
+          echo "PUBLISHED_SINGLE_STRATEGY_SHA=$(git rev-parse HEAD)"
+          echo '## Single-strategy implementation' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Before/after synthetic behavior matched for both original and moderate presets. Full offline suite, lint, syntax and build passed. No production data or credentials were used.' >> "$GITHUB_STEP_SUMMARY"
+          echo "Published revision: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
