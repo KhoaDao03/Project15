@@ -140,7 +140,8 @@ def restore_contract_history(executor, now):
         if ticker not in executor.positions and not (order and order.active):
             continue
         entered = order.created if order else executor.positions[ticker].opened
-        if ticker not in executor.contracts:
+        legacy_contract = ticker not in executor.contracts
+        if legacy_contract:
             candidates = [(r, m) for r, m in parsed if m.ticker == ticker and r["timestamp"] <= entered]
             if not candidates:
                 raise ValueError(
@@ -164,7 +165,10 @@ def restore_contract_history(executor, now):
             for r in problems
         )
         if changed or invalid_seen or rules_seen:
-            executor.quarantine(pinned, now, "LEGACY_METADATA_QUARANTINE")
+            # Only old checkpoints need legacy classification. Never convert a
+            # modern unrelated HALTED state into a recoverable metadata halt.
+            reason = "LEGACY_METADATA_QUARANTINE" if legacy_contract else "METADATA_HISTORY_RECONCILIATION"
+            executor.quarantine(pinned, now, reason)
         if ticker in executor.quarantines:
             markets[ticker] = pinned
     for ticker in executor.quarantines:
