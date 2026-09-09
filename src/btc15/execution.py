@@ -142,9 +142,7 @@ class PaperExecutor:
 
     def same_portfolio(self, row):
         model = row["body"].get("model")
-        if self.model_identity["model_id"] == "settlement-edge":
-            return model is None or model["model_id"] == "settlement-edge"
-        return model == self.model_identity
+        return model is None or model["model_id"] == "settlement-edge"
 
     def record(self, kind, body, now, market, op):
         body = {**body, "model": self.model_identity, "trade_id": op or None}
@@ -168,11 +166,7 @@ class PaperExecutor:
             decision["decision"] != "TRADE_CANDIDATE"
             or not freshness_ok
             or not market.tradable(now)
-            or not (
-                c.no_new_entry <= market.close_time - now <= c.entry_window_start
-                if hasattr(c, "model_id")
-                else c.no_new_entry < market.close_time - now <= c.entry_window_start
-            )
+            or not (c.no_new_entry < market.close_time - now <= c.entry_window_start)
         ):
             return None
         side = decision["side"]
@@ -192,11 +186,6 @@ class PaperExecutor:
             return None
         quantity = self.risk.size(max(price, ask), now)
         if not quantity or market.ticker in self.orders or market.ticker in self.positions:
-            return None
-        if hasattr(c, "model_id") and not self.store.claim(self.run_id, "event:" + market.event_ticker):
-            self.record(
-                "execution_rejection", dict(reason="DUPLICATE_EVENT"), now, market.ticker, opportunity_id
-            )
             return None
         if not self.store.claim(self.run_id, "entry:" + market.ticker):
             return None
@@ -409,8 +398,6 @@ class PaperExecutor:
         pos.max_favorable = max(pos.max_favorable, mark)
         pos.max_adverse = min(pos.max_adverse, mark)
         c = self.config
-        if getattr(c, "hold_to_settlement", False):
-            return
         conservative = probability["conservative_" + pos.side]
         try:
             target = market.snap(c.take_profit, up=True) if c.take_profit is not None else None

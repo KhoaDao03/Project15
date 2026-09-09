@@ -126,7 +126,7 @@ def test_dashboard_owns_collection_lifecycle(store, monkeypatch):
         assert kwargs["paper"] is True
         assert kwargs["managed_run"] == "dashboard-paper"
         assert kwargs["min_free_bytes"] == 10 * 1024**3
-        assert kwargs["multi_model"] is True
+        assert "multi_model" not in kwargs
         calls.append("started")
         await kwargs["stop_event"].wait()
         calls.append("stopped")
@@ -155,20 +155,22 @@ def test_dashboard_reports_collection_failure_without_losing_ui(store, monkeypat
 
 def test_market_groups_count_before_pagination_and_filter_exact_market(store):
     for i in range(105):
-        store.add('opportunity', {'decision': 'NO_TRADE'}, 'r1', 'PAPER', i, market='BTC-A')
-    store.add('opportunity', {'decision': 'TRADE_CANDIDATE'}, 'r2', 'PAPER', 110, market='BTC-A')
-    store.add('opportunity', {'decision': 'NO_TRADE'}, 'r1', 'PAPER', 111, market='BTC-AB')
-    store.add('opportunity', {'decision': 'NO_TRADE'}, 'r1', 'BACKTEST', 112, market='BTC-C')
+        store.add("opportunity", {"decision": "NO_TRADE"}, "r1", "PAPER", i, market="BTC-A")
+    store.add("opportunity", {"decision": "TRADE_CANDIDATE"}, "r2", "PAPER", 110, market="BTC-A")
+    store.add("opportunity", {"decision": "NO_TRADE"}, "r1", "PAPER", 111, market="BTC-AB")
+    store.add("opportunity", {"decision": "NO_TRADE"}, "r1", "BACKTEST", 112, market="BTC-C")
     with TestClient(dashboard.create_app(store)) as client:
-        data = client.get('/api/records?group_by_market=true&limit=1').json()
-        assert data['total'] == 2 and data['evaluations'] == 107
-        assert data['rows'][0]['market'] == 'BTC-AB'
-        group = client.get('/api/records?group_by_market=true&offset=1').json()['rows'][0]
-        assert group['total'] == 106 and group['skipped'] == 105
-        assert group['candidates'] == 1 and group['runs'] == 2
-        exact = client.get('/api/records?market=BTC-A&offset=100').json()
-        assert exact['total'] == 106 and len(exact['rows']) == 6
-        assert all(r['market'] == 'BTC-A' for r in exact['rows'])
-        filtered = client.get('/api/records?group_by_market=true&decision=TRADE_CANDIDATE&run_id=r2&search=BTC-A').json()
-        assert filtered['total'] == 1 and filtered['evaluations'] == 1
-        assert client.get('/api/records?group_by_market=true&mode=LIVE').json()['rows'] == []
+        data = client.get("/api/records?group_by_market=true&limit=1").json()
+        assert data["total"] == 2 and data["evaluations"] == 107
+        assert data["rows"][0]["market"] == "BTC-AB"
+        group = client.get("/api/records?group_by_market=true&offset=1").json()["rows"][0]
+        assert group["total"] == 106 and group["skipped"] == 105
+        assert group["candidates"] == 1 and group["runs"] == 2
+        exact = client.get("/api/records?market=BTC-A&offset=100").json()
+        assert exact["total"] == 106 and len(exact["rows"]) == 6
+        assert all(r["market"] == "BTC-A" for r in exact["rows"])
+        filtered = client.get(
+            "/api/records?group_by_market=true&decision=TRADE_CANDIDATE&run_id=r2&search=BTC-A"
+        ).json()
+        assert filtered["total"] == 1 and filtered["evaluations"] == 1
+        assert client.get("/api/records?group_by_market=true&mode=LIVE").json()["rows"] == []

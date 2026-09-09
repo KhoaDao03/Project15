@@ -27,29 +27,15 @@ def test_expired_market_transitions_once_and_still_settles(store, config, market
 
 
 @pytest.mark.parametrize("delay", [0, 10, "during_model"])
-@pytest.mark.parametrize("model", ["control", "momentum", "volatility"])
+@pytest.mark.parametrize("passive", [True, False])
 def test_processing_lag_cancels_resting_order_before_trade_fill(
-    store, config, market, book, now, monkeypatch, delay, model
+    store, config, market, book, now, monkeypatch, delay, passive
 ):
     from dataclasses import replace
 
     from test_execution import decision, ready
 
-    from btc15.strategies.momentum import Momentum, volatility_model
-
-    if model != "control":
-        config = replace(Momentum() if model == "momentum" else volatility_model(), max_entry_price=0.99)
-        monkeypatch.setattr(
-            module,
-            "observations",
-            lambda *args: dict(
-                return_180=0.001,
-                candle_age=0,
-                reference_source="CF Benchmarks BRTI",
-                volatility_regime="NORMAL",
-                volatility_samples=40,
-            ),
-        )
+    config = replace(config, passive=passive)
     clock = [now + 1 + (delay if isinstance(delay, int) else 0)]
     engine = module.Engine(store, config, run_id="run", clock=lambda: clock[0])
     engine.executor = ready(store, market, now, config)
@@ -75,7 +61,7 @@ def test_processing_lag_cancels_resting_order_before_trade_fill(
     engine.process(
         now + 1,
         "delayed-trade",
-        "trade" if model == "control" else "orderbook_delta",
+        "trade" if passive else "orderbook_delta",
         dict(
             market_ticker=market.ticker,
             trade_id="delayed",
@@ -175,27 +161,3 @@ def test_overflow_preserves_rejected_frame_and_never_acknowledges_clean_stop(
     assert any(row["payload"] == marker for row in rows)
     assert not store.list("shutdown_complete")
     assert store.writer_owner() is None
-
-
-def test_observation_cache_matches_uncached_at_fractional_boundaries_gaps_and_updates():
-    from btc15.strategies.momentum import Momentum, ObservationCache, observations
-
-    config = Momentum()
-    cache = ObservationCache()
-    ticks = [Tick(6000 + i + 0.25, 6000 + i + 0.5, 79000 + (i % 9)) for i in range(3600) if i % 137 != 0]
-    calls = []
-
-    def measured(*args):
-        calls.append(args[1])
-        return observations(*args)
-
-    for now in [9599.5, 9599.51, 9599.52, 9599.9, 9600, 9600.24, 9600.25, 9601.25, 9601.26, 9602.26, 9603.5]:
-        assert cache.get(ticks, now, config, measured) == observations(ticks, now, config)
-    assert len(calls) < 11
-    ticks.append(Tick(9604.25, 9604.5, 79001))
-    assert cache.get(ticks, 9604.3, config) == observations(ticks, 9604.3, config)
-    assert cache.get(ticks, 9604.5, config) == observations(ticks, 9604.5, config)
-    # Replaced history and backwards clock movement cannot reuse future results.
-    ticks = ticks[-500:]
-    for now in [9660, 9599.5]:
-        assert cache.get(ticks, now, config) == observations(ticks, now, config)

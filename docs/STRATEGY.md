@@ -43,7 +43,7 @@ improvement sequence remains collect → hypothesis → replay → held-out vali
 
 ## Code organization
 
-The implemented algorithm is **BTC15 Settlement Edge** (`settlement_edge`):
+The only executable algorithm is **BTC15 Settlement Edge** (`settlement_edge`):
 
 | File | Responsibility |
 | --- | --- |
@@ -54,9 +54,14 @@ The implemented algorithm is **BTC15 Settlement Edge** (`settlement_edge`):
 | `src/btc15/execution.py` | Shared paper orders, fills, positions and checkpoints |
 
 `btc15.config.Strategy` remains the public configuration import. Only one algorithm
-is implemented. The folder layout gives future algorithms a clear location;
-adding one still requires engine integration, UI support and validation. There is
+is implemented. Retired algorithms are preserved by Git history and cannot be activated in this version. There is
 no dynamic plugin loader or simultaneous multi-strategy execution.
+
+## Single-strategy scope
+
+See [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md) for legacy recovery and read-only archives.
+Original and moderate settings below are unchanged; the chosen run configuration remains frozen.
+The local validation and multi-strategy group notes describe the earlier implementation.
 
 ## Edit settings in the dashboard
 

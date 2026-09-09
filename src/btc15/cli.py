@@ -18,23 +18,6 @@ def main():
     parser.add_argument("--database", help="SQLAlchemy database URL override")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("init-db")
-    p = commands.add_parser("models", help="Independent paper-only model definitions")
-    p.add_argument("action", choices=["list", "activate", "deactivate", "create"])
-    p.add_argument("key", nargs="?")
-    p.add_argument("--file", help="Complete or partial Momentum configuration JSON for a new version")
-    p = commands.add_parser("model-comparison")
-    p.add_argument("--mode", choices=["PAPER", "BACKTEST"], default="PAPER")
-    p.add_argument("--days", choices=[1, 7, 30], type=int)
-    p = commands.add_parser("model-paper", help="One collector for control and active paper models")
-    p.add_argument("--run-id", required=True)
-    p.add_argument("--seconds", type=float)
-    p.add_argument("--min-free-gb", type=float, default=10)
-    p = commands.add_parser("model-backtest")
-    p.add_argument("input", nargs="+")
-    p.add_argument(
-        "--models", nargs="+", default=["conservative-confirmed-momentum:v1", "volatility-regime-momentum:v1"]
-    )
-
     commands.add_parser("config")
     p = commands.add_parser("paper-service", help="Managed PAPER operation; no real orders")
     p.add_argument("--run-id", required=True)
@@ -58,6 +41,7 @@ def main():
     p = commands.add_parser("analytics")
     p.add_argument("--mode", choices=["PAPER", "BACKTEST", "LIVE"], default="PAPER")
     p.add_argument("--run")
+    p.add_argument("--archive", action="store_true", help="Read retired strategy results only")
     p = commands.add_parser("export")
     p.add_argument("opportunity_id")
     p.add_argument("--output", default="data/trade_packets")
@@ -69,7 +53,9 @@ def main():
     dashboard_mode.add_argument(
         "--observe-only", action="store_true", help="Collect and evaluate without simulated orders"
     )
-    p.add_argument("--run-id", default="dashboard-paper", help="Named PAPER run to start or resume")
+    p.add_argument(
+        "--run-id", default="dashboard-paper", help="Named Settlement Edge PAPER run to start or resume"
+    )
     p.add_argument("--port", type=int, default=8000)
     p = commands.add_parser("walk-forward")
     p.add_argument("manifest")
@@ -137,61 +123,7 @@ def main():
         asyncio.run(api())
         return
     store = Store(args.database or settings.database_url)
-    if args.command == "models":
-        import json
-
-        from .models import activate, definitions, register
-        from .strategies.momentum import Momentum
-
-        if args.action == "create":
-            if not args.file:
-                parser.error("models create requires --file")
-            print(register(store, Momentum(**json.loads(Path(args.file).read_text()))))
-        elif args.action in ("activate", "deactivate"):
-            if not args.key:
-                parser.error("Model key required")
-            activate(store, args.key, args.action == "activate")
-            print(dumps(definitions(store)))
-        else:
-            from .models import identity
-
-            print(
-                dumps(
-                    {
-                        "settlement-edge:control": dict(
-                            **identity(config), active=config.enabled, mode="paper", config=asdict(config)
-                        ),
-                        **definitions(store),
-                    }
-                )
-            )
-    elif args.command == "model-comparison":
-        from .models import comparison
-
-        print(dumps(comparison(store, args.mode, args.days, control_config=config)))
-    elif args.command == "model-paper":
-        from .operation import serve
-
-        print(
-            asyncio.run(
-                serve(
-                    settings,
-                    config,
-                    store,
-                    args.run_id,
-                    int(args.min_free_gb * 1024**3),
-                    args.seconds,
-                    multi_model=True,
-                )
-            )
-        )
-    elif args.command == "model-backtest":
-        from .models import comparison
-        from .research import replay_files
-
-        print(replay_files(args.input, config, store, model_keys=args.models))
-        print(dumps(comparison(store, "BACKTEST")))
-    elif args.command == "init-db":
+    if args.command == "init-db":
         print("Database initialized")
     elif args.command == "paper-service":
         from .operation import serve
@@ -239,7 +171,7 @@ def main():
 
         print(dumps(walk_forward(args.manifest, store)))
     elif args.command == "analytics":
-        print(dumps(metrics(store, args.mode, args.run)))
+        print(dumps(metrics(store, args.mode, args.run, scope="archive" if args.archive else "settlement")))
     elif args.command == "export":
         print(export_packet(store, args.opportunity_id, args.output))
     elif args.command == "dashboard":

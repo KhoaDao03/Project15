@@ -1,3 +1,7 @@
+> **Scope update:** current runtime is Settlement Edge only. Multi-strategy descriptions
+> and measurements below describe historical revisions, not current execution.
+> See [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md) for current architecture, history and recovery.
+
 # Trade memory and exports
 
 Each meaningful evaluation has a UUID, mode, run, market, complete effective

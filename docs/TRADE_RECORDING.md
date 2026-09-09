@@ -1,7 +1,7 @@
 # Paper recording
 
-Paper execution (dashboard, paper, paper-service and model-paper) keeps actual
-filled-trade evidence and one compressed input tape shared by the session's models.
+Paper execution (dashboard, paper and paper-service) keeps actual
+filled-trade evidence and one compressed input tape for its Settlement Edge engine.
 Strategy rules, evaluation cadence, freshness gates, fees, risk limits and portfolio
 isolation are unchanged.
 
@@ -14,7 +14,7 @@ isolation are unchanged.
   ordering and these inputs is necessary to recalculate decisions and simulated fills.
 - Each compressed batch is flushed and fsynced before analysis. There is no duplicate
   Parquet archive in paper mode. A truncated final batch fails replay explicitly.
-  Every model's `raw_source` record points to the same tape for that collection session.
+  The run's `raw_source` record points to that collection session's tape.
 - Orders and cancellations are retained for duplicate prevention and daily risk
   budgets, including attempts that did not fill.
 - Entry evidence stays in the pending order checkpoint. The first fill atomically
@@ -65,6 +65,11 @@ checkpoints, while preserving four model definition/activation records, registry
 claims, strategy files and credentials. SQLite was vacuumed from 663,937,024 to
 86,016 bytes. Existing raw files were outside the table reset and remain on disk.
 Normal startup does not delete history.
+
+## Historical multi-strategy validation
+
+The measurements below predate the single-strategy scope change. They are not new
+performance measurements of this version. See [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md).
 
 ## Validation
 

@@ -7,7 +7,7 @@ import time
 from .runner import collect
 
 
-async def serve(settings, config, store, run_id, min_free_bytes, duration=None, *, multi_model=False):
+async def serve(settings, config, store, run_id, min_free_bytes, duration=None):
     if not run_id or min_free_bytes <= 0:
         raise ValueError("Service requires a run ID and positive disk reserve")
     stop = asyncio.Event()
@@ -26,7 +26,6 @@ async def serve(settings, config, store, run_id, min_free_bytes, duration=None, 
             managed_run=run_id,
             stop_event=stop,
             min_free_bytes=min_free_bytes,
-            **({"multi_model": True} if multi_model else {}),
         )
     finally:
         for sig in installed:

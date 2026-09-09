@@ -18,9 +18,8 @@ from .analytics import lifetime_performance, metrics
 from .api import KalshiClient
 from .config import Settings, Strategy
 from .domain import dumps
-from .models import definitions, identity
+from .models import history_models, identity, run_model, select_history
 from .storage import Store
-from .strategies.momentum import Momentum
 
 
 def create_app(
@@ -62,7 +61,6 @@ def create_app(
                             managed_run=run_id if paper_execution else None,
                             min_free_bytes=10 * 1024**3 if paper_execution else 0,
                             stop_event=stop,
-                            multi_model=True,
                         )
                     except Exception as exc:
                         feed_error = (
@@ -260,25 +258,34 @@ def create_app(
         )
 
     @app.get("/api/runs")
-    def runs(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$")):
-        return store.run_summaries(mode, limit=100)
+    def runs(
+        mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"),
+        scope: str = Query("settlement", pattern="^(settlement|archive)$"),
+    ):
+        rows = store.run_summaries(mode)
+        return select_history(rows, {r["run_id"]: run_model(r) for r in rows}, scope)[:100]
 
     @app.get("/api/strategies")
-    def strategies(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$")):
-        saved = Strategy.load(strategy_path) if strategy_path.exists() else session_config
+    def strategies(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"), run_id: str | None = None):
+        selected_model = identity(session_config)
+        if run_id:
+            selected = store.run_summaries(mode)
+            selected = [
+                r for r in selected if r["run_id"] == run_id and run_model(r)["model_id"] == "settlement-edge"
+            ]
+            if selected:
+                selected_model = run_model(selected[0])
         entries = {}
 
         def include(model, enabled=None):
             key = (model["model_id"], model["model_version"], model["config_hash"])
             return entries.setdefault(key, dict(model=model, entries_enabled=enabled, runs=[], record=None))
 
-        if saved.enabled:
-            include(identity(saved), True)
-        for definition in definitions(store).values():
-            if definition["active"]:
-                include(identity(Momentum(**definition["config"])), True)
+        include(selected_model, session_config.enabled)
         # Show active configurations only; historical records remain available by run.
-        summaries = store.run_summaries(mode)
+        summaries = select_history(store.run_summaries(mode), history_models(store, mode))
+        if run_id:
+            summaries = [r for r in summaries if r["run_id"] == run_id]
         latest = store.latest_evaluations([r["run_id"] for r in summaries], mode)
         for run in summaries:
             body = run["body"]
@@ -294,13 +301,23 @@ def create_app(
             rows = [latest[run["run_id"]]] if run["run_id"] in latest else []
             if rows and (entry["record"] is None or rows[0]["timestamp"] > entry["record"]["timestamp"]):
                 entry["record"] = rows[0]
+        selected_ids = {r["run_id"] for entry in entries.values() for r in entry["runs"]}
         membership = tuple((key, tuple(r["run_id"] for r in entry["runs"])) for key, entry in entries.items())
         with performance_lock:
             revision = (store.trade_revision(mode), membership)
             cached = performance_cache.get(mode)
             if cached is None or cached[0] != revision:
-                results = store.list(kind="trade_result", mode=mode, limit=None)
-                fills = store.list(kind="fill", mode=mode, limit=None)
+                known = history_models(store, mode)
+                results = [
+                    r
+                    for r in select_history(store.list(kind="trade_result", mode=mode, limit=None), known)
+                    if r["run_id"] in selected_ids
+                ]
+                fills = [
+                    r
+                    for r in select_history(store.list(kind="fill", mode=mode, limit=None), known)
+                    if r["run_id"] in selected_ids
+                ]
                 by_run, fills_by_run = {}, {}
                 for result in results:
                     by_run.setdefault(result["run_id"], []).append(result)
@@ -355,7 +372,7 @@ def create_app(
             if latest and any(m["run_id"] == run_id for m in latest[0]["body"].get("models", [])):
                 status = latest[0]
         selected = run_id or (status["run_id"] if status and mode == "PAPER" else None)
-        rows = store.latest_evaluation(selected, mode)
+        rows = select_history(store.latest_evaluation(selected, mode), history_models(store, mode))
         row = rows[0] if rows else None
         fresh = bool(status and 0 <= now - status["timestamp"] < 5 and status["body"].get("connected"))
         age = now - row["timestamp"] if row else None
@@ -384,6 +401,7 @@ def create_app(
         decision: str = "",
         market: str | None = None,
         group_by_market: bool = False,
+        scope: str = Query("settlement", pattern="^(settlement|archive)$"),
         offset: int = Query(0, ge=0),
         limit: int = Query(100, ge=1, le=500),
     ):
@@ -398,7 +416,11 @@ def create_app(
             "experiment",
         ):
             raise HTTPException(400, "Unsupported record kind")
-        rows = store.list(kind=kind, mode=mode, run_id=run_id, market=market, limit=None)[::-1]
+        rows = select_history(
+            store.list(kind=kind, mode=mode, run_id=run_id, market=market, limit=None),
+            history_models(store, mode),
+            scope,
+        )[::-1]
         if search:
             rows = [r for r in rows if search.lower() in (r["id"] + " " + r["market"]).lower()]
         if decision:
@@ -428,16 +450,25 @@ def create_app(
     @app.get("/api/trades")
     def trades(
         mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"),
+        scope: str = Query("settlement", pattern="^(settlement|archive)$"),
         run_id: str | None = None,
         search: str = "",
         offset: int = Query(0, ge=0),
         limit: int = Query(100, ge=1, le=500),
     ):
+        known = history_models(store, mode)
         opportunities = {
-            r["id"]: r["body"] for r in store.list(kind="opportunity", mode=mode, run_id=run_id, limit=None)
+            r["id"]: r["body"]
+            for r in select_history(
+                store.list(kind="opportunity", mode=mode, run_id=run_id, limit=None), known, scope
+            )
         }
         rows = []
-        for r in reversed(store.list(kind="trade_result", mode=mode, run_id=run_id, limit=None)):
+        for r in reversed(
+            select_history(
+                store.list(kind="trade_result", mode=mode, run_id=run_id, limit=None), known, scope
+            )
+        ):
             if search.lower() not in (r["opportunity_id"] + " " + r["market"]).lower():
                 continue
             b = r["body"]
@@ -487,7 +518,11 @@ def create_app(
         )
 
     @app.get("/api/analytics")
-    def analytics(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"), run_id: str | None = None):
-        return metrics(store, mode, run_id)
+    def analytics(
+        mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"),
+        run_id: str | None = None,
+        scope: str = Query("settlement", pattern="^(settlement|archive)$"),
+    ):
+        return metrics(store, mode, run_id, scope=scope)
 
     return app

@@ -6,11 +6,10 @@ from btc15.config import Strategy
 from btc15.dashboard import create_app
 from btc15.domain import Book, D
 from btc15.storage import market_display, records
-from btc15.strategies.momentum import Momentum, volatility_model
 from btc15.strategies.settlement_edge.model import Tick
 
 
-@pytest.mark.parametrize("config", [Strategy(), Momentum(), volatility_model()])
+@pytest.mark.parametrize("config", [Strategy()])
 @pytest.mark.parametrize("fill_order", [False, True])
 def test_only_filled_entry_is_retained(store, market, now, config, monkeypatch, fill_order):
     engine = module.Engine(store, config, execute=True, clock=lambda: clock[0], record_evaluations=False)
@@ -43,17 +42,6 @@ def test_only_filled_entry_is_retained(store, market, now, config, monkeypatch, 
     )
     p = dict(p_yes=0.5, p_no=0.5, conservative_yes=0.5, conservative_no=0.5)
     monkeypatch.setattr(module, "probability", lambda *a: dict(p))
-    monkeypatch.setattr(
-        module,
-        "observations",
-        lambda *a: dict(
-            return_180=0.001,
-            candle_age=0,
-            reference_source="CF Benchmarks BRTI",
-            volatility_regime="NORMAL",
-            volatility_samples=40,
-        ),
-    )
     for i in range(10):
         engine.process(now + i / 100, str(i), "orderbook_delta", dict(market_ticker=market.ticker))
     assert not store.list(kind="opportunity")

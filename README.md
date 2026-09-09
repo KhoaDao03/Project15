@@ -1,332 +1,136 @@
-# Kalshi15
+# Kalshi15 — BTC15 Settlement Edge
 
-Settlement-aware research for **Kalshi BTC15 only**. This is an engineering V1,
-not a validated strategy or a profitability claim. LIVE order submission is disabled.
-The original request is preserved in [docs/REQUEST.md](docs/REQUEST.md).
+Settlement-aware research and simulated trading for **Kalshi BTC15 only**.
+One executable strategy: **BTC15 Settlement Edge**. This is a research build,
+not a validated profitability claim. Real-money order submission remains blocked.
 
-## Quick start
+## Start
 
-Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/). No Node build is required.
+Requires Python 3.12+ and uv. No Node build or new frontend framework is required.
 
 ```bash
-cd /home/devk/Project15
 uv sync --extra dev --locked
 cp .env.example .env
 uv run btc15 init-db
 uv run btc15 dashboard
 ```
 
-The dashboard has four views: **Live overview**, **Opportunity memory**,
-**Results & accuracy**, and **Strategies**. Opportunity memory groups saved
-evaluations by market, with counts for skipped entries and passed entry checks.
-Expand a market to browse its evaluation cards with plain-language decisions and
-reasons. Select **Completed trades** for realized results; passing entry checks
-alone does not confirm a trade. Open **View explanation** for saved inputs,
-charts, and the market-wide timeline. Technical records remain available in
-expandable details and JSON. Use **Refresh history** to load newer records.
+Open `http://127.0.0.1:8000`. With configured Kalshi read/feed credentials, the
+dashboard starts or resumes the named `dashboard-paper` PAPER run. Orders/fills
+are simulated. `--run-id NAME` selects another run; `--observe-only` explicitly
+collects without orders; `--no-collect` displays a separately running writer.
+The last two flags are mutually exclusive. Missing credentials show a setup error,
+not fabricated prices or trades. Paper startup checks a 10 GiB free-space reserve.
 
-**Live overview** shows separate cards for all three strategies, including inactive
-models with no saved evaluations. Each card identifies its version/configuration,
-latest recorded decision, market, time and estimated edge. Cards show the latest
-saved evaluation across runs in the selected mode; the run filter controls the
-detailed view. **Evaluation**, **History** and **Results** open that card's run.
-The run picker includes strategy names and full run IDs. New registered model
-versions appear automatically, with configurations kept separate.
+**Upgrading from the multi-strategy version:** read
+[scope and non-destructive recovery](docs/SINGLE_STRATEGY.md) first. Old runs with
+momentum children cannot silently resume as controls. Resolve their pending orders
+and positions using the compatible revision, then select a new single-strategy
+run ID. Do not reset data or clear a crash lease to bypass recovery.
 
-**Strategies** lists the model library and edits the current BTC15 Settlement Edge algorithm. The enable
-switch controls new entries; disabled strategies still record evaluations and
-retain position-management logic. Saving writes validated settings atomically to
-`DATA_DIR/strategy.json` (default `data/strategy.json`). New CLI collection, paper,
-and backtest sessions load this file automatically. An explicit `--config` file
-has priority. Changes do not modify running sessions, and saving or enabling does
-not start a stopped process. Resume an existing paper run with its original configuration;
-use a new `dashboard --run-id NAME` to apply changed settings after previous exposure
-is resolved. Live stays disabled.
+## Four focused views
 
-The algorithm lives in `src/btc15/strategies/settlement_edge/`: `config.py` holds
-its validated settings, `model.py` computes features and settlement probabilities,
-and `rules.py` contains entry, fee, sizing and risk rules. The event engine and
-paper execution remain shared infrastructure. The existing algorithm remains the control. Independent Conservative Confirmed
-Momentum and Volatility-Regime Momentum models are available through the
-[paper model research workflow](docs/MOMENTUM_MODELS.md); both start inactive.
-See the [strategy guide](docs/STRATEGY.md) for UI controls, configuration precedence,
-and checkpoint-compatible session changes.
+**Live overview** shows current BRTI/contract prices, one Settlement Edge card,
+its configuration hash/run, execution/entry state, reasons, positions and risk.
+The headline results exclude retired strategies and follow the selected control
+configuration or run. Disabled entries remain visible; hiding a card is not a stop.
 
-A [moderate Settlement Edge paper preset](docs/STRATEGY.md#moderate-settlement-edge-paper-preset)
-adds two minutes to the entry window, lowers the minimum ask from $0.85 to $0.80,
-and requires $0.02 net edge/EV instead of $0.03. Confidence and risk controls stay
-the same. Local saved settings select it for new sessions; use the documented new
-run name, since existing checkpoints retain their original configuration.
+**Trade history** distinguishes entry evidence, orders/cancellations, fills and
+completed trades. **Results & accuracy** shows retained-evidence calibration and
+realized P&L. **Settings** saves validated parameters for new sessions. History
+stays still while reading; use Refresh to load newer records.
 
-Paper execution now uses **trade evidence plus compact inputs**: skipped evaluations and periodic
-health updates are replaceable live snapshots, not growing history. Entry evidence
-is archived when the first simulated fill occurs; order activity, fills, fees,
-results, market metadata and recovery checkpoints are retained. One compressed
-`jsonl.gz` input tape per session preserves prices, quotes, books, trades and timing
-for recalculation, without a duplicate Parquet archive. Use `btc15 collect` for
-full research recordings and stored evaluation history. See
-[recording behavior and limitations](docs/TRADE_RECORDING.md).
+The History selector has an explicit **Archived strategies (read-only)** view.
+Existing records, IDs and replay explanations remain available without loading or
+running retired strategy code. No startup/reset/cleanup deletes historical records.
 
-Open **http://127.0.0.1:8000**. The dashboard automatically loads current official
-Kalshi BTC15 markets, including strike, quotes, volume and closing time. With the
-authenticated collector running, current quotes and the separate 5 Hz BRTI display
-stream into the browser, with display snapshots published at most twenty times per
-second. Values update in place independently of model evaluations. Disconnections,
-stale snapshots and invalid books are labelled; the browser reconnects automatically.
-The YES/NO bid/ask panel also follows this stream in PAPER and LIVE views, with
-the current ticker and a millisecond update timestamp shown above it. Evaluation polling cannot overwrite live quotes.
-BACKTEST retains saved quotes, and evaluation features remain historical. When the
-live feed becomes unavailable, the quote panel clears instead of presenting old
-prices as current.
-The evaluation area's first tile shows live 5 Hz BRTI in PAPER/LIVE views. Its
-decision metrics separately identify the reference used in the recorded evaluation;
-live price changes do not rewrite saved probabilities or their inputs. BACKTEST
-continues to show its recorded reference. This display change does not accelerate
-the model's evaluation interval or establish better trading outcomes.
-Without collection, public REST snapshots refresh every 15 seconds. These fallback
-snapshots need no credentials and are explicitly labelled. Current prices appear separately from
-recorded research and are not saved as a replay dataset. The dashboard has
-mode/run filters, searchable opportunities, replay charts/timeline, calibration,
-P&L and JSON APIs. It binds to localhost and has no order-submission endpoint.
+## Configurations: one strategy, one active configuration
 
-With API credentials configured, `btc15 dashboard` starts **paper execution by default**
-for Settlement Edge and all active momentum strategies on one shared live feed.
-Orders and fills are simulated; real-money submission remains blocked. It starts
-or resumes the named `dashboard-paper` group and saves checkpoints on clean exit.
-Use `--run-id NAME` to select another paper group, `--observe-only` to collect and
-evaluate without simulated orders, or `--no-collect` to view a separate running writer.
-Paper startup requires 10 GiB of free disk space. Resume requires the original
-configuration; saved setting changes do not silently rewrite an existing portfolio.
-An occupied writer lease is never stolen; startup failures appear in the dashboard.
-After a crash, follow the recovery instructions before restarting. Stop the default
-dashboard before starting a standalone writer on the same database.
+The original control defaults remain `120 < seconds_remaining <= 480`, minimum
+ask $0.85, conservative probability >= 0.90, quality >= 85, and net edge/EV >= $0.03
+per contract after estimated costs. Spread, liquidity, metadata, freshness, regime
+and risk checks must also pass. These are research assumptions, not optimized values.
 
-The overview polls evaluations and collector health every second. Active
-markets record evaluations at the configured interval (one second by default),
-including warmup and outside-entry-window rejection reasons. Quote updates recheck
-entry conditions between calculations using the latest cached probability; unchanged
-checks do not repeat audit state transitions. Each decision records the model
-calculation timestamp and its age. Entry limits remain
-unchanged. Run choices use run IDs and refresh automatically. The first page of
-opportunity memory and analytics refresh every five seconds; loading older pages
-pauses list refresh. LIVE explains that execution is disabled instead of implying
-that live evaluations should appear. A stopped collector is explicitly marked stale.
+The existing moderate preset changes only entry-window start to 600 seconds,
+minimum ask to $0.80, and both minimum net edge/EV to $0.02. No preset or setting
+is silently selected by this scope change. Use a frozen config deliberately:
 
-The collector publishes a single replaceable `market_display` projection after
-ordered processing; it does not add high-frequency UI snapshots to immutable
-research history. `/api/market-stream` reads that projection every 50 ms and sends
-[server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events).
-Reconnects start from the latest snapshot instead of replaying price history. The visible
-snapshot age measures publication-to-server-delivery time, not exchange-to-browser
-latency. Upstream delivery, processing and browser scheduling add latency. The
-standard settlement reference and trading timing rules remain unchanged.
+```bash
+uv run btc15 --config config/settlement-edge-paper-moderate.json dashboard --run-id settlement-paper --port 8001
+```
 
-## Try the complete offline flow
+`--config` overrides `DATA_DIR/strategy.json`; absent both, built-in defaults apply.
+Saving settings does not change an active run. Resume with its original config.
+Configuration hashes, version identities and raw sources remain attached to evidence.
+See [strategy semantics and presets](docs/STRATEGY.md).
+
+## Data and execution
+
+Paper mode keeps one durable compressed `data/raw/<session>.jsonl.gz` tape plus
+orders, cancellations, first-fill entry evidence, fills, fees, settlement/results
+and checkpoints. Skipped evaluations and periodic status are replaceable live
+snapshots. An empty opportunity-history view does not mean no checks or orders.
+`btc15 collect` and `dashboard --observe-only` retain full research evaluations
+and JSONL/Parquet recordings. Read [recording limitations](docs/TRADE_RECORDING.md).
+
+The shared engine uses the standard BRTI settlement samples; the independent 5 Hz
+reference display is not a replacement for them. It validates the contract's
+close time, comparison/rounding and price grid. UI prices do not authorize orders.
+Passive fills require eligible opposing volume, latency and conservative queue
+accounting; quote touches do not guarantee fills. The fractional-quantity fix is
+retained. One attempt per market/run and daily attempt/exposure limits still apply.
+
+Only one writer may own a database. SQLite WAL is the local default; PostgreSQL
+support and the existing Compose/service configuration remain available.
+
+```bash
+uv run btc15 paper
+# In a separate terminal, using the same database:
+uv run btc15 dashboard --no-collect
+```
+
+Never commit `.env` or private keys. Public `btc15 discover` needs no credentials;
+authenticated reference/order-book collection requires an appropriate RSA API key
+configured locally. No real order-submission endpoint is enabled.
+
+## Shutdown and recovery
+
+The dashboard's **Shut down safely** stops entries, cancels unfilled remainders,
+drains/flushes data, and saves positions before exiting. It does not liquidate
+positions or delete evidence. Restart the same compatible run/config to resume.
+A crash lease requires operator review; no automatic lease stealing is introduced.
+`btc15 halt` writes the persistent HALT switch; it is not a guaranteed liquidation.
+See [paper lifecycle](docs/PAPER_TRADING.md), [safety](docs/SAFETY.md), and the
+[managed single-strategy service](docs/AUTONOMOUS_PAPER.md).
+
+## Offline verification and research
 
 ```bash
 uv run btc15 demo --output data/synthetic.jsonl
 uv run btc15 --database sqlite:///data/demo.db backtest data/synthetic.jsonl
-uv run btc15 --database sqlite:///data/demo.db dashboard
-```
-
-Choose **BACKTEST** in the dashboard. This is explicitly synthetic data: it tests
-partial fills and settlement accounting, not model calibration or returns.
-The backtest prints its run ID. Keep research datasets separate from synthetic demos.
-
-## Collect official market data
-
-Public discovery needs no credentials:
-
-```bash
-uv run btc15 discover
-```
-
-Authenticated WebSockets require `KALSHI_API_KEY_ID` and
-`KALSHI_PRIVATE_KEY_PATH` in `.env`. Use an existing appropriate Kalshi RSA API key.
-Never commit the key or `.env`. The private key is read locally; it is not stored
-in research records. Set `DATA_DIR` and `DATABASE_URL` before collection.
-
-```bash
-uv run btc15 collect
-# Optional bounded capture:
-uv run btc15 collect --seconds 900
-```
-
-Records current/next market metadata, standard BRTI and 5 Hz BRTI, book snapshots
-and deltas, trades, ticker/lifecycle events, timestamps, sequence and connection
-health. Data is journaled under `data/raw/`, then compressed to Parquet. Collector
-mode evaluates and records opportunities but does not simulate orders.
-
-## Start PAPER mode
-
-```bash
-# .env: TRADING_MODE=PAPER and ENABLE_LIVE_TRADING=false
-uv run btc15 paper
-```
-
-The collector and paper runner are alternatives: run **one writer per database**.
-Run the dashboard alongside it. Missing/invalid contracts, missing strikes, stale
-feeds, unsupported fees, clock skew and risk violations block entries. New orders
-are allowed only when `120 < seconds_remaining <= 480` by default.
-
-`uv run btc15 halt` creates `DATA_DIR/HALT`; the runner cancels pending paper entries
-and prevents new entries. It does not promise liquidation. Remove the file only
-after reviewing the cause and restarting the runner. A killed process leaves a
-writer lease intentionally; consult [SAFETY.md](docs/SAFETY.md) before recovery.
-
-## Database and configuration
-
-For operation without an attached terminal, see the
-[managed PAPER service and health probe](docs/AUTONOMOUS_PAPER.md).
-
-SQLite WAL is the local default. To use PostgreSQL:
-
-```bash
-docker compose up -d db
-# Set DATABASE_URL in .env:
-# postgresql+psycopg://btc15:local-development-only@localhost:5432/btc15
-uv run btc15 init-db
-```
-
-The Compose password is for localhost development. Dependencies are locked in
-`uv.lock`. Schema initialization is automatic; this initial release has no schema
-migration runner. `LOG_LEVEL` controls logs; default is INFO.
-
-```bash
-uv run btc15 config > config/research.json
-uv run btc15 --config config/research.json paper
-```
-
-All strategy defaults are **ASSUMPTIONS**. JSON files may supply just overrides;
-unknown keys and invalid values are rejected. Every retained trade entry saves the complete
-configuration, version hashes, source snapshot reference and model versions.
-Observation-only collection and backtests retain their full evaluation history.
-Changing a JSON file does not modify an already-running process.
-
-Fee correction in this follow-up: metadata-backed `quadratic` markets use zero
-maker trading coefficient; scheduled changes are checked before execution. The
-default balance precision is now `0.0001` for direct Kalshi accounting. Set `0.01`
-for an applicable FCM account and review additional intermediary fees. Existing
-experiment configurations and histories remain immutable.
-
-## Tests and research
-
-```bash
+uv run btc15 --database sqlite:///data/demo.db dashboard --no-collect
 uv run pytest -q
 uv run ruff check src tests
-uv run ruff format --check src tests
-uv run btc15 audit data/raw/<session>.jsonl
-uv run btc15 backtest data/raw/<session>.jsonl
-uv run btc15 analytics --mode BACKTEST --run <run-id>
-uv run btc15 export <opportunity-id>
+uv build
+```
+
+The demo is **synthetic**, not historical returns. Choose BACKTEST for its results.
+Do not mix repeated backtests or different configurations into a portfolio claim.
+
+```bash
+uv run btc15 audit data/raw/SESSION.jsonl.gz
+uv run btc15 --config config/original.json backtest data/raw/SESSION.jsonl.gz
+uv run btc15 analytics --mode BACKTEST --run RUN_ID
+uv run btc15 export OPPORTUNITY_ID
 uv run btc15 walk-forward config/walk-forward.example.json
 ```
 
-Replace placeholder paths in the walk-forward manifest with your recordings.
-Counterfactuals use a new run, preserving original decisions:
+Replace placeholders with original complete inputs/configs. Archived strategy
+results can be read with `analytics --archive --run RUN_ID`, but archived algorithms
+cannot execute in this version. Counterfactuals belong in new runs, never rewrites
+of recorded predictions or fills. Authentic overnight validation remains separate
+from unit tests, public REST discovery and synthetic end-to-end replay.
 
-```bash
-uv run btc15 --config config/experiment.json backtest data/raw/<session>.jsonl --parent-run <original-run>
-```
-
-Use the journal for an entire capture, or one Parquet chunk for a bounded replay;
-identical IDs across journal/Parquet mirrors are deduplicated and conflicting IDs
-are rejected. The CLI accepts several chronological captures in one run:
-`btc15 backtest first.jsonl second.jsonl`. Public candles cannot reconstruct queue
-position or passive fills. No historical order-book dataset is bundled.
-
-Historical CF data can be downloaded when the account has the required entitlement:
-
-```bash
-uv run btc15 reference-history --timestamp 2026-09-08T18:00:00.000Z --output data/reference-hour.json
-```
-
-This stores the upstream response, not a fabricated tradable backtest tape.
-
-## Status and limitations
-
-See [collection recovery](docs/COLLECTION_RECOVERY.md) for the resolved clock/rollover
-gates and [the hardening review](docs/RESEARCH_HARDENING.md) for the follow-up changes,
-measured authenticated evidence, and remaining acceptance gates. Software readiness
-does not establish calibration, realistic counterfactual fills, or economic edge.
-Those require consecutive real market data and independent observations.
-
-Paper recovery: `btc15 paper --resume <run-id>` restores the committed checkpoint
-and cancels resting remainders; it never invents fills during downtime. Use the same
-strategy configuration. Legacy runs without checkpoints need forensic recovery.
-A crash lease must be reviewed before release as described in `docs/SAFETY.md`.
-
-
-| Capability | Status |
-| --- | --- |
-| Public BTC15 discovery | READY; current endpoint checked |
-| Authenticated data collection | READY for authenticated research collection; repaired host clock and 1,000-second rollover capture passed audit |
-| Recorded/synthetic replay | READY for audited research; streaming replay, provenance and held-out gates tested |
-| Paper simulation | READY for conservative simulation; atomic accounting and explicit checkpoint resume tested |
-| Autonomous production paper operation | IMPLEMENTED FOR VALIDATION; managed service, resume and health probe available; multi-day acceptance pending |
-| Live trading | NOT READY; submission is blocked, even with activation flags |
-
-Confirmed API differences: use `close_time`, not delayed `expiration_time`; YES
-includes equality; settlement rounds the 60-sample BRTI average to two decimals;
-5 Hz updates are separate from the 60 settlement samples; prices/quantities are
-fixed-point; current BTC15 metadata routes to shard 2. See sources and exact
-limitations in [SETTLEMENT_MODEL.md](docs/SETTLEMENT_MODEL.md).
-
-Read [IMPLEMENTATION_REVIEW.md](docs/IMPLEMENTATION_REVIEW.md) before relying on
-results. Other documentation: [architecture](docs/ARCHITECTURE.md),
-[strategy](docs/STRATEGY.md), [probability](docs/PROBABILITY_MODEL.md),
-[data model](docs/DATA_MODEL.md), [paper trading](docs/PAPER_TRADING.md),
-[backtesting](docs/BACKTESTING.md), [trade memory](docs/TRADE_MEMORY.md),
-[safety](docs/SAFETY.md), [live trading](docs/LIVE_TRADING.md).
-
-## Independent momentum experiments
-
-The existing Settlement Edge model remains unchanged as the control. Two new,
-inactive paper-only models have separate immutable configurations and portfolios:
-**Conservative Confirmed Momentum v1** and **Volatility-Regime Momentum v1**.
-Use `btc15 models list`, `btc15 model-paper --run-id <name>`,
-`btc15 model-backtest <capture.jsonl>` and `btc15 model-comparison`.
-Activation is explicit; existing `paper`/`paper-service` remain the control-only workflow.
-Read [model rules, activation, versioning and volatility methodology](docs/MOMENTUM_MODELS.md)
-and the [implementation readiness review](docs/MOMENTUM_READINESS.md) first.
-
-The strategy overview now shows only enabled configurations. Historical configurations
-remain accessible through run selection and history, without additional overview cards.
-Both momentum v1 models were explicitly activated for PAPER on 2026-09-09. The current
-local run is `momentum-paper`, with the dashboard viewing it on port 8001 using
-`--no-collect`. Runtime logs and process IDs are under `data/runtime/`. These are
-background processes in the current host session, not a newly installed startup service.
-Live execution remains disabled.
-
-The dashboard header includes **Shut down safely**. After confirmation, it stops
-paper entries, cancels unfilled orders, saves positions and flushes data before
-closing the bot and dashboard. Open positions are retained for resuming the same
-run; see [shutdown and resume instructions](docs/PAPER_TRADING.md#dashboard-shutdown).
-
-Starting `btc15 dashboard --port 8001` now starts or resumes the `dashboard-paper`
-group with simulated execution for Settlement Edge and active momentum strategies.
-To resume an older group, use `btc15 dashboard --run-id GROUP_ID --port 8001` with
-its original configuration. `--observe-only` explicitly disables paper execution.
-Strategy cards show evaluation freshness and whether paper execution is running.
-
-The strategy overview includes lifetime realized net P&L after recorded fees and a
-completed-trade count. The mode total includes all retained history, including
-inactive strategies and older configurations; each card covers its exact configuration
-across runs. Open positions are excluded. PAPER and BACKTEST stay separate; backtest
-totals sum independent replays (potentially repeated datasets), not one portfolio.
-
-Lifetime summaries and strategy cards also show maximum realized drawdown, average
-net P&L per completed trade, win rate, profit factor, open exposure, open-trade count,
-and current/longest win and loss streaks. Break-even trades reset streaks and count
-in the win-rate denominator. Profit factor is undefined without losses. Drawdown
-starts at zero and uses completed-trade P&L; streaks follow completion timestamps
-with record IDs breaking ties. Combined metrics interleave independent runs. Open
-exposure is remaining filled inventory at average entry cost including allocated
-entry fees, adjusted for partial exits; it excludes unfilled orders and is not a
-live market valuation. Expand “How these metrics are calculated” for UI definitions.
-
-Live market prices places the 5 Hz Bitcoin reference above contract cards. Each
-card groups the strike, live-reference distance and approximate countdown, followed
-by YES/NO bids, asks and spreads in cents. Volume and close time sit below the
-quotes; feed diagnostics are expandable. Missing strikes and stale reference data
-show no distance, and disconnected/stale quote feeds clear their price values.
+The retired commands `models`, `model-paper`, `model-backtest`, and `model-comparison`
+are deliberately removed. See [SINGLE_STRATEGY.md](docs/SINGLE_STRATEGY.md) for the
+API history scope, known compatible legacy revision, and migration safeguards.

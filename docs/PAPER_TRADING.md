@@ -65,7 +65,7 @@ sessions. `btc15 paper` loads `DATA_DIR/strategy.json` unless a global `--config
 file is supplied. Disabling entries blocks candidate selection and paper order
 submission while keeping evaluation and position-management logic available.
 Saving or enabling does not start a stopped process. Dashboard startup defaults
-to paper execution for Settlement Edge and all active momentum strategies.
+to paper execution for Settlement Edge only.
 
 For checkpoint resume, use the original configuration even if UI settings have
 changed: `btc15 --config config/session.json paper --resume RUN_ID`. Do not create
@@ -83,31 +83,17 @@ and releases its database writer lease. The browser tab remains open with the re
 If confirmation fails or times out, the dashboard stays open for inspection; it does
 not force-kill the collector or remove its lease.
 
-Open paper positions are retained without forced liquidation. Position management
-and settlement processing resume when you restart the same run. For the current
-momentum paper session, run `btc15 model-paper --run-id momentum-paper` and restart
-the dashboard with `btc15 dashboard --no-collect --port 8001`. Strategy activation
-settings are retained and the persistent HALT switch is not set by routine shutdown.
-The button affects the collector sharing this dashboard's database, irrespective of
-the selected history run or display mode. Live trading remains disabled.
+Open paper positions are retained without forced liquidation. Restart the same
+single-strategy run with its original configuration to resume management/settlement.
+The shutdown request affects the collector sharing this database, not the selected
+historical run or archive filter. Live execution remains blocked.
 
-Dashboard startup now starts or resumes the named `dashboard-paper` group with
-paper execution enabled. Use `btc15 dashboard --port 8001` after a clean shutdown
-to resume the same checkpoints. `--run-id GROUP_ID` selects another existing paper
-group (with its original configuration) or creates a new one when no unresolved
-positions remain. Membership and configuration are pinned for each named group;
-activation of another model requires a new group after resolving old exposure.
+Dashboard startup starts/resumes `dashboard-paper` using one Settlement Edge engine.
+`--run-id NAME` selects a different run. `--observe-only` records without orders;
+`--no-collect` is a viewing dashboard. Warmup, signal, risk, freshness, credentials,
+disk-space and writer-lease checks still apply. Old multi-strategy manifests and
+pending archived exposure are rejected with a recovery message, not silently dropped.
+Read [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md) before upgrading an existing installation.
 
-`--observe-only` runs collection and evaluations without simulated orders.
-`--no-collect` serves a viewing dashboard for an external collector or paper runner.
-These flags are mutually exclusive. Startup retains the writer lease, configuration,
-checkpoint and unresolved-position checks, and requires 10 GiB of free disk space.
-A crash lease is never stolen. Missing credentials leave the dashboard available
-with a feed setup message; they do not create simulated data. Warmup, entry rules,
-risk limits and execution freshness checks still apply. Real-money trading remains
-blocked regardless of dashboard mode.
-
-Paper sessions now use [trade evidence plus compact inputs](TRADE_RECORDING.md):
-live evaluations and status are replaceable; first-fill evidence and execution/recovery
-records are retained. A shared compressed input tape preserves prices, books, quotes,
-trades and timing for replay, without duplicate JSONL/Parquet archives.
+Paper sessions use [trade evidence plus compact inputs](TRADE_RECORDING.md). No
+historical records or raw tapes are removed by this scope change.

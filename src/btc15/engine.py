@@ -9,10 +9,10 @@ import uuid
 from dataclasses import asdict
 from pathlib import Path
 
+from .config import Strategy
 from .domain import Book, dumps, parse_market, timestamp
 from .execution import PaperExecutor
-from .strategies.momentum import Momentum, ObservationCache, observations
-from .strategies.momentum import evaluate as evaluate_momentum
+from .models import require_single_run
 from .strategies.settlement_edge.model import Tick, features, probability, quality
 from .strategies.settlement_edge.rules import evaluate
 
@@ -36,6 +36,10 @@ class Engine:
     ):
         if mode not in ("PAPER", "BACKTEST"):
             raise ValueError("Research modes only")
+        if type(config) is not Strategy:
+            raise ValueError("Only BTC15 Settlement Edge is executable")
+        if resume:
+            require_single_run(store, run_id)
         self.store, self.config, self.mode = store, config, mode
         self.run_id = run_id or str(uuid.uuid4())
         self.execute, self.clock = execute, clock
@@ -43,7 +47,6 @@ class Engine:
         self.raw_archive = record_evaluations
         self.markets, self.books, self.last_evaluation, self.latest = {}, {}, {}, {}
         self.ticks = []
-        self._causal_reference = (None, 0)
         self.sequences = {}
         self.connection = None
         self.healthy = False
@@ -55,13 +58,11 @@ class Engine:
         self.last_received = -float("inf")
         self._model_cache = {}
         self._pending_settlement = set()
-        self._observations = ObservationCache()
         self._decision_keys = {}
         self._last_op = {}
         self.last_mono = None
         self.last_wall = None
         self.entries_active = True
-        self.shared_calculations = {}
         self.executor = PaperExecutor(store, self.run_id, mode, config)
         try:
             commit = subprocess.check_output(
@@ -285,23 +286,8 @@ class Engine:
             raise ValueError("Premature settlement")
         self.executor.settle(market, result, now)
 
-    def causal_ticks(self, now):
-        # Ingest replaces the reference list on every accepted tick. Cache the
-        # eligibility bound, not event time, so future ticks and clock reversals
-        # still use the exact causal filter.
-        previous, eligible_at = self._causal_reference
-        if previous is not self.ticks:
-            eligible_at = max((max(t.source, t.received) for t in self.ticks), default=0)
-            self._causal_reference = (self.ticks, eligible_at)
-        if now >= eligible_at:
-            return self.ticks
-        return [t for t in self.ticks if t.source <= now and t.received <= now]
-
     def process(self, now, event_id, kind, msg):
         c = self.config
-        for key in list(self.shared_calculations):
-            if key[0] != now:
-                del self.shared_calculations[key]
         for ticker, market in list(self.markets.items()):
             if ticker in self._pending_settlement:
                 continue
@@ -385,43 +371,11 @@ class Engine:
                 or now < cached[0]
                 or now - cached[0] >= c.evaluation_interval
                 or cached[1] != market.spec
-                or isinstance(c, Momentum)
-                and material
-                and (quote_update or resting or position)
-                and now - cached[0] >= min(1.0, c.evaluation_interval)
             )
             if model_recomputed:
                 try:
-                    # Model parameters, not entry thresholds, determine cache compatibility.
-                    calculation_key = (
-                        now,
-                        market.spec,
-                        tuple(
-                            (name, getattr(c, name))
-                            for name in (
-                                "paths",
-                                "seed",
-                                "ewma_decay",
-                                "volatility_floor",
-                                "shock_threshold",
-                                "extreme_sigma",
-                                "calibration_penalty",
-                                "warmup_seconds",
-                                "bollinger_period",
-                                "bollinger_std",
-                                "rsi_period",
-                                "stochastic_period",
-                                "atr_period",
-                            )
-                        ),
-                    )
-                    shared = self.shared_calculations.get(calculation_key)
-                    if shared is None:
-                        f = features(self.ticks, now, c)
-                        p = probability(market.spec, self.ticks, now, f["sigma"], c)
-                        self.shared_calculations[calculation_key] = (f, p)
-                    else:
-                        f, p = shared
+                    f = features(self.ticks, now, c)
+                    p = probability(market.spec, self.ticks, now, f["sigma"], c)
                     cached = (now, market.spec, f, p, None)
                 except ValueError as exc:
                     cached = (now, market.spec, {}, {}, str(exc))
@@ -430,28 +384,8 @@ class Engine:
             try:
                 if model_error is not None:
                     raise ValueError(model_error)
-                if isinstance(c, Momentum):
-                    observation_key = (
-                        now,
-                        "momentum",
-                        c.confirmation_minutes,
-                        c.volatility_history_minutes,
-                        c.volatility_min_samples,
-                        c.volatility_boundaries,
-                    )
-                    observed = self.shared_calculations.get(observation_key)
-                    if observed is None:
-                        observed = self._observations.get(self.ticks, now, c, observations)
-                        self.shared_calculations[observation_key] = observed
-                    f = {**f, **observed}
-                decision_ticks = self.ticks
-                if isinstance(c, Momentum):
-                    decision_ticks = self.causal_ticks(now)
-                    if not decision_ticks:
-                        raise ValueError("No causal reference for momentum decision")
-                q = quality(f, decision_ticks, book, now, c)
-                rule = evaluate_momentum if isinstance(c, Momentum) else evaluate
-                decision = rule(market, book, decision_ticks[-1], f, p, q, now, c, extras)
+                q = quality(f, self.ticks, book, now, c)
+                decision = evaluate(market, book, self.ticks[-1], f, p, q, now, c, extras)
             except ValueError as exc:
                 f, p, q = {}, {}, dict(score=0, reasons=["MODEL_UNAVAILABLE"])
                 decision = dict(
@@ -509,13 +443,6 @@ class Engine:
                     "model_evaluated_at": model_time,
                     "model_age_seconds": now - model_time,
                 }
-                if isinstance(c, Momentum):
-                    body["reasons"] = [
-                        {**r, "code": ("POSITION_ALREADY_OPEN" if position else "DUPLICATE_EVENT")}
-                        if r["code"] == "EXISTING_ENTRY"
-                        else r
-                        for r in decision["reasons"]
-                    ]
                 if self.record_evaluations:
                     self.store.add("opportunity", body, self.run_id, self.mode, now, ticker, op, record_id=op)
                 self.latest[ticker] = body

@@ -12,17 +12,17 @@ import websockets
 from .api import KalshiClient, subscriptions
 from .domain import dumps
 from .engine import Engine
+from .models import guard_archived_exposure, require_single_run
 from .storage import CompactRecorder, RawRecorder
 
 
 def stop_entries(engine, now):
     """Stop new entries and cancel pending remainders without liquidating positions."""
-    for member in getattr(engine, "engines", [engine]):
-        member.execute = False
-        member.entries_active = False
-        for ticker in list(member.executor.orders):
-            if member.executor.orders[ticker].active:
-                member.executor.cancel(ticker, now, "safe_shutdown")
+    engine.execute = False
+    engine.entries_active = False
+    for ticker in list(engine.executor.orders):
+        if engine.executor.orders[ticker].active:
+            engine.executor.cancel(ticker, now, "safe_shutdown")
 
 
 async def collect(
@@ -36,7 +36,6 @@ async def collect(
     stop_event=None,
     managed_run=None,
     min_free_bytes=0,
-    multi_model=False,
     record_all=None,
 ):
     """Independent receipt/metadata tasks; one ordered durable analysis worker."""
@@ -63,6 +62,9 @@ async def collect(
         client.headers("GET", "/trade-api/ws/v2")
         store.acquire("collector", owner)
         acquired = True
+        if paper:
+            require_single_run(store, resume or managed_run)
+            guard_archived_exposure(store)
         if managed_run:
             if not paper or resume:
                 raise ValueError("Managed runs require paper execution without explicit resume")
@@ -71,20 +73,7 @@ async def collect(
                 if previous[0]["mode"] != "PAPER" or not previous[0]["body"]["execute"]:
                     raise ValueError("Managed run must refer to an executing PAPER run")
                 resume = managed_run
-        if multi_model and paper and not resume:
-            closed = {r["opportunity_id"] for r in store.list(kind="trade_result", mode="PAPER", limit=None)}
-            buys = {
-                r["opportunity_id"]
-                for r in store.list(kind="fill", mode="PAPER", limit=None)
-                if r["body"]["action"] == "buy"
-            }
-            if buys - closed:
-                raise RuntimeError("Unresolved paper positions: resume their original model group")
-
-        from .models import ModelGroup
-
-        engine_type = ModelGroup if multi_model else Engine
-        engine = engine_type(
+        engine = Engine(
             store,
             config,
             "PAPER",
@@ -103,33 +92,28 @@ async def collect(
             }
             if buys - closed:
                 raise RuntimeError("Unresolved paper positions: use paper --resume RUN_ID")
-            (engine.restore_daily_history() if multi_model else engine.executor.restore_daily_history())
+            engine.executor.restore_daily_history()
         if paper:
             # Even a run with no fills must be resumable after a clean service restart.
-            (
-                engine.checkpoint()
-                if multi_model
-                else store.checkpoint(engine.run_id, engine.executor.snapshot())
-            )
+            store.checkpoint(engine.run_id, engine.executor.snapshot())
         recorder = (
             RawRecorder(Path(settings.data_dir) / "raw", chunk_size=2000)
             if record_all
             else CompactRecorder(Path(settings.data_dir) / "raw")
         )
         journal = recorder.directory / (recorder.session + ".jsonl") if record_all else recorder.path
-        for member in engine.engines if multi_model else [engine]:
-            member.raw_archive = True
-            store.add(
-                "raw_source",
-                {
-                    "journal": str(journal),
-                    "format": "jsonl" if record_all else "jsonl.gz",
-                    "parent_run": engine.run_id,
-                },
-                member.run_id,
-                "PAPER",
-                time.time(),
-            )
+        engine.raw_archive = True
+        store.add(
+            "raw_source",
+            {
+                "journal": str(journal),
+                "format": "jsonl" if record_all else "jsonl.gz",
+                "parent_run": engine.run_id,
+            },
+            engine.run_id,
+            "PAPER",
+            time.time(),
+        )
         queue = asyncio.Queue(maxsize=20000)
         overflow_rows = []
         reconnect = asyncio.Event()
@@ -179,8 +163,6 @@ async def collect(
 
         def process_batch(rows):
             nonlocal last_status, last_display, display_reference, entries_stopped
-            if multi_model and not stop.is_set():
-                engine.apply_activation(store)
             if recorder:
                 recorder.append_rows(rows)  # Input capture is durable before analysis.
             valid = True
@@ -189,7 +171,7 @@ async def collect(
                     stop_entries(engine, row["received"])
                     entries_stopped = True
                 if not engine.executor.risk.halted and (Path(settings.data_dir) / "HALT").exists():
-                    (engine.halt(row["received"]) if multi_model else engine.executor.halt(row["received"]))
+                    engine.executor.halt(row["received"])
                 valid = engine.ingest(row) and valid
                 payload = json.loads(row["payload"])
                 if payload.get("type") == "cfbenchmarks_value_5hz":
@@ -257,7 +239,7 @@ async def collect(
                                 open_positions=len(e.executor.positions),
                                 realized_pnl=e.executor.risk.realized,
                             )
-                            for e in (engine.engines if multi_model else [engine])
+                            for e in ([engine])
                         ],
                         clock_ok=engine.clock_ok,
                         exchange_open=engine.exchange_open,
@@ -277,18 +259,17 @@ async def collect(
                 if recorder:
                     recorder.flush()
                 if not record_all:
-                    for member in engine.engines if multi_model else [engine]:
-                        if member.latest:
-                            latest = max(member.latest.values(), key=lambda b: b["timestamp"])
-                            store.publish_record(
-                                "evaluation",
-                                latest,
-                                member.run_id,
-                                member.mode,
-                                latest["timestamp"],
-                                latest["ticker"],
-                                member._last_op[latest["ticker"]],
-                            )
+                    if engine.latest:
+                        latest = max(engine.latest.values(), key=lambda b: b["timestamp"])
+                        store.publish_record(
+                            "evaluation",
+                            latest,
+                            engine.run_id,
+                            engine.mode,
+                            latest["timestamp"],
+                            latest["ticker"],
+                            engine._last_op[latest["ticker"]],
+                        )
                 last_status = now
             return valid
 
@@ -517,8 +498,7 @@ async def collect(
             await worker
         if paper:
             with store.transaction():
-                for member in engine.engines if multi_model else [engine]:
-                    store.checkpoint(member.run_id, member.executor.snapshot())
+                store.checkpoint(engine.run_id, engine.executor.snapshot())
         clean_shutdown = True
         return engine.run_id
     finally:
@@ -555,13 +535,12 @@ async def collect(
                     if acquired:
                         with store.transaction():
                             if clean_shutdown:
-                                members = engine.engines if multi_model else [engine]
                                 store.add(
                                     "shutdown_complete",
                                     dict(
                                         run_id=engine.run_id,
-                                        open_positions=sum(len(e.executor.positions) for e in members),
-                                        runs=[e.run_id for e in members],
+                                        open_positions=len(engine.executor.positions),
+                                        runs=[engine.run_id],
                                     ),
                                     owner,
                                     "PAPER",
