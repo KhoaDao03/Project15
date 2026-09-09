@@ -55,7 +55,7 @@ jobs:
               'README', 'GETTING_STARTED', 'PAPER_TRADING', 'STRATEGY', 'TROUBLESHOOTING',
               'ARCHITECTURE', 'DATA_MODEL', 'TRADE_MEMORY', 'TRADE_RECORDING',
               'BACKTESTING', 'AUTONOMOUS_PAPER', 'SAFETY', 'VALIDATION', 'LIVE_TRADING',
-              'SINGLE_STRATEGY', 'SINGLE_STRATEGY_VALIDATION',
+              'SINGLE_STRATEGY', 'SINGLE_STRATEGY_VALIDATION', 'SETTLEMENT_RECOVERY',
           )]
           original_parse = argparse.ArgumentParser.parse_args
           class Parsed(Exception):
