@@ -1,0 +1,203 @@
+name: Validate fractional exit quantity fix
+
+on:
+  push:
+    branches: [fix/fractional-passive-fills]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-and-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TRADING_MODE: PAPER
+      ENABLE_LIVE_TRADING: 'false'
+      KALSHI_API_KEY_ID: ''
+      KALSHI_PRIVATE_KEY_PATH: ''
+      DATA_DIR: data/ci-exit-fix
+      DATABASE_URL: sqlite:///data/ci-exit-fix.db
+      BASE_SHA: 14b0e623621c9892810da1537c25787c31f09bd2
+    steps:
+      - name: Check out exact branch revision
+        run: |
+          git init .
+          git remote add origin https://github.com/KhoaDao03/Project15.git
+          git fetch --depth=2 origin fix/fractional-passive-fills
+          git checkout --detach FETCH_HEAD
+          git fetch --depth=1 origin "$BASE_SHA"
+          test -z "$(git diff --name-only "$BASE_SHA" HEAD -- src tests config pyproject.toml uv.lock)"
+
+      - name: Install locked dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/btc15-tools"
+          "$RUNNER_TEMP/btc15-tools/bin/pip" install uv==0.8.13
+          echo "$RUNNER_TEMP/btc15-tools/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/btc15-tools/bin/uv" sync --locked --extra dev
+
+      - name: Add regression tests and prove the old behavior fails
+        run: |
+          cat > tests/test_fractional_exits.py <<'PY'
+          from decimal import Decimal
+
+          import pytest
+
+          from btc15.domain import Book, D
+          from btc15.execution import PaperExecutor
+
+
+          def candidate(side):
+              return dict(decision="TRADE_CANDIDATE", side=side, conservative_probability=0.99)
+
+
+          def ready(store, market, now, config, mode):
+              for state in (
+                  "DISCOVER_MARKET",
+                  "VALIDATE_MARKET",
+                  "WARMUP",
+                  "ENTRY_WINDOW",
+                  "EVALUATING",
+                  "TRADE_CANDIDATE",
+              ):
+                  store.transition("exit-run", mode, market.ticker, state, now)
+              return PaperExecutor(store, "exit-run", mode, config)
+
+
+          def exit_book(side, quantity, when):
+              levels = {D(".50"): D(quantity)}
+              return Book(
+                  yes=levels if side == "yes" else {},
+                  no=levels if side == "no" else {},
+                  received=when,
+                  source_time=when,
+                  valid=True,
+              )
+
+
+          @pytest.mark.parametrize("mode", ["PAPER", "BACKTEST"])
+          @pytest.mark.parametrize("side", ["yes", "no"])
+          def test_four_fractional_exits_close_exactly(store, market, book, now, config, mode, side):
+              executor = ready(store, market, now, config, mode)
+              order = executor.submit(market, book, candidate(side), "op", now, True)
+              assert order is not None
+              executor.fill(order, 0.40, order.limit, now + 1, True)
+              assert D(executor.positions[market.ticker].quantity) == D(".40")
+
+              probability = {"conservative_yes": 0.99, "conservative_no": 0.99}
+              executor.monitor(market, exit_book(side, ".10", now + 2), probability, now + 2, "intent")
+              assert not [r for r in store.list(kind="fill") if r["body"]["action"] == "sell"]
+
+              expected_remaining = [D(".30"), D(".20"), D(".10"), D("0")]
+              for index, (visible, remaining) in enumerate(
+                  zip((".10", ".20", ".30", ".40"), expected_remaining), start=3
+              ):
+                  executor.monitor(
+                      market,
+                      exit_book(side, visible, now + index),
+                      probability,
+                      now + index,
+                      f"exit-{index}",
+                  )
+                  if remaining:
+                      assert D(executor.positions[market.ticker].quantity) == remaining
+                      checkpoint = store.load_checkpoint("exit-run")
+                      assert D(checkpoint["positions"][market.ticker]["quantity"]) == remaining
+
+              sells = [r for r in store.list(kind="fill") if r["body"]["action"] == "sell"]
+              assert [D(r["body"]["quantity"]) for r in sells] == [D(".10")] * 4
+              assert sum((D(r["body"]["quantity"]) for r in sells), D(0)) == D(".40")
+              assert market.ticker not in executor.positions
+              assert market.ticker not in executor.risk.reserved
+              assert store.state("exit-run", market.ticker) == "CLOSED"
+              results = store.list(kind="trade_result")
+              assert len(results) == 1
+              assert D(results[0]["body"]["quantity"]) == D("0")
+              checkpoint = store.load_checkpoint("exit-run")
+              assert market.ticker not in checkpoint["positions"]
+              assert D(checkpoint["exit_consumed"][0][2]) == D(".40")
+
+
+          @pytest.mark.parametrize("mode", ["PAPER", "BACKTEST"])
+          def test_exit_depth_is_floored_never_rounded_up(store, market, book, now, config, mode):
+              executor = ready(store, market, now, config, mode)
+              order = executor.submit(market, book, candidate("yes"), "op", now, True)
+              executor.fill(order, 0.02, order.limit, now + 1, True)
+              probability = {"conservative_yes": 0.99, "conservative_no": 0.99}
+              executor.monitor(market, exit_book("yes", ".019", now + 2), probability, now + 2, "intent")
+              executor.monitor(market, exit_book("yes", ".019", now + 3), probability, now + 3, "sell")
+              sells = [r for r in store.list(kind="fill") if r["body"]["action"] == "sell"]
+              assert len(sells) == 1
+              assert D(sells[0]["body"]["quantity"]) == D(".01")
+              assert D(executor.positions[market.ticker].quantity) == D(".01")
+              assert not store.list(kind="trade_result")
+
+
+          def test_legacy_exit_consumed_binary_drift_normalizes_on_restore(store, market, book, now, config):
+              executor = ready(store, market, now, config, "PAPER")
+              order = executor.submit(market, book, candidate("yes"), "op", now, True)
+              executor.fill(order, 0.10, order.limit, now + 1, True)
+              snapshot = executor.snapshot()
+              snapshot["exit_consumed"] = [[market.ticker, ".50", 0.30000000000000004]]
+              store.checkpoint("exit-run", snapshot)
+
+              restored = PaperExecutor(store, "exit-run", "PAPER", config)
+              restored.restore(store.load_checkpoint("exit-run"))
+              assert restored.exit_consumed[(market.ticker, D(".50"))] == Decimal("0.30")
+          PY
+          set +e
+          uv run --no-sync pytest -q tests/test_fractional_exits.py
+          status=$?
+          set -e
+          test "$status" -ne 0
+          echo "OLD_BEHAVIOR_REPRODUCED: regression fails before the fix as expected"
+
+      - name: Apply exact exit-quantity fix
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/btc15/execution.py')
+          text = path.read_text()
+          replacements = {
+              '            exit_consumed=[[k[0], str(k[1]), v] for k, v in self.exit_consumed.items()],':
+                  '            exit_consumed=[[k[0], str(k[1]), str(v)] for k, v in self.exit_consumed.items()],',
+              '        self.exit_consumed = {(m, D(p)): v for m, p, v in data["exit_consumed"]}':
+                  '        self.exit_consumed = {}\n        for market, price, value in data["exit_consumed"]:\n            consumed = D(value)\n            nearest = consumed.quantize(D(".01"))\n            if abs(consumed - nearest) <= D("1e-9"):\n                consumed = nearest\n            self.exit_consumed[(market, D(price))] = consumed',
+              '        pos.bought += quantity':
+                  '        pos.bought = float(D(pos.bought) + D(quantity))',
+              '''            available = max(D(0), quantity - D(self.exit_consumed.get(key, 0)))\n            q = float(min(D(pos.quantity), available))\n            if q <= 0 or float(price) <= c.slippage:\n                continue\n            fill_price = market.snap(float(price) - c.slippage)\n            if reason == "TAKE_PROFIT" and fill_price < target:\n                continue\n            self.exit_consumed[key] = self.exit_consumed.get(key, 0) + q\n            fee = fees.charge(fill_price, q, c.taker_fee_rate, "sell")\n            pos.quantity = float(D(pos.quantity) - D(q))\n            pos.proceeds += q * fill_price\n            pos.fees += fee\n            self.record(\n                "fill",\n                dict(action="sell", side=pos.side, quantity=q, price=fill_price, fee=fee, reason=reason),\n                now,\n                market.ticker,\n                pos.opportunity_id,\n            )\n            if pos.quantity <= 0:\n                self.finish(market.ticker, now, reason)\n                return''':
+              '''            consumed = D(self.exit_consumed.get(key, 0))\n            available = max(D(0), quantity - consumed)\n            position_quantity = D(pos.quantity)\n            q = min(position_quantity, available).quantize(D(".01"), rounding=ROUND_FLOOR)\n            if q <= 0 or float(price) <= c.slippage:\n                continue\n            fill_price = market.snap(float(price) - c.slippage)\n            if reason == "TAKE_PROFIT" and fill_price < target:\n                continue\n            self.exit_consumed[key] = consumed + q\n            q_float = float(q)\n            fee = fees.charge(fill_price, q_float, c.taker_fee_rate, "sell")\n            remaining = (position_quantity - q).quantize(D(".01"))\n            pos.quantity = float(remaining)\n            pos.proceeds += q_float * fill_price\n            pos.fees += fee\n            self.record(\n                "fill",\n                dict(\n                    action="sell",\n                    side=pos.side,\n                    quantity=q_float,\n                    price=fill_price,\n                    fee=fee,\n                    reason=reason,\n                ),\n                now,\n                market.ticker,\n                pos.opportunity_id,\n            )\n            if remaining == 0:\n                self.finish(market.ticker, now, reason)\n                return''',
+          }
+          for old, new in replacements.items():
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'Expected exactly one match, got {count}: {old[:80]!r}')
+              text = text.replace(old, new)
+          path.write_text(text)
+          PY
+          uv run --no-sync ruff format src/btc15/execution.py tests/test_fractional_exits.py
+          uv run --no-sync ruff check src/btc15/execution.py tests/test_fractional_exits.py
+
+      - name: Verify targeted and complete suite
+        run: |
+          uv run --no-sync pytest -q tests/test_fractional_exits.py tests/test_execution.py tests/test_fractional_passive_fills.py tests/test_hardening.py tests/test_trade_recording.py
+          uv run --no-sync pytest -q
+          uv run --no-sync ruff check src tests
+          uv run --no-sync python -m compileall -q src tests
+          uv build
+          git diff --check
+
+      - name: Publish tested fix and remove temporary workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          test "$(git ls-remote origin refs/heads/fix/fractional-passive-fills | cut -f1)" = "$(git rev-parse HEAD)"
+          git rm .github/workflows/fix-fractional-exits.yml
+          git add src/btc15/execution.py tests/test_fractional_exits.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix: make fractional exits exact and terminal'
+          AUTH=$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $AUTH" push origin HEAD:refs/heads/fix/fractional-passive-fills
+          echo "PUBLISHED_SHA=$(git rev-parse HEAD)"
