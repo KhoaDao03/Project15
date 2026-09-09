@@ -91,14 +91,6 @@ jobs:
         run: |
           python3 /tmp/recovery_patch.py
           python3 /tmp/recovery_boundaries.py
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('.github/workflows/documentation-validation.yml')
-          s = p.read_text()
-          old = "'SINGLE_STRATEGY', 'SINGLE_STRATEGY_VALIDATION',"
-          assert s.count(old) == 1
-          p.write_text(s.replace(old, old + " 'SETTLEMENT_RECOVERY',"))
-          PY
           uv run --no-sync ruff check --select I --fix tests/test_settlement_recovery.py
           uv run --no-sync ruff format src/btc15/recovery.py src/btc15/engine.py src/btc15/execution.py src/btc15/storage.py src/btc15/runner.py src/btc15/cli.py src/btc15/operation.py tests/test_settlement_recovery.py
           uv run --no-sync ruff check src tests
@@ -112,7 +104,7 @@ jobs:
           node --check src/btc15/static/app.js
           uv build
           git diff --check
-          git diff --exit-code "$BASE_SHA" -- src/btc15/strategies src/btc15/domain.py src/btc15/dashboard.py src/btc15/models.py config pyproject.toml uv.lock
+          git diff --exit-code "$BASE_SHA" -- src/btc15/strategies src/btc15/domain.py src/btc15/dashboard.py src/btc15/models.py config pyproject.toml uv.lock .github/workflows/documentation-validation.yml
           git diff --stat
 
       - name: Publish only passing changes and remove temporary workflow
@@ -121,7 +113,7 @@ jobs:
         run: |
           test "$(git ls-remote origin refs/heads/fix/fractional-passive-fills | cut -f1)" = "$(git rev-parse HEAD)"
           git rm .github/workflows/implement-settlement-recovery.yml
-          git add src/btc15/recovery.py src/btc15/engine.py src/btc15/execution.py src/btc15/storage.py src/btc15/runner.py src/btc15/cli.py src/btc15/operation.py tests/test_settlement_recovery.py docs/SETTLEMENT_RECOVERY.md docs/README.md docs/SAFETY.md docs/POSITION_MANAGEMENT.md docs/TROUBLESHOOTING.md README.md .github/workflows/documentation-validation.yml
+          git add src/btc15/recovery.py src/btc15/engine.py src/btc15/execution.py src/btc15/storage.py src/btc15/runner.py src/btc15/cli.py src/btc15/operation.py tests/test_settlement_recovery.py docs/SETTLEMENT_RECOVERY.md docs/README.md docs/SAFETY.md docs/POSITION_MANAGEMENT.md docs/TROUBLESHOOTING.md README.md
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'fix: preserve quarantined contracts and reconcile settlements with explicit evidence'
