@@ -1,0 +1,74 @@
+name: Independent strategy verification (review only)
+on:
+  push:
+    branches: [verify/settlement-strategy-745414e]
+    paths: ['verification/**', '.github/workflows/strategy-reverification.yml']
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TRADING_MODE: PAPER
+      ENABLE_LIVE_TRADING: 'false'
+      KALSHI_API_KEY_ID: ''
+      KALSHI_PRIVATE_KEY_PATH: ''
+      DATA_DIR: data/isolated-verification
+      DATABASE_URL: sqlite:///data/isolated-verification/review.db
+      TARGET_SHA: 745414e425fdefea90431b858d4645d3a605adf4
+      REVIEW_SHA: ${{ github.sha }}
+    steps:
+      - name: Check out the exact production revision, not a modified implementation
+        run: |
+          [[ "$REVIEW_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git init .
+          git remote add origin https://github.com/KhoaDao03/Project15.git
+          git fetch --depth=1 origin "$TARGET_SHA"
+          git checkout --detach FETCH_HEAD
+          git fetch --depth=1 origin "$REVIEW_SHA"
+          git show "$REVIEW_SHA:verification/test_strategy_reverification.py" > /tmp/test_strategy_reverification.py
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Install the unchanged locked dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/btc15-review-tools"
+          "$RUNNER_TEMP/btc15-review-tools/bin/pip" install uv==0.8.13
+          echo "$RUNNER_TEMP/btc15-review-tools/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/btc15-review-tools/bin/uv" sync --python 3.12 --locked --extra dev
+      - name: Rerun original 457-test suite and package checks
+        run: |
+          uv run --no-sync pytest -q --junitxml=/tmp/original-tests.xml
+          uv run --no-sync ruff check src tests
+          uv build
+          git diff --exit-code HEAD -- src config pyproject.toml uv.lock
+      - name: Independent strategy, lifecycle, and adversarial checks
+        run: |
+          cp /tmp/test_strategy_reverification.py tests/test_strategy_reverification.py
+          uv run --no-sync python - <<'PY'
+          import json, subprocess, xml.etree.ElementTree as ET
+          from pathlib import Path
+          result = subprocess.run([
+              '.venv/bin/python', '-m', 'pytest', '-q', '-s',
+              'tests/test_strategy_reverification.py', '--tb=short',
+              '--junitxml=/tmp/independent-tests.xml',
+          ])
+          root = ET.parse('/tmp/independent-tests.xml').getroot()
+          report = dict(target='745414e425fdefea90431b858d4645d3a605adf4',
+              total=len(root.findall('.//testcase')), failures=[], errors=[])
+          for case in root.findall('.//testcase'):
+              for kind in ('failure', 'error'):
+                  node = case.find(kind)
+                  if node is not None:
+                      report['failures' if kind == 'failure' else 'errors'].append(
+                          dict(test=case.get('name'), message=node.get('message'), detail=node.text))
+          print('INDEPENDENT_REVIEW_JSON ' + json.dumps(report))
+          Path('/tmp/independent-report.json').write_text(json.dumps(report, indent=2))
+          raise SystemExit(result.returncode)
+          PY
+      - name: Confirm protected source and configuration are unchanged
+        if: always()
+        run: |
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git diff --exit-code HEAD -- src config pyproject.toml uv.lock
+          echo 'REVIEW_ONLY: no runtime fixes, no credentials, no trades against an exchange, no branch push from this runner.'
