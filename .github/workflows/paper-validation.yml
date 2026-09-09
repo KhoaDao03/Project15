@@ -18,8 +18,8 @@ jobs:
       ENABLE_LIVE_TRADING: 'false'
       KALSHI_API_KEY_ID: ''
       KALSHI_PRIVATE_KEY_PATH: ''
-      DATA_DIR: ${{ runner.temp }}/btc15-validation
-      DATABASE_URL: sqlite:///${{ runner.temp }}/btc15-validation.db
+      DATA_DIR: data/ci-validation
+      DATABASE_URL: sqlite:///data/ci-validation.db
     steps:
       - name: Check out tested revision without stored credentials
         env:
