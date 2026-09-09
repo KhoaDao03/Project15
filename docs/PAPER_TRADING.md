@@ -1,99 +1,82 @@
-# Paper trading
+# Paper trading — Settlement Edge only
 
-`btc15 paper` combines authenticated recording, model evaluation and the paper
-executor. `btc15 collect` records/evaluates without simulated submissions. Both use
-PAPER-labelled operational data and never send trading requests to Kalshi.
+Paper operation uses authenticated market inputs but local simulated orders/fills. The CLI labels both paper execution and observation-only collection as PAPER; inspect the execution flag, not the label alone. Start with [Getting started](GETTING_STARTED.md) for credentials, a database and a frozen configuration.
 
-An approved signal is persisted before execution. Immediately before submission,
-execution rechecks backend wall time, reference/book freshness, open status, EV,
-valid price grid, risk limits and unique market-entry claim. Orders have a latency
-eligibility time; public trades with source times before eligibility cannot fill.
+## Dashboard-owned paper execution
 
-Passive matching requires opposing taker direction and eligible traded volume at
-or through the limit. Visible same-side depth at/better than the quote, multiplied
-by 1.5 by default, is counted as queue ahead. Cancellation of visible queue is
-not assumed to help. After queue depletion, volume can produce fractional partial
-fills; duplicate trade IDs cannot fill twice. Quote touches alone never fill.
+```bash
+uv run --locked btc15 --config data/runtime/settlement-original.json dashboard --run-id settlement-original --port 8000
+```
 
-Resting orders are revalidated on each material reference, book or trade event,
-and heartbeats. Cancellation leaves filled positions exposed and retains a
-conservative reservation. Invalidation never magically undoes an earlier fill.
-Aggressive orders use executable depth after latency; unfilled IOC remainders
-are cancelled. Exit intents also incur latency, consume visible bids, and do not
-reuse unchanged displayed depth across repeated events. This is conservative:
-V1 does not infer replenishment hidden within unchanged aggregate depth.
+This starts/resumes one Settlement Edge engine and the UI. Without `--run-id`, the default is `dashboard-paper`. Paper startup checks compatible history/checkpoints, writer ownership and a 10 GiB data-filesystem reserve. The process remains subject to every signal/freshness/risk gate. Neither `dashboard` nor `paper` guarantees a fill.
 
-Trade results include entry cost, bought amount, remaining quantity, proceeds,
-fees, gross/net P&L, holding time and observed price excursions. Settlement only
-uses a received official result, never a prediction. A data gap at expiry leaves
-a pending position until the result arrives. Partially exited positions receive
-a payout only for their remaining quantity.
+## Separate process and viewing dashboard
 
-Each paper execution action commits its ledger records, duplicate claims, state
-transitions and accounting checkpoint together. A failed write restores the
-in-memory projection and rolls back SQL. Checkpoints include fractional positions,
-fee carry, queue state, trade IDs, exit depth consumption and daily risk totals.
+For a standalone fresh paper run:
 
-`btc15 paper --resume RUN_ID` restores a checkpoint under the same configuration
-and mode. It cancels resting remainders, keeps filled exposure, starts with feeds
-unhealthy, and polls previously tracked markets for official settlement. No fills
-are inferred for downtime. Older runs without atomic checkpoints require forensic
-recovery. Crash writer leases intentionally require operator review before release.
+```bash
+uv run --locked btc15 --config data/runtime/settlement-original.json paper --seconds 1800
+```
 
-Series and event fee schedules are applied at their effective times. Supported
-profiles are unit-multiplier quadratic and quadratic-with-maker-fees; other
-schedules explicitly block execution. Quadratic maker trading fees are zero;
-fractional balance alignment can still cost money. Direct accounting defaults to
-`0.0001`; applicable FCM accounts use `0.01`. Configured coefficients remain
-versioned research assumptions for cost stress tests and special account arrangements.
-See the [official schedule](https://kalshi.com/docs/kalshi-fee-schedule.pdf).
+This creates a generated run ID and prints it when the command completes. It does not take `--run-id`. Find the run in the dashboard/history as well. Resume it explicitly, replacing `RUN_ID`:
 
-Remaining empirical boundaries: aggregate depth does not reveal actual queue
-position, hidden liquidity, counterfactual impact or attainable latency. Test
-predeclared pessimistic queue/latency/slippage configurations on consecutive data.
-The one-entry/no-automatic-reprice policy is retained; changing that policy is a
-strategy experiment, not a prerequisite for correct conservative simulation.
-Unattended production paper acceptance and LIVE remain separate, uncompleted gates.
-The [managed PAPER service](AUTONOMOUS_PAPER.md) provides a stable run identity,
-graceful shutdown, checkpoint resume, disk reserve and health probe for validation.
+```bash
+uv run --locked btc15 --config data/runtime/settlement-original.json paper --resume RUN_ID
+```
 
+For stable named operation on Linux/WSL, including an optional bounded acceptance session:
+
+```bash
+uv run --locked btc15 --config data/runtime/settlement-original.json paper-service --run-id settlement-original --seconds 1800
+```
+
+Omit `--seconds` for continuous foreground service operation. Native Windows does not implement the POSIX signal-handler path used here; use the dashboard workflow or a Linux/WSL service. See [Managed paper](AUTONOMOUS_PAPER.md).
+
+In another terminal, with the **same database and data directory**:
+
+```bash
+uv run --locked btc15 --config data/runtime/settlement-original.json dashboard --no-collect --port 8000
+uv run --locked btc15 paper-health --run-id settlement-original
+```
+
+The health example applies to that named run; replace it for a generated ID. Do not start `dashboard` without `--no-collect` next to a writer. Changing the port does not allow a second writer on the same database. `paper-health` can exit 1 during warmup or degraded operation; its probe thresholds differ from strategy entry thresholds.
+
+## Observation without orders
+
+```bash
+uv run --locked btc15 --config data/runtime/settlement-original.json collect --seconds 1800
+```
+
+Or run `dashboard --observe-only` instead of a paper writer. Observation keeps full evaluation history and JSONL/Parquet inputs. Paper keeps compact inputs and first-fill evidence. `--observe-only` and `--no-collect` are mutually exclusive. Do not run observation and paper collectors simultaneously against one database.
+
+## Execution semantics
+
+A qualifying evaluation is not a fill. Immediately before submission the executor rechecks time, fresh reference/book, market status, price grid, net EV, risk budget and the unique market-entry claim. Orders have a latency eligibility time; stale trades or trades published before eligibility cannot fill them.
+
+Passive matching requires the opposing taker side and eligible volume at/through the limit. Same-side depth at/better than the proposed quote, multiplied by the configured queue multiplier (1.5 by default), models queue ahead. Newly modeled queues round up to the 0.01-contract increment using Decimal arithmetic. Residual volume from finer legacy queues rounds down; no fill volume is invented. See [the fractional-fill correction](PASSIVE_FILL_FIX.md). Quote touches and apparent queue cancellations alone do not fill the order.
+
+Resting orders are revalidated on material reference/book/trade events and heartbeats. Default patience is 20 seconds. Cancellation does not reverse an earlier partial fill. There is one entry attempt per market/run; cancelled attempts still count against daily attempt and gross-exposure limits. Do not reset a run to evade those budgets. An explicitly configured aggressive order uses depth after latency and cancels its unfilled IOC remainder.
+
+Exits require eligible observed liquidity and configured stop/TP/invalidation conditions, or a received official settlement result. Stops are not guaranteed. Open inventory can remain pending while a feed/result is missing. Settlement pays only remaining inventory; a prediction is never treated as an official payout.
+
+## Evidence and checkpoints
+
+In paper mode the full candidate snapshot is held in the pending order checkpoint. **Only the first simulated fill permanently saves its entry evidence**, atomically with the fill. Later partial fills reuse it. An unfilled cancellation retains the order/cancellation but discards its pending opportunity evidence. Skipped evaluations/status are replaceable live snapshots. See [Recording](TRADE_RECORDING.md).
+
+Each execution action commits ledger records, duplicate claims, state transitions and checkpoint together; a failed write rolls back the in-memory and SQL state. Resume requires the original configuration/mode, cancels resting remainders, retains filled inventory and daily limits, and starts with unhealthy feeds. No fills are invented for downtime.
 
 ## Dashboard settings and new sessions
 
-The **Strategies** page saves entry, risk, model and execution settings for new
-sessions. `btc15 paper` loads `DATA_DIR/strategy.json` unless a global `--config`
-file is supplied. Disabling entries blocks candidate selection and paper order
-submission while keeping evaluation and position-management logic available.
-Saving or enabling does not start a stopped process. Dashboard startup defaults
-to paper execution for Settlement Edge only.
-
-For checkpoint resume, use the original configuration even if UI settings have
-changed: `btc15 --config config/session.json paper --resume RUN_ID`. Do not create
-a replacement run to bypass unresolved positions. The UI switch does not affect
-an already-running session; use the [kill switch](SAFETY.md#operating-the-kill-switch)
-when a running paper session must stop accepting entries.
+**Settings** saves `DATA_DIR/strategy.json` for future sessions. Explicit `--config` takes precedence, and a running engine is not reconfigured. Saving or disabling entries is not a running-process emergency stop. See [Strategy](STRATEGY.md) and [the persistent kill switch](SAFETY.md#operating-the-kill-switch).
 
 ## Dashboard shutdown
 
-Use **Shut down safely** in the dashboard header and confirm the prompt. This stops
-new entries across the current collector's strategies, cancels unfilled paper order
-remainders, drains received events, saves portfolio checkpoints and flushes raw data.
-The dashboard closes its server only after the collector acknowledges completion
-and releases its database writer lease. The browser tab remains open with the result.
-If confirmation fails or times out, the dashboard stays open for inspection; it does
-not force-kill the collector or remove its lease.
+Use **Shut down safely** and confirm. It requests the collector sharing that dashboard's database to stop entries, cancel unfilled remainders, save positions/checkpoints and flush received inputs. It is not scoped by the selected historical run, mode or archive filter. The dashboard waits for acknowledgement; a failed confirmation is not permission to remove a lease or force a second writer.
 
-Open paper positions are retained without forced liquidation. Restart the same
-single-strategy run with its original configuration to resume management/settlement.
-The shutdown request affects the collector sharing this database, not the selected
-historical run or archive filter. Live execution remains blocked.
+Open positions are retained without forced liquidation. Repeat the same named start command/configuration after a clean stop. On Linux/WSL a managed service also handles SIGINT/SIGTERM. A disconnected browser or closed tab is not a stop command; the process runs on the host, which must remain awake.
 
-Dashboard startup starts/resumes `dashboard-paper` using one Settlement Edge engine.
-`--run-id NAME` selects a different run. `--observe-only` records without orders;
-`--no-collect` is a viewing dashboard. Warmup, signal, risk, freshness, credentials,
-disk-space and writer-lease checks still apply. Old multi-strategy manifests and
-pending archived exposure are rejected with a recovery message, not silently dropped.
-Read [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md) before upgrading an existing installation.
+## Existing multi-strategy portfolios
 
-Paper sessions use [trade evidence plus compact inputs](TRADE_RECORDING.md). No
-historical records or raw tapes are removed by this scope change.
+This runtime cannot execute retired algorithms or silently drop their child portfolios. Nonempty group manifests, archived child resumes and unresolved archived exposure are rejected with a compatible-revision recovery message. Follow [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md) before switching an existing installation. No reset/migration/deletion is part of normal startup.
+
+Aggregate depth, queue position, counterfactual impact, attainable latency, live feed endurance and strategy profitability remain empirical questions. Synthetic tests and a successful public discovery call do not close them.

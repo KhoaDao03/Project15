@@ -1,0 +1,168 @@
+name: Documentation and fresh-start validation
+
+on:
+  push:
+    branches: [fix/fractional-passive-fills]
+    paths: ['README.md', 'docs/**', '.github/workflows/documentation-validation.yml']
+  pull_request:
+    branches: [main]
+    paths: ['README.md', 'docs/**', '.github/workflows/documentation-validation.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  documentation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      TRADING_MODE: PAPER
+      ENABLE_LIVE_TRADING: 'false'
+      KALSHI_API_KEY_ID: ''
+      KALSHI_PRIVATE_KEY_PATH: ''
+      DATA_DIR: data/docs-smoke
+      DATABASE_URL: sqlite:///data/docs-smoke/default.db
+    steps:
+      - name: Check out exact tested revision without stored credentials
+        env:
+          TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          [[ "$TARGET_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git init .
+          git remote add origin https://github.com/KhoaDao03/Project15.git
+          git fetch --depth=1 origin "$TARGET_SHA"
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+      - name: Install the existing locked environment
+        run: |
+          python3 -m venv "$RUNNER_TEMP/btc15-doc-tools"
+          "$RUNNER_TEMP/btc15-doc-tools/bin/pip" install uv==0.8.13
+          echo "$RUNNER_TEMP/btc15-doc-tools/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/btc15-doc-tools/bin/uv" sync --python 3.12 --extra dev --locked
+      - name: Check current guide links and parse CLI examples without executing them
+        run: |
+          uv run --locked python - <<'PY'
+          import argparse
+          import re
+          import shlex
+          import sys
+          from pathlib import Path
+          from unittest.mock import patch
+          from urllib.parse import unquote, urlsplit
+          from btc15 import cli
+
+          guides = [Path('README.md')] + [Path('docs') / (name + '.md') for name in (
+              'README', 'GETTING_STARTED', 'PAPER_TRADING', 'STRATEGY', 'TROUBLESHOOTING',
+              'ARCHITECTURE', 'DATA_MODEL', 'TRADE_MEMORY', 'TRADE_RECORDING',
+              'BACKTESTING', 'AUTONOMOUS_PAPER', 'SAFETY', 'VALIDATION', 'LIVE_TRADING',
+              'SINGLE_STRATEGY', 'SINGLE_STRATEGY_VALIDATION',
+          )]
+          original_parse = argparse.ArgumentParser.parse_args
+          class Parsed(Exception):
+              pass
+          def parse_only(parser, *args, **kwargs):
+              original_parse(parser, *args, **kwargs)
+              raise Parsed
+          links = commands = 0
+          for guide in guides:
+              text = guide.read_text(encoding='utf-8')
+              assert text.count('```') % 2 == 0, f'Unclosed fence: {guide}'
+              for target in re.findall(r'\[[^\]]+\]\(([^\s)]+)\)', text):
+                  parsed = urlsplit(target)
+                  if parsed.scheme or parsed.netloc:
+                      continue
+                  path = (guide.parent / unquote(parsed.path)).resolve() if parsed.path else guide.resolve()
+                  assert path.exists(), f'Broken local link: {guide} -> {target}'
+                  if parsed.fragment and path.suffix == '.md':
+                      headings = re.findall(r'^#{1,6}\s+(.+)$', path.read_text(encoding='utf-8'), re.M)
+                      anchors = {re.sub(r'[^\w\- ]', '', h.lower()).replace(' ', '-') for h in headings}
+                      assert unquote(parsed.fragment) in anchors, f'Broken anchor: {guide} -> {target}'
+                  links += 1
+              for line in text.splitlines():
+                  if not line.strip().startswith('uv run --locked btc15 '):
+                      continue
+                  argv = shlex.split(line, comments=True)[4:]
+                  with patch.object(sys, 'argv', ['btc15', *argv]), patch.object(
+                      argparse.ArgumentParser, 'parse_args', parse_only
+                  ):
+                      try:
+                          cli.main()
+                      except Parsed:
+                          pass
+                      except SystemExit as exc:
+                          assert exc.code == 0 and '--help' in argv, f'Invalid example: {guide}: {line}'
+                      else:
+                          raise AssertionError('Example was not intercepted before side effects')
+                  commands += 1
+          print(f'DOCS_PASS guides={len(guides)} local_links={links} parsed_cli_examples={commands}')
+          PY
+      - name: Run the documented frozen-config and isolated demo setup
+        run: |
+          uv run --locked python -c "from pathlib import Path; from dataclasses import asdict; from btc15.config import Strategy; from btc15.domain import dumps; p=Path('data/runtime/settlement-original.json'); p.parent.mkdir(parents=True, exist_ok=True); p.open('x', encoding='utf-8').write(dumps(asdict(Strategy()))+'\n')"
+          uv run --locked python -c "from pathlib import Path; from dataclasses import asdict; from btc15.config import Strategy; from btc15.domain import dumps; p=Path('data/runtime/settlement-moderate.json'); p.parent.mkdir(parents=True, exist_ok=True); p.open('x', encoding='utf-8').write(dumps(asdict(Strategy.load('config/settlement-edge-paper-moderate.json')))+'\n')"
+          uv run --locked btc15 --config data/runtime/settlement-original.json init-db
+          uv run --locked btc15 --config data/runtime/settlement-original.json config > data/docs-smoke/original.json
+          uv run --locked btc15 --config data/runtime/settlement-moderate.json config > data/docs-smoke/moderate.json
+          uv run --locked btc15 demo --output data/docs-smoke/synthetic.jsonl
+          uv run --locked btc15 --database sqlite:///data/docs-smoke/demo.db backtest data/docs-smoke/synthetic.jsonl > data/docs-smoke/result.json
+          uv run --locked python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('data/docs-smoke')
+          original = json.loads((root / 'original.json').read_text())
+          moderate = json.loads((root / 'moderate.json').read_text())
+          assert original['entry_window_start'] == 480
+          assert original['fee_balance_precision'] == '0.0001'
+          assert {key: value for key, value in moderate.items() if value != original[key]} == {
+              'entry_window_start': 600, 'min_entry_price': 0.8, 'min_edge': 0.02, 'min_ev': 0.02
+          }
+          result = json.loads((root / 'result.json').read_text())
+          assert result['mode'] == 'BACKTEST' and result['trades'] > 0
+          print('FRESH_SETUP_PASS synthetic_completed_trades=' + str(result['trades']))
+          PY
+      - name: Verify the viewing dashboard and coordinated shutdown over HTTP
+        run: |
+          uv run --locked python - <<'PY'
+          import subprocess
+          import time
+          from pathlib import Path
+          import httpx
+          log_path = Path('data/docs-smoke/dashboard.log')
+          with log_path.open('w') as log:
+              process = subprocess.Popen([
+                  'uv', 'run', '--locked', 'btc15', '--database', 'sqlite:///data/docs-smoke/demo.db',
+                  'dashboard', '--no-collect', '--port', '8765'
+              ], stdout=log, stderr=subprocess.STDOUT)
+              try:
+                  with httpx.Client(base_url='http://127.0.0.1:8765', timeout=5) as client:
+                      for _ in range(100):
+                          if process.poll() is not None:
+                              raise AssertionError(log_path.read_text())
+                          try:
+                              response = client.get('/api/health')
+                              response.raise_for_status()
+                              break
+                          except httpx.HTTPError:
+                              time.sleep(0.1)
+                      else:
+                          raise AssertionError('Viewing dashboard startup timed out')
+                      assert response.json()['live_enabled'] is False
+                      assert client.get('/').status_code == 200
+                      trades = client.get('/api/trades', params={'mode': 'BACKTEST'})
+                      trades.raise_for_status()
+                      assert trades.json()['total'] > 0
+                      stopped = client.post('/api/shutdown', json={'confirm': True}, headers={
+                          'Origin': 'http://127.0.0.1:8765'
+                      })
+                      assert stopped.status_code == 202, stopped.text
+                  assert process.wait(timeout=20) == 0
+                  print('VIEWER_PASS synthetic results visible; no collector; safe shutdown completed')
+              finally:
+                  if process.poll() is None:
+                      process.terminate()
+                      try:
+                          process.wait(timeout=10)
+                      except subprocess.TimeoutExpired:
+                          process.kill()
+                          process.wait()
+          PY

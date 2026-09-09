@@ -1,61 +1,43 @@
-> **Scope update:** current runtime is Settlement Edge only. Multi-strategy descriptions
-> and measurements below describe historical revisions, not current execution.
-> See [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md) for current architecture, history and recovery.
+# Trade memory, history and exports
 
-# Trade memory and exports
+The goal is understandable evidence for a person or an AI reviewer, without storing every derived paper-mode evaluation forever. Use [Recording](TRADE_RECORDING.md) for the exact full-versus-compact policy.
 
-Each meaningful evaluation has a UUID, mode, run, market, complete effective
-configuration, Git/source/config version hashes, model versions, settlement spec,
-causal features, raw/conservative probabilities, uncertainty, model quality,
-normalized book and structured rejection reasons. An unavailable model still
-produces an opportunity containing the diagnostic failure. Rejected opportunities
-are never discarded simply because no order was submitted.
+## What an opportunity record means
 
-Orders, partial fills, cancellations, exit intents and trade results reference
-the originating opportunity. Market-level transitions and authoritative settlement
-records are attached when constructing replay. Historical predictions remain
-separate from outcomes. Full source and dependency-lock snapshots accompany runs,
-including changes not yet committed to Git. Credentials are not part of snapshots.
+A retained evaluation includes its ID, run/mode/market, timestamp, configuration and version hashes, settlement specification, features, probabilities, quality, normalized book and reasons. **Paper mode only archives this evidence when a candidate first fills.** Prior to that it lives in the pending order checkpoint. A rejected live evaluation can appear in the UI without becoming an immutable `opportunity` row. Observation-only collection and BACKTEST retain full evaluation histories, including rejects/model failures.
 
-`btc15 export <opportunity-id>` creates a new directory under
-`data/trade_packets/YYYY/MM/<opportunity-id>/`. It contains summary, features,
-probability, decision, orders, fills, config, versions, software snapshot, timeline,
-market/probability Parquet paths and an analysis Markdown file. Existing packet
-directories are not overwritten. Exports carry the recorded mode.
-
-`/api/replay/<id>` returns opportunity, market timeline and probability/market path.
-`/api/records` supplies paginated/filterable JSON. `/api/analytics` supplies scores,
-counts, rejections, P&L paths and grouped research metrics. These APIs support an
-AI analyst without scraping HTML. Analysis can propose experiments; no API can
-change the running strategy or activate live orders.
-
-Limitations: process-quality letter grading is not implemented; counts and grades
-must not equate a winning outcome with sound reasoning. Replay charts do not yet
-render all requested entry/exit/window overlays. Fee/slippage estimates and actual
-simulated fees are distinct; they should not be silently substituted in analysis.
-
+Orders, cancellations, fills, exits and results reference their originating opportunity ID. An unfilled order can therefore have an ID without an exported opportunity: its pending evidence was discarded at cancellation. Inspect the order/cancellation and input tape, not a nonexistent replay packet. Later partial fills share the first-fill evidence; outcomes remain separate from predictions.
 
 ## Dashboard views
 
-**Opportunity memory** groups evaluations by market, newest market activity first.
-Each expandable group shows matching evaluations, skipped entries, passed entry
-checks, latest evaluation time and run count. Counts cover all matching records
-before pagination. Expanding loads that market's evaluation cards, with additional
-pages available. Mode, run, search and decision filters apply to groups and cards.
-History stays still while reading; **Refresh history** loads newer records.
+**Trade history** separates **Entry evidence**, **Orders / cancellations**, **Fills** and **Completed trades**. Select the correct mode and run, and use Refresh to load newer history. Entry-evidence counts are not all evaluated quotes in compact paper mode. A submitted order is not a fill; a buy fill is not necessarily a completed trade.
 
-**View explanation** shows reasons and saved inputs before charts. Technical data
-is expandable, and JSON remains accessible. The timeline covers the whole market
-within that run, so not every event belongs to the selected evaluation. Passing
-entry checks does not prove an order or fill; **Completed trades** shows results.
+The normal scope is Settlement Edge. **Archived strategies (read-only)** exposes retained old evidence without executing its algorithms. Default headline results exclude archived portfolios and use the selected control configuration/run. Backtest totals can represent independent/repeated replays, not one live portfolio.
 
-`GET /api/records?group_by_market=true` returns market summaries and a total
-matching evaluation count. `market=TICKER` selects an exact market for its
-paginated records. The underlying immutable evaluations are unchanged.
+**View explanation** reads a retained opportunity and its market/run timeline. Some timeline events belong to other actions in the same market. Continuous reference/probability paths need full evaluations or recalculation from inputs; a paper packet containing one retained entry is not a full tick chart.
 
-**Results & accuracy** uses completed trades for realized P&L, win rate and
-drawdown. Calibration uses the last eligible entry-window prediction per
-run/market with a recorded official settlement, even without a trade. Fill rate
-uses orders and fills; skipped-entry counts use evaluations. A selected run with
-no recorded settlements has no calibration observations. Small samples do not
-establish predictive accuracy or profitability.
+## Exports
+
+Replace `OPPORTUNITY_ID` with a retained entry/evaluation ID and use its database:
+
+```bash
+uv run --locked btc15 export OPPORTUNITY_ID
+```
+
+Default output is `data/trade_packets/YYYY/MM/OPPORTUNITY_ID/`, selected by the export command's `--output` argument, not automatically relocated by changing `DATA_DIR`. Existing packet directories are refused, not overwritten.
+
+Packets include summary/features/probability/decision/config/model versions, orders/fills, software snapshot, timeline, market/probability Parquet paths and `analysis.md`. The replay route is `/api/replay/OPPORTUNITY_ID`; JSON is available without scraping HTML. `/api/records`, `/api/trades`, `/api/runs` and `/api/analytics` accept the documented history scope. Read-only archived analytics is also available:
+
+```bash
+uv run --locked btc15 analytics --mode PAPER --run RETIRED_RUN_ID --archive
+```
+
+## Review limitations
+
+Do not equate winning with sound reasoning or a large quote-check count with independent trades. Distinguish estimated fees/slippage at decision time from recorded simulated execution costs.
+
+Calibration/rejection metrics are calculated from retained opportunities. Compact-paper data is selected by fills and is not a full-market calibration sample. Preserve and audit the complete tapes for rejected-opportunity/counterfactual analysis.
+
+Current exports are not a completeness certification: some opportunity-path queries retain the Store default limit, and the software export selects the original run's source snapshot. After a code-changing resume, compare the selected entry's source hash and preserve the exact matching revision; do not assume a packet alone contains the right resumed software. Long-path completeness and code-changing-resume provenance require explicit review. These documentation cautions do not alter the exporter.
+
+Never rewrite recorded predictions/fills when exploring an improvement. Produce a new replay run and keep its source/config/input identity. Credentials/private keys do not belong in packets or shared evidence.
