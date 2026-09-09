@@ -3,6 +3,7 @@
 import copy
 import uuid
 from dataclasses import asdict, dataclass, field
+from decimal import ROUND_CEILING, ROUND_FLOOR, InvalidOperation
 from functools import wraps
 
 from .domain import D, order_direction
@@ -201,7 +202,9 @@ class PaperExecutor:
             return None
         self.risk.reserve(market.ticker, max(price, ask), quantity, now)
         levels = book.yes if side == "yes" else book.no
-        queue = float(sum(q for p, q in levels.items() if float(p) >= price)) * c.queue_multiplier
+        # Round queue ahead up, never executable volume up. Keep numeric checkpoint fields.
+        queue = sum((q for p, q in levels.items() if p >= D(price)), D(0)) * D(c.queue_multiplier)
+        queue = float(queue.quantize(D(".01"), rounding=ROUND_CEILING))
         order = PaperOrder(
             str(uuid.uuid4()),
             opportunity_id,
@@ -362,12 +365,18 @@ class PaperExecutor:
         price = yes_price if order.side == "yes" else 1 - yes_price
         if price > order.limit + 1e-9:
             return
-        quantity = float(msg["count_fp"])
-        if quantity <= 0:
-            return
-        consumed = min(order.queue, quantity)
-        order.queue -= consumed
-        quantity -= consumed
+        try:
+            quantity = D(msg["count_fp"])
+        except InvalidOperation as exc:
+            raise ValueError("Invalid trade quantity") from exc
+        if not quantity.is_finite() or quantity <= 0 or quantity % D(".01"):
+            raise ValueError("Invalid trade quantity")
+        queue = D(order.queue)
+        consumed = min(queue, quantity)
+        order.queue = float(queue - consumed)
+        # Legacy checkpoints can contain sub-cent queues. Discard a sub-cent residual
+        # rather than reject valid source volume or fabricate a minimum-sized fill.
+        quantity = (quantity - consumed).quantize(D(".01"), rounding=ROUND_FLOOR)
         if quantity > 0:
             self.fill(order, quantity, order.limit, now, True)
 
