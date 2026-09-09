@@ -62,3 +62,7 @@ After a clean stop and backup, inspect local modifications, fetch the intended b
 Unexpected data errors invalidate books and cancel entries. Recorder/database errors stop operation rather than continuing without evidence. Queue overflow stops capture; clock/sequence/freshness problems must be diagnosed, not bypassed. The 5 Hz UI reference is separate from standard settlement samples and execution-time freshness.
 
 Host-specific clock repairs in [COLLECTION_RECOVERY.md](COLLECTION_RECOVERY.md) are historical; do not disable time services on another host by copying those commands. Use one properly managed clock source for your actual environment and verify new captures. Hardware/host endurance, authentic feed validation, backup restoration and PostgreSQL remain separate acceptance work. No safety guard or passing synthetic test guarantees a profit or a stop fill.
+
+## Metadata quarantine and settlement
+
+A quarantined held contract stays tracked with reserved exposure. Only verified finalized evidence can complete its accounting. Matching original terms may recover automatically; changed terms require explicit evidence-bound review. The recovery command takes the existing writer lease and never reopens entries, changes a result by user input or resets a kill switch. See [Settlement recovery](SETTLEMENT_RECOVERY.md).

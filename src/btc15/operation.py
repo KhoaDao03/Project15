@@ -48,6 +48,8 @@ def health(store, run_id, now=None):
             reasons.append(key.upper())
     if body.get("halted"):
         reasons.append("HALTED")
+    if body.get("settlement_recovery"):
+        reasons.append("SETTLEMENT_RECOVERY_REQUIRED")
     if body.get("reference_age") is None or not 0 <= body["reference_age"] <= 2:
         reasons.append("STALE_REFERENCE")
     if not 0 <= body.get("processing_lag", float("inf")) <= 1:

@@ -25,6 +25,14 @@ def main():
     p.add_argument("--seconds", type=float, help="Optional bounded acceptance session")
     p = commands.add_parser("paper-health", help="Read-only probe; exit 1 when unhealthy")
     p.add_argument("--run-id", required=True)
+    p = commands.add_parser(
+        "settlement-recovery", help="Inspect or explicitly reconcile a quarantined settlement"
+    )
+    p.add_argument("--run-id", required=True)
+    p.add_argument("--market", required=True)
+    p.add_argument("--evidence-id", help="Retained final REST evidence to review")
+    p.add_argument("--confirm", help="Exact evidence hash from the preview")
+    p.add_argument("--reason", help="Required operator review explanation")
     commands.add_parser("discover")
     for name in ("collect", "paper"):
         p = commands.add_parser(name)
@@ -66,6 +74,26 @@ def main():
     args = parser.parse_args()
     settings = Settings.env()
     settings.guard()
+    if args.command == "settlement-recovery":
+        from .recovery import recover_settlement
+
+        store = Store(args.database or settings.database_url)
+        try:
+            print(
+                dumps(
+                    recover_settlement(
+                        store,
+                        args.run_id,
+                        args.market,
+                        evidence_id=args.evidence_id,
+                        confirm=args.confirm,
+                        reason=args.reason,
+                    )
+                )
+            )
+        finally:
+            store.engine.dispose()
+        return
     saved_config = Path(settings.data_dir) / "strategy.json"
     config = Strategy.load(args.config or (saved_config if saved_config.exists() else None))
     logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO").upper(), format="%(message)s")

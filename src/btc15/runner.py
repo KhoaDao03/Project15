@@ -124,6 +124,10 @@ async def collect(
         tracked = {
             r["market"]: r["body"]["raw"] for r in store.list(kind="market", run_id=engine.run_id, limit=None)
         }
+        for ticker, snapshot in engine.executor.contracts.items():
+            if ticker in engine.executor.positions:
+                tracked[ticker] = snapshot["raw"]
+        settled_tickers = set()
         connected = False
         started = time.monotonic()
         maximum_queue = 0
@@ -174,6 +178,10 @@ async def collect(
                     engine.executor.halt(row["received"])
                 valid = engine.ingest(row) and valid
                 payload = json.loads(row["payload"])
+                if payload.get("type") == "settlement":
+                    ticker = payload["msg"]["market_ticker"]
+                    if store.state(engine.run_id, ticker) == "CLOSED":
+                        loop.call_soon_threadsafe(settled_tickers.add, ticker)
                 if payload.get("type") == "cfbenchmarks_value_5hz":
                     msg = payload.get("msg", {})
                     display_reference = dict(
@@ -248,6 +256,11 @@ async def collect(
                         maximum_queue=maximum_queue,
                         markets=list(engine.markets),
                         positions={k: vars(v) for k, v in engine.executor.positions.items()},
+                        settlement_recovery={
+                            k: v
+                            for k, v in engine.executor.quarantines.items()
+                            if k in engine.executor.positions
+                        },
                         exposure=sum(engine.executor.risk.reserved.values()),
                         daily=engine.executor.risk.day(now),
                         halted=engine.executor.risk.halted,
@@ -329,8 +342,12 @@ async def collect(
                     current = sorted(m["ticker"] for m in markets)
                     tickers = current
                     for m in markets:
-                        tracked[m["ticker"]] = m
+                        # Later malformed/changed close times must not postpone held-contract polling.
+                        tracked.setdefault(m["ticker"], m)
                     for ticker, m in list(tracked.items()):
+                        if ticker in settled_tickers:
+                            del tracked[ticker]
+                            continue
                         from .domain import timestamp
 
                         if time.time() >= timestamp(m["close_time"]):
@@ -341,10 +358,13 @@ async def collect(
                                 emit(
                                     dict(
                                         type="settlement",
-                                        msg=dict(market_ticker=ticker, result=raw["result"]),
+                                        msg=dict(
+                                            market_ticker=ticker,
+                                            result=raw["result"],
+                                            evidence=dict(source="kalshi_rest", market=raw, series=series),
+                                        ),
                                     )
                                 )
-                                del tracked[ticker]
                     metadata_ready.set()
                 except (httpx.HTTPError, OSError, ValueError, KeyError) as exc:
                     emit(

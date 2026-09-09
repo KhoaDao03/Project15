@@ -96,3 +96,7 @@ Default views exclude retired strategies; the explicit archive selector reads th
 [Documentation index](docs/README.md) · [From scratch](docs/GETTING_STARTED.md) · [Paper lifecycle](docs/PAPER_TRADING.md) · [Strategy/settings](docs/STRATEGY.md) · [No-trade troubleshooting](docs/TROUBLESHOOTING.md) · [Managed service](docs/AUTONOMOUS_PAPER.md) · [Replay](docs/BACKTESTING.md) · [Safety/recovery](docs/SAFETY.md)
 
 The earlier measured single-strategy verification is retained in [SINGLE_STRATEGY_VALIDATION.md](docs/SINGLE_STRATEGY_VALIDATION.md). It is dated evidence, not a claim that a later checkout or the user's overnight session has been tested. No startup command deletes history; no live-trading activation procedure is part of this milestone.
+
+## Quarantined settlement recovery
+
+Invalid or changed metadata blocks trading but no longer discards a held contract. Final settlement recovery and the preview/confirmation command are documented in [Settlement recovery](docs/SETTLEMENT_RECOVERY.md). Recovery does not reopen trading or reset risk budgets.

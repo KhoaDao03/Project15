@@ -351,7 +351,18 @@ class Store:
         with self.engine.connect() as c:
             return c.execute(self._state_query, dict(run=run_id, ticker=market)).scalar()
 
-    def transition(self, run_id, mode, market, target, now, opportunity_id="", *, record_history=True):
+    def transition(
+        self,
+        run_id,
+        mode,
+        market,
+        target,
+        now,
+        opportunity_id="",
+        *,
+        record_history=True,
+        settlement_recovery_id=None,
+    ):
         with self.transaction() as c:
             row = (
                 c.execute(select(states).where(states.c.run_id == run_id, states.c.market == market))
@@ -361,7 +372,35 @@ class Store:
             old = row["state"] if row else None
             if old == target:
                 return
-            if target not in ({"DISCOVER_MARKET"} if old is None else TRANSITIONS[old] | {"ERROR", "HALTED"}):
+            recovering = False
+            if settlement_recovery_id is not None:
+                recovery = c.execute(
+                    select(records.c.body).where(
+                        records.c.id == settlement_recovery_id,
+                        records.c.kind == "settlement_recovery",
+                        records.c.run_id == run_id,
+                        records.c.mode == mode,
+                        records.c.market == market,
+                    )
+                ).scalar()
+                if old != "HALTED" or target != "SETTLEMENT_PENDING" or not recovery:
+                    raise ValueError("Invalid settlement recovery transition")
+                body = json.loads(recovery)
+                proof = c.execute(
+                    select(records.c.body).where(
+                        records.c.id == body["evidence_id"],
+                        records.c.kind == "settlement_evidence",
+                        records.c.run_id == run_id,
+                        records.c.mode == mode,
+                        records.c.market == market,
+                    )
+                ).scalar()
+                if not proof or json.loads(proof)["result"] != body["result"]:
+                    raise ValueError("Settlement recovery evidence mismatch")
+                recovering = True
+            if not recovering and target not in (
+                {"DISCOVER_MARKET"} if old is None else TRANSITIONS[old] | {"ERROR", "HALTED"}
+            ):
                 raise ValueError(f"Invalid transition {old} -> {target}")
             if row:
                 result = c.execute(
@@ -380,7 +419,11 @@ class Store:
             if record_history:
                 self.add(
                     "transition",
-                    dict(previous=old, state=target),
+                    dict(
+                        previous=old,
+                        state=target,
+                        **({"settlement_recovery_id": settlement_recovery_id} if recovering else {}),
+                    ),
                     run_id,
                     mode,
                     now,

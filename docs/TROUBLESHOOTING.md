@@ -68,3 +68,7 @@ Use the intended database environment/global override in the terminal. Health ex
 Preserve the exact revision and frozen config, run/order/fill/result/health records, checkpoints and the complete ordered `.jsonl.gz` input tapes including needed warmup/predecessor sessions. Back up consistently. Do not share credentials/private keys or rewrite received timestamps. A single latest evaluation cannot explain an entire night.
 
 Replay into a separate BACKTEST database following [Backtesting](BACKTESTING.md). Host scheduling, downtime and starting inventory are not recreated automatically. Report no-signal/no-fill/unfinished outcomes honestly; a synthetic success is not evidence that this overnight market offered an eligible trade.
+
+## Position remains quarantined after close
+
+Run the preview described in [Settlement recovery](SETTLEMENT_RECOVERY.md). Inspect `metadata_quarantine`, `settlement_evidence` and `settlement_blocked` records. Missing or unsupported final metadata is not a loss or a zero payout: accounting remains unresolved. Never edit checkpoint flags or delete the writer lease to force completion.

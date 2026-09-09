@@ -32,3 +32,7 @@ The following files record earlier designs, host-specific actions, test counts o
 - [Fractional-fill correction](PASSIVE_FILL_FIX.md) and [dated single-strategy verification](SINGLE_STRATEGY_VALIDATION.md).
 
 For current startup, recording or shutdown behavior, use the current guides above rather than copying a historical command or host-specific path. Earlier contents of updated documents remain in Git history. Operational trade history, raw tapes, checkpoints and credentials are not modified by this documentation update.
+
+## Settlement recovery
+
+[Settlement recovery](SETTLEMENT_RECOVERY.md) covers pinned entry identity, finalized evidence, explicit operator review, legacy checkpoints and retry/rollback behavior.

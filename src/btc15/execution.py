@@ -8,6 +8,7 @@ from decimal import ROUND_CEILING, ROUND_FLOOR, InvalidOperation
 from functools import wraps
 
 from .domain import D, order_direction
+from .recovery import contract_hash, evidence_hash, restore_market, validate_final_evidence
 from .strategies.settlement_edge.rules import FeeAccumulator, Risk, fee_bound, passive_price
 
 
@@ -82,10 +83,13 @@ class PaperExecutor:
         self.last_exit_event = {}
         self.exit_consumed = {}
         self.maker_rates = {}
+        self.contracts, self.quarantines = {}, {}
 
     def snapshot(self):
         return dict(
             maker_rates=self.maker_rates,
+            contracts=self.contracts,
+            quarantines=self.quarantines,
             config_version=self.config.version,
             mode=self.mode,
             orders={k: asdict(v) for k, v in self.orders.items()},
@@ -107,6 +111,8 @@ class PaperExecutor:
         if data["config_version"] != self.config.version or data["mode"] != self.mode:
             raise ValueError("Checkpoint configuration/mode mismatch")
         self.maker_rates = data.get("maker_rates", {})
+        self.contracts = data.get("contracts", {})
+        self.quarantines = data.get("quarantines", {})
         self.orders = {}
         for k, v in data["orders"].items():
             f = v.pop("fees")
@@ -166,7 +172,7 @@ class PaperExecutor:
 
     @atomic
     def submit(self, market, book, decision, opportunity_id, now, freshness_ok, *, entry_evidence=None):
-        if not self.config.enabled:
+        if not self.config.enabled or market.ticker in self.quarantines:
             return None
         c = self.config
         if (
@@ -196,6 +202,7 @@ class PaperExecutor:
             return None
         if not self.store.claim(self.run_id, "entry:" + market.ticker):
             return None
+        self.contracts.setdefault(market.ticker, asdict(market))
         self.risk.reserve(market.ticker, max(price, ask), quantity, now)
         levels = book.yes if side == "yes" else book.no
         # Round queue ahead up, never executable volume up. Keep numeric checkpoint fields.
@@ -274,7 +281,7 @@ class PaperExecutor:
             raise ValueError("Stale paper order reference")
         if not D(price).is_finite() or not 0 < price < 1 or price > order.limit:
             raise ValueError("Fill violates order price")
-        if not order.active or now < order.eligible:
+        if not order.active or now < order.eligible or order.market in self.quarantines:
             return
         if not D(quantity).is_finite() or D(quantity) <= 0 or D(quantity) % D(".01"):
             raise ValueError("Invalid fill quantity")
@@ -395,7 +402,7 @@ class PaperExecutor:
     @atomic
     def monitor(self, market, book, probability, now, event_id):
         pos = self.positions.get(market.ticker)
-        if not pos or not book.valid or not market.tradable(now):
+        if not pos or market.ticker in self.quarantines or not book.valid or not market.tradable(now):
             return
         bid = book.bid(pos.side)
         if bid is None or now - book.received > self.config.book_max_age:
@@ -519,22 +526,165 @@ class PaperExecutor:
         self.state(market, "CLOSED", now, pos.opportunity_id)
 
     @atomic
-    def settle(self, market, result, now):
-        if now < market.close_time or result not in ("yes", "no"):
-            raise ValueError("Premature/invalid settlement")
-        if not self.store.claim(self.run_id, "settlement:" + market.ticker):
+    def quarantine(self, market, now, reason, observed=None):
+        """Block trading without discarding the identity or accounting of inventory."""
+        ticker = market.ticker
+        state = self.store.state(self.run_id, ticker)
+        if state in ("CLOSED", "ERROR"):
             return
-        self.record("settlement", dict(result=result), now, market.ticker, "")
-        self.cancel(market.ticker, now, "settlement")
-        pos = self.positions.get(market.ticker)
+        if state == "HALTED" and ticker not in self.quarantines and reason != "LEGACY_METADATA_QUARANTINE":
+            # A later metadata issue cannot relabel an unrelated operator/error halt.
+            return
+        self.contracts.setdefault(ticker, asdict(market))
+        if ticker in self.quarantines:
+            return
+        self.cancel(ticker, now, reason)
+        body = dict(
+            reason=reason,
+            since=now,
+            expected_contract_hash=contract_hash(restore_market(self.contracts[ticker])),
+        )
+        self.quarantines[ticker] = body
+        order = self.orders.get(ticker)
+        op = order.opportunity_id if order else ""
+        self.record("metadata_quarantine", dict(**body, observed=observed), now, ticker, op)
+        self.state(ticker, "HALTED", now, op)
+
+    def _blocked_settlement(self, ticker, now, result, reason, evidence_id=None):
+        # Repeated WS hints/polls are not new accounting, nor a reconnect request.
+        key = f"settlement-blocked:{ticker}:{result}:{reason}:{evidence_id}"
+        if self.store.claim(self.run_id, key):
+            order = self.orders.get(ticker)
+            self.record(
+                "settlement_blocked",
+                dict(result=result, reason=reason, evidence_id=evidence_id),
+                now,
+                ticker,
+                order.opportunity_id if order else "",
+            )
+        return "BLOCKED"
+
+    @atomic
+    def settle(self, market, result, now, *, evidence=None, review=None):
+        ticker = market.ticker
+        market = restore_market(self.contracts[ticker]) if ticker in self.contracts else market
+        if not math.isfinite(now) or now < market.close_time or result not in ("yes", "no"):
+            raise ValueError("Premature/invalid settlement")
+        prior = self.store.list(kind="settlement", run_id=self.run_id, market=ticker, limit=1)
+        if prior:
+            if prior[0]["body"]["result"] != result:
+                return self._blocked_settlement(ticker, now, result, "CONFLICTING_SETTLEMENT_RESULT")
+            return "ALREADY_SETTLED"
+        state = self.store.state(self.run_id, ticker)
+        if state == "ERROR" or (state == "HALTED" and ticker not in self.quarantines):
+            return self._blocked_settlement(ticker, now, result, "UNCLASSIFIED_QUARANTINE")
+        final, evidence_id, digest = None, None, None
+        if evidence is not None:
+            digest = evidence_hash(evidence)
+            existing = self.store.list(
+                kind="settlement_evidence", run_id=self.run_id, market=ticker, limit=None
+            )
+            record = next((r for r in existing if r["body"]["evidence_hash"] == digest), None)
+            evidence_id = (
+                record["id"]
+                if record
+                else self.record(
+                    "settlement_evidence",
+                    dict(
+                        result=result,
+                        evidence=evidence,
+                        evidence_hash=digest,
+                        expected_contract_hash=contract_hash(market),
+                    ),
+                    now,
+                    ticker,
+                    self.orders[ticker].opportunity_id if ticker in self.orders else "",
+                )
+            )
+            try:
+                final = validate_final_evidence(market, result, now, evidence)
+            except (ValueError, KeyError, TypeError, OverflowError) as exc:
+                self.quarantine(market, now, "FINAL_METADATA_INVALID", evidence)
+                return self._blocked_settlement(ticker, now, result, str(exc), evidence_id)
+            if contract_hash(final) != contract_hash(market):
+                self.quarantine(market, now, "FINAL_METADATA_CHANGED", evidence)
+        recovery_id = None
+        if ticker in self.quarantines:
+            if final is None:
+                return self._blocked_settlement(ticker, now, result, "FINAL_REST_METADATA_REQUIRED")
+            if review is not None:
+                if (
+                    review.get("evidence_id") != evidence_id
+                    or review.get("evidence_hash") != digest
+                    or not isinstance(review.get("reason"), str)
+                    or not review["reason"].strip()
+                ):
+                    raise ValueError("Explicit evidence review is required")
+            elif contract_hash(final) != contract_hash(market):
+                return self._blocked_settlement(
+                    ticker, now, result, "CHANGED_TERMS_REVIEW_REQUIRED", evidence_id
+                )
+            elif any(
+                r["body"]["result"] != result
+                for r in self.store.list(
+                    kind="settlement_evidence", run_id=self.run_id, market=ticker, limit=None
+                )
+            ):
+                return self._blocked_settlement(
+                    ticker, now, result, "CONFLICTING_FINAL_EVIDENCE", evidence_id
+                )
+            recovery_id = self.record(
+                "settlement_recovery",
+                dict(
+                    result=result,
+                    evidence_id=evidence_id,
+                    evidence_hash=digest,
+                    expected_contract_hash=contract_hash(market),
+                    final_contract_hash=contract_hash(final),
+                    method="operator_review" if review else "matching_final_metadata",
+                    review=review,
+                ),
+                now,
+                ticker,
+                self.orders[ticker].opportunity_id if ticker in self.orders else "",
+            )
+        elif review is not None:
+            raise ValueError("Only a quarantined contract can use settlement recovery")
+        if not self.store.claim(self.run_id, "settlement:" + ticker):
+            return "ALREADY_SETTLED"
+        self.record(
+            "settlement",
+            dict(
+                result=result,
+                **(dict(evidence_id=evidence_id, recovery_id=recovery_id) if evidence_id else {}),
+            ),
+            now,
+            ticker,
+            "",
+        )
+        self.cancel(ticker, now, "settlement")
+        pos = self.positions.get(ticker)
+        if recovery_id:
+            # This audited escape can only enter settlement, never reopen trading.
+            self.store.transition(
+                self.run_id,
+                self.mode,
+                ticker,
+                "SETTLEMENT_PENDING",
+                now,
+                pos.opportunity_id if pos else "",
+                settlement_recovery_id=recovery_id,
+            )
         if pos:
-            self.state(market.ticker, "SETTLEMENT_PENDING", now, pos.opportunity_id)
+            self.state(ticker, "SETTLEMENT_PENDING", now, pos.opportunity_id)
             pos.proceeds += pos.quantity * (1 if pos.side == result else 0)
             pos.quantity = 0
-            self.finish(market.ticker, now, "SETTLEMENT", result)
-        elif self.store.state(self.run_id, market.ticker) not in ("CLOSED", "HALTED", "ERROR"):
-            self.state(market.ticker, "SETTLEMENT_PENDING", now)
-            self.state(market.ticker, "CLOSED", now)
+            self.finish(ticker, now, "SETTLEMENT", result)
+        elif self.store.state(self.run_id, ticker) not in ("CLOSED", "HALTED", "ERROR"):
+            self.state(ticker, "SETTLEMENT_PENDING", now)
+            self.state(ticker, "CLOSED", now)
+        self.quarantines.pop(ticker, None)
+        return "SETTLED"
 
 
 def live_payload(market, action, side, price, quantity, client_order_id):

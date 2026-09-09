@@ -138,3 +138,7 @@ market recording, PostgreSQL execution, full browser-rendering test or deployed
 laptop process was exercised by this change.
 
 See [Safety](SAFETY.md), [Strategy](STRATEGY.md) and [Validation](VALIDATION.md).
+
+## Subsequent metadata recovery change
+
+The separately scoped metadata/settlement recovery work is now described in [Settlement recovery](SETTLEMENT_RECOVERY.md). It does not relax this document's pre-expiry exit safety checks or contract-quarantine trading block.

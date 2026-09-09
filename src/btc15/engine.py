@@ -13,6 +13,7 @@ from .config import Strategy
 from .domain import Book, dumps, parse_market, timestamp
 from .execution import PaperExecutor
 from .models import require_single_run
+from .recovery import contract_hash, restore_contract_history, restore_market
 from .strategies.settlement_edge.model import Tick, features, probability, quality
 from .strategies.settlement_edge.rules import evaluate
 
@@ -95,10 +96,8 @@ class Engine:
                     "No atomic checkpoint for this run; legacy open positions require forensic recovery"
                 )
             self.executor.restore(checkpoint)
-            for record in store.list(kind="market", run_id=self.run_id, limit=None):
-                m = parse_market(record["body"]["raw"], record["body"]["series"])
-                self.markets[m.ticker] = m
-                self.books[m.ticker] = Book()
+            self.markets = restore_contract_history(self.executor, time.time())
+            self.books = {ticker: Book() for ticker in self.markets}
             for ticker in list(self.executor.orders):
                 self.executor.cancel(ticker, time.time(), "operator_resume_no_downtime_fills")
             store.add(
@@ -202,27 +201,21 @@ class Engine:
                 for raw in msg["markets"]:
                     try:
                         market = parse_market(raw, series)
-                    except (ValueError, KeyError, TypeError) as exc:
+                    except (ValueError, KeyError, TypeError, AttributeError, ArithmeticError) as exc:
                         ticker = raw.get("ticker", "")
-                        if raw.get("floor_strike") is None:
+                        if raw.get("floor_strike") is None and ticker not in self.markets:
                             # Keep the subscribed book warm while strike publication is pending.
                             # Activation must not require reconnecting the reference feeds.
                             self.books.setdefault(ticker, Book())
                             self.store.add("pending_market", raw, self.run_id, self.mode, now, ticker)
                             continue
+                        self.store.add("invalid_market", raw, self.run_id, self.mode, now, ticker)
                         self.error("INVALID_MARKET", now, ticker, str(exc))
                         if ticker in self.markets:
-                            self.executor.cancel(ticker, now, "metadata_invalid")
-                            self.markets.pop(ticker)
-                        self.store.add("invalid_market", raw, self.run_id, self.mode, now, ticker)
+                            self.executor.quarantine(self.markets[ticker], now, "METADATA_INVALID", raw)
+                            self.books[ticker].valid = False
+
                         continue
-                    old = self.markets.get(market.ticker)
-                    if old and old.spec != market.spec:
-                        self.executor.cancel(market.ticker, now, "settlement_rules_changed")
-                        self.state(market.ticker, "HALTED", now)
-                        self.error("RULES_CHANGED", now, market.ticker)
-                    self.markets[market.ticker] = market
-                    self.books.setdefault(market.ticker, Book())
                     self.store.add(
                         "market",
                         dict(raw=raw, series=series, spec=asdict(market.spec)),
@@ -231,6 +224,17 @@ class Engine:
                         now,
                         market.ticker,
                     )
+                    old = self.markets.get(market.ticker)
+                    if old and contract_hash(old) != contract_hash(market):
+                        self.executor.quarantine(old, now, "METADATA_CHANGED", raw)
+                        self.error("RULES_CHANGED", now, market.ticker)
+                    # Never overwrite the held contract with changed settlement terms.
+                    if market.ticker in self.executor.quarantines:
+                        self.markets[market.ticker] = restore_market(self.executor.contracts[market.ticker])
+                    else:
+                        self.markets[market.ticker] = market
+                    self.books.setdefault(market.ticker, Book())
+
                     if self.store.state(self.run_id, market.ticker) is None:
                         for state in ("DISCOVER_MARKET", "VALIDATE_MARKET", "WARMUP"):
                             self.state(market.ticker, state, now)
@@ -264,11 +268,14 @@ class Engine:
                     event = msg.get("event_type")
                     if event == "settled" and msg.get("result") in ("yes", "no"):
                         self.settle(ticker, msg["result"], now)
+                    elif event in ("metadata_updated", "close_date_updated"):
+                        self.executor.quarantine(self.markets[ticker], now, "LIFECYCLE_METADATA_CHANGED", msg)
+                        self.books[ticker].valid = False
                     elif event in ("closed", "deactivated", "price_level_structure_updated", "determined"):
                         self.books[ticker].valid = False
                         self.executor.cancel(ticker, now, event)
             elif kind == "settlement":
-                self.settle(msg["market_ticker"], msg["result"], now)
+                self.settle(msg["market_ticker"], msg["result"], now, evidence=msg.get("evidence"))
             # 5 Hz/ticker frames remain in raw storage; never counted as 1 Hz settlement samples.
             if kind not in ("cfbenchmarks_value_5hz", "ticker", "subscribed", "ok"):
                 self.process(now, row["id"], kind, msg)
@@ -278,13 +285,18 @@ class Engine:
             return False
         return True
 
-    def settle(self, ticker, result, now):
+    def settle(self, ticker, result, now, *, evidence=None):
         market = self.markets.get(ticker)
+        if ticker in self.executor.contracts:
+            market = restore_market(self.executor.contracts[ticker])
         if not market:
+            self.error("SETTLEMENT_UNKNOWN_MARKET", now, ticker, "No validated contract identity")
             return
         if now < market.close_time or result not in ("yes", "no"):
             raise ValueError("Premature settlement")
-        self.executor.settle(market, result, now)
+        if evidence is None:
+            return self.executor.settle(market, result, now)
+        return self.executor.settle(market, result, now, evidence=evidence)
 
     def process(self, now, event_id, kind, msg):
         c = self.config
