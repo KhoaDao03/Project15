@@ -48,7 +48,7 @@ jobs:
           READ_TOKEN: ${{ github.token }}
         run: |
           python3 - <<'PY'
-          import base64, hashlib, json, os, urllib.request
+          import base64, hashlib, json, os, re, urllib.request
           from pathlib import Path
           blobs = {
               '/tmp/market_pause_patch.py': 'e7d0a5e0c8a992c646c90940b0ce609164f301e4',
@@ -68,6 +68,8 @@ jobs:
               assert hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() == sha
               Path(name).write_bytes(data)
               print('VERIFIED_INPUT', name, sha)
+          test = Path('tests/test_market_pause.py')
+          test.write_text(re.sub(r'\brequest\b', 'request_case', test.read_text()))
           PY
       - name: Reproduce the quote-after-deactivation failure before applying changes
         run: |
