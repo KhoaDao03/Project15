@@ -23,6 +23,44 @@ VERSIONS = dict(
 )
 
 
+def freshness_rechecks(book, ticks, received, checked_at, config):
+    """Return exactly the failed receive/source/processing-time execution checks."""
+    rows = []
+    if not book.valid:
+        rows.append(dict(code="BOOK_INVALID", message="Order book has not passed validation"))
+    checks = [
+        ("PROCESSING_LAG", checked_at - received, 0, min(config.reference_max_age, config.book_max_age)),
+        ("BOOK_RECEIVE_AGE", checked_at - book.received, 0, config.book_max_age),
+        ("BOOK_SOURCE_AGE", checked_at - book.source_time, -config.max_clock_skew, config.book_max_age),
+    ]
+    if ticks:
+        checks.extend(
+            [
+                ("REFERENCE_RECEIVE_AGE", checked_at - ticks[-1].received, 0, config.reference_max_age),
+                (
+                    "REFERENCE_SOURCE_AGE",
+                    checked_at - ticks[-1].source,
+                    -config.max_clock_skew,
+                    config.reference_max_age,
+                ),
+            ]
+        )
+    else:
+        rows.append(dict(code="MISSING_REFERENCE", message="No official reference sample is available"))
+    for code, actual, minimum, maximum in checks:
+        if not minimum <= actual <= maximum:
+            rows.append(
+                dict(
+                    code=code,
+                    message=code.replace("_", " ").capitalize() + " is outside the allowed range",
+                    actual=actual,
+                    required=[minimum, maximum],
+                    checked_at=checked_at,
+                )
+            )
+    return rows
+
+
 class Engine:
     def __init__(
         self,
@@ -258,10 +296,28 @@ class Engine:
             elif kind in ("orderbook_snapshot", "orderbook_delta"):
                 ticker = msg.get("market_ticker")
                 if ticker in self.books:
+                    continuous = self.books[ticker].valid
                     if kind == "orderbook_snapshot":
                         self.books[ticker].snapshot(msg, now)
+                        # Honor source time when supplied; an old snapshot is not fresh
+                        # merely because it was received now (zero is not a fallback).
+                        self.books[ticker].source_time = msg.get("ts_ms", now * 1000) / 1000
                     else:
                         self.books[ticker].delta(msg, now)
+                    if (
+                        ticker in self.executor.positions
+                        and self.executor.exit_consumed
+                        and ticker in self.markets
+                    ):
+                        # Observe every validated book event, including an empty level
+                        # while no exit signal/model is usable. Execution stays gated below.
+                        self.executor.observe_exit_liquidity(
+                            self.markets[ticker],
+                            self.books[ticker],
+                            now,
+                            continuous=continuous,
+                            source_time=msg.get("ts_ms", now * 1000) / 1000,
+                        )
             elif kind == "market_lifecycle_v2":
                 ticker = msg.get("market_ticker")
                 if ticker in self.markets:
@@ -407,12 +463,17 @@ class Engine:
                     seconds_remaining=market.close_time - now,
                     approval_status="RESEARCH_ONLY",
                 )
-            if (
-                decision["decision"] == "TRADE_CANDIDATE"
-                and self.executor.risk.size(decision["expected_fill_price"], now) == 0
-            ):
-                decision["decision"] = "NO_TRADE"
-                decision["reasons"].append(dict(code="RISK_LIMIT"))
+            if decision["decision"] == "TRADE_CANDIDATE":
+                sizing = self.executor.risk.size_details(decision["expected_fill_price"], now)
+                if sizing["quantity"] == 0:
+                    decision["decision"] = "NO_TRADE"
+                    decision["reasons"].append(
+                        dict(
+                            code="RISK_LIMIT",
+                            message="; ".join(r["message"] for r in sizing["reasons"]),
+                            details=sizing,
+                        )
+                    )
             signature = (
                 decision["decision"],
                 decision.get("side"),
@@ -473,15 +534,8 @@ class Engine:
             # Recheck after model computation: receipt-time freshness alone cannot
             # authorize fills or exits while a live collector is draining a backlog.
             execution_now = self.clock() if self.clock else now
-            inputs_fresh = bool(
-                book.valid
-                and self.ticks
-                and 0 <= execution_now - now <= min(c.reference_max_age, c.book_max_age)
-                and 0 <= execution_now - self.ticks[-1].received <= c.reference_max_age
-                and 0 <= execution_now - book.received <= c.book_max_age
-                and -c.max_clock_skew <= execution_now - self.ticks[-1].source <= c.reference_max_age
-                and -c.max_clock_skew <= execution_now - book.source_time <= c.book_max_age
-            )
+            freshness_failures = freshness_rechecks(book, self.ticks, now, execution_now, c)
+            inputs_fresh = not freshness_failures
             # Entry policy and model quality must not disable safe risk reduction.
             # Unknown health reasons still fail closed; only these known policy/model
             # conditions are allowed through the position-management gate.
@@ -527,32 +581,34 @@ class Engine:
                 self.executor.monitor(market, book, exit_probability, execution_now, event_id)
             if decision["decision"] == "TRADE_CANDIDATE" and record_decision:
                 submit_now = self.clock() if self.clock else now
-                fresh = (
-                    self.ticks
-                    and 0 <= submit_now - self.ticks[-1].received <= c.reference_max_age
-                    and 0 <= submit_now - book.received <= c.book_max_age
-                )
-                order = (
-                    self.executor.submit(
+                context = dict(snapshot_id=event_id, decision_timestamp=now, submission_timestamp=submit_now)
+                rechecks = list(freshness_failures)
+                rechecks.extend(freshness_rechecks(book, self.ticks, now, submit_now, c))
+                rechecks = list({r["code"]: r for r in rechecks}.values())
+                for code in extras + q["reasons"]:
+                    if code != "EXISTING_ENTRY" and not any(r["code"] == code for r in rechecks):
+                        rechecks.append(dict(code=code, message=code.replace("_", " ").capitalize()))
+                if not self.execute:
+                    order = self.executor.reject_submission(
+                        market,
+                        op,
+                        submit_now,
+                        "EXECUTION_DISABLED",
+                        "Observation only: simulated order submission is disabled",
+                        **context,
+                    )
+                else:
+                    order = self.executor.submit(
                         market,
                         book,
                         decision,
                         op,
                         submit_now,
-                        fresh and entry_healthy,
+                        not rechecks and entry_healthy,
+                        recheck_reasons=rechecks,
+                        submission_context=context,
                         **({"entry_evidence": body} if not self.record_evaluations else {}),
                     )
-                    if self.execute
-                    else None
-                )
                 if order is None:
+                    # submit() owns the precise rejection; do not add a second generic one.
                     self.state(ticker, "NO_TRADE", submit_now, op)
-                    self.store.add(
-                        "execution_rejection",
-                        dict(reason="disabled_or_submission_recheck"),
-                        self.run_id,
-                        self.mode,
-                        submit_now,
-                        ticker,
-                        op,
-                    )

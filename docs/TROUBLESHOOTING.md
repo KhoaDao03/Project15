@@ -72,3 +72,18 @@ Replay into a separate BACKTEST database following [Backtesting](BACKTESTING.md)
 ## Position remains quarantined after close
 
 Run the preview described in [Settlement recovery](SETTLEMENT_RECOVERY.md). Inspect `metadata_quarantine`, `settlement_evidence` and `settlement_blocked` records. Missing or unsupported final metadata is not a loss or a zero payout: accounting remains unresolved. Never edit checkpoint flags or delete the writer lease to force completion.
+
+## Observed exit liquidity and submission diagnostics
+
+Use **Trade history → Submission rejections** in the same mode and run as the
+collector. Each expected submission refusal has a readable message, stable reason
+code and expandable details (e.g. actual versus required edge, data age, or the
+specific exhausted budget). Old generic records remain unchanged. No retained
+opportunity is needed to view a compact-mode rejection. Rejected signal filters
+are evaluations, not submitted orders; unfilled cancellations remain order records.
+
+An unchanged bid does not refill itself. Fresh continuous observations of reduced
+or disappeared depth allow later visible replenishment to be used conservatively.
+First snapshots after gaps/restarts do not erase old consumed depth. Exits still
+need safe data, fees, a signal, latency and available volume. See
+[paper matching and diagnostic details](PAPER_TRADING.md#observed-exit-liquidity-and-submission-diagnostics).

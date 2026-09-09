@@ -414,6 +414,7 @@ def create_app(
             "market",
             "status",
             "experiment",
+            "execution_rejection",
         ):
             raise HTTPException(400, "Unsupported record kind")
         rows = select_history(

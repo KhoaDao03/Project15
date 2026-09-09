@@ -170,38 +170,158 @@ class PaperExecutor:
     def state(self, market, target, now, op=""):
         self.store.transition(self.run_id, self.mode, market, target, now, op)
 
-    @atomic
-    def submit(self, market, book, decision, opportunity_id, now, freshness_ok, *, entry_evidence=None):
-        if not self.config.enabled or market.ticker in self.quarantines:
-            return None
-        c = self.config
-        if (
-            decision["decision"] != "TRADE_CANDIDATE"
-            or not freshness_ok
-            or not market.tradable(now)
-            or not (c.no_new_entry < market.close_time - now <= c.entry_window_start)
-        ):
-            return None
-        side = decision["side"]
-        if not book.valid or now - book.received > c.book_max_age:
-            return None
-        ask = book.ask(side)
-        if ask is None or decision["conservative_probability"] - ask - fee_bound(ask, c) - c.slippage < max(
-            c.min_ev, c.min_edge
-        ):
-            return None
-        price = (
-            passive_price(market, book, side, decision["conservative_probability"], c)
-            if c.passive
-            else market.snap(ask + c.slippage)
+    def reject_submission(self, market, opportunity_id, now, reason, message, **details):
+        self.record(
+            "execution_rejection",
+            dict(
+                reason=reason,
+                message=message,
+                stage="submission",
+                config_version=self.config.version,
+                details=details,
+            ),
+            now,
+            market.ticker,
+            opportunity_id,
         )
+        return None
+
+    @atomic
+    def submit(
+        self,
+        market,
+        book,
+        decision,
+        opportunity_id,
+        now,
+        freshness_ok,
+        *,
+        entry_evidence=None,
+        recheck_reasons=(),
+        submission_context=None,
+    ):
+        def reject(code, message, **details):
+            return self.reject_submission(
+                market,
+                opportunity_id,
+                now,
+                code,
+                message,
+                **{**(submission_context or {}), **details},
+            )
+
+        c = self.config
+        if not c.enabled:
+            return reject("STRATEGY_DISABLED", "Strategy entries are disabled")
+        if market.ticker in self.quarantines:
+            return reject("METADATA_QUARANTINED", "Contract metadata requires settlement recovery")
+        if decision["decision"] != "TRADE_CANDIDATE":
+            return reject(
+                "SIGNAL_NOT_CANDIDATE",
+                "Signal did not pass the entry filters",
+                decision=decision["decision"],
+                signal_reasons=decision.get("reasons", []),
+            )
+        if not freshness_ok:
+            if recheck_reasons:
+                first = recheck_reasons[0]
+                return reject(first["code"], first["message"], rechecks=list(recheck_reasons))
+            return reject(
+                "EXECUTION_GATE_BLOCKED", "Caller did not authorize execution; inspect its health checks"
+            )
+        if not market.tradable(now):
+            return reject(
+                "MARKET_NOT_TRADABLE",
+                "Market is not active at submission time",
+                status=market.status,
+                checked_at=now,
+                open_time=market.open_time,
+                close_time=market.close_time,
+            )
+        remaining = market.close_time - now
+        if not c.no_new_entry < remaining <= c.entry_window_start:
+            return reject(
+                "ENTRY_WINDOW",
+                "Submission is outside the configured entry window",
+                seconds_remaining=remaining,
+                minimum_exclusive=c.no_new_entry,
+                maximum_inclusive=c.entry_window_start,
+            )
+        side = decision["side"]
+        if side not in ("yes", "no"):
+            return reject("INVALID_SIDE", "A valid YES or NO side is required", side=side)
+        if not book.valid:
+            return reject("BOOK_INVALID", "Order book has not passed validation")
+        if not 0 <= now - book.received <= c.book_max_age:
+            return reject(
+                "BOOK_RECEIVE_AGE",
+                "Book receive age is outside the allowed range",
+                actual=now - book.received,
+                required=[0, c.book_max_age],
+            )
+        ask = book.ask(side)
+        if ask is None:
+            return reject("NO_ASK", "No executable ask is available", side=side)
+        conservative = decision["conservative_probability"]
+        if (
+            type(conservative) not in (int, float)
+            or not math.isfinite(conservative)
+            or not 0 <= conservative <= 1
+        ):
+            return reject(
+                "INVALID_PROBABILITY",
+                "Conservative probability must be a finite number in [0, 1]",
+                actual=str(conservative),
+            )
+        fee = fee_bound(ask, c)
+        net_ev = conservative - ask - fee - c.slippage
+        required = max(c.min_ev, c.min_edge)
+        if net_ev < required:
+            return reject(
+                "NET_EDGE_RECHECK",
+                "Current ask no longer leaves the required net edge",
+                ask=ask,
+                evaluated_ask=decision.get("expected_fill_price"),
+                conservative_probability=conservative,
+                estimated_fee=fee,
+                slippage=c.slippage,
+                actual=net_ev,
+                required=required,
+            )
+        if c.passive and book.bid(side) is None:
+            return reject("NO_BID", "Passive pricing requires a bid as well as an ask", side=side)
+        try:
+            price = (
+                passive_price(market, book, side, conservative, c)
+                if c.passive
+                else market.snap(ask + c.slippage)
+            )
+        except ValueError as exc:
+            return reject(
+                "UNSUPPORTED_ENTRY_TICK", "No supported entry price could be selected", detail=str(exc)
+            )
         if not market.valid_tick(price):
-            return None
-        quantity = self.risk.size(max(price, ask), now)
-        if not quantity or market.ticker in self.orders or market.ticker in self.positions:
-            return None
+            return reject(
+                "UNSUPPORTED_ENTRY_TICK", "Selected entry price is outside the supported grid", price=price
+            )
+        if market.ticker in self.positions:
+            return reject("EXISTING_POSITION", "This market already has filled inventory")
+        if market.ticker in self.orders:
+            old = self.orders[market.ticker]
+            return reject(
+                "ORDER_ALREADY_ATTEMPTED",
+                "Only one entry attempt per market/run is allowed",
+                order_id=old.id,
+                active=old.active,
+                remaining=old.remaining,
+            )
+        sizing = self.risk.size_details(max(price, ask), now)
+        quantity = sizing["quantity"]
+        if not quantity:
+            reason = sizing["reasons"][0]
+            return reject(reason["code"], reason["message"], sizing=sizing)
         if not self.store.claim(self.run_id, "entry:" + market.ticker):
-            return None
+            return reject("ENTRY_ALREADY_CLAIMED", "A durable entry claim already exists for this market/run")
         self.contracts.setdefault(market.ticker, asdict(market))
         self.risk.reserve(market.ticker, max(price, ask), quantity, now)
         levels = book.yes if side == "yes" else book.no
@@ -382,6 +502,33 @@ class PaperExecutor:
         quantity = (quantity - consumed).quantize(D(".01"), rounding=ROUND_FLOOR)
         if quantity > 0:
             self.fill(order, quantity, order.limit, now, True)
+
+    @atomic
+    def observe_exit_liquidity(self, market, book, now, *, continuous, source_time):
+        """Account for visible removal of already-consumed depth; never execute a sale.
+
+        Unchanged depth retains its consumption. A drop caps outstanding consumption
+        at the remaining displayed quantity (zero when a level disappears). Later
+        growth is thus available without resetting the same snapshot on each event.
+        A first snapshot after a gap/restart cannot establish continuous depletion.
+        """
+        ticker = market.ticker
+        if (
+            not continuous
+            or ticker not in self.positions
+            or ticker in self.quarantines
+            or not book.valid
+            or not math.isfinite(source_time)
+            or not 0 <= now - book.received <= self.config.book_max_age
+            or not -self.config.max_clock_skew <= now - source_time <= self.config.book_max_age
+        ):
+            return
+        side = self.positions[ticker].side
+        levels = book.yes if side == "yes" else book.no
+        for key, consumed in list(self.exit_consumed.items()):
+            if key[0] == ticker:
+                displayed = levels.get(key[1], D(0))
+                self.exit_consumed[key] = min(D(consumed), displayed)
 
     @atomic
     def aggressive(self, market, book, now):

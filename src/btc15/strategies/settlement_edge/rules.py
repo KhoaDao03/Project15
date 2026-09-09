@@ -110,9 +110,33 @@ class Risk:
         return self.daily.setdefault(key, dict(pnl=0.0, exposure=0.0, trades=0))
 
     def size(self, price, now):
+        return self.size_details(price, now)["quantity"]
+
+    def size_details(self, price, now):
+        """Explain the existing whole-contract sizing policy; do not relax any budget."""
         c, d = self.config, self.day(now)
-        if self.halted or d["pnl"] <= -c.max_daily_loss or d["trades"] >= c.max_daily_trades:
-            return 0
+        reasons = []
+        for code, failed, message, actual, required in (
+            ("KILL_SWITCH", self.halted, "Risk kill switch is latched", self.halted, False),
+            (
+                "DAILY_LOSS_LIMIT",
+                d["pnl"] <= -c.max_daily_loss,
+                "Realized daily loss threshold reached",
+                d["pnl"],
+                -c.max_daily_loss,
+            ),
+            (
+                "DAILY_ATTEMPT_LIMIT",
+                d["trades"] >= c.max_daily_trades,
+                "Daily submitted-order limit reached (including unfilled attempts)",
+                d["trades"],
+                c.max_daily_trades,
+            ),
+        ):
+            if failed:
+                reasons.append(dict(code=code, message=message, actual=actual, required=required))
+        if reasons:
+            return dict(quantity=0, reasons=reasons)
         cost = price + fee_bound(price, c) + c.slippage
         bankroll = max(0, c.bankroll + self.realized)
         target = {
@@ -120,15 +144,28 @@ class Risk:
             "fixed_dollars": c.fixed_dollars,
             "bankroll_percentage": bankroll * c.bankroll_fraction,
         }[c.sizing_mode]
-        budget = min(
-            target,
-            c.max_trade_dollars,
-            bankroll * c.bankroll_fraction,
-            c.max_open_exposure - sum(self.reserved.values()),
-            c.max_daily_exposure - d["exposure"],
-            bankroll - sum(self.reserved.values()),
-        )
-        return max(0, min(c.max_contracts, math.floor(budget / cost)))
+        limits = {
+            "SIZING_TARGET": target,
+            "MAX_TRADE_DOLLARS": c.max_trade_dollars,
+            "BANKROLL_ALLOCATION": bankroll * c.bankroll_fraction,
+            "OPEN_EXPOSURE_LIMIT": c.max_open_exposure - sum(self.reserved.values()),
+            "DAILY_EXPOSURE_LIMIT": c.max_daily_exposure - d["exposure"],
+            "AVAILABLE_BANKROLL": bankroll - sum(self.reserved.values()),
+        }
+        budget = min(limits.values())
+        quantity = max(0, min(c.max_contracts, math.floor(budget / cost)))
+        if quantity == 0:
+            for code, available in limits.items():
+                if available < cost:
+                    reasons.append(
+                        dict(
+                            code=code,
+                            message=code.replace("_", " ").capitalize() + " cannot fund one whole contract",
+                            actual=available,
+                            required=cost,
+                        )
+                    )
+        return dict(quantity=quantity, reasons=reasons, cost_per_contract=cost, budget=budget, limits=limits)
 
     def reserve(self, key, price, quantity, now):
         if key in self.reserved or quantity <= 0 or quantity > self.size(price, now):

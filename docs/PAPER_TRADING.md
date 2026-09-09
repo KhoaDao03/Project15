@@ -80,3 +80,50 @@ Open positions are retained without forced liquidation. Repeat the same named st
 This runtime cannot execute retired algorithms or silently drop their child portfolios. Nonempty group manifests, archived child resumes and unresolved archived exposure are rejected with a compatible-revision recovery message. Follow [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md) before switching an existing installation. No reset/migration/deletion is part of normal startup.
 
 Aggregate depth, queue position, counterfactual impact, attainable latency, live feed endurance and strategy profitability remain empirical questions. Synthetic tests and a successful public discovery call do not close them.
+
+## Observed exit liquidity and submission diagnostics
+
+Exit matching tracks depth already consumed by this simulator separately from
+real sell fills. On each fresh, validated, in-sequence book observation in a
+continuous connection, outstanding consumed depth is capped at the quantity
+still displayed at that price (zero when the level disappears). Reappearing or
+increased depth can then be used. Unchanged snapshots do not replenish it.
+Partial reductions are conservative: existing consumption is retained up to the
+remaining displayed quantity. No hidden refill, queue identity or market impact
+is inferred. Rounding remains downward to the 0.01-contract sell increment.
+
+Observation occurs even when no exit signal is active or the model/reference is
+unavailable; it never executes a sale. All actual exits still require the
+existing safety, metadata, fee, latency and signal checks. Stale/future-dated or
+invalid books do not replenish depth. The first snapshot after a disconnect,
+sequence gap or restart retains old consumed depth rather than assuming a refill
+occurred during the missing interval. Checkpoints preserve this consumed-depth
+accounting; no historical fills are rewritten.
+
+A candidate is not an order. Expected submission refusals now retain a stable
+`reason` code, readable `message`, `details`, run/mode/config identity and the
+linked evaluation ID. Engine-dispatched attempts also include the triggering
+snapshot ID and decision/submission times. See **Trade history → Submission
+rejections** in the matching mode/run, then expand Technical details. The same
+records are available through `/api/records?kind=execution_rejection` and the
+existing market replay timeline. No retained entry-evidence row is required to
+view a rejection in compact paper mode.
+
+Examples include `EXECUTION_DISABLED`, `PROCESSING_LAG`, `BOOK_RECEIVE_AGE`,
+`REFERENCE_SOURCE_AGE`, `NET_EDGE_RECHECK`, `METADATA_QUARANTINED`,
+`DAILY_ATTEMPT_LIMIT`, `DAILY_LOSS_LIMIT`, `OPEN_EXPOSURE_LIMIT`,
+`DAILY_EXPOSURE_LIMIT`, `ORDER_ALREADY_ATTEMPTED`, and `ENTRY_ALREADY_CLAIMED`.
+A moved-price rejection shows current/evaluated ask, conservative probability,
+fee/slippage estimates, net edge and required edge. Risk sizing reports the
+binding budgets using the same arithmetic as execution, not a second calculator.
+The existing `RISK_LIMIT` evaluation also contains that explanation.
+
+Rejected entry filters are still evaluations, not submission attempts; compact
+paper mode does not archive all of them. Cancellation and zero-fill events are
+still orders, not submission rejections. An unexpected database/programming
+error still propagates and rolls back; it is not hidden as a harmless refusal.
+The executor retains its `PaperOrder`-or-`None` interface. Old generic history
+remains readable; it is not retroactively assigned a guessed cause. No strategy
+thresholds, presets, risk budgets, fees, dependencies or real-trading permissions
+are changed. Increased eligible simulated exit volume is not proof that an actual
+venue order would fill, and the changes do not establish profitability.
