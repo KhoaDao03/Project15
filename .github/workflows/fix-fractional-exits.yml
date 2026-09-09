@@ -65,7 +65,8 @@ jobs:
 
 
           def exit_book(side, quantity, when):
-              levels = {D(".50"): D(quantity)}
+              price = D(".50") if side == "yes" else D(".05")
+              levels = {price: D(quantity)}
               return Book(
                   yes=levels if side == "yes" else {},
                   no=levels if side == "no" else {},
