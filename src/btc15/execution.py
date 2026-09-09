@@ -97,7 +97,7 @@ class PaperExecutor:
             ),
             seen_trades=sorted(self.seen_trades),
             last_exit_event=self.last_exit_event,
-            exit_consumed=[[k[0], str(k[1]), v] for k, v in self.exit_consumed.items()],
+            exit_consumed=[[k[0], str(k[1]), str(v)] for k, v in self.exit_consumed.items()],
             exit_eligible=getattr(self, "_exit_eligible", {}),
         )
 
@@ -116,7 +116,13 @@ class PaperExecutor:
             setattr(self.risk, k, v)
         self.seen_trades = set(data["seen_trades"])
         self.last_exit_event = data["last_exit_event"]
-        self.exit_consumed = {(m, D(p)): v for m, p, v in data["exit_consumed"]}
+        self.exit_consumed = {}
+        for market, price, value in data["exit_consumed"]:
+            consumed = D(value)
+            nearest = consumed.quantize(D(".01"))
+            if abs(consumed - nearest) <= D("1e-9"):
+                consumed = nearest
+            self.exit_consumed[(market, D(price))] = consumed
         self._exit_eligible = data["exit_eligible"]
 
     @atomic
@@ -299,7 +305,7 @@ class PaperExecutor:
             order.market, Position(order.opportunity_id, order.market, order.side, opened=now)
         )
         pos.quantity = float(D(pos.quantity) + D(quantity))
-        pos.bought += quantity
+        pos.bought = float(D(pos.bought) + D(quantity))
         pos.cost += quantity * price
         pos.fees += fee
         self.record(
@@ -447,26 +453,37 @@ class PaperExecutor:
         fees = FeeAccumulator(c.fee_balance_precision)
         for price, quantity in sorted(levels.items(), reverse=True):
             key = (market.ticker, price)
-            available = max(D(0), quantity - D(self.exit_consumed.get(key, 0)))
-            q = float(min(D(pos.quantity), available))
+            consumed = D(self.exit_consumed.get(key, 0))
+            available = max(D(0), quantity - consumed)
+            position_quantity = D(pos.quantity)
+            q = min(position_quantity, available).quantize(D(".01"), rounding=ROUND_FLOOR)
             if q <= 0 or float(price) <= c.slippage:
                 continue
             fill_price = market.snap(float(price) - c.slippage)
             if reason == "TAKE_PROFIT" and fill_price < target:
                 continue
-            self.exit_consumed[key] = self.exit_consumed.get(key, 0) + q
-            fee = fees.charge(fill_price, q, c.taker_fee_rate, "sell")
-            pos.quantity = float(D(pos.quantity) - D(q))
-            pos.proceeds += q * fill_price
+            self.exit_consumed[key] = consumed + q
+            q_float = float(q)
+            fee = fees.charge(fill_price, q_float, c.taker_fee_rate, "sell")
+            remaining = (position_quantity - q).quantize(D(".01"))
+            pos.quantity = float(remaining)
+            pos.proceeds += q_float * fill_price
             pos.fees += fee
             self.record(
                 "fill",
-                dict(action="sell", side=pos.side, quantity=q, price=fill_price, fee=fee, reason=reason),
+                dict(
+                    action="sell",
+                    side=pos.side,
+                    quantity=q_float,
+                    price=fill_price,
+                    fee=fee,
+                    reason=reason,
+                ),
                 now,
                 market.ticker,
                 pos.opportunity_id,
             )
-            if pos.quantity <= 0:
+            if remaining == 0:
                 self.finish(market.ticker, now, reason)
                 return
         self.state(market.ticker, "POSITION_OPEN", now, pos.opportunity_id)
