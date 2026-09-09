@@ -1,17 +1,13 @@
 name: Validate persistent market-pause restriction
-
 on:
   push:
     branches: [fix/fractional-passive-fills]
     paths: [.github/workflows/implement-market-pause.yml]
-
 permissions:
   contents: write
-
 concurrency:
   group: implement-market-pause
   cancel-in-progress: false
-
 jobs:
   implement-and-validate:
     runs-on: ubuntu-latest
@@ -72,7 +68,8 @@ jobs:
           test.write_text(re.sub(r'\brequest\b', 'request_case', test.read_text()))
           patch = Path('/tmp/market_pause_patch.py')
           text = patch.read_text()
-          text = text.replace('assert text.count(old) == 1,', 'assert text.count(old) == (2 if path == "src/btc15/static/app.js" and old == "const labels={PROCESSING_LAG:" else 1),')
+          two = repr(('const labels={PROCESSING_LAG:', '            "execution_rejection",\n'))
+          text = text.replace('assert text.count(old) == 1,', 'assert text.count(old) == (2 if old in ' + two + ' else 1),')
           text = text.replace('text.replace(old, new, 1)', 'text.replace(old, new)')
           patch.write_text(text)
           PY
@@ -87,7 +84,6 @@ jobs:
           ], capture_output=True, text=True)
           root = ET.parse(report).getroot()
           counts = tuple(len(root.findall('.//' + kind)) for kind in ('testcase', 'failure', 'error'))
-          print(result.stdout)
           assert result.returncode == 1 and counts == (4, 4, 0), (counts, result.stdout, result.stderr)
           print('BASELINE_REPRODUCED: four behavioral failures, zero setup/collection errors')
           PY
