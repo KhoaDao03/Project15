@@ -1,0 +1,128 @@
+name: Paper execution validation
+
+on:
+  push:
+    branches: [fix/fractional-passive-fills]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      TRADING_MODE: PAPER
+      ENABLE_LIVE_TRADING: 'false'
+      KALSHI_API_KEY_ID: ''
+      KALSHI_PRIVATE_KEY_PATH: ''
+      DATA_DIR: ${{ runner.temp }}/btc15-validation
+      DATABASE_URL: sqlite:///${{ runner.temp }}/btc15-validation.db
+    steps:
+      - name: Check out tested revision without stored credentials
+        env:
+          TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          [[ "$TARGET_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git init .
+          git remote add origin https://github.com/KhoaDao03/Project15.git
+          git fetch --depth=1 origin "$TARGET_SHA"
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+
+      - name: Install locked application dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/btc15-tools"
+          "$RUNNER_TEMP/btc15-tools/bin/pip" install uv==0.8.13
+          echo "$RUNNER_TEMP/btc15-tools/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/btc15-tools/bin/uv" sync --locked --extra dev
+
+      - name: End-to-end synthetic trade through compact input and real engine
+        run: |
+          uv run --no-sync python - <<'PY'
+          import json
+          import os
+          import tempfile
+          from pathlib import Path
+
+          from btc15.config import Settings, Strategy
+          from btc15.demo import generate
+          from btc15.engine import Engine
+          from btc15.execution import LiveTrader
+          from btc15.storage import CompactRecorder, Store, read_events
+
+          Settings().guard()
+          try:
+              LiveTrader().submit()
+          except RuntimeError:
+              pass
+          else:
+              raise AssertionError('Live submission must remain blocked')
+
+          reports = []
+          with tempfile.TemporaryDirectory() as directory:
+              root = Path(directory)
+              rows = list(read_events(generate(root / 'synthetic.jsonl')))
+              recorder = CompactRecorder(root / 'raw')
+              try:
+                  for offset in range(0, len(rows), 256):
+                      recorder.append_rows(rows[offset:offset + 256])
+              finally:
+                  recorder.close()
+              assert list(read_events(recorder.path)) == rows
+              for name, config in (
+                  ('original', Strategy()),
+              ):
+                  store = Store('sqlite:///' + str(root / (name + '.db')))
+                  try:
+                      engine = Engine(store, config, mode='BACKTEST', execute=True,
+                                      record_evaluations=False)
+                      for row in read_events(recorder.path):
+                          assert engine.ingest(row), row['id']
+                      orders = store.list('order', engine.run_id, limit=None)
+                      fills = store.list('fill', engine.run_id, limit=None)
+                      results = store.list('trade_result', engine.run_id, limit=None)
+                      evidence = store.list('opportunity', engine.run_id, limit=None)
+                      assert any(r['body'].get('status') == 'submitted' for r in orders)
+                      assert any(r['body']['action'] == 'buy' for r in fills)
+                      assert results and evidence
+                      assert not engine.executor.positions
+                      assert not engine.executor.risk.reserved
+                      assert store.load_checkpoint(engine.run_id)
+                      reports.append({
+                          'input_kind': 'SYNTHETIC_FIXTURE_NOT_REAL_MARKET_DATA',
+                          'execution': 'OFFLINE_VIRTUAL_TIME',
+                          'config': name,
+                          'events': len(rows),
+                          'buy_fill_records': sum(r['body']['action'] == 'buy' for r in fills),
+                          'completed_trades': len(results),
+                          'retained_entry_records': len(evidence),
+                          'net_pnl_fixture_only': sum(r['body']['net_pnl'] for r in results),
+                          'status': 'PASS',
+                      })
+                  finally:
+                      store.engine.dispose()
+          print(json.dumps(reports, indent=2))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as handle:
+              handle.write('## Synthetic end-to-end results (not market validation)\n\n')
+              handle.write('```json\n' + json.dumps(reports, indent=2) + '\n```\n')
+          PY
+
+      - name: Run complete offline regression suite
+        if: ${{ !cancelled() && success() }}
+        run: uv run --no-sync pytest -q
+
+      - name: Lint and build
+        if: ${{ !cancelled() && success() }}
+        run: |
+          uv run --no-sync ruff check src tests
+          uv build
+
+      - name: Probe public market discovery (no keys, no orders)
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: |
+          echo 'This is a REST discovery check, not an authenticated feed or real-data paper trade.'
+          timeout 60 uv run --no-sync btc15 discover
