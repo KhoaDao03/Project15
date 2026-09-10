@@ -218,13 +218,16 @@ class PaperExecutor:
             if r["body"].get("status") == "submitted":
                 d = self.risk.day(r["timestamp"])
                 d["trades"] += 1
-                d["exposure"] += r["body"].get("risk_reserved", r["body"]["quantity"])
+                d["exposure"] = float(
+                    D(d["exposure"]) + D(r["body"].get("risk_reserved", r["body"]["quantity"]))
+                )
         for r in self.store.list(kind="trade_result", mode="PAPER", limit=None):
             if not self.same_portfolio(r):
                 continue
             pnl = r["body"]["net_pnl"]
-            self.risk.realized += pnl
-            self.risk.day(r["timestamp"])["pnl"] += pnl
+            self.risk.realized = float(D(self.risk.realized) + D(pnl))
+            day = self.risk.day(r["timestamp"])
+            day["pnl"] = float(D(day["pnl"]) + D(pnl))
 
     def same_portfolio(self, row):
         model = row["body"].get("model")
@@ -373,7 +376,7 @@ class PaperExecutor:
             price = (
                 passive_price(market, book, side, conservative, c)
                 if c.passive
-                else market.snap(ask + c.slippage)
+                else market.snap(D(ask) + D(c.slippage))
             )
         except ValueError as exc:
             return reject(
@@ -575,9 +578,14 @@ class PaperExecutor:
         taker = msg.get("taker_outcome_side")
         if taker not in ("yes", "no") or taker == order.side:
             return
-        yes_price = float(msg["yes_price_dollars"])
+        try:
+            yes_price = D(msg["yes_price_dollars"])
+        except InvalidOperation as exc:
+            raise ValueError("Invalid trade price") from exc
+        if not yes_price.is_finite() or not 0 < yes_price < 1:
+            raise ValueError("Invalid trade price")
         price = yes_price if order.side == "yes" else 1 - yes_price
-        if price > order.limit + 1e-9:
+        if price > D(order.limit):
             return
         try:
             quantity = D(msg["count_fp"])
@@ -635,7 +643,7 @@ class PaperExecutor:
             return
         # Called only on a new book event. IOC: unfilled remainder is cancelled.
         for price, quantity in book.asks(order.side):
-            price = market.snap(price + self.config.slippage, up=True)
+            price = market.snap(D(price) + D(self.config.slippage), up=True)
             if price > order.limit:
                 break
             self.fill(order, quantity, price, now, False)
@@ -724,9 +732,9 @@ class PaperExecutor:
             available = max(D(0), quantity - consumed)
             position_quantity = D(pos.quantity)
             q = min(position_quantity, available).quantize(D(".01"), rounding=ROUND_FLOOR)
-            if q <= 0 or float(price) <= c.slippage:
+            if q <= 0 or D(price) <= D(c.slippage):
                 continue
-            fill_price = market.snap(float(price) - c.slippage)
+            fill_price = market.snap(D(price) - D(c.slippage))
             if reason == "TAKE_PROFIT" and fill_price < target:
                 continue
             self.exit_consumed[key] = consumed + q

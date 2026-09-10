@@ -67,6 +67,10 @@ stops/take-profit, not an invented probability-invalidation signal. Stale inputs
 clock/feed problems, unverified fees and contract quarantine still block sells.
 See [position-management policy](POSITION_MANAGEMENT.md) for the complete matrix.
 
+Order prices and sizing use exact operands before market-grid rounding and
+whole-contract division. See [price and sizing arithmetic](PRICE_SIZING.md) for
+correction examples, preserved budget caps and numeric compatibility limits.
+
 ## Configuration precedence and reproducibility
 
 CLI startup uses, in order:

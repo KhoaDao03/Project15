@@ -1,8 +1,9 @@
 # Persistent market-pause handling
 
 Scope: Settlement Edge PAPER/BACKTEST only. This corrects a venue-deactivation
-restriction being lost when a later quote made the book valid again. Price and
-sizing arithmetic are deliberately unchanged and remain separate review items.
+restriction being lost when a later quote made the book valid again. The pause change
+did not alter pricing/sizing; subsequent arithmetic corrections are documented
+in [exact price and sizing](PRICE_SIZING.md).
 
 ## Policy
 

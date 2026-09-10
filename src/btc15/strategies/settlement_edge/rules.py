@@ -1,4 +1,3 @@
-import math
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import ROUND_CEILING, ROUND_FLOOR
@@ -137,23 +136,27 @@ class Risk:
                 reasons.append(dict(code=code, message=message, actual=actual, required=required))
         if reasons:
             return dict(quantity=0, reasons=reasons)
-        cost = price + fee_bound(price, c) + c.slippage
-        bankroll = max(0, c.bankroll + self.realized)
+        # Convert operands before arithmetic, not after a float division/floor.
+        # Preserve every budget cap; no epsilon may fund an unaffordable contract.
+        cost = D(price) + D(fee_bound(price, c)) + D(c.slippage)
+        bankroll = max(D(0), D(c.bankroll) + D(self.realized))
+        reserved = sum((D(value) for value in self.reserved.values()), D(0))
+        allocation = bankroll * D(c.bankroll_fraction)
         target = {
-            "fixed_contracts": c.fixed_contracts * cost,
-            "fixed_dollars": c.fixed_dollars,
-            "bankroll_percentage": bankroll * c.bankroll_fraction,
+            "fixed_contracts": D(c.fixed_contracts) * cost,
+            "fixed_dollars": D(c.fixed_dollars),
+            "bankroll_percentage": allocation,
         }[c.sizing_mode]
         limits = {
             "SIZING_TARGET": target,
-            "MAX_TRADE_DOLLARS": c.max_trade_dollars,
-            "BANKROLL_ALLOCATION": bankroll * c.bankroll_fraction,
-            "OPEN_EXPOSURE_LIMIT": c.max_open_exposure - sum(self.reserved.values()),
-            "DAILY_EXPOSURE_LIMIT": c.max_daily_exposure - d["exposure"],
-            "AVAILABLE_BANKROLL": bankroll - sum(self.reserved.values()),
+            "MAX_TRADE_DOLLARS": D(c.max_trade_dollars),
+            "BANKROLL_ALLOCATION": allocation,
+            "OPEN_EXPOSURE_LIMIT": D(c.max_open_exposure) - reserved,
+            "DAILY_EXPOSURE_LIMIT": D(c.max_daily_exposure) - D(d["exposure"]),
+            "AVAILABLE_BANKROLL": bankroll - reserved,
         }
         budget = min(limits.values())
-        quantity = max(0, min(c.max_contracts, math.floor(budget / cost)))
+        quantity = max(0, min(c.max_contracts, int(budget // cost)))
         if quantity == 0:
             for code, available in limits.items():
                 if available < cost:
@@ -161,25 +164,33 @@ class Risk:
                         dict(
                             code=code,
                             message=code.replace("_", " ").capitalize() + " cannot fund one whole contract",
-                            actual=available,
-                            required=cost,
+                            actual=float(available),
+                            required=float(cost),
                         )
                     )
-        return dict(quantity=quantity, reasons=reasons, cost_per_contract=cost, budget=budget, limits=limits)
+        # Keep the existing JSON/API numeric types; only decision arithmetic is Decimal.
+        return dict(
+            quantity=quantity,
+            reasons=reasons,
+            cost_per_contract=float(cost),
+            budget=float(budget),
+            limits={name: float(value) for name, value in limits.items()},
+        )
 
     def reserve(self, key, price, quantity, now):
         if key in self.reserved or quantity <= 0 or quantity > self.size(price, now):
             raise ValueError("Risk reservation rejected")
-        amount = quantity * (price + fee_bound(price, self.config) + self.config.slippage)
-        self.reserved[key] = amount
+        amount = D(quantity) * (D(price) + D(fee_bound(price, self.config)) + D(self.config.slippage))
+        self.reserved[key] = float(amount)
         day = self.day(now)
-        day["exposure"] += amount
+        day["exposure"] = float(D(day["exposure"]) + amount)
         day["trades"] += 1
 
     def close(self, key, pnl, now):
         self.reserved.pop(key, None)
-        self.realized += pnl
-        self.day(now)["pnl"] += pnl
+        self.realized = float(D(self.realized) + D(pnl))
+        day = self.day(now)
+        day["pnl"] = float(D(day["pnl"]) + D(pnl))
 
 
 def passive_price(market, book, side, conservative, config):
@@ -187,8 +198,13 @@ def passive_price(market, book, side, conservative, config):
     if ask is None or bid is None:
         raise ValueError("Incomplete book")
     # Discount bounded by spread, available edge and configured patience. No chasing.
-    discount = min(config.passive_discount, (ask - bid) / 2, max(0, conservative - ask - config.min_edge))
+    ask, bid = D(ask), D(bid)
+    discount = min(
+        D(config.passive_discount),
+        (ask - bid) / 2,
+        max(D(0), D(conservative) - ask - D(config.min_edge)),
+    )
     price = market.snap(ask - discount)
-    if price >= ask:
-        price = market.snap(ask - 0.0001)
-    return max(bid, price)
+    if D(price) >= ask:
+        price = market.snap(ask - D("0.0001"))
+    return float(max(bid, D(price)))

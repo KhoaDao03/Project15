@@ -4,9 +4,9 @@ Quotes and model outputs are synthetic. No network, credentials or real orders.
 """
 
 import copy
-import math
 import random
 from dataclasses import replace
+from fractions import Fraction
 from pathlib import Path
 
 import pytest
@@ -391,7 +391,7 @@ def test_rejection_write_error_is_not_hidden(store, config, market, book, now, m
 
 
 @pytest.mark.parametrize("sizing_mode", ["fixed_contracts", "fixed_dollars", "bankroll_percentage"])
-def test_explained_sizing_matches_original_formula(config, sizing_mode):
+def test_explained_sizing_matches_exact_formula(config, sizing_mode):
     c = replace(config, sizing_mode=sizing_mode)
     r = Risk(c)
     rng = random.Random(15)
@@ -409,22 +409,28 @@ def test_explained_sizing_matches_original_formula(config, sizing_mode):
         if r.halted or d["pnl"] <= -c.max_daily_loss or d["trades"] >= c.max_daily_trades:
             expected = 0
         else:
-            cost = price + fee_bound(price, c) + c.slippage
-            bankroll = max(0, c.bankroll + r.realized)
+            # Rational oracle preserves the policy without the old float-floor bug.
+            def exact(value):
+                return Fraction(str(value))
+
+            cost = exact(price) + exact(fee_bound(price, c)) + exact(c.slippage)
+            bankroll = max(0, exact(c.bankroll) + exact(r.realized))
+            reserved = sum((exact(value) for value in r.reserved.values()), Fraction(0))
+            allocation = bankroll * exact(c.bankroll_fraction)
             target = {
                 "fixed_contracts": c.fixed_contracts * cost,
-                "fixed_dollars": c.fixed_dollars,
-                "bankroll_percentage": bankroll * c.bankroll_fraction,
+                "fixed_dollars": exact(c.fixed_dollars),
+                "bankroll_percentage": allocation,
             }[sizing_mode]
             budget = min(
                 target,
-                c.max_trade_dollars,
-                bankroll * c.bankroll_fraction,
-                c.max_open_exposure - sum(r.reserved.values()),
-                c.max_daily_exposure - d["exposure"],
-                bankroll - sum(r.reserved.values()),
+                exact(c.max_trade_dollars),
+                allocation,
+                exact(c.max_open_exposure) - reserved,
+                exact(c.max_daily_exposure) - exact(d["exposure"]),
+                bankroll - reserved,
             )
-            expected = max(0, min(c.max_contracts, math.floor(budget / cost)))
+            expected = max(0, min(c.max_contracts, budget // cost))
         details = r.size_details(price, 100)
         assert r.size(price, 100) == details["quantity"] == expected
         assert bool(details["reasons"]) == (expected == 0)
