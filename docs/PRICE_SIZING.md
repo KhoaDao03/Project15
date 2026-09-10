@@ -65,5 +65,39 @@ checkpoint and risk-history coverage. Reference sizing checks use an independent
 rational-arithmetic oracle. Inputs are synthetic, not a live venue session or
 profitability evidence. See the PR for the actual completed CI results.
 
+## Executed validation
+
+Runtime correction: `ab8259e71744fdcbfcb5b7eb441269729780ccaf`, based on
+`cb13f3b819d13dbe449f0b9f0b95652e8b752908`.
+[Implementation validation](https://github.com/KhoaDao03/Project15/actions/runs/34419905443)
+completed successfully with the existing locked Python 3.12 environment. Its
+completed job log was inspected before publishing the fix.
+
+The thirteen original arithmetic assertions failed on the old code with zero
+setup errors, then passed on the correction with their expectations retained.
+The combined focused suite passed 125 cases: all 57 independent strategy checks
+plus 68 additional boundary cases. This includes all 32 full-model synthetic
+lifecycle combinations across PAPER/BACKTEST, YES/NO, original/moderate presets,
+and take-profit, hard stop, winning settlement and losing settlement. Entry
+records, P&L and history API readback after reopening SQLite passed.
+
+The complete repository suite passed **635 tests** with two existing dependency
+deprecation warnings. Lint, changed-file formatting, Python compilation, source
+and wheel builds and whitespace checks passed. Protected-file and AST checks
+confirmed the model, entry evaluation, fee formulas, presets, venue/recovery gates
+and real-order block were not changed.
+
+The previous diagnostic sizing test's 750 sampled cases now use an exact rational
+oracle rather than requiring equality to the known-defective float floor. All
+caps and rejection assertions remain. Another 900 sampled states cover the three
+sizing modes and both existing fee-precision settings. Budget-boundary tests check
+exact affordability and a genuine $0.000000001 shortfall without adding an epsilon.
+
+The temporary implementation workflow removed itself after successful tests;
+ordinary validation CI remains read-only. Final-commit CI results are recorded in
+PR #1. No production data, credentials, running process or real account was used.
+These tests do not establish authentic overnight results, live-feed endurance,
+PostgreSQL behavior, full browser rendering or profitability.
+
 References: [Python Decimal](https://docs.python.org/3/library/decimal.html) and
 [Kalshi fixed-point representation](https://docs.kalshi.com/getting_started/fixed_point_migration).
