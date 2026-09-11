@@ -259,9 +259,16 @@ class Book:
         other = self.no if side == "yes" else self.yes
         return sorted((float(1 - p), float(q)) for p, q in other.items())
 
-    def ask(self, side):
+    def ask_level(self, side):
+        """Best ask and its quantity without sorting the full depth ladder."""
         other = self.no if side == "yes" else self.yes
-        return float(1 - max(other)) if other else None
+        if not other:
+            return None, 0
+        price = max(other)
+        return float(1 - price), float(other[price])
+
+    def ask(self, side):
+        return self.ask_level(side)[0]
 
     def summary(self):
         yb, nb, ya, na = self.bid("yes"), self.bid("no"), self.ask("yes"), self.ask("no")
@@ -271,7 +278,7 @@ class Book:
             yes_ask=ya,
             no_bid=nb,
             no_ask=na,
-            spread=ya - yb if ya is not None and yb is not None else None,
+            spread=float(D(ya) - D(yb)) if ya is not None and yb is not None else None,
             midpoint=(ya + yb) / 2 if ya is not None and yb is not None else None,
             yes_depth=float(yd),
             no_depth=float(nd),

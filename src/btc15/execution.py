@@ -9,6 +9,7 @@ from functools import wraps
 
 from .domain import D, order_direction
 from .recovery import contract_hash, evidence_hash, restore_market, validate_final_evidence
+from .strategies.settlement_edge.economics import entry_economics
 from .strategies.settlement_edge.rules import FeeAccumulator, Risk, fee_bound, passive_price
 
 
@@ -25,6 +26,11 @@ class PaperOrder:
     queue: float
     original_queue: float
     remaining: float
+    reference_ask: float | None = None
+    attempt: int = 1
+    cycle: int = 1
+    completed_at: float | None = None
+    cancelled_at: float | None = None
     active: bool = True
     fees: FeeAccumulator = field(default_factory=FeeAccumulator)
     entry_evidence: dict | None = None
@@ -85,6 +91,34 @@ class PaperExecutor:
         self.maker_rates = {}
         self.contracts, self.quarantines = {}, {}
         self.venue_pauses = {}
+        # Receipt state belongs to this process, never to a resumable portfolio.
+        self.latest_reference_receipt = None
+        self.processed_reference_id = None
+        self._reference_waits = {}
+
+    def pending_reference(self):
+        receipt = self.latest_reference_receipt
+        return receipt if receipt and receipt[0] != self.processed_reference_id else None
+
+    def wait_for_reference(self, order, now):
+        receipt = self.pending_reference()
+        if receipt is None:
+            return False
+        if self._reference_waits.get(order.id) != receipt[0]:
+            self.record(
+                "entry_revalidation_wait",
+                dict(
+                    reason="REFERENCE_UPDATE_PENDING",
+                    order_id=order.id,
+                    reference_event_id=receipt[0],
+                    reference_received=receipt[1],
+                ),
+                now,
+                order.market,
+                order.opportunity_id,
+            )
+            self._reference_waits[order.id] = receipt[0]
+        return True
 
     def snapshot(self):
         return dict(
@@ -122,6 +156,13 @@ class PaperExecutor:
             v["fees"] = FeeAccumulator(f["precision"], D(f["carry"]))
             self.orders[k] = PaperOrder(**v)
         self.positions = {k: Position(**v) for k, v in data["positions"].items()}
+        for ticker, order in self.orders.items():
+            if order.completed_at is None and not order.active and ticker not in self.positions:
+                results = self.store.list(
+                    kind="trade_result", run_id=self.run_id, opportunity_id=order.opportunity_id, limit=1
+                )
+                if results:
+                    order.completed_at = results[0]["timestamp"]
         for k, v in data["risk"].items():
             setattr(self.risk, k, v)
         self.seen_trades = set(data["seen_trades"])
@@ -147,8 +188,6 @@ class PaperExecutor:
         if not math.isfinite(now):
             raise ValueError("Invalid venue pause time")
         ticker = market.ticker
-        if self.store.state(self.run_id, ticker) == "CLOSED":
-            return
         previous = self.venue_pauses.get(ticker)
         # Neither a later activation hint nor an old message can release a terminal
         # restriction. Legitimate changed-close recovery uses the metadata path.
@@ -233,6 +272,28 @@ class PaperExecutor:
         model = row["body"].get("model")
         return model is None or model["model_id"] == "settlement-edge"
 
+    def execution_observation(self, book, now):
+        book = book if book is not None else getattr(self, "audit_book", None)
+        received, reference = getattr(self, "audit_input", (None, None))
+        observation = dict(
+            processing_lag_seconds=max(0, now - received) if received is not None else None,
+            reference_age_seconds=now - reference if reference is not None else None,
+        )
+        if book is not None:
+            observation.update(
+                book_received_age_seconds=now - book.received,
+                book_source_age_seconds=now - book.source_time if book.source_time else None,
+                yes_bid=book.bid("yes"),
+                no_bid=book.bid("no"),
+                yes_ask=book.ask("yes"),
+                no_ask=book.ask("no"),
+                yes_ask_quantity=book.ask_level("yes")[1],
+                no_ask_quantity=book.ask_level("no")[1],
+                yes_bid_quantity=book.yes.get(D(book.bid("yes")), D(0)) if book.bid("yes") is not None else 0,
+                no_bid_quantity=book.no.get(D(book.bid("no")), D(0)) if book.bid("no") is not None else 0,
+            )
+        return observation
+
     def record(self, kind, body, now, market, op):
         body = {**body, "model": self.model_identity, "trade_id": op or None}
         if kind == "fill" and body["action"] == "buy":
@@ -245,6 +306,35 @@ class PaperExecutor:
 
     def state(self, market, target, now, op=""):
         self.store.transition(self.run_id, self.mode, market, target, now, op)
+
+    def reentry_ready(self, ticker, now):
+        order = self.orders.get(ticker)
+        return bool(
+            order
+            and not order.active
+            and order.completed_at is not None
+            and now - order.completed_at >= self.config.entry_retry_cooldown
+            and ticker not in self.positions
+            and ticker not in self.quarantines
+            and ticker not in self.venue_pauses
+            and not self.risk.halted
+        )
+
+    def retry_ready(self, ticker, now):
+        order = self.orders.get(ticker)
+        return bool(
+            order
+            and not order.active
+            and order.remaining == order.quantity
+            and ticker not in self.positions
+            and ticker not in self.quarantines
+            and ticker not in self.venue_pauses
+            and not self.risk.halted
+            and order.attempt <= self.config.max_entry_retries
+            and order.cancelled_at is not None
+            and now - order.cancelled_at >= self.config.entry_retry_cooldown
+            and self.store.state(self.run_id, ticker) == "ORDER_CANCELLED"
+        )
 
     def reject_submission(self, market, opportunity_id, now, reason, message, **details):
         self.record(
@@ -287,6 +377,14 @@ class PaperExecutor:
             )
 
         c = self.config
+        receipt = self.pending_reference()
+        if receipt is not None:
+            return reject(
+                "REFERENCE_UPDATE_PENDING",
+                "A received reference update must be processed before entry",
+                reference_event_id=receipt[0],
+                reference_received=receipt[1],
+            )
         if not c.enabled:
             return reject("STRATEGY_DISABLED", "Strategy entries are disabled")
         if market.ticker in self.quarantines:
@@ -321,14 +419,33 @@ class PaperExecutor:
                 close_time=market.close_time,
             )
         remaining = market.close_time - now
-        if not c.no_new_entry < remaining <= c.entry_window_start:
+        if not c.entry_cutoff < remaining <= c.entry_window_start:
             return reject(
                 "ENTRY_WINDOW",
                 "Submission is outside the configured entry window",
                 seconds_remaining=remaining,
-                minimum_exclusive=c.no_new_entry,
+                minimum_exclusive=c.entry_cutoff,
                 maximum_inclusive=c.entry_window_start,
             )
+        if c.sustained_lead_enabled:
+            late = c.late_entry_enabled and remaining <= c.no_new_entry
+            lead = decision.get("lead", {})
+            path = "late_settlement" if late else "standard"
+            threshold = c.late_min_lead_sigma if late else c.min_lead_sigma
+            if (
+                decision.get("entry_path") != path
+                or lead.get("side") != decision.get("side")
+                or lead.get("lead_sigma", 0) < threshold
+                or not lead.get("confirmed_late" if late else "confirmed_normal")
+                or (
+                    c.entry_probability_deductions
+                    and lead.get("stressed_probability", 0) < c.probability_floor(late)
+                )
+            ):
+                return reject(
+                    "LEAD_RECHECK",
+                    "Current entry path requires confirmed settlement lead and applicable probability evidence",
+                )
         side = decision["side"]
         if side not in ("yes", "no"):
             return reject("INVALID_SIDE", "A valid YES or NO side is required", side=side)
@@ -344,6 +461,19 @@ class PaperExecutor:
         ask = book.ask(side)
         if ask is None:
             return reject("NO_ASK", "No executable ask is available", side=side)
+        if not D(c.min_entry_price) <= D(ask) <= D(c.max_entry_price):
+            return reject("ENTRY_PRICE_RECHECK", "Current ask is outside the entry price range", ask=ask)
+        bid = book.bid(side)
+        if bid is None:
+            return reject("NO_BID", "Entry validation requires a bid as well as an ask", side=side)
+        spread = D(ask) - D(bid)
+        if not 0 < spread <= D(c.max_spread):
+            return reject(
+                "SPREAD_RECHECK",
+                "Current spread is outside the allowed range",
+                actual=float(spread),
+                required=c.max_spread,
+            )
         conservative = decision["conservative_probability"]
         if (
             type(conservative) not in (int, float)
@@ -356,9 +486,9 @@ class PaperExecutor:
                 actual=str(conservative),
             )
         fee = fee_bound(ask, c)
-        net_ev = conservative - ask - fee - c.slippage
+        net_ev = D(conservative) - D(ask) - D(fee) - D(c.slippage)
         required = max(c.min_ev, c.min_edge)
-        if net_ev < required:
+        if net_ev < D(required):
             return reject(
                 "NET_EDGE_RECHECK",
                 "Current ask no longer leaves the required net edge",
@@ -367,16 +497,14 @@ class PaperExecutor:
                 conservative_probability=conservative,
                 estimated_fee=fee,
                 slippage=c.slippage,
-                actual=net_ev,
+                actual=float(net_ev),
                 required=required,
             )
-        if c.passive and book.bid(side) is None:
-            return reject("NO_BID", "Passive pricing requires a bid as well as an ask", side=side)
         try:
             price = (
                 passive_price(market, book, side, conservative, c)
                 if c.passive
-                else market.snap(D(ask) + D(c.slippage))
+                else market.snap(min(D(ask) + D(c.slippage), D(c.max_entry_price)))
             )
         except ValueError as exc:
             return reject(
@@ -386,13 +514,25 @@ class PaperExecutor:
             return reject(
                 "UNSUPPORTED_ENTRY_TICK", "Selected entry price is outside the supported grid", price=price
             )
+        if not c.passive:
+            limit_ev = D(conservative) - D(price) - D(fee_bound(price, c))
+            if D(price) < D(ask) or limit_ev < D(required):
+                return reject(
+                    "IOC_LIMIT_EDGE",
+                    "IOC price cap does not leave the required net edge",
+                    limit=price,
+                    actual=float(limit_ev),
+                    required=required,
+                )
         if market.ticker in self.positions:
             return reject("EXISTING_POSITION", "This market already has filled inventory")
-        if market.ticker in self.orders:
-            old = self.orders[market.ticker]
+        old = self.orders.get(market.ticker)
+        retry = self.retry_ready(market.ticker, now)
+        reentry = self.reentry_ready(market.ticker, now)
+        if old and not retry and not reentry:
             return reject(
                 "ORDER_ALREADY_ATTEMPTED",
-                "Only one entry attempt per market/run is allowed",
+                "An active, filled, exhausted, or cooling-down entry blocks submission",
                 order_id=old.id,
                 active=old.active,
                 remaining=old.remaining,
@@ -402,7 +542,15 @@ class PaperExecutor:
         if not quantity:
             reason = sizing["reasons"][0]
             return reject(reason["code"], reason["message"], sizing=sizing)
-        if not self.store.claim(self.run_id, "entry:" + market.ticker):
+        attempt = old.attempt + 1 if retry else 1
+        cycle = old.cycle + 1 if reentry else old.cycle if retry else 1
+        claim = (
+            "entry:"
+            + market.ticker
+            + (f":cycle:{cycle}" if cycle > 1 else "")
+            + (f":retry:{attempt}" if retry else "")
+        )
+        if not self.store.claim(self.run_id, claim):
             return reject("ENTRY_ALREADY_CLAIMED", "A durable entry claim already exists for this market/run")
         self.contracts.setdefault(market.ticker, asdict(market))
         self.risk.reserve(market.ticker, max(price, ask), quantity, now)
@@ -422,6 +570,9 @@ class PaperExecutor:
             queue,
             queue,
             quantity,
+            reference_ask=ask,
+            attempt=attempt,
+            cycle=cycle,
             fees=FeeAccumulator(c.fee_balance_precision),
             entry_evidence=copy.deepcopy(entry_evidence),
         )
@@ -432,26 +583,68 @@ class PaperExecutor:
                 **{k: v for k, v in asdict(order).items() if k not in ("fees", "entry_evidence")},
                 status="submitted",
                 theoretical_price=ask,
+                entry_economics=entry_economics(
+                    market,
+                    book,
+                    side,
+                    price,
+                    quantity,
+                    conservative,
+                    c,
+                    now,
+                    stage="order_limit",
+                    entry_slippage=0,
+                ),
                 passive=c.passive,
                 risk_reserved=self.risk.reserved[market.ticker],
+                decision_context=submission_context or {},
+                observation=self.execution_observation(book, now),
+                entry_checks=dict(
+                    entry_path=decision.get("entry_path", "standard"),
+                    revalidate_entry_signal=c.revalidate_entry_signal,
+                    lead=decision.get("lead", {}),
+                    conservative_probability=conservative,
+                    entry_probability_basis=decision.get("entry_probability_basis", "adjusted"),
+                    min_probability=c.probability_floor(c.late_entry_enabled and remaining <= c.no_new_entry),
+                    min_edge=c.min_edge,
+                    min_ev=c.min_ev,
+                    min_quality=c.min_quality,
+                    expected_net_ev=decision.get("net_ev"),
+                    max_spread=c.max_spread,
+                ),
             ),
             now,
             market.ticker,
             opportunity_id,
         )
+        if retry:
+            self.state(market.ticker, "EVALUATING", now, opportunity_id)
+            self.state(market.ticker, "TRADE_CANDIDATE", now, opportunity_id)
         self.state(market.ticker, "ORDER_PENDING", now, opportunity_id)
+        if not c.passive and c.latency_seconds == 0:
+            self.aggressive(market, book, now)
         return order
 
     @atomic
-    def cancel(self, market, now, reason):
+    def cancel(self, market, now, reason, *, details=None):
         order = self.orders.get(market)
         if not order or not order.active:
             return
         order.active = False
+        order.cancelled_at = now
         order.entry_evidence = None
         self.record(
             "order",
-            dict(id=order.id, status="cancelled", reason=reason, remaining=order.remaining),
+            dict(
+                id=order.id,
+                status="cancelled",
+                reason=reason,
+                remaining=order.remaining,
+                details=details or {},
+                attempt=order.attempt,
+                elapsed_seconds=now - order.created,
+                queue_remaining=order.queue,
+            ),
             now,
             market,
             order.opportunity_id,
@@ -462,24 +655,45 @@ class PaperExecutor:
         else:
             self.risk.reserved.pop(market, None)
 
-    def revalidate(self, market, decision, now, healthy):
+    def revalidate(self, market, decision, now, healthy, health_reasons=()):
         order = self.orders.get(market.ticker)
-        if (
-            order
-            and order.active
-            and (
-                not healthy
-                or market.ticker in self.venue_pauses
-                or decision["decision"] != "TRADE_CANDIDATE"
-                or now - order.created >= self.config.max_wait
-                or market.close_time - now <= self.config.no_new_entry
-                or not market.tradable(now)
+        if not order or not order.active:
+            return
+        reasons = list(health_reasons)
+        if self.config.revalidate_entry_signal:
+            reasons.extend(decision.get("reasons", []))
+        if not healthy:
+            reasons.append(dict(code="EXECUTION_HEALTH"))
+        if market.ticker in self.venue_pauses:
+            reasons.append(dict(code="VENUE_PAUSED"))
+        if self.config.revalidate_entry_signal and decision.get("side") not in (None, order.side):
+            reasons.append(dict(code="SIDE_CHANGED"))
+        if self.config.revalidate_entry_signal and decision["decision"] != "TRADE_CANDIDATE" and not reasons:
+            reasons.append(dict(code="SIGNAL_NOT_CANDIDATE"))
+        if now - order.created >= self.config.max_wait:
+            reasons.append(dict(code="ORDER_TIMEOUT"))
+        if market.close_time - now <= self.config.entry_cutoff:
+            reasons.append(dict(code="ENTRY_WINDOW"))
+        if not market.tradable(now):
+            reasons.append(dict(code="MARKET_NOT_TRADABLE"))
+        if reasons:
+            self.cancel(
+                market.ticker,
+                now,
+                "signal_invalid_or_timeout",
+                details=dict(
+                    reasons=reasons,
+                    limit=order.limit,
+                    checked_entry_price=decision.get("expected_fill_price"),
+                    conservative_probability=decision.get("conservative_probability"),
+                    net_ev=decision.get("net_ev"),
+                ),
             )
-        ):
-            self.cancel(market.ticker, now, "signal_invalid_or_timeout")
 
     @atomic
-    def fill(self, order, quantity, price, now, maker):
+    def fill(self, order, quantity, price, now, maker, book=None):
+        if self.wait_for_reference(order, now):
+            return False
         if self.orders.get(order.market) is not order:
             raise ValueError("Stale paper order reference")
         if not D(price).is_finite() or not 0 < price < 1 or price > order.limit:
@@ -539,9 +753,14 @@ class PaperExecutor:
                 else self.config.taker_fee_rate,
                 balance_precision=self.config.fee_balance_precision,
                 latency=now - order.created,
+                submitted_at=order.created,
+                eligible_at=order.eligible,
+                observation=self.execution_observation(book, now),
                 queue_ahead=order.queue,
                 remaining=order.remaining,
-                slippage=price - order.limit,
+                slippage=float(
+                    D(price) - D(order.reference_ask if order.reference_ask is not None else order.limit)
+                ),
             ),
             now,
             order.market,
@@ -569,6 +788,8 @@ class PaperExecutor:
         ):
             return
         source = msg.get("ts_ms", 0) / 1000
+        if self.wait_for_reference(order, now):
+            return
         if (
             source < order.eligible
             or source > now + self.config.max_clock_skew
@@ -602,7 +823,6 @@ class PaperExecutor:
         if quantity > 0:
             self.fill(order, quantity, order.limit, now, True)
 
-    @atomic
     def observe_exit_liquidity(self, market, book, now, *, continuous, source_time):
         """Account for visible removal of already-consumed depth; never execute a sale.
 
@@ -625,10 +845,18 @@ class PaperExecutor:
             return
         side = self.positions[ticker].side
         levels = book.yes if side == "yes" else book.no
-        for key, consumed in list(self.exit_consumed.items()):
+        updates = {}
+        for key, consumed in self.exit_consumed.items():
             if key[0] == ticker:
                 displayed = levels.get(key[1], D(0))
-                self.exit_consumed[key] = min(D(consumed), displayed)
+                if D(consumed) > displayed:
+                    updates[key] = displayed
+        if updates:
+            self._apply_exit_liquidity(updates)
+
+    @atomic
+    def _apply_exit_liquidity(self, updates):
+        self.exit_consumed.update(updates)
 
     @atomic
     def aggressive(self, market, book, now):
@@ -641,18 +869,58 @@ class PaperExecutor:
             or market.ticker in self.venue_pauses
         ):
             return
-        # Called only on a new book event. IOC: unfilled remainder is cancelled.
+        # One match after latency, using current displayed asks within the original cap.
+        if self.wait_for_reference(order, now):
+            return
+        # Slippage bounds the cap; it is not an artificial surcharge on every fill.
+        reasons = []
+        for code, okay in (
+            ("BOOK_INVALID", book.valid),
+            ("BOOK_RECEIVE_AGE", 0 <= now - book.received <= self.config.book_max_age),
+            (
+                "BOOK_SOURCE_AGE",
+                -self.config.max_clock_skew <= now - book.source_time <= self.config.book_max_age,
+            ),
+            ("MARKET_NOT_TRADABLE", market.tradable(now)),
+            ("ENTRY_WINDOW", market.close_time - now > self.config.entry_cutoff),
+            ("KILL_SWITCH", not self.risk.halted),
+            ("METADATA_QUARANTINED", market.ticker not in self.quarantines),
+        ):
+            if not okay:
+                reasons.append(dict(code=code))
+        if reasons:
+            self.cancel(market.ticker, now, "ioc_execution_blocked", details=dict(reasons=reasons))
+            return
         for price, quantity in book.asks(order.side):
-            price = market.snap(D(price) + D(self.config.slippage), up=True)
-            if price > order.limit:
+            if D(price) > D(order.limit):
                 break
-            self.fill(order, quantity, price, now, False)
+            if not market.valid_tick(price):
+                self.cancel(market.ticker, now, "invalid_book_tick", details=dict(price=price))
+                return
+            quantity = float(D(quantity).quantize(D(".01"), rounding=ROUND_FLOOR))
+            if quantity <= 0:
+                continue
+            if self.fill(order, quantity, price, now, False, book=book) is False:
+                return
             if not order.active:
                 break
         if order.active:
-            self.cancel(market.ticker, now, "ioc_remainder")
+            self.cancel(
+                market.ticker,
+                now,
+                "ioc_remainder",
+                details=dict(
+                    limit=order.limit,
+                    best_ask=book.ask(order.side),
+                    reasons=[
+                        dict(
+                            code="IOC_UNFILLED",
+                            message="Available quantity within the price cap was insufficient",
+                        )
+                    ],
+                ),
+            )
 
-    @atomic
     def monitor(self, market, book, probability, now, event_id):
         pos = self.positions.get(market.ticker)
         if (
@@ -664,12 +932,10 @@ class PaperExecutor:
         ):
             return
         bid = book.bid(pos.side)
-        if bid is None or now - book.received > self.config.book_max_age:
+        if bid is None or not 0 <= now - book.received <= self.config.book_max_age:
             return
         entry = pos.cost / pos.bought
         mark = bid - entry
-        pos.max_favorable = max(pos.max_favorable, mark)
-        pos.max_adverse = min(pos.max_adverse, mark)
         c = self.config
         # The engine may authorize price-only risk reduction while its model is
         # warming up or unavailable. Missing/invalid probability is not a zero.
@@ -677,17 +943,12 @@ class PaperExecutor:
         model_available = (
             type(conservative) in (int, float) and math.isfinite(conservative) and 0 <= conservative <= 1
         )
+        target_warning = False
         try:
             target = market.snap(c.take_profit, up=True) if c.take_profit is not None else None
         except ValueError:
-            target = None  # Unreachable TP never suppresses the independent hard stop.
-            self.record(
-                "exit_warning",
-                {"reason": "UNSUPPORTED_TAKE_PROFIT_TICK"},
-                now,
-                market.ticker,
-                pos.opportunity_id,
-            )
+            target = None
+            target_warning = True
         reason = (
             "HARD_STOP"
             if bid <= entry * c.stop_multiplier
@@ -697,10 +958,107 @@ class PaperExecutor:
             if model_available
             and (
                 conservative < c.exit_probability
-                or conservative - (bid - fee_bound(bid, c) - c.slippage) < c.min_hold_ev
+                or (
+                    c.hold_value_exit_enabled
+                    and conservative - (bid - fee_bound(bid, c) - c.slippage) < c.min_hold_ev
+                )
             )
             else ""
         )
+        clear_pending = model_available or pos.exit_reason != "INVALIDATION"
+        # Most quote updates change neither the exit decision nor saved extrema.
+        # Keep these read-only checks outside the rollback snapshot/SQL transaction.
+        if (
+            not target_warning
+            and not reason
+            and (not pos.exit_reason or not clear_pending)
+            and pos.max_adverse <= mark <= pos.max_favorable
+        ):
+            return
+        audit = None
+        if reason and reason != pos.exit_reason:
+            hold_ev = conservative - (bid - fee_bound(bid, c) - c.slippage) if model_available else None
+            audit = dict(
+                trigger=(
+                    "PROBABILITY_BELOW_EXIT_THRESHOLD"
+                    if conservative < c.exit_probability
+                    else "HOLD_VALUE_BELOW_THRESHOLD"
+                )
+                if reason == "INVALIDATION"
+                else reason,
+                conservative_probability=conservative if model_available else None,
+                model_available=model_available,
+                exit_probability=c.exit_probability,
+                hold_ev=hold_ev,
+                min_hold_ev=c.min_hold_ev,
+                hold_value_exit_enabled=c.hold_value_exit_enabled,
+                bid=bid,
+                average_entry=entry,
+                hard_stop_price=entry * c.stop_multiplier,
+                take_profit_price=target,
+                fee_estimate=fee_bound(bid, c),
+                slippage=c.slippage,
+                snapshot_id=event_id,
+                observation=self.execution_observation(book, now),
+            )
+        self._apply_monitor(
+            market,
+            book,
+            mark,
+            reason,
+            target,
+            target_warning,
+            now,
+            event_id,
+            audit,
+            clear_pending=clear_pending,
+        )
+
+    @atomic
+    def _apply_monitor(
+        self,
+        market,
+        book,
+        mark,
+        reason,
+        target,
+        target_warning,
+        now,
+        event_id,
+        audit=None,
+        *,
+        clear_pending=True,
+    ):
+        pos = self.positions[market.ticker]
+        pos.max_favorable = max(pos.max_favorable, mark)
+        pos.max_adverse = min(pos.max_adverse, mark)
+        c = self.config
+        if target_warning:
+            self.record(
+                "exit_warning",
+                {"reason": "UNSUPPORTED_TAKE_PROFIT_TICK"},
+                now,
+                market.ticker,
+                pos.opportunity_id,
+            )
+        # Missing probability is not evidence that a probability trigger recovered.
+        # A new trigger must never inherit a previous conditional intent's latency.
+        if pos.exit_reason and reason != pos.exit_reason and (reason or clear_pending):
+            self.record(
+                "exit_cancelled",
+                dict(
+                    reason="TRIGGER_CHANGED" if reason else "TRIGGER_CLEARED",
+                    previous_reason=pos.exit_reason,
+                    remaining_quantity=pos.quantity,
+                    eligible=getattr(self, "_exit_eligible", {}).get(market.ticker),
+                    snapshot_id=event_id,
+                ),
+                now,
+                market.ticker,
+                pos.opportunity_id,
+            )
+            pos.exit_reason = ""
+            getattr(self, "_exit_eligible", {}).pop(market.ticker, None)
         if not reason:
             return
         # An exit consumes each observed depth event at most once, after modeled latency.
@@ -711,7 +1069,7 @@ class PaperExecutor:
             self.last_exit_event[market.ticker] = event_id
             self.record(
                 "exit_intent",
-                dict(reason=reason, eligible=now + c.latency_seconds),
+                dict(reason=reason, eligible=now + c.latency_seconds, decision=audit),
                 now,
                 market.ticker,
                 pos.opportunity_id,
@@ -719,22 +1077,26 @@ class PaperExecutor:
             self._exit_eligible = getattr(self, "_exit_eligible", {})
             self._exit_eligible[market.ticker] = now + c.latency_seconds
             return
-        if now < self._exit_eligible[market.ticker]:
+        eligible = self._exit_eligible[market.ticker]
+        if now < eligible or book.received < eligible:
             return
         self.last_exit_event[market.ticker] = event_id
         self.cancel(market.ticker, now, "exit_requested")
         self.state(market.ticker, "EXITING", now, pos.opportunity_id)
         levels = book.yes if pos.side == "yes" else book.no
+        # Each eligible matching event is an IOC child; its partial fills share fees.
         fees = FeeAccumulator(c.fee_balance_precision)
+        stress_fees = FeeAccumulator(c.fee_balance_precision)
+        execution_id = f"{market.ticker}:{event_id}"
         for price, quantity in sorted(levels.items(), reverse=True):
             key = (market.ticker, price)
             consumed = D(self.exit_consumed.get(key, 0))
             available = max(D(0), quantity - consumed)
             position_quantity = D(pos.quantity)
             q = min(position_quantity, available).quantize(D(".01"), rounding=ROUND_FLOOR)
-            if q <= 0 or D(price) <= D(c.slippage):
+            if q <= 0 or not market.valid_tick(float(price)):
                 continue
-            fill_price = market.snap(D(price) - D(c.slippage))
+            fill_price = float(price)
             if reason == "TAKE_PROFIT" and fill_price < target:
                 continue
             self.exit_consumed[key] = consumed + q
@@ -753,6 +1115,49 @@ class PaperExecutor:
                     price=fill_price,
                     fee=fee,
                     reason=reason,
+                    exit_eligible_at=self._exit_eligible.get(market.ticker),
+                    exit_execution_id=execution_id,
+                    execution_model="displayed-depth-v2",
+                    book_received_at=book.received,
+                    book_source_at=book.source_time,
+                    observation=self.execution_observation(book, now),
+                ),
+                now,
+                market.ticker,
+                pos.opportunity_id,
+            )
+            # Same-opportunity stress diagnostic only: never changes inventory/P&L.
+            try:
+                stress_price = market.snap(D(price) - D(c.slippage))
+            except ValueError:
+                stress_price = None
+            stress_fillable = stress_price is not None and (reason != "TAKE_PROFIT" or stress_price >= target)
+            stress_fee = (
+                stress_fees.charge(stress_price, q_float, c.taker_fee_rate, "sell")
+                if stress_fillable
+                else None
+            )
+            self.record(
+                "exit_stress",
+                dict(
+                    exit_execution_id=execution_id,
+                    scenario="bid_haircut_same_opportunity",
+                    side=pos.side,
+                    quantity=q_float,
+                    displayed_price=fill_price,
+                    primary_fee=fee,
+                    haircut=c.slippage,
+                    stressed_price=stress_price,
+                    fillable=stress_fillable,
+                    status="FILLABLE"
+                    if stress_fillable
+                    else "NOT_FILLABLE_AT_LIMIT"
+                    if stress_price is not None
+                    else "NO_VALID_TICK",
+                    sell_limit=target if reason == "TAKE_PROFIT" else None,
+                    stressed_fee=stress_fee,
+                    stressed_proceeds=q_float * stress_price if stress_fillable else None,
+                    primary_proceeds=q_float * fill_price,
                 ),
                 now,
                 market.ticker,
@@ -782,6 +1187,9 @@ class PaperExecutor:
             market,
             pos.opportunity_id,
         )
+        order = self.orders.get(market)
+        if order and order.opportunity_id == pos.opportunity_id:
+            order.completed_at = now
         self.state(market, "CLOSED", now, pos.opportunity_id)
 
     @atomic
@@ -789,7 +1197,7 @@ class PaperExecutor:
         """Block trading without discarding the identity or accounting of inventory."""
         ticker = market.ticker
         state = self.store.state(self.run_id, ticker)
-        if state in ("CLOSED", "ERROR"):
+        if state == "ERROR":
             return
         if state == "HALTED" and ticker not in self.quarantines and reason != "LEGACY_METADATA_QUARANTINE":
             # A later metadata issue cannot relabel an unrelated operator/error halt.
@@ -942,6 +1350,36 @@ class PaperExecutor:
         elif self.store.state(self.run_id, ticker) not in ("CLOSED", "HALTED", "ERROR"):
             self.state(ticker, "SETTLEMENT_PENDING", now)
             self.state(ticker, "CLOSED", now)
+        for trade in self.store.list(kind="trade_result", run_id=self.run_id, market=ticker, limit=None):
+            b = trade["body"]
+            if b.get("settlement_result") is not None:
+                continue
+            buy_fees = sum(
+                r["body"]["fee"]
+                for r in self.store.list(
+                    kind="fill",
+                    run_id=self.run_id,
+                    market=ticker,
+                    opportunity_id=trade["opportunity_id"],
+                    limit=None,
+                )
+                if r["body"].get("action") == "buy"
+            )
+            hypothetical = b["bought"] * int(b["side"] == result) - b["cost"] - buy_fees
+            self.record(
+                "hold_to_settlement_comparison",
+                dict(
+                    hypothetical=True,
+                    result=result,
+                    actual_net_pnl=b["net_pnl"],
+                    hypothetical_net_pnl=hypothetical,
+                    actual_minus_hold=b["net_pnl"] - hypothetical,
+                    assumption="Same filled purchases held to payout; entry fees only; no settlement fee modeled",
+                ),
+                now,
+                ticker,
+                trade["opportunity_id"],
+            )
         self.quarantines.pop(ticker, None)
         self.venue_pauses.pop(ticker, None)
         return "SETTLED"

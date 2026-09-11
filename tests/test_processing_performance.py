@@ -29,6 +29,9 @@ def test_incremental_book_matches_full_validation():
         )
         assert book.yes == expected.yes and book.no == expected.no
         assert book.valid == expected.valid
+        for outcome in ("yes", "no"):
+            asks = expected.asks(outcome)
+            assert book.ask_level(outcome) == (asks[0] if asks else (None, 0))
 
 
 @pytest.mark.parametrize("side", ["yes", "no"])

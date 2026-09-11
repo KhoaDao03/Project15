@@ -62,11 +62,11 @@ def create_app(
                             min_free_bytes=10 * 1024**3 if paper_execution else 0,
                             stop_event=stop,
                         )
-                    except Exception as exc:
+                    except Exception:
                         feed_error = (
                             "Dashboard could not start collection. Check the collector log and writer lease."
                         )
-                        logging.getLogger("btc15").error("Dashboard collection stopped: %s", exc)
+                        logging.getLogger("btc15").exception("Dashboard collection stopped")
 
                 task = asyncio.create_task(run_feed())
             else:
@@ -387,7 +387,17 @@ def create_app(
         elif not row:
             message = "Collector connected; waiting for a valid market and reference samples."
         elif age is not None and age > 10:
-            message = "Collector connected; last evaluation is older than 10 seconds. Awaiting the next eligible market update."
+            market_state = store.state(row["run_id"], row.get("market") or row["body"].get("ticker", ""))
+            if market_state == "CLOSED":
+                message = (
+                    "Collector connected; trading is complete for the displayed position. "
+                    "Its final evaluation is retained until the next evaluation or market update."
+                )
+            else:
+                message = (
+                    "Collector connected, but no fresh evaluation for this selection in over 10 seconds. "
+                    "The displayed decision is historical; check market and data status."
+                )
         else:
             message = "Evaluations updating from the authenticated collector."
         return dict(record=row, message=message, evaluation_age=age, collector_fresh=fresh, server_time=now)
@@ -415,6 +425,11 @@ def create_app(
             "status",
             "experiment",
             "execution_rejection",
+            "exit_intent",
+            "exit_cancelled",
+            "exit_stress",
+            "stop_shadow_status",
+            "stop_shadow_comparison",
             "market_pause",
             "market_resume",
         ):
@@ -456,6 +471,7 @@ def create_app(
         scope: str = Query("settlement", pattern="^(settlement|archive)$"),
         run_id: str | None = None,
         search: str = "",
+        include_open: bool = False,
         offset: int = Query(0, ge=0),
         limit: int = Query(100, ge=1, le=500),
     ):
@@ -490,6 +506,61 @@ def create_app(
                         "versions": op.get("versions", {}),
                     },
                 }
+            )
+        if include_open:
+            completed = {(r["run_id"], r["body"].get("trade_id") or r["opportunity_id"]) for r in rows}
+            positions = {}
+            fills = select_history(
+                store.list(kind="fill", mode=mode, run_id=run_id, limit=None), known, scope
+            )
+            # Aggregate purchases before sales, including fills sharing a timestamp.
+            for r in sorted(fills, key=lambda r: (r["body"].get("action") != "buy", r["timestamp"])):
+                b = r["body"]
+                trade_id = b.get("trade_id") or r["opportunity_id"]
+                key = (r["run_id"], trade_id)
+                if key in completed or not trade_id:
+                    continue
+                if search.lower() not in (trade_id + " " + r["market"]).lower():
+                    continue
+                if b.get("action") == "buy":
+                    position = positions.setdefault(
+                        key,
+                        {
+                            **r,
+                            "id": trade_id,
+                            "opportunity_id": trade_id,
+                            "body": dict(
+                                trade_id=trade_id,
+                                side=b["side"],
+                                bought=0,
+                                quantity=0,
+                                cost=0,
+                                proceeds=0,
+                                fees=0,
+                                opened=r["timestamp"],
+                                status="OPEN",
+                                net_pnl=None,
+                            ),
+                        },
+                    )["body"]
+                    position["bought"] += b["quantity"]
+                    position["quantity"] += b["quantity"]
+                    position["cost"] += b["quantity"] * b["price"]
+                    position["fees"] += b["fee"]
+                elif b.get("action") == "sell" and key in positions:
+                    position = positions[key]["body"]
+                    position["quantity"] -= b["quantity"]
+                    position["proceeds"] += b["quantity"] * b["price"]
+                    position["fees"] += b["fee"]
+            for r in positions.values():
+                b = r["body"]
+                b["quantity"] = max(0, b["quantity"])
+                b["entry"] = b["cost"] / b["bought"]
+                rows.append(r)
+            for r in rows:
+                r["body"].setdefault("status", "CLOSED")
+            rows.sort(
+                key=lambda r: (r["body"].get("opened", r["timestamp"]), r["opportunity_id"]), reverse=True
             )
         return {"total": len(rows), "rows": rows[offset : offset + limit]}
 

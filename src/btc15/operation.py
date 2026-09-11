@@ -7,7 +7,9 @@ import time
 from .runner import collect
 
 
-async def serve(settings, config, store, run_id, min_free_bytes, duration=None):
+async def serve(
+    settings, config, store, run_id, min_free_bytes, duration=None, *, stop_confirmation_shadow=False
+):
     if not run_id or min_free_bytes <= 0:
         raise ValueError("Service requires a run ID and positive disk reserve")
     stop = asyncio.Event()
@@ -26,6 +28,7 @@ async def serve(settings, config, store, run_id, min_free_bytes, duration=None):
             managed_run=run_id,
             stop_event=stop,
             min_free_bytes=min_free_bytes,
+            **({"stop_confirmation_shadow": True} if stop_confirmation_shadow else {}),
         )
     finally:
         for sig in installed:

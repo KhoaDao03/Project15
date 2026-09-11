@@ -4,6 +4,8 @@
 
 This is a research/paper-trading application, not a claim of profitability. It uses real Kalshi market data when credentials are configured, but orders and fills are simulated. **Real-money submission is blocked in code.**
 
+For this installation, [active paper settings](docs/ACTIVE_PAPER_SETTINGS.md) describe the current paper configuration, including [sustained-lead checks and late entries](docs/SUSTAINED_LEAD.md). See [paper exit execution](docs/EXIT_EXECUTION.md) for post-latency depth matching and separate stress diagnostics. The [stop-confirmation comparison](docs/STOP_CONFIRMATION_SHADOW.md) runs in a separate paper ledger.
+
 ## Start here
 
 Read [Getting started from scratch](docs/GETTING_STARTED.md) for the complete Linux/macOS and PowerShell setup, credentials, frozen configuration, first run and restart instructions. Existing multi-strategy installations must first read [legacy retirement and recovery](docs/SINGLE_STRATEGY.md); a fresh clone is not permission to abandon an existing portfolio.
@@ -69,6 +71,13 @@ Use **Shut down safely** and confirm. Open positions are saved, not liquidated. 
 
 Both presets are the same strategy. Only one selected configuration runs at a time. The optional [moderate preset](docs/STRATEGY.md#moderate-settlement-edge-paper-preset) does not become active merely by pulling this branch. New settings need a deliberately named experiment after prior exposure is resolved; checkpoints require their original configuration.
 
+The optional [paper fill experiment](docs/FILL_EXPERIMENT.md) adds limit-price revalidation
+and one bounded retry; a separate IOC preset tests more competitive execution. Neither
+changes an existing frozen run automatically.
+
+For this installation, [collector throughput recovery and service controls](docs/COLLECTOR_THROUGHPUT.md)
+describe the measured performance fix and supervised operation.
+
 ## Operating modes
 
 | Command | Behavior |
@@ -100,3 +109,22 @@ The earlier measured single-strategy verification is retained in [SINGLE_STRATEG
 ## Quarantined settlement recovery
 
 Invalid or changed metadata blocks trading but no longer discards a held contract. Final settlement recovery and the preview/confirmation command are documented in [Settlement recovery](docs/SETTLEMENT_RECOVERY.md). Recovery does not reopen trading or reset risk budgets.
+
+Decision and execution audit records: [logging reference](docs/DECISION_LOGGING.md).
+
+Active market routing and replay validation: [processing notes](docs/MARKET_PROCESSING.md).
+
+Current IOC paper strategy: [trading strategy documentation](docs/TRADING_STRATEGY.md).
+
+## Convergence paper experiment
+
+The opt-in [convergence experiment](docs/CONVERGENCE_EXPERIMENT.md) lowers net entry
+edge/EV to two cents and disables only the hold-value exit. It includes separate
+entry-only and exit-only presets for comparison. Existing frozen runs keep their
+settings; select the combined preset explicitly for a new run.
+
+Entry safety: [reference receipt and model revalidation](docs/ENTRY_REFERENCE_REVALIDATION.md).
+
+Entry reporting: [settlement, target-sale and stop-exit economics](docs/ENTRY_ECONOMICS.md).
+
+Sequential paper trades: [same-market re-entry](docs/REENTRY.md).

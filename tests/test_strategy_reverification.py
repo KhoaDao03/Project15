@@ -295,6 +295,8 @@ def test_sell_price_does_not_lose_an_extra_tick(store, market, now, mode, side):
     e.monitor(market, b, p, now + 2, "sell")
     fills = [r["body"] for r in store.list(kind="fill") if r["body"]["action"] == "sell"]
     assert len(fills) == 1
-    expected = market.snap(D(".939") - D(c.slippage))
-    print("EXIT_PRICE_OBSERVED", mode, side, expected, fills[0]["price"])
-    assert D(fills[0]["price"]) == D(expected)
+    assert D(fills[0]["price"]) == D(".939")
+    stress = store.list(kind="exit_stress")[0]["body"]
+    expected_stress = market.snap(D(".939") - D(c.slippage))
+    assert D(stress["stressed_price"]) == D(expected_stress)
+    assert stress["fillable"]

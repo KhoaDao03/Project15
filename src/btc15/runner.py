@@ -37,6 +37,7 @@ async def collect(
     managed_run=None,
     min_free_bytes=0,
     record_all=None,
+    stop_confirmation_shadow=False,
 ):
     """Independent receipt/metadata tasks; one ordered durable analysis worker."""
     settings.guard()
@@ -52,6 +53,7 @@ async def collect(
     recorder = None
     clean_shutdown = False
     entries_stopped = False
+    shadow = None
     pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="btc15-recorder")
     loop = asyncio.get_running_loop()
 
@@ -96,6 +98,21 @@ async def collect(
         if paper:
             # Even a run with no fills must be resumable after a clean service restart.
             store.checkpoint(engine.run_id, engine.executor.snapshot())
+        if stop_confirmation_shadow:
+            if not paper:
+                raise ValueError("Stop comparison requires paper purchases")
+            from .stop_shadow import StopShadow
+
+            try:
+                shadow = StopShadow(engine, Path(settings.data_dir) / "stop-confirmation-shadow.db")
+            except Exception as exc:
+                store.add(
+                    "stop_shadow_status",
+                    dict(status="FAILED", error=str(exc)),
+                    engine.run_id,
+                    engine.mode,
+                    time.time(),
+                )
         recorder = (
             RawRecorder(Path(settings.data_dir) / "raw", chunk_size=2000)
             if record_all
@@ -146,6 +163,10 @@ async def collect(
                 connection_id=connection,
                 payload=dumps(payload),
             )
+            if payload.get("type") == "cfbenchmarks_value":
+                # Immutable marker only: the worker still validates/applies the
+                # durable event in order. Receipt cannot supply future model data.
+                engine.executor.latest_reference_receipt = (row["id"], row["received"])
             if overflow_rows:
                 overflow_rows.append(row)
                 raise RuntimeError("Recorder queue overflow; capture stopped")
@@ -178,6 +199,8 @@ async def collect(
                     engine.executor.halt(row["received"])
                 valid = engine.ingest(row) and valid
                 payload = json.loads(row["payload"])
+                if shadow is not None:
+                    shadow.process(row, payload)
                 if payload.get("type") == "settlement":
                     ticker = payload["msg"]["market_ticker"]
                     if store.state(engine.run_id, ticker) == "CLOSED":
@@ -228,6 +251,7 @@ async def collect(
                 )
                 last_display = time.monotonic()
             if now - last_status >= 1 or not connected:
+                engine.flush_rejections(now)
                 save_status = store.add if record_all else store.publish_record
                 save_status(
                     "status",
@@ -254,6 +278,8 @@ async def collect(
                         reference_age=now - engine.ticks[-1].received if engine.ticks else None,
                         processing_lag=(time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9,
                         maximum_queue=maximum_queue,
+                        queue_depth=queue.qsize(),
+                        queue_capacity=queue.maxsize,
                         markets=list(engine.markets),
                         positions={k: vars(v) for k, v in engine.executor.positions.items()},
                         venue_pauses=dict(engine.executor.venue_pauses),
@@ -336,6 +362,7 @@ async def collect(
                             msg=dict(
                                 series=series,
                                 markets=markets,
+                                discovery_resolutions=getattr(client, "discovery_resolutions", []),
                                 source="kalshi_rest",
                                 request_started_at=metadata_request_started_at,
                                 fee_changes=changes,
@@ -530,8 +557,19 @@ async def collect(
     finally:
         try:
             try:
-                if acquired and "engine" in locals() and not clean_shutdown:
-                    await work(stop_entries, engine, time.time())
+                if acquired and "engine" in locals():
+
+                    def finish_audit():
+                        now = time.time()
+                        engine.flush_rejections(now, force=True)
+                        for ticker in engine.executor.positions:
+                            engine.monitoring_state(ticker, now, False, ["COLLECTOR_STOPPED"])
+
+                    try:
+                        await work(finish_audit)
+                    finally:
+                        if not clean_shutdown:
+                            await work(stop_entries, engine, time.time())
             finally:
                 if recorder:
                     # Preserve frames already received even when analysis or a producer fails.
@@ -575,6 +613,8 @@ async def collect(
                             store.release("collector", owner)
                 finally:
                     pool.shutdown(wait=True)
+                    if shadow is not None:
+                        shadow.store.engine.dispose()
 
 
 def backtest(path, config, store, parent_run=None):

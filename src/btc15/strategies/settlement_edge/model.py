@@ -121,7 +121,7 @@ def features(ticks, now, config):
     return out
 
 
-def probability(spec, ticks, now, sigma, config):
+def probability(spec, ticks, now, sigma, config, *, price_shift=0):
     if not math.isfinite(sigma) or sigma < 0:
         raise ValueError("Invalid sigma")
     past = [t for t in ticks if t.source <= now and t.received <= now]
@@ -140,7 +140,9 @@ def probability(spec, ticks, now, sigma, config):
     if set(observed) != set(range(1, expected_known + 1)):
         raise ValueError("Missing past settlement observations")
     rng = np.random.default_rng(config.seed)
-    paths = np.full(config.paths, latest.price, dtype=float)
+    if not math.isfinite(price_shift) or latest.price + price_shift <= 0:
+        raise ValueError("Invalid stress price")
+    paths = np.full(config.paths, latest.price + price_shift, dtype=float)
     sums = np.full(config.paths, sum(observed.values()), dtype=float)
     previous = latest.source
     for i, target in enumerate(spec.sample_times, 1):
@@ -185,10 +187,44 @@ def probability(spec, ticks, now, sigma, config):
         conservative_yes=max(0, p - penalty),
         conservative_no=max(0, 1 - p - penalty),
         known_samples=len(observed),
+        settlement_mean=float(np.mean(averages)),
+        settlement_std=float(np.std(averages)),
+        required_remaining_average=(60 * spec.strike - sum(observed.values())) / (60 - len(observed))
+        if len(observed) < 60
+        else None,
         paths=config.paths,
         seed=config.seed,
         calibrated=False,
         model="settlement-mc-logwalk-v1",
+    )
+
+
+def lead_evidence(spec, ticks, now, f, p, config):
+    """Entry-only stress; known settlement samples are never altered."""
+    late = config.late_entry_enabled and spec.settlement_end - now <= config.no_new_entry
+    side = spec.favored(p["settlement_mean"] if late else ticks[-1].price)
+    direction = 1 if (side == "yes") == (spec.comparison_operator in (">=", ">")) else -1
+    recent = [t for t in ticks if now - 61 <= t.source <= now and t.received <= now]
+    adverse = max(
+        (
+            max(0, -direction * (b.price - a.price))
+            for a, b in zip(recent, recent[1:])
+            if 0 < b.source - a.source <= 1.5
+        ),
+        default=0,
+    )
+    stressed = probability(spec, ticks, now, f["sigma"], config, price_shift=-direction * adverse)
+    margin = direction * (p["settlement_mean"] - spec.strike)
+    # A cent floor avoids infinite diagnostic ratios at deterministic settlement.
+    lead_sigma = margin / max(0.01, p["settlement_std"])
+    return dict(
+        side=side,
+        source=ticks[-1].source,
+        lead_sigma=lead_sigma,
+        adverse_move=adverse,
+        stressed_probability=stressed.get("conservative_" + side, 0) if side else 0,
+        known_samples=p["known_samples"],
+        required_remaining_average=p["required_remaining_average"],
     )
 
 

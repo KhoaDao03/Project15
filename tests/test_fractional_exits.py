@@ -38,6 +38,9 @@ def exit_book(side, quantity, when):
 @pytest.mark.parametrize("mode", ["PAPER", "BACKTEST"])
 @pytest.mark.parametrize("side", ["yes", "no"])
 def test_four_fractional_exits_close_exactly(store, market, book, now, config, mode, side):
+    if side == "no":
+        # Both entry sides must satisfy the configured entry-price range.
+        book.yes, book.no = book.no, book.yes
     executor = ready(store, market, now, config, mode)
     order = executor.submit(market, book, candidate(side), "op", now, True)
     assert order is not None

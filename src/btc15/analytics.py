@@ -113,7 +113,12 @@ def metrics(store, mode="PAPER", run_id=None, *, scope="settlement"):
             continue
         pair = (b["probability"]["p_yes"], int(settlements[key] == "yes"))
         all_predictions.append(pair)
-        if b["config"]["no_new_entry"] < b["seconds_remaining"] <= b["config"]["entry_window_start"]:
+        cutoff = (
+            b["config"].get("late_no_new_entry", 15)
+            if b["config"].get("late_entry_enabled")
+            else b["config"]["no_new_entry"]
+        )
+        if cutoff < b["seconds_remaining"] <= b["config"]["entry_window_start"]:
             last[key] = (r, pair)
     for r, pair in last.values():
         pairs.append(pair)
@@ -123,6 +128,7 @@ def metrics(store, mode="PAPER", run_id=None, *, scope="settlement"):
             ("model", b["versions"]["probability"]),
             ("entry_minute", int(b["seconds_remaining"] // 60)),
             ("side", b.get("side")),
+            ("entry_path", b.get("entry_path", "standard")),
         ]:
             grouped[f"{name}:{value}"].append(pair)
     pnl = [r["body"]["net_pnl"] for r in results]
@@ -144,6 +150,7 @@ def metrics(store, mode="PAPER", run_id=None, *, scope="settlement"):
         b = op_map.get(r["opportunity_id"], {})
         for name, value in [
             ("side", r["body"]["side"]),
+            ("entry_path", b.get("entry_path", "standard")),
             ("regime", b.get("features", {}).get("regime")),
             ("model", b.get("versions", {}).get("probability")),
             ("entry_minute", int(b.get("seconds_remaining", 0) // 60)),

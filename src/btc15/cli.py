@@ -23,6 +23,9 @@ def main():
     p.add_argument("--run-id", required=True)
     p.add_argument("--min-free-gb", type=float, default=10)
     p.add_argument("--seconds", type=float, help="Optional bounded acceptance session")
+    p.add_argument(
+        "--stop-confirmation-shadow", action="store_true", help="Compare stops in an isolated shadow ledger"
+    )
     p = commands.add_parser("paper-health", help="Read-only probe; exit 1 when unhealthy")
     p.add_argument("--run-id", required=True)
     p = commands.add_parser(
@@ -158,7 +161,15 @@ def main():
 
         print(
             asyncio.run(
-                serve(settings, config, store, args.run_id, int(args.min_free_gb * 1024**3), args.seconds)
+                serve(
+                    settings,
+                    config,
+                    store,
+                    args.run_id,
+                    int(args.min_free_gb * 1024**3),
+                    args.seconds,
+                    stop_confirmation_shadow=args.stop_confirmation_shadow,
+                )
             )
         )
     elif args.command == "paper-health":

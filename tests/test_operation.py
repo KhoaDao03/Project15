@@ -122,3 +122,35 @@ def test_health_uses_latest_status_and_rejects_staleness(store):
     assert health(store, "service", now=106)["reasons"] == ["STALE_STATUS"]
     store.add("status", {**body, "halted": True}, "service", "PAPER", 107)
     assert health(store, "service", now=108)["reasons"] == ["HALTED"]
+
+
+@pytest.mark.parametrize("initialization_failure", [False, True])
+def test_managed_shadow_is_opt_in_and_failure_does_not_stop_primary(
+    store, config, tmp_path, raw, series, monkeypatch, initialization_failure
+):
+    from btc15 import stop_shadow
+
+    fake_client(monkeypatch, raw, series)
+    fake_socket(monkeypatch, [])
+    if initialization_failure:
+
+        def fail(*args):
+            raise OSError("isolated shadow ledger unavailable")
+
+        monkeypatch.setattr(stop_shadow, "StopShadow", fail)
+    run = asyncio.run(
+        runner.collect(
+            Settings(data_dir=str(tmp_path)),
+            config,
+            store,
+            paper=True,
+            duration=0.1,
+            managed_run="shadow-enabled",
+            stop_confirmation_shadow=True,
+        )
+    )
+    assert run == "shadow-enabled"
+    statuses = store.list(kind="stop_shadow_status")
+    assert statuses[0]["body"]["status"] == ("FAILED" if initialization_failure else "STARTED")
+    assert not store.list(kind="fill")
+    assert store.load_checkpoint(run) is not None

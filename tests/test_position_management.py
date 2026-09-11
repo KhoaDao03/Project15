@@ -472,3 +472,82 @@ def test_hard_stop_after_entry_window_closes(scenario, store, market, mode):
         process(s, market, when, str(i))
     assert store.list(kind="trade_result")[0]["body"]["reason"] == "HARD_STOP"
     assert not s.e.executor.positions and not s.e.executor.risk.reserved
+
+
+def test_entry_economics_does_not_mutate_rejected_risk(scenario, market, now, config):
+    s = scenario(buy=False, chosen=replace(config, min_ev=0.99))
+    before = copy.deepcopy(s.e.executor.risk.daily)
+    process(s, market, now)
+    assert not s.e.executor.orders
+    assert s.e.executor.risk.daily == before
+    report = s.e.latest[market.ticker]["entry_economics"]
+    assert report["status"] == "AVAILABLE"
+    assert report["reporting_only"]
+
+
+def test_second_trade_same_market_keeps_history_and_cooldown(scenario, store, market, now):
+    s = scenario()
+    first = s.order
+    for i in (2, 3):
+        s.refresh(now + i, ".50")
+        process(s, market, now + i, str(i))
+    assert not s.e.executor.positions
+    assert first.completed_at == now + 3
+    pnl = s.e.executor.risk.realized
+    s.refresh(now + 4)
+    process(s, market, now + 4, "cooldown")
+    assert s.e.executor.orders[market.ticker].id == first.id
+    assert s.e.latest[market.ticker]["timestamp"] == now + 4
+    s.refresh(now + 9)
+    process(s, market, now + 9, "reentry")
+    second = s.e.executor.orders[market.ticker]
+    assert second.id != first.id and second.opportunity_id != first.opportunity_id
+    assert second.cycle == 2 and second.attempt == 1
+    assert s.e.executor.risk.realized == pnl
+    s.refresh(now + 9.5)
+    s.e.process(
+        now + 9.5,
+        "second-fill",
+        "trade",
+        dict(
+            market_ticker=market.ticker,
+            trade_id="second-fill",
+            ts_ms=(now + 9.5) * 1000,
+            taker_outcome_side="no",
+            yes_price_dollars=str(second.limit),
+            count_fp=".40",
+        ),
+    )
+    assert s.e.executor.positions[market.ticker].opportunity_id == second.opportunity_id
+    for i in (11, 12):
+        s.refresh(now + i, ".50")
+        process(s, market, now + i, str(i))
+    results = store.list(kind="trade_result", run_id=s.e.run_id)
+    assert len(results) == 2
+    assert len({r["opportunity_id"] for r in results}) == 2
+    assert s.e.executor.risk.realized == pytest.approx(sum(r["body"]["net_pnl"] for r in results))
+    from btc15.execution import PaperExecutor
+
+    resumed = PaperExecutor(store, s.e.run_id, "PAPER", s.e.config)
+    resumed.restore(s.e.executor.snapshot())
+    assert resumed.orders[market.ticker].cycle == 2
+    assert not resumed.reentry_ready(market.ticker, now + 13)
+    assert resumed.reentry_ready(market.ticker, now + 18)
+
+
+@pytest.mark.parametrize("blocker", ["daily_loss", "entry_cutoff"])
+def test_reentry_preserves_limits(scenario, market, now, blocker):
+    s = scenario()
+    for i in (2, 3):
+        s.refresh(now + i, ".50")
+        process(s, market, now + i, str(i))
+    first = s.e.executor.orders[market.ticker].id
+    when = now + 9
+    if blocker == "daily_loss":
+        s.e.executor.risk.day(when)["pnl"] = -s.e.config.max_daily_loss
+    else:
+        when = market.close_time - s.e.config.entry_cutoff
+    s.refresh(when)
+    process(s, market, when, "blocked-reentry")
+    assert s.e.executor.orders[market.ticker].id == first
+    assert not s.e.executor.positions

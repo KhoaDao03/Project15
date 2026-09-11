@@ -91,7 +91,8 @@ def test_aggressive_price_does_not_ceil_an_extra_tick(store, market, now, mode, 
     e.aggressive(market, b, now + 1)
     fills = store.list(kind="fill")
     assert len(fills) == 1 and fills[0]["body"]["quantity"] == 5
-    assert D(fills[0]["body"]["price"]) == expected
+    assert D(fills[0]["body"]["price"]) == D(ask)
+    assert fills[0]["body"]["slippage"] == 0
     assert e.positions[market.ticker].quantity == 5
     assert not order.active
     restored = PaperExecutor(store, e.run_id, mode, c)
@@ -113,7 +114,9 @@ def test_aggressive_off_grid_slippage_does_not_weaken_order_limit(store, market,
         now,
         True,
     )
-    assert D(order.limit) == D(".938")  # Limit rounds down; execution rounds up.
+    assert D(order.limit) == D(".938")  # Never round the price cap up.
+    # A quote moving above the cap must still cancel without filling.
+    b = make_book(side, ".92", ".939", now + 1)
     b.received = b.source_time = now + 1
     e.aggressive(market, b, now + 1)
     assert not store.list(kind="fill") and not order.active

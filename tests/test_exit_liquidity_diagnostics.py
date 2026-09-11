@@ -132,6 +132,8 @@ def test_observe_empty_depth_without_an_exit_signal(scenario, store, market, now
     assert sold(store) == D(".10")
     s.p["conservative_yes"] = 0.70
     assert frame(s, market, now + 6, ".30", bid=".80")
+    assert sold(store) == D(".10")  # New trigger starts a new latency period.
+    assert frame(s, market, now + 6.25, ".30", bid=".80")
     assert sold(store) == D(".40")
 
 

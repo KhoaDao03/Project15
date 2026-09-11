@@ -34,18 +34,70 @@ def fee_bound(price, config):
     )
 
 
-def evaluate(market, book, tick, features, probability, quality, now, config, extra_reasons=()):
+def effective_entry_ceiling(market, conservative, config, *, late=False):
+    """Largest supported ask passing probability and entry-value filters only."""
+    if conservative < config.probability_floor(late):
+        return None
+    required = D(max(config.min_edge, config.min_ev))
+
+    def affordable(price):
+        return D(conservative) - price - D(fee_bound(price, config)) - D(config.slippage) >= required
+
+    candidates = []
+    for band in market.price_ranges:
+        start, end, step = (D(band[k]) for k in ("start", "end", "step"))
+        low = max(
+            0, int(((D(config.min_entry_price) - start) / step).to_integral_value(rounding=ROUND_CEILING))
+        )
+        high = int(
+            ((min(end, D(config.max_entry_price)) - start) / step).to_integral_value(rounding=ROUND_FLOOR)
+        )
+        # Cost is concave in price: an affordable upper endpoint is already maximal.
+        if low > high:
+            continue
+        if affordable(start + high * step):
+            candidates.append(start + high * step)
+            continue
+        if not affordable(start + low * step):
+            continue
+        while low < high:
+            mid = (low + high + 1) // 2
+            if affordable(start + mid * step):
+                low = mid
+            else:
+                high = mid - 1
+        candidates.append(start + low * step)
+    return float(max(candidates)) if candidates else None
+
+
+def evaluate(
+    market, book, tick, features, probability, quality, now, config, extra_reasons=(), *, entry_price=None
+):
     remaining = market.close_time - now
     side = market.spec.favored(tick.price)
-    ask = book.ask(side) if side else None
+    path = "late_settlement" if config.late_entry_enabled and remaining <= config.no_new_entry else "standard"
+    late = path == "late_settlement"
+    minimum_probability = config.probability_floor(late)
+    lead = probability.get("lead", {})
+    if path == "late_settlement":
+        side = lead.get("side")
+    ask, liquidity = book.ask_level(side) if side else (None, 0)
     bid = book.bid(side) if side else None
-    conservative = probability["conservative_" + side] if side else 0
-    penalty = min(0.05, features["volatility_disagreement"] * 0.01)
-    conservative = max(0, conservative - penalty)
-    spread = ask - bid if ask is not None and bid is not None else None
-    liquidity = book.asks(side)[0][1] if side and book.asks(side) else 0
-    fee = fee_bound(ask, config) if ask is not None else None
-    ev = conservative - ask - fee - config.slippage if ask is not None else None
+    penalty = 0
+    if config.entry_probability_deductions:
+        conservative = probability["conservative_" + side] if side else 0
+        if config.sustained_lead_enabled:
+            conservative = min(conservative, lead.get("stressed_probability", 0))
+        penalty = min(0.05, features["volatility_disagreement"] * 0.01)
+        conservative = max(0, conservative - penalty)
+    else:
+        conservative = probability["p_" + side] if side else 0
+    spread = float(D(ask) - D(bid)) if ask is not None and bid is not None else None
+    price = ask if entry_price is None else entry_price
+    fee = fee_bound(price, config) if price is not None else None
+    # An IOC limit already includes its slippage allowance; do not deduct it twice.
+    slippage = 0 if entry_price is not None and not config.passive else config.slippage
+    ev = D(conservative) - D(price) - D(fee) - D(slippage) if price is not None else None
     reasons = []
 
     def check(code, okay, actual=None, required=None):
@@ -56,19 +108,39 @@ def evaluate(market, book, tick, features, probability, quality, now, config, ex
     check("MARKET_OPEN", market.tradable(now), market.status, "active")
     check(
         "ENTRY_WINDOW",
-        config.no_new_entry < remaining <= config.entry_window_start,
+        config.entry_cutoff < remaining <= config.entry_window_start,
         remaining,
-        [config.no_new_entry, config.entry_window_start],
+        [config.entry_cutoff, config.entry_window_start],
     )
     check("FAVORED_SIDE", side is not None)
+    if config.sustained_lead_enabled:
+        threshold = config.late_min_lead_sigma if path == "late_settlement" else config.min_lead_sigma
+        check("LEAD_MODEL", bool(lead) and lead.get("side") == side)
+        check("SETTLEMENT_LEAD", lead.get("lead_sigma", 0) >= threshold, lead.get("lead_sigma"), threshold)
+        check(
+            "LEAD_CONFIRMATION",
+            lead.get("confirmed_late" if path == "late_settlement" else "confirmed_normal", False),
+            lead.get("confirmation_samples", 0),
+            config.confirmation_count(late),
+        )
     for r in quality["reasons"]:
         check(r, False)
     check("MODEL_QUALITY", quality["score"] >= config.min_quality, quality["score"], config.min_quality)
-    check("MIN_PRICE", ask is not None and ask >= config.min_entry_price, ask, config.min_entry_price)
-    check("MAX_PRICE", ask is not None and ask <= config.max_entry_price, ask, config.max_entry_price)
-    check("MIN_PROBABILITY", conservative >= config.min_probability, conservative, config.min_probability)
-    check("MIN_EDGE", ev is not None and ev >= config.min_edge, ev, config.min_edge)
-    check("MIN_EV", ev is not None and ev >= config.min_ev, ev, config.min_ev)
+    check("MIN_PRICE", price is not None and price >= config.min_entry_price, price, config.min_entry_price)
+    check("MAX_PRICE", price is not None and price <= config.max_entry_price, price, config.max_entry_price)
+    check("MIN_PROBABILITY", conservative >= minimum_probability, conservative, minimum_probability)
+    check(
+        "MIN_EDGE",
+        ev is not None and ev >= D(config.min_edge),
+        float(ev) if ev is not None else None,
+        config.min_edge,
+    )
+    check(
+        "MIN_EV",
+        ev is not None and ev >= D(config.min_ev),
+        float(ev) if ev is not None else None,
+        config.min_ev,
+    )
     check("SPREAD", spread is not None and spread <= config.max_spread, spread, config.max_spread)
     check("LIQUIDITY", liquidity >= config.min_liquidity, liquidity, config.min_liquidity)
     check("REGIME", features["regime"] != "EXTREME", features["regime"], "not EXTREME")
@@ -77,15 +149,19 @@ def evaluate(market, book, tick, features, probability, quality, now, config, ex
     return dict(
         decision="NO_TRADE" if reasons else "TRADE_CANDIDATE",
         side=side,
+        entry_path=path,
+        lead=lead,
         reasons=reasons,
         seconds_remaining=remaining,
         conservative_probability=conservative,
+        entry_probability_basis="adjusted" if config.entry_probability_deductions else "raw",
         model_disagreement_penalty=penalty,
-        expected_fill_price=ask,
+        expected_fill_price=price,
+        effective_max_entry_price=effective_entry_ceiling(market, conservative, config, late=late),
         estimated_fees=fee,
-        expected_slippage=config.slippage,
-        raw_edge=conservative - ask if ask is not None else None,
-        net_ev=ev,
+        expected_slippage=slippage,
+        raw_edge=conservative - price if price is not None else None,
+        net_ev=float(ev) if ev is not None else None,
         market_probability=ask,
         liquidity=liquidity,
         spread=spread,
@@ -126,7 +202,7 @@ class Risk:
             ),
             (
                 "DAILY_ATTEMPT_LIMIT",
-                d["trades"] >= c.max_daily_trades,
+                c.daily_entry_limits_enabled and d["trades"] >= c.max_daily_trades,
                 "Daily submitted-order limit reached (including unfilled attempts)",
                 d["trades"],
                 c.max_daily_trades,
@@ -155,6 +231,8 @@ class Risk:
             "DAILY_EXPOSURE_LIMIT": D(c.max_daily_exposure) - D(d["exposure"]),
             "AVAILABLE_BANKROLL": bankroll - reserved,
         }
+        if not c.daily_entry_limits_enabled:
+            del limits["DAILY_EXPOSURE_LIMIT"]
         budget = min(limits.values())
         quantity = max(0, min(c.max_contracts, int(budget // cost)))
         if quantity == 0:

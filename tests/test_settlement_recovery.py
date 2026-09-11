@@ -12,6 +12,9 @@ from btc15.storage import Store
 
 
 def opened(store, config, market, book, now, series, mode="PAPER", side="yes", fill=True):
+    if side == "no":
+        book = copy.deepcopy(book)
+        book.yes, book.no = book.no, book.yes
     e = Engine(store, config, mode, run_id="recovery-run", record_evaluations=False)
     e.connection = "test"
     e.markets[market.ticker] = market

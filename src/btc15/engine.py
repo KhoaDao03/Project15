@@ -1,5 +1,6 @@
 """One causal event consumer shared by collector, paper mode and backtests."""
 
+import copy
 import hashlib
 import json
 import logging
@@ -14,7 +15,8 @@ from .domain import Book, dumps, parse_market, timestamp
 from .execution import PaperExecutor
 from .models import require_single_run
 from .recovery import contract_hash, restore_contract_history, restore_market
-from .strategies.settlement_edge.model import Tick, features, probability, quality
+from .strategies.settlement_edge.economics import entry_economics
+from .strategies.settlement_edge.model import Tick, features, lead_evidence, probability, quality
 from .strategies.settlement_edge.rules import evaluate
 
 log = logging.getLogger("btc15")
@@ -96,8 +98,14 @@ class Engine:
         self.series_fee_changes = None
         self.last_received = -float("inf")
         self._model_cache = {}
+        self._lead_history = {}
         self._pending_settlement = set()
+        self._processing_tickers = {}
+        self._known_tickers = set()
         self._decision_keys = {}
+        self._management_gaps = {}
+        self._rejection_summary = {}
+        self._rejection_flush = None
         self._last_op = {}
         self.last_mono = None
         self.last_wall = None
@@ -134,6 +142,8 @@ class Engine:
                     "No atomic checkpoint for this run; legacy open positions require forensic recovery"
                 )
             self.executor.restore(checkpoint)
+            for ticker in self.executor.positions:
+                self.monitoring_state(ticker, time.time(), False, ["RESUME_AWAITING_FRESH_INPUTS"])
             self.markets = restore_contract_history(self.executor, time.time())
             self.books = {ticker: Book() for ticker in self.markets}
             for ticker in list(self.executor.orders):
@@ -176,11 +186,62 @@ class Engine:
             record_history=self.record_evaluations or market in self.executor.orders,
         )
 
+    def monitoring_state(self, ticker, now, available, reasons=()):
+        gap = self._management_gaps.get(ticker)
+        if available:
+            if gap is None:
+                return
+            self.store.add(
+                "position_monitoring",
+                dict(status="resumed", started=gap, duration_seconds=max(0, now - gap)),
+                self.run_id,
+                self.mode,
+                now,
+                ticker,
+            )
+            del self._management_gaps[ticker]
+        elif gap is None:
+            self.store.add(
+                "position_monitoring",
+                dict(status="interrupted", reasons=list(reasons)),
+                self.run_id,
+                self.mode,
+                now,
+                ticker,
+                self.executor.positions[ticker].opportunity_id,
+            )
+            self._management_gaps[ticker] = now
+
+    def flush_rejections(self, now, force=False):
+        if self._rejection_flush is None:
+            self._rejection_flush = now
+        if not force and now - self._rejection_flush < 60:
+            return
+        if self._rejection_summary:
+            self.store.add(
+                "entry_rejection_summary",
+                dict(
+                    window_start=self._rejection_flush,
+                    window_end=now,
+                    counting_unit="recorded decision evaluations; reasons may overlap",
+                    groups=list(self._rejection_summary.values()),
+                ),
+                self.run_id,
+                self.mode,
+                now,
+            )
+            self._rejection_summary.clear()
+        self._rejection_flush = now
+
     def error(self, code, now, market="", detail=""):
         self.store.add("health", dict(code=code, detail=detail), self.run_id, self.mode, now, market)
         log.warning(dumps(dict(code=code, market_id=market, run_id=self.run_id, detail=detail)))
 
     def invalidate(self, now, reason):
+        self._lead_history.clear()
+        self._model_cache.clear()
+        for ticker in self.executor.positions:
+            self.monitoring_state(ticker, now, False, [reason])
         self.healthy = False
         for book in self.books.values():
             book.valid = False
@@ -236,6 +297,10 @@ class Engine:
                 self.fee_changes = msg.get("fee_changes", {})
                 self.clock_ok = abs(msg.get("clock_skew", float("inf"))) <= self.config.max_clock_skew
                 self.exchange_open = msg.get("exchange_status", {}).get("trading_active") is True
+                for resolution in msg.get("discovery_resolutions", []):
+                    self.store.add(
+                        "metadata_resolution", resolution, self.run_id, self.mode, now, resolution["ticker"]
+                    )
                 for raw in msg["markets"]:
                     try:
                         market = parse_market(raw, series)
@@ -299,6 +364,7 @@ class Engine:
                 self.invalidate(now, kind)
                 self.error(kind.upper(), now, detail=str(msg))
             elif kind == "cfbenchmarks_value":
+                self.executor.processed_reference_id = row["id"]
                 raw = json.loads(msg["data"])
                 if msg["index_id"] != "BRTI" or raw.get("id") != "BRTI" or raw.get("type") != "value":
                     raise ValueError("Not an official BRTI tick")
@@ -379,13 +445,48 @@ class Engine:
             return self.executor.settle(market, result, now)
         return self.executor.settle(market, result, now, evidence=evidence)
 
+    def processing_markets(self, now, kind, msg):
+        # Discovery is infrequent. Keep historical markets out of the per-event scan,
+        # but retain their identity/books for late metadata and settlement evidence.
+        if len(self._known_tickers) != len(self.markets):
+            for ticker in self.markets:
+                if ticker not in self._known_tickers:
+                    self._processing_tickers[ticker] = None
+            self._known_tickers = set(self.markets)
+            for ticker in list(self._processing_tickers):
+                if ticker not in self.markets:
+                    self._processing_tickers.pop(ticker)
+        local = kind in ("orderbook_snapshot", "orderbook_delta", "trade", "market_lifecycle_v2")
+        target = msg.get("market_ticker")
+        for ticker in tuple(self._processing_tickers):
+            market = self.markets[ticker]
+            if local and ticker != target and now < market.close_time:
+                order = self.executor.orders.get(ticker)
+                # Time passing can affect another market's pending order/position.
+                # Preserve those checks and scheduled evaluations, including their logs.
+                if (not order or not order.active) and ticker not in self.executor.positions:
+                    if now - self.last_evaluation.get(ticker, 0) < self.config.evaluation_interval:
+                        continue
+            yield ticker, market
+
     def process(self, now, event_id, kind, msg):
         c = self.config
-        for ticker, market in list(self.markets.items()):
+        for ticker, market in self.processing_markets(now, kind, msg):
             if ticker in self._pending_settlement:
+                self._processing_tickers.pop(ticker, None)
                 continue
             state = self.store.state(self.run_id, ticker)
+            if (
+                state == "CLOSED"
+                and ticker in self.executor.orders
+                and self.executor.orders[ticker].completed_at is not None
+                and market.tradable(now)
+                and ticker not in self.executor.quarantines
+            ):
+                self.state(ticker, "MONITORING", now)
+                state = "MONITORING"
             if state in ("CLOSED", "ERROR", "HALTED"):
+                self._processing_tickers.pop(ticker, None)
                 continue
             if now >= market.close_time:
                 order = self.executor.orders.get(ticker)
@@ -394,6 +495,7 @@ class Engine:
                 if state != "SETTLEMENT_PENDING":
                     self.state(ticker, "SETTLEMENT_PENDING", now)
                 self._pending_settlement.add(ticker)
+                self._processing_tickers.pop(ticker, None)
                 continue
             book = self.books[ticker]
             resting = self.executor.orders.get(ticker)
@@ -417,7 +519,11 @@ class Engine:
                 kind in ("orderbook_snapshot", "orderbook_delta") and msg.get("market_ticker") == ticker
             )
             if not market.tradable(now) or not (
-                due or quote_update or ((resting and resting.active) or position) and material
+                due
+                or quote_update
+                or kind == "cfbenchmarks_value"
+                or ((resting and resting.active) or position)
+                and material
             ):
                 continue
 
@@ -458,7 +564,10 @@ class Engine:
                 extras.append("UNVERIFIED_FEES")
             if self.executor.risk.halted:
                 extras.append("KILL_SWITCH")
-            if resting or position:
+            if position or (
+                resting
+                and not (self.executor.retry_ready(ticker, now) or self.executor.reentry_ready(ticker, now))
+            ):
                 extras.append("EXISTING_ENTRY")
             cached = self._model_cache.get(ticker)
             model_recomputed = (
@@ -466,16 +575,41 @@ class Engine:
                 or now < cached[0]
                 or now - cached[0] >= c.evaluation_interval
                 or cached[1] != market.spec
+                or cached[5] != (self.ticks[-1] if self.ticks else None)
             )
             if model_recomputed:
                 try:
                     f = features(self.ticks, now, c)
                     p = probability(market.spec, self.ticks, now, f["sigma"], c)
-                    cached = (now, market.spec, f, p, None)
+                    if c.sustained_lead_enabled:
+                        lead = lead_evidence(market.spec, self.ticks, now, f, p, c)
+                        history = self._lead_history.setdefault(ticker, [])
+                        if history and (
+                            (cached and cached[1] != market.spec)
+                            or lead["side"] != history[-1]["side"]
+                            or lead["source"] - history[-1]["source"] > 1.5
+                            or int(lead["source"]) - int(history[-1]["source"]) > 1
+                        ):
+                            history.clear()
+                        if not history or int(lead["source"]) > int(history[-1]["source"]):
+                            history.append(lead.copy())
+                            del history[: -max(c.confirmation_count(), c.confirmation_count(True))]
+                        for late, key, threshold in (
+                            (False, "confirmed_normal", c.min_lead_sigma),
+                            (True, "confirmed_late", c.late_min_lead_sigma),
+                        ):
+                            count = c.confirmation_count(late)
+                            lead[key] = len(history) >= count and all(
+                                h["lead_sigma"] >= threshold for h in history[-count:]
+                            )
+                        lead["confirmation_samples"] = len(history)
+                        p["lead"] = lead
+                    cached = (now, market.spec, f, p, None, self.ticks[-1] if self.ticks else None)
                 except ValueError as exc:
-                    cached = (now, market.spec, {}, {}, str(exc))
+                    self._lead_history.pop(ticker, None)
+                    cached = (now, market.spec, {}, {}, str(exc), self.ticks[-1] if self.ticks else None)
                 self._model_cache[ticker] = cached
-            model_time, _, f, p, model_error = cached
+            model_time, _, f, p, model_error, _ = cached
             try:
                 if model_error is not None:
                     raise ValueError(model_error)
@@ -515,6 +649,45 @@ class Engine:
             )
             self._decision_keys[ticker] = signature
             if record_decision:
+                # Preview sizing on a shallow risk copy so reporting cannot create a
+                # daily bucket or mutate the live risk state for rejected evaluations.
+                preview = copy.copy(self.executor.risk)
+                preview.daily = dict(preview.daily)
+                entry_price = decision.get("expected_fill_price")
+                report_quantity = preview.size(entry_price, now) if entry_price is not None else 0
+                decision["entry_economics"] = entry_economics(
+                    market,
+                    book,
+                    decision.get("side"),
+                    entry_price,
+                    report_quantity,
+                    decision.get("conservative_probability"),
+                    c,
+                    now,
+                    stage="evaluation",
+                    entry_slippage=decision.get("expected_slippage", 0),
+                )
+                if decision["decision"] == "NO_TRADE":
+                    for reason in decision["reasons"]:
+                        key = (ticker, reason["code"])
+                        sample = self._rejection_summary.get(key)
+                        if sample is None:
+                            sample = dict(
+                                market=ticker,
+                                reason=reason["code"],
+                                count=0,
+                                first_at=now,
+                                sample=dict(
+                                    side=decision.get("side"),
+                                    expected_fill_price=decision.get("expected_fill_price"),
+                                    net_ev=decision.get("net_ev"),
+                                    conservative_probability=decision.get("conservative_probability"),
+                                ),
+                            )
+                            self._rejection_summary[key] = sample
+                        sample["count"] += 1
+                        sample["last_at"] = now
+                    self.flush_rejections(now)
                 self.last_evaluation[ticker] = now
                 op = str(uuid.uuid4())
                 body = {
@@ -579,23 +752,43 @@ class Engine:
                 and all(r in ("MODEL_INACTIVE", "KILL_SWITCH", "EXISTING_ENTRY") for r in extras)
                 and all(r in ("WARMUP", "SHOCK", "REFERENCE_GAP", "MODEL_UNAVAILABLE") for r in q["reasons"])
             )
+            if position or (resting and resting.active):
+                self.executor.audit_book = book
+                self.executor.audit_input = (now, self.ticks[-1].received if self.ticks else None)
+            if position and (not management_healthy or ticker in self._management_gaps):
+                self.monitoring_state(
+                    ticker,
+                    execution_now,
+                    management_healthy,
+                    extras + q["reasons"] + [r["code"] for r in freshness_failures],
+                )
             if resting and resting.active:
+                resting_decision = decision
+                if (c.resting_limit_recheck or c.sustained_lead_enabled) and model_error is None:
+                    resting_decision = evaluate(
+                        market,
+                        book,
+                        self.ticks[-1],
+                        f,
+                        p,
+                        q,
+                        execution_now,
+                        c,
+                        extras,
+                        entry_price=resting.limit if c.resting_limit_recheck else None,
+                    )
                 revalidated = {
-                    **decision,
-                    "reasons": [r for r in decision["reasons"] if r["code"] != "EXISTING_ENTRY"],
+                    **resting_decision,
+                    "reasons": [r for r in resting_decision["reasons"] if r["code"] != "EXISTING_ENTRY"],
                 }
                 revalidated["decision"] = "NO_TRADE" if revalidated["reasons"] else "TRADE_CANDIDATE"
                 if resting.side != decision["side"]:
                     revalidated["decision"] = "NO_TRADE"
-                self.executor.revalidate(market, revalidated, now, entry_healthy)
+                self.executor.revalidate(market, revalidated, now, entry_healthy, freshness_failures)
                 if kind == "trade" and msg.get("market_ticker") == ticker and entry_healthy:
                     self.executor.trade(market, msg, now)
-                if (
-                    kind in ("orderbook_snapshot", "orderbook_delta")
-                    and msg.get("market_ticker") == ticker
-                    and entry_healthy
-                ):
-                    self.executor.aggressive(market, book, now)
+                if not c.passive and entry_healthy:
+                    self.executor.aggressive(market, book, execution_now)
             if (
                 position
                 and management_healthy
@@ -608,6 +801,7 @@ class Engine:
                 self.executor.monitor(market, book, exit_probability, execution_now, event_id)
             if decision["decision"] == "TRADE_CANDIDATE" and record_decision:
                 submit_now = self.clock() if self.clock else now
+                self.executor.audit_input = (now, self.ticks[-1].received if self.ticks else None)
                 context = dict(snapshot_id=event_id, decision_timestamp=now, submission_timestamp=submit_now)
                 rechecks = list(freshness_failures)
                 rechecks.extend(freshness_rechecks(book, self.ticks, now, submit_now, c))
