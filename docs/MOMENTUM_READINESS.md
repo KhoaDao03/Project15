@@ -1,3 +1,6 @@
+> **Historical archive — not executable in the current single-strategy bot.**
+> For legacy recovery and the compatible revision, see [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md).
+
 # Momentum implementation/readiness review
 
 ## Outcome

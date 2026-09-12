@@ -183,6 +183,7 @@ def test_hard_stop_latency_depth_and_no_depth_reuse(store, market, book, now, co
     assert e.positions[market.ticker].quantity == o.quantity
     e.monitor(market, book, p, now + 1.1, "two")
     assert e.positions[market.ticker].quantity == o.quantity
+    book.received = now + 2  # New observation after exit eligibility.
     e.monitor(market, book, p, now + 2, "three")
     assert e.positions[market.ticker].quantity == o.quantity - 1.25
     e.monitor(market, book, p, now + 3, "four")
@@ -203,3 +204,25 @@ def test_aggressive_entry_respects_depth_and_cancels_remainder(store, market, bo
     e.aggressive(market, book, now + 1)
     assert e.positions[market.ticker].quantity == 1.25
     assert not o.active and o.remaining == o.quantity - 1.25
+
+
+def test_zero_liquidity_minimum_allows_thin_entry(market, book, config, now):
+    from btc15.domain import D
+
+    book.no = {D(".10"): D(".25")}
+    args = (
+        market,
+        book,
+        Tick(now, now, market.spec.strike + 100),
+        dict(volatility_disagreement=0, regime="NORMAL"),
+        dict(conservative_yes=0.99),
+        dict(score=100, reasons=[]),
+        now,
+    )
+    baseline = evaluate(*args, config)
+    relaxed = evaluate(*args, replace(config, min_liquidity=0))
+    assert "LIQUIDITY" in {r["code"] for r in baseline["reasons"]}
+    assert "LIQUIDITY" not in {r["code"] for r in relaxed["reasons"]}
+    assert relaxed["decision"] == "TRADE_CANDIDATE"
+    book.no.clear()
+    assert evaluate(*args, replace(config, min_liquidity=0))["decision"] == "NO_TRADE"

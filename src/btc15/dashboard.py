@@ -18,9 +18,9 @@ from .analytics import lifetime_performance, metrics
 from .api import KalshiClient
 from .config import Settings, Strategy
 from .domain import dumps
-from .models import definitions, identity
+from .models import history_models, identity, run_model, select_history
+from .operational_state import operational_state
 from .storage import Store
-from .strategies.momentum import Momentum
 
 
 def create_app(
@@ -62,13 +62,15 @@ def create_app(
                             managed_run=run_id if paper_execution else None,
                             min_free_bytes=10 * 1024**3 if paper_execution else 0,
                             stop_event=stop,
-                            multi_model=True,
                         )
                     except Exception as exc:
+                        from .operation import record_collector_failure
+
+                        record_collector_failure(store, run_id, exc)
                         feed_error = (
                             "Dashboard could not start collection. Check the collector log and writer lease."
                         )
-                        logging.getLogger("btc15").error("Dashboard collection stopped: %s", exc)
+                        logging.getLogger("btc15").exception("Dashboard collection stopped")
 
                 task = asyncio.create_task(run_feed())
             else:
@@ -246,39 +248,60 @@ def create_app(
 
     @app.get("/api/health")
     def health():
-        status = store.list(kind="status", limit=1, newest_first=True)
+        status = store.list(kind="status", mode="PAPER", limit=1, newest_first=True)
         latest = status[0] if status else None
-        age = time.time() - latest["timestamp"] if latest else None
+        now = time.time()
+        age = now - latest["timestamp"] if latest else None
+        current_run = latest["body"].get("run_id", latest["run_id"]) if latest else None
+        evaluations = store.latest_evaluations([current_run], "PAPER") if current_run else {}
+        operational = operational_state(
+            latest,
+            evaluations.get(current_run),
+            now,
+            startup_error=feed_error,
+            reference=store.read_market_display("reference"),
+            failure=store.read_market_display("collector_failure"),
+        )
         return dict(
             database="ok",
-            server_time=time.time(),
+            server_time=now,
             live_enabled=False,
-            collector_startup_error=feed_error,
+            collector_startup_error=(operational.get("failure") or {}).get("message") or feed_error,
             collector=latest["body"] if latest else None,
             status_age=age,
             collector_fresh=age is not None and 0 <= age < 5,
+            operational=operational,
         )
 
     @app.get("/api/runs")
-    def runs(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$")):
-        return store.run_summaries(mode, limit=100)
+    def runs(
+        mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"),
+        scope: str = Query("settlement", pattern="^(settlement|archive)$"),
+    ):
+        rows = store.run_summaries(mode)
+        return select_history(rows, {r["run_id"]: run_model(r) for r in rows}, scope)[:100]
 
     @app.get("/api/strategies")
-    def strategies(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$")):
-        saved = Strategy.load(strategy_path) if strategy_path.exists() else session_config
+    def strategies(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"), run_id: str | None = None):
+        selected_model = identity(session_config)
+        if run_id:
+            selected = store.run_summaries(mode)
+            selected = [
+                r for r in selected if r["run_id"] == run_id and run_model(r)["model_id"] == "settlement-edge"
+            ]
+            if selected:
+                selected_model = run_model(selected[0])
         entries = {}
 
         def include(model, enabled=None):
             key = (model["model_id"], model["model_version"], model["config_hash"])
             return entries.setdefault(key, dict(model=model, entries_enabled=enabled, runs=[], record=None))
 
-        if saved.enabled:
-            include(identity(saved), True)
-        for definition in definitions(store).values():
-            if definition["active"]:
-                include(identity(Momentum(**definition["config"])), True)
+        include(selected_model, session_config.enabled)
         # Show active configurations only; historical records remain available by run.
-        summaries = store.run_summaries(mode)
+        summaries = select_history(store.run_summaries(mode), history_models(store, mode))
+        if run_id:
+            summaries = [r for r in summaries if r["run_id"] == run_id]
         latest = store.latest_evaluations([r["run_id"] for r in summaries], mode)
         for run in summaries:
             body = run["body"]
@@ -294,13 +317,23 @@ def create_app(
             rows = [latest[run["run_id"]]] if run["run_id"] in latest else []
             if rows and (entry["record"] is None or rows[0]["timestamp"] > entry["record"]["timestamp"]):
                 entry["record"] = rows[0]
+        selected_ids = {r["run_id"] for entry in entries.values() for r in entry["runs"]}
         membership = tuple((key, tuple(r["run_id"] for r in entry["runs"])) for key, entry in entries.items())
         with performance_lock:
             revision = (store.trade_revision(mode), membership)
             cached = performance_cache.get(mode)
             if cached is None or cached[0] != revision:
-                results = store.list(kind="trade_result", mode=mode, limit=None)
-                fills = store.list(kind="fill", mode=mode, limit=None)
+                known = history_models(store, mode)
+                results = [
+                    r
+                    for r in select_history(store.list(kind="trade_result", mode=mode, limit=None), known)
+                    if r["run_id"] in selected_ids
+                ]
+                fills = [
+                    r
+                    for r in select_history(store.list(kind="fill", mode=mode, limit=None), known)
+                    if r["run_id"] in selected_ids
+                ]
                 by_run, fills_by_run = {}, {}
                 for result in results:
                     by_run.setdefault(result["run_id"], []).append(result)
@@ -355,7 +388,7 @@ def create_app(
             if latest and any(m["run_id"] == run_id for m in latest[0]["body"].get("models", [])):
                 status = latest[0]
         selected = run_id or (status["run_id"] if status and mode == "PAPER" else None)
-        rows = store.latest_evaluation(selected, mode)
+        rows = select_history(store.latest_evaluation(selected, mode), history_models(store, mode))
         row = rows[0] if rows else None
         fresh = bool(status and 0 <= now - status["timestamp"] < 5 and status["body"].get("connected"))
         age = now - row["timestamp"] if row else None
@@ -370,7 +403,17 @@ def create_app(
         elif not row:
             message = "Collector connected; waiting for a valid market and reference samples."
         elif age is not None and age > 10:
-            message = "Collector connected; last evaluation is older than 10 seconds. Awaiting the next eligible market update."
+            market_state = store.state(row["run_id"], row.get("market") or row["body"].get("ticker", ""))
+            if market_state == "CLOSED":
+                message = (
+                    "Collector connected; trading is complete for the displayed position. "
+                    "Its final evaluation is retained until the next evaluation or market update."
+                )
+            else:
+                message = (
+                    "Collector connected, but no fresh evaluation for this selection in over 10 seconds. "
+                    "The displayed decision is historical; check market and data status."
+                )
         else:
             message = "Evaluations updating from the authenticated collector."
         return dict(record=row, message=message, evaluation_age=age, collector_fresh=fresh, server_time=now)
@@ -384,6 +427,7 @@ def create_app(
         decision: str = "",
         market: str | None = None,
         group_by_market: bool = False,
+        scope: str = Query("settlement", pattern="^(settlement|archive)$"),
         offset: int = Query(0, ge=0),
         limit: int = Query(100, ge=1, le=500),
     ):
@@ -396,9 +440,21 @@ def create_app(
             "market",
             "status",
             "experiment",
+            "execution_rejection",
+            "exit_intent",
+            "exit_cancelled",
+            "exit_stress",
+            "stop_shadow_status",
+            "stop_shadow_comparison",
+            "market_pause",
+            "market_resume",
         ):
             raise HTTPException(400, "Unsupported record kind")
-        rows = store.list(kind=kind, mode=mode, run_id=run_id, market=market, limit=None)[::-1]
+        rows = select_history(
+            store.list(kind=kind, mode=mode, run_id=run_id, market=market, limit=None),
+            history_models(store, mode),
+            scope,
+        )[::-1]
         if search:
             rows = [r for r in rows if search.lower() in (r["id"] + " " + r["market"]).lower()]
         if decision:
@@ -428,16 +484,26 @@ def create_app(
     @app.get("/api/trades")
     def trades(
         mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"),
+        scope: str = Query("settlement", pattern="^(settlement|archive)$"),
         run_id: str | None = None,
         search: str = "",
+        include_open: bool = False,
         offset: int = Query(0, ge=0),
         limit: int = Query(100, ge=1, le=500),
     ):
+        known = history_models(store, mode)
         opportunities = {
-            r["id"]: r["body"] for r in store.list(kind="opportunity", mode=mode, run_id=run_id, limit=None)
+            r["id"]: r["body"]
+            for r in select_history(
+                store.list(kind="opportunity", mode=mode, run_id=run_id, limit=None), known, scope
+            )
         }
         rows = []
-        for r in reversed(store.list(kind="trade_result", mode=mode, run_id=run_id, limit=None)):
+        for r in reversed(
+            select_history(
+                store.list(kind="trade_result", mode=mode, run_id=run_id, limit=None), known, scope
+            )
+        ):
             if search.lower() not in (r["opportunity_id"] + " " + r["market"]).lower():
                 continue
             b = r["body"]
@@ -457,7 +523,74 @@ def create_app(
                     },
                 }
             )
-        return {"total": len(rows), "rows": rows[offset : offset + limit]}
+        if include_open:
+            completed = {(r["run_id"], r["body"].get("trade_id") or r["opportunity_id"]) for r in rows}
+            positions = {}
+            fills = select_history(
+                store.list(kind="fill", mode=mode, run_id=run_id, limit=None), known, scope
+            )
+            # Aggregate purchases before sales, including fills sharing a timestamp.
+            for r in sorted(fills, key=lambda r: (r["body"].get("action") != "buy", r["timestamp"])):
+                b = r["body"]
+                trade_id = b.get("trade_id") or r["opportunity_id"]
+                key = (r["run_id"], trade_id)
+                if key in completed or not trade_id:
+                    continue
+                if search.lower() not in (trade_id + " " + r["market"]).lower():
+                    continue
+                if b.get("action") == "buy":
+                    position = positions.setdefault(
+                        key,
+                        {
+                            **r,
+                            "id": trade_id,
+                            "opportunity_id": trade_id,
+                            "body": dict(
+                                trade_id=trade_id,
+                                side=b["side"],
+                                bought=0,
+                                quantity=0,
+                                cost=0,
+                                proceeds=0,
+                                fees=0,
+                                opened=r["timestamp"],
+                                status="OPEN",
+                                net_pnl=None,
+                            ),
+                        },
+                    )["body"]
+                    position["bought"] += b["quantity"]
+                    position["quantity"] += b["quantity"]
+                    position["cost"] += b["quantity"] * b["price"]
+                    position["fees"] += b["fee"]
+                elif b.get("action") == "sell" and key in positions:
+                    position = positions[key]["body"]
+                    position["quantity"] -= b["quantity"]
+                    position["proceeds"] += b["quantity"] * b["price"]
+                    position["fees"] += b["fee"]
+            for r in positions.values():
+                b = r["body"]
+                b["quantity"] = max(0, b["quantity"])
+                b["entry"] = b["cost"] / b["bought"]
+                rows.append(r)
+            for r in rows:
+                r["body"].setdefault("status", "CLOSED")
+            rows.sort(
+                key=lambda r: (r["body"].get("opened", r["timestamp"]), r["opportunity_id"]), reverse=True
+            )
+        page = rows[offset : offset + limit]
+        outcomes = {}
+        for row in page:
+            key = (row["run_id"], row["market"])
+            if key not in outcomes:
+                settlements = store.list(
+                    kind="settlement", mode=mode, run_id=key[0], market=key[1],
+                    limit=1, newest_first=True,
+                )
+                outcomes[key] = settlements[0]["body"].get("result") if settlements else None
+            result = outcomes[key] or row["body"].get("settlement_result")
+            row["body"]["market_result"] = result if result in ("yes", "no") else None
+        return {"total": len(rows), "rows": page}
 
     @app.get("/api/replay/{opportunity_id}")
     def replay(opportunity_id: str):
@@ -481,13 +614,19 @@ def create_app(
                     "settlement",
                     "exit_intent",
                     "execution_rejection",
+                    "market_pause",
+                    "market_resume",
                 )
             ],
             path=path,
         )
 
     @app.get("/api/analytics")
-    def analytics(mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"), run_id: str | None = None):
-        return metrics(store, mode, run_id)
+    def analytics(
+        mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"),
+        run_id: str | None = None,
+        scope: str = Query("settlement", pattern="^(settlement|archive)$"),
+    ):
+        return metrics(store, mode, run_id, scope=scope)
 
     return app

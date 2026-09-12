@@ -1,164 +1,102 @@
-# Strategy and assumptions
+# BTC15 Settlement Edge — rules and configuration
 
-The question is whether the probability of the **settlement average** satisfying
-the contract is higher than the executable cost after fees and slippage. A favored
-side follows the actual comparator and reference/strike relationship; it is not a
-standalone signal. Exactly at the strike, V1 does not choose a favored side.
+## Single-strategy scope
 
-Default entry window: `120 < close_time−now <= 480`. Suggested .85 minimum price,
-.99 maximum price, .90 minimum conservative probability, quality ≥85 and net
-edge/EV ≥.03 are configurable **ASSUMPTIONS**. Prices must have adequate executable
-depth, spread ≤.04, valid metadata and fresh feeds. EXTREME regimes are rejected.
-No indicators or Kalshi-implied prices dominate the base probability model.
+Only Settlement Edge is executable on this branch. The original and moderate files are configurations of that one algorithm, not separate simultaneously running strategies. Current scope is correctness and paper validation first. Retired algorithms are available only through Git history; retained old records remain readable. See [legacy recovery](SINGLE_STRATEGY.md).
 
-For one purchased binary contract: `EV=p*(1-c)-(1-p)*c-fees-slippage`, equivalently
-`p-c-fees-slippage`. Ask already incorporates crossing the spread, so the spread
-is not subtracted a second time. Entry uses conservative side probability and an
-upper fee estimate. Partial-fill fees are charged at execution. Remaining orders
-are cancelled when the signal deteriorates, the side changes, data ages, the
-no-entry boundary arrives, or the configured patience expires.
+## Decision rule
 
-Passive quotes discount the ask by at most the configured discount, half-spread
-and available edge, then snap to a valid tick. They never reprice upward after an
-invalid signal. V1 makes **one entry attempt per market per run**; cancel/replace
-and automatic chasing are deliberately not enabled until execution validation.
-Aggressive entry is an explicit config choice with latency and depth-limited IOC.
+The model asks whether the probability of the contract's **settlement average** satisfying its comparator exceeds the cost of buying the favored side after estimated fees and slippage. The favored side follows the comparator/reference/strike relationship; at the strike it is undefined. A favored side alone is not a signal.
 
-Sizing modes: fixed contracts, fixed dollars or bankroll percentage, always capped
-by worst-case cost, bankroll percentage, trade contracts/dollars, open exposure,
-daily gross exposure, daily net loss and daily order count. Cancelled attempts
-still consume the daily attempt/exposure budget. No martingale or loss-based sizing.
+For one purchased binary contract, net expected value is `p - ask - fee_bound - slippage`, equivalent to `p*(1-ask) - (1-p)*ask - fees - slippage`. The ask already includes crossing the spread, so the spread is not deducted a second time. `min_edge` and `min_ev` both gate this same adjusted value. Probability is reduced by uncertainty/calibration and volatility-disagreement penalties; quality is a different diagnostic, not a probability.
 
-Exits: executable configured TP, probability invalidation/hold versus net sell
-value, or entry-price × .75 hard stop. Otherwise wait for official settlement.
-Stops are not guaranteed; full worthless settlement is the sizing baseline. TP
-rounds upward to the actual market grid and still must cover simulated slippage.
+All configured checks must pass: enabled entries, open/validated market, entry window, available favored side, healthy reference/book/clock/processing, verified fee metadata, warmup/quality, price limits, conservative probability, net EV, spread, liquidity, non-EXTREME regime and risk limits. The executor rechecks submission eligibility after computation. See [model](PROBABILITY_MODEL.md) and [settlement semantics](SETTLEMENT_MODEL.md).
 
-Every numeric default in `config/defaults.json` is an explicit research assumption
-except constants validated as contract semantics. Do not treat these settings as
-optimal. No experiment updates running paper or live configuration. The required
-improvement sequence remains collect → hypothesis → replay → held-out validation
-→ paper validation → review → explicit approval before a live change.
+## Original control
 
-
-## Code organization
-
-The implemented algorithm is **BTC15 Settlement Edge** (`settlement_edge`):
-
-| File | Responsibility |
+| Setting | Built-in value |
 | --- | --- |
-| `src/btc15/strategies/settlement_edge/config.py` | Validated `Strategy` settings and configuration version |
-| `src/btc15/strategies/settlement_edge/model.py` | Reference features, volatility, settlement probability and quality |
-| `src/btc15/strategies/settlement_edge/rules.py` | Entry evaluation, fees, sizing, risk and passive pricing |
-| `src/btc15/engine.py` | Shared causal event processing and recorded decisions |
-| `src/btc15/execution.py` | Shared paper orders, fills, positions and checkpoints |
+| Entry timing | `120 < close_time - now <= 480` seconds |
+| Ask range | $0.85 to $0.99, also subject to net EV |
+| Conservative probability | At least 0.90 |
+| Quality | At least 85 |
+| Net edge and net EV | At least $0.03 per contract each |
+| Spread / top-level liquidity | At most $0.04 / at least 5 contracts |
+| Reference warmup | 300 seconds, subject to data-quality requirements |
+| Model calculation interval | 1 second |
+| Passive execution | Enabled; default discount $0.01, patience 20 seconds, latency 0.25 seconds, queue multiplier 1.5 |
+| Direct-account fee precision setting | `0.0001` |
 
-`btc15.config.Strategy` remains the public configuration import. Only one algorithm
-is implemented. The folder layout gives future algorithms a clear location;
-adding one still requires engine integration, UI support and validation. There is
-no dynamic plugin loader or simultaneous multi-strategy execution.
+These are research assumptions, not fitted/optimal values. The actual contract price grid and supported effective fee metadata are checked in code. Do not treat this table as an assertion about today's account charges.
 
-## Edit settings in the dashboard
+At `545.962` seconds remaining, original timing correctly rejects entry as too early. Exactly 480 seconds passes timing; exactly 120 seconds does not. For a 15:00–15:15 contract, original timing permits entries from 15:07:00 inclusive to 15:13:00 exclusive. Passing timing alone does not authorize an order.
 
-### Moderate Settlement Edge paper preset
+## Moderate Settlement Edge paper preset
 
-`config/settlement-edge-paper-moderate.json` is a frozen paper experiment requested
-on 2026-09-09. It changes only these original entry thresholds:
+The repository file [settlement-edge-paper-moderate.json](../config/settlement-edge-paper-moderate.json) changes exactly four fields from the current built-in control:
 
-| Setting | Original control | Moderate paper |
+| Field | Original | Moderate |
 | --- | --- | --- |
-| Start accepting entries before close | 480 seconds | 600 seconds |
-| Minimum entry ask | $0.85 | $0.80 |
-| Minimum net edge and minimum net EV | $0.03 each | $0.02 each |
+| `entry_window_start` | 480 | 600 |
+| `min_entry_price` | 0.85 | 0.80 |
+| `min_edge` | 0.03 | 0.02 |
+| `min_ev` | 0.03 | 0.02 |
 
-Both edge fields gate the same value after the conservative probability adjustment,
-estimated fees and slippage, so both must change together. The lower price floor
-admits cheaper favored contracts while still requiring conservative probability
-at least 0.90. The wider window adds two minutes; entries still stop with 120
-seconds remaining. Quality, warmup, calibration penalty, fresh-feed checks, spread,
-liquidity, passive execution, sizing and loss limits retain their original values.
-The built-in defaults remain available as the original control.
+Other settings, including the exclusive 120-second cutoff, probability/quality thresholds, calibration, fees, passive execution and risk limits, are unchanged. The moderate window passes timing at `545.962`. It does not guarantee a qualifying signal or fill. More eligible quotes can still produce worse results.
 
-The local saved settings in `data/strategy.json` select this preset for new
-sessions. The existing `dashboard-paper` checkpoint requires its original config;
-start a new group after a clean shutdown and resolution of any open exposure:
+To experiment with it, use the [exclusive configuration-freeze command](GETTING_STARTED.md#optional-moderate-experiment) and a new run after earlier exposure is resolved:
 
 ```bash
-uv run btc15 --config config/settlement-edge-paper-moderate.json dashboard --run-id dashboard-paper-moderate --port 8001
+uv run --locked btc15 --config data/runtime/settlement-moderate.json dashboard --run-id settlement-moderate --port 8000
 ```
 
-To resume the original local group, explicitly supply its frozen configuration:
+No repository update proves what an untracked local `data/strategy.json` contains or what a running process loaded. Earlier local gate-review measurements are historical evidence in the prior [strategy document](https://github.com/KhoaDao03/Project15/blob/c23981dd0475d10af24caf1dde372d9477e78e08/docs/STRATEGY.md), not bundled recordings or a guarantee for this experiment.
 
-```bash
-uv run btc15 --config data/runtime/settlement-edge-paper-20260909.json dashboard --run-id dashboard-paper --port 8001
-```
+## Sizing, attempts and exits
 
-This preset is an assumption for paper observation, not calibrated or optimized
-on historical returns. More eligible quotes need not produce passive fills or
-better results. Review new trades and realized losses before further relaxation.
+Fixed-contract, fixed-dollar and bankroll-percentage sizing remain subject to per-trade, bankroll, open-exposure and daily limits. The default daily maximum is 20 submitted attempts; unfilled cancellations still consume attempt and gross-exposure budget. Daily buckets use UTC, not the operator's local midnight. A new control run carries forward applicable paper risk history.
 
-Local validation replayed 1,123,175 recorded input events from the last
-`dashboard-paper` capture through the causal engine with execution disabled.
-On 1,007,670 paired entry checks, the control admitted zero quotes; the preset
-admitted 1,462 checks in **one market**. These are correlated quote updates, not
-1,462 trade opportunities or fills. Net edge was the most frequent rejection
-under the original settings. The diagnostic and its script are retained locally
-as `data/runtime/settlement-edge-moderate-gate-review.json` and
-`data/runtime/settlement_edge_gate_review.py`. This was an entry-gate diagnostic,
-not a fill simulation, dataset-quality audit or held-out performance test.
+The daily loss threshold blocks entries based on realized daily P&L; it is not a guarantee that an outstanding position cannot take losses beyond that threshold. No martingale sizing or automatic parameter optimization is implemented.
 
-### Saving settings
+One entry attempt is permitted per market/run. Passive quotes discount the ask within configured spread/edge bounds and snap to valid ticks; there is no automatic chase/reprice loop. Exits consider executable take-profit, hard stop (default entry price times 0.75), probability/hold-value invalidation, or official settlement. Slippage, latency, liquidity and missing data can prevent an exit; full loss remains possible. [Paper trading](PAPER_TRADING.md) describes the matching assumptions.
 
-1. Open **Strategies** in the sidebar.
-2. Set **Enable entries in new sessions** and edit the entry/risk fields.
-   Expand **Advanced model, execution and risk settings** for other parameters.
-   Probability fields use fractions: `0.95` means 95%. Prices and net value are
-   dollars per contract. Leave take-profit blank to disable that exit threshold.
-3. Select **Save for new sessions**. Invalid settings are rejected. A successful
-   save atomically replaces `DATA_DIR/strategy.json`, default `data/strategy.json`.
-4. Start a new session to use the saved configuration. Restart a dashboard that
-   owns collection to update that collector. Saving does not start paper execution.
+Entry permission and existing-position management use separate safety gates.
+Disabling entries or latching the risk kill switch does not disable an otherwise
+safe configured exit. A missing/quality-blocked model allows only price-based
+stops/take-profit, not an invented probability-invalidation signal. Stale inputs,
+clock/feed problems, unverified fees and contract quarantine still block sells.
+See [position-management policy](POSITION_MANAGEMENT.md) for the complete matrix.
 
-Settings are shared across dashboard modes and dashboards using the same
-`DATA_DIR`; the Mode and Run filters do not choose separate settings files.
-Running sessions keep their configuration. Historical records are not rewritten.
-The page compares saved settings with that dashboard's startup configuration,
-not with every external collector or paper service.
-
-The enable switch defaults to true. When false, the strategy records skipped
-entries with `STRATEGY_DISABLED`, and paper submission also rejects new entries.
-Reference collection, evaluations and position-management logic remain available.
-It is a next-session setting, not an emergency stop for a running process; see
-[the kill switch](SAFETY.md#operating-the-kill-switch).
+Order prices and sizing use exact operands before market-grid rounding and
+whole-contract division. See [price and sizing arithmetic](PRICE_SIZING.md) for
+correction examples, preserved budget caps and numeric compatibility limits.
 
 ## Configuration precedence and reproducibility
 
-CLI startup chooses settings in this order:
+CLI startup uses, in order:
 
-1. An explicit global `--config PATH` argument.
-2. `DATA_DIR/strategy.json`, if present.
-3. The built-in `Strategy` defaults.
+1. Explicit global `--config PATH`.
+2. `DATA_DIR/strategy.json`, if it exists.
+3. Built-in `Strategy` defaults.
 
-A JSON file may contain partial overrides; omitted fields use built-in defaults.
-An explicit file replaces the saved file as the input rather than merging with it.
-`config/defaults.json` is an example and is loaded only when explicitly selected.
-Use `uv run btc15 config` to inspect the effective settings for your environment.
+A partial JSON file fills omitted fields from built-in defaults, not from the saved settings file. The explicit file is not merged with `data/strategy.json`. `config/defaults.json` is loaded only if selected and retains a different `fee_balance_precision="0.01"`; do not confuse it with the current built-in control. Freeze complete settings for reproducibility.
 
 ```bash
-uv run btc15 config > config/session.json
-uv run btc15 --config config/session.json paper
-# Resume that run using the same frozen settings:
-uv run btc15 --config config/session.json paper --resume RUN_ID
+uv run --locked btc15 config
+uv run --locked btc15 --config data/runtime/settlement-original.json config
+uv run --locked btc15 --config data/runtime/settlement-original.json paper --resume RUN_ID
 ```
 
-A changed UI configuration must not be used to resume a run whose checkpoint
-requires the original version. The new `enabled=true` default preserves legacy
-configuration hashes; `enabled=false` changes the version. Every new run and
-recorded evaluation still carries its effective configuration and version.
+The first command shows settings for a new invocation, not necessarily the configuration of a running process. The second reads the frozen file created by the setup guide. Replace `RUN_ID` with the matching checkpoint's ID. Place global flags before the subcommand. Preserve config/source hashes and the exact source revision with evidence. Never modify a checkpoint to accept another config version.
 
-`GET /api/strategy` returns saved settings (or startup settings before the first
-save), their version and the dashboard startup version. `PUT /api/strategy`
-accepts a JSON settings object, validates it and saves it for new sessions. It
-requires JSON and rejects a supplied foreign Origin. This is a local dashboard
-control, not an authenticated multi-user administration service. Neither endpoint
-activates live execution or changes an existing run.
+## Edit settings in the dashboard
+
+Open **Settings**, edit **Enable entries in new sessions** and the other fields, then use **Save for new sessions**. The save validates JSON and atomically replaces `DATA_DIR/strategy.json`. The page compares saved values to that dashboard's startup values, not every external writer's configuration. Probability inputs are fractions; blank take-profit disables that target.
+
+Saving does not reconfigure or start a process. When startup uses an explicit frozen `--config`, that file still wins. Before adopting a changed setting, resolve exposure, stop cleanly, freeze the intended new config into another file, and choose a new run ID. Do not use changed settings to resume old inventory. The enable switch is not an emergency stop; use [Safety](SAFETY.md#operating-the-kill-switch).
+
+Mode/run/history filters do not select another settings file and cannot activate real trading. `/api/strategy` exposes next-session settings; `/api/strategies` is the retained route for one overview card, not a registry.
+
+## Code organization
+
+[config.py](../src/btc15/strategies/settlement_edge/config.py) validates `Strategy`; [model.py](../src/btc15/strategies/settlement_edge/model.py) computes features/probabilities/quality; [rules.py](../src/btc15/strategies/settlement_edge/rules.py) applies entry, fee, pricing and sizing rules. [Engine](../src/btc15/engine.py) consumes causal events; [PaperExecutor](../src/btc15/execution.py) owns matching/accounting; [models.py](../src/btc15/models.py) contains only identity/history/recovery helpers. No retired strategy or multi-engine dispatcher is instantiated.

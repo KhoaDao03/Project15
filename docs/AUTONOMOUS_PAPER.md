@@ -1,104 +1,73 @@
-# Managed autonomous PAPER operation
+# Managed paper operation — Linux/WSL
 
-The service combines authenticated collection, model evaluation, simulated orders,
-position/risk accounting and official settlement without a terminal session.
-Implementation is available for operational validation. Multi-day acceptance has
-not been completed; software operation does not establish strategy performance.
+One Settlement Edge engine can run without an attached terminal using the existing `paper-service` command and optional systemd user-service template. This is operational validation infrastructure, not evidence of multi-day reliability or profitable trading. Native Windows does not support this command's POSIX signal-handler path; use Linux/WSL for managed service operation.
 
-## Run and monitor
+Complete [Getting started](GETTING_STARTED.md) first. For an existing database, finish [legacy retirement](SINGLE_STRATEGY.md) before switching code. Do not create a fresh database to evade unresolved inventory or daily limits.
 
-Use an isolated database and data directory. Keep existing credentials in the
-project `.env`; the service uses the same authenticated, read-only API client.
+## Choose one storage/configuration pair
+
+From the repository root on Linux/WSL, after deciding that this is a genuinely separate new experiment:
 
 ```bash
-cd /home/devk/Project15
-export TRADING_MODE=PAPER ENABLE_LIVE_TRADING=false
-export DATA_DIR=data/production-paper
-export DATABASE_URL=sqlite:///data/production-paper/paper.db
-.venv/bin/btc15 paper-service --run-id production-paper
-# Another terminal, with the same environment:
-.venv/bin/btc15 paper-health --run-id production-paper
+export TRADING_MODE=PAPER
+export ENABLE_LIVE_TRADING=false
+export DATA_DIR="$PWD/data/production-paper"
+export DATABASE_URL="sqlite:///$PWD/data/production-paper/paper.db"
+uv run --locked btc15 --config data/runtime/settlement-original.json init-db
+uv run --locked btc15 --config data/runtime/settlement-original.json paper-service --run-id production-paper --min-free-gb 10 --seconds 1800
 ```
 
-The command starts a new named run or resumes its checkpoint, including a run
-that has not traded. Collection/BACKTEST identities, configuration mismatches and
-occupied writer leases are rejected. Resume cancels resting remainders, retains
-positions and daily limits, and starts with unhealthy feeds. No fills are assigned
-to downtime. Keep the same configuration on restart; pass global `--config PATH`
-before the command to pin a frozen configuration. Without it, CLI startup reads
-`DATA_DIR/strategy.json` when present, including settings saved from a dashboard
-using the same data directory. A dashboard using another `DATA_DIR` edits another
-file. UI saves do not reconfigure a running service. Before restarting a named
-run, ensure its configuration still matches the checkpoint; see
-[strategy configuration precedence](STRATEGY.md#configuration-precedence-and-reproducibility).
+The original frozen file is created in the setup guide. An absolute SQLite URL contains the extra slash for an absolute Unix path, as produced above. Do not point this at another existing portfolio blindly. Omit `--seconds` for continuous foreground operation. Resume repeats the same run/configuration/storage; incompatible config/mode, unresolved archived exposure and occupied writer leases are rejected.
 
-`--seconds N` bounds a validation session. Otherwise it runs continuously.
-SIGINT/SIGTERM stop producers, drain received frames, record disconnection, cancel
-pending entries through normal disconnection handling, flush raw data and release
-the writer lease. Filled positions remain checkpointed for the next start.
+In another terminal, repeat the environment exports (or use the same explicit absolute database override), then:
 
-`--min-free-gb` defaults to 10 GiB. Falling below this data-filesystem reserve stops
-the process with a failure; recordings are never automatically deleted. The reserve
-does not monitor remote database storage. Provision/archive recordings before the
-disk fills. Record actual daily storage and memory growth during acceptance.
+```bash
+uv run --locked btc15 --config data/runtime/settlement-original.json dashboard --no-collect --port 8001
+uv run --locked btc15 paper-health --run-id production-paper
+```
 
-The health command returns JSON and exit 0 only for status no older than five
-seconds, connected executing PAPER, healthy clock, open exchange, no halt,
-reference age at most two seconds and processing lag at most one second. These
-probe thresholds are independent of strategy entry thresholds. Exit 1 means
-missing, stale or degraded status. This is not a trade signal or proof of book
-liquidity. Logs/probes are local; external alert delivery is not configured.
+Open `http://127.0.0.1:8001` and choose PAPER / `production-paper`. **A viewer using default `data/btc15.db` will not show this service's database.** The viewer's `DATA_DIR` also determines where Settings writes and HALT commands target. Always keep the pair consistent.
 
-## User service
+## Stop and health semantics
 
-The definition assumes `$HOME/Project15` and an installed `.venv`. It fixes PAPER
-mode and uses a separate production-paper database. Review paths on other hosts.
+SIGINT/SIGTERM and the coordinated dashboard shutdown stop entries, cancel unfilled remainders, drain/flush inputs and save filled positions. They do not liquidate inventory or invent fills during downtime. A named run with no trades still receives an initial checkpoint for clean restart.
+
+The default disk reserve is 10 GiB on the data filesystem; falling below it stops operation. It does not monitor storage on a remote database server. Recordings are never auto-deleted. Monitor actual tape/database growth and preserve backups before disk pressure.
+
+`paper-health` exits 0 only when status is recent, PAPER execution/connection/clock/exchange state are healthy, no halt is active, reference age is at most two seconds and processing lag at most one second. It is a stricter operating probe, not a signal or fill guarantee. During warmup/degradation it can exit 1. External alert delivery is not configured.
+
+## Optional systemd user service
+
+The shipped [unit](../deploy/btc15-paper.service) assumes `$HOME/Project15`, its `.venv`, and `data/production-paper/paper.db`. It sets PAPER, disables live trading, uses WARNING console logging, allows 60 seconds to stop and sets `Restart=no`. It is a template, not an installed service. Do not enable it while a foreground writer owns that database.
 
 ```bash
 mkdir -p ~/.config/systemd/user
-cp deploy/btc15-paper.service ~/.config/systemd/user/
-systemctl --user daemon-reload
-systemctl --user enable --now btc15-paper
-systemctl --user status btc15-paper
-journalctl --user -u btc15-paper -f
-systemctl --user stop btc15-paper
+cp deploy/btc15-paper.service ~/.config/systemd/user/btc15-paper.service
 ```
 
-Use the same DATA_DIR/DATABASE_URL above for health and halt commands.
-The service allows 60 seconds to stop and does not automatically restart failures
-([systemd service semantics](https://github.com/systemd/systemd/blob/main/man/systemd.service.xml)).
-Network interruptions reconnect within the collector. Fatal authentication, disk,
-database or process failures require investigation. SIGKILL/power loss leaves the
-writer lease intact; follow [recovery instructions](SAFETY.md) before restarting.
-No timeout steals a possibly active writer's lease. A clean `systemctl --user
-restart btc15-paper` resumes the same run.
+Review the copied unit before starting. Correct all paths for your checkout and explicitly pin its configuration. For the setup guide's original frozen file, change the copied unit's `ExecStart` to:
 
-Beyond logout, the host must keep the user service manager running (user lingering).
-WSL must remain running and Windows awake. This change does not configure Windows
-startup, suspend policy or lingering. The definition is supplied, not automatically
-installed/enabled.
+```ini
+ExecStart=%h/Project15/.venv/bin/btc15 --config %h/Project15/data/runtime/settlement-original.json paper-service --run-id production-paper --min-free-gb 10
+```
 
-`btc15 halt` blocks entries while allowing position/settlement handling. The
-checkpoint retains this halt across managed restarts; deleting HALT alone does not
-clear it. Do not edit a checkpoint to bypass it. Review the run and resolve exposure
-before starting a new named run.
+Without this edit the template loads settings using CLI precedence; a different `DATA_DIR/strategy.json` or later saved settings can cause a resume mismatch. Keep credentials protected in the expected local environment/key file; a service can have a different environment from an interactive shell.
 
-## Validation and remaining acceptance
+After checking paths/configuration and confirming no other writer:
 
-- Full regression suite: **78 passed**, two existing third-party deprecation warnings.
-- New tests cover clean named-run restart, initial checkpoints without fills,
-  stop/drain behavior, low disk, occupied crash leases and stale/degraded health.
-- Ruff lint/format, whitespace and host systemd unit validation passed.
-- Two authenticated PAPER sessions used the same `operation-acceptance` run. The
-  first completed its 30-second limit; the second resumed, reported healthy after
-  20 seconds and exited 0 on SIGTERM. Execution was enabled, but no simulated fills
-  occurred. Live health reported 0.002 s processing lag and 0.234 s reference age.
-  Evidence is retained in `data/operation-smoke/`.
+```bash
+systemctl --user daemon-reload
+systemctl --user start btc15-paper
+systemctl --user status btc15-paper
+journalctl --user -u btc15-paper -f
+```
 
-Before production readiness, run consecutive multi-day sessions with repeated
-rollover, settlement and daily-limit rollover; test interruptions with outstanding
-simulated positions and an actual killed process; measure resource growth and
-audit all capture segments. Verify operator detection of failed service. Evaluate
-calibration and pessimistic fill/cost assumptions on independent held-out data as
-a separate research gate. Short smoke tests do not close these gates. LIVE remains
-blocked.
+Only after a successful manual service test, `systemctl --user enable btc15-paper` enables it for the user-service lifecycle. Stop with `systemctl --user stop btc15-paper`. A clean restart uses the same original config/run; fatal errors require inspection because automatic restart is disabled. See [systemd user-service guidance](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html).
+
+Beyond logout, user-service lifetime/lingering must be configured separately by the operator. WSL and its Windows host must remain running/awake. This repository does not provision Windows startup, sleep policy or user lingering. Enabling a service is not equivalent to an always-on cloud server.
+
+## Recovery and acceptance
+
+Never steal a writer lease. A killed process or power loss requires [crash recovery](SAFETY.md#crash-recovery), not a blind restart. HALT remains latched in checkpoints; removing its file alone does not unhalt a resumed run.
+
+Prior two-session/78-test results in the [earlier service report](https://github.com/KhoaDao03/Project15/blob/c23981dd0475d10af24caf1dde372d9477e78e08/docs/AUTONOMOUS_PAPER.md) describe an earlier host/revision, not this installation. Current software evidence is in [Validation](VALIDATION.md). Verify repeated rollovers, official settlements, UTC daily limits, interruptions with inventory, actual crash recovery, resource growth and operator detection of failures during consecutive real-data sessions. Do not use a short smoke run as multi-day acceptance.

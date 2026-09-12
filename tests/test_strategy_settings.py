@@ -61,7 +61,27 @@ def test_disabled_strategy_blocks_candidates_and_submission(store, market, book,
 def test_enabled_default_preserves_historical_config_version():
     config = Strategy()
     historical = asdict(config)
-    del historical["enabled"]
+    for name in (
+        "enabled",
+        "daily_entry_limits_enabled",
+        "resting_limit_recheck",
+        "revalidate_entry_signal",
+        "max_entry_retries",
+        "entry_retry_cooldown",
+        "hold_value_exit_enabled",
+        "profit_value_exit_enabled",
+        "entry_probability_deductions",
+        "sustained_lead_enabled",
+        "late_entry_enabled",
+        "late_no_new_entry",
+        "lead_confirmation_samples",
+        "late_min_probability",
+        "late_lead_confirmation_samples",
+        "min_lead_sigma",
+        "late_min_lead_sigma",
+        "bollinger_entry_filter_enabled",
+    ):
+        del historical[name]
     expected = hashlib.sha256(json.dumps(historical, sort_keys=True).encode()).hexdigest()[:16]
     assert config.version == expected
     assert replace(config, enabled=False).version != expected

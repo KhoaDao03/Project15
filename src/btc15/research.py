@@ -10,18 +10,13 @@ from .config import Strategy
 from .engine import Engine
 
 
-def replay_files(paths, config, store, parent_run=None, model_keys=None):
+def replay_files(paths, config, store, parent_run=None):
     paths = [Path(p) for p in paths]
     inputs = [dict(path=str(p), sha256=file_hash(p)) for p in paths]
     audit = audit_files(paths)
     if not audit["events"]:
         raise ValueError("Empty replay dataset")
-    if model_keys is None:
-        engine = Engine(store, config, "BACKTEST", execute=True)
-    else:
-        from .models import ModelGroup
-
-        engine = ModelGroup(store, config, "BACKTEST", execute=True, model_keys=model_keys)
+    engine = Engine(store, config, "BACKTEST", execute=True)
     count = 0
     try:
         for row in unique_events(paths):
@@ -41,24 +36,21 @@ def replay_files(paths, config, store, parent_run=None, model_keys=None):
             "experiment_failed", {"reason": "INPUT_CHANGED"}, engine.run_id, "BACKTEST", engine.last_received
         )
         raise ValueError("Replay input changed during execution")
-    engines = engine.engines if model_keys is not None else [engine]
-    for member in engines:
-        store.add(
-            "experiment",
-            dict(
-                parent_run=parent_run,
-                comparison_run=engine.run_id if model_keys is not None else None,
-                inputs=inputs,
-                dataset_audit=audit,
-                events=count,
-                config_version=member.config.version,
-                open_positions=len(member.executor.positions),
-                ended_without_settlement=bool(member.executor.positions),
-            ),
-            member.run_id,
-            "BACKTEST",
-            member.last_received,
-        )
+    store.add(
+        "experiment",
+        dict(
+            parent_run=parent_run,
+            inputs=inputs,
+            dataset_audit=audit,
+            events=count,
+            config_version=engine.config.version,
+            open_positions=len(engine.executor.positions),
+            ended_without_settlement=bool(engine.executor.positions),
+        ),
+        engine.run_id,
+        "BACKTEST",
+        engine.last_received,
+    )
     return engine.run_id
 
 

@@ -3,6 +3,7 @@ import json
 import shutil
 import time
 import uuid
+from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -10,19 +11,22 @@ import httpx
 import websockets
 
 from .api import KalshiClient, subscriptions
+from .collector_recovery import CollectorRecovery
 from .domain import dumps
 from .engine import Engine
+from .models import guard_archived_exposure, require_single_run
 from .storage import CompactRecorder, RawRecorder
+
+QUEUE_CAPACITY = 20000
 
 
 def stop_entries(engine, now):
     """Stop new entries and cancel pending remainders without liquidating positions."""
-    for member in getattr(engine, "engines", [engine]):
-        member.execute = False
-        member.entries_active = False
-        for ticker in list(member.executor.orders):
-            if member.executor.orders[ticker].active:
-                member.executor.cancel(ticker, now, "safe_shutdown")
+    engine.execute = False
+    engine.entries_active = False
+    for ticker in list(engine.executor.orders):
+        if engine.executor.orders[ticker].active:
+            engine.executor.cancel(ticker, now, "safe_shutdown")
 
 
 async def collect(
@@ -36,8 +40,8 @@ async def collect(
     stop_event=None,
     managed_run=None,
     min_free_bytes=0,
-    multi_model=False,
     record_all=None,
+    stop_confirmation_shadow=False,
 ):
     """Independent receipt/metadata tasks; one ordered durable analysis worker."""
     settings.guard()
@@ -53,6 +57,7 @@ async def collect(
     recorder = None
     clean_shutdown = False
     entries_stopped = False
+    shadow = None
     pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="btc15-recorder")
     loop = asyncio.get_running_loop()
 
@@ -63,6 +68,9 @@ async def collect(
         client.headers("GET", "/trade-api/ws/v2")
         store.acquire("collector", owner)
         acquired = True
+        if paper:
+            require_single_run(store, resume or managed_run)
+            guard_archived_exposure(store)
         if managed_run:
             if not paper or resume:
                 raise ValueError("Managed runs require paper execution without explicit resume")
@@ -71,20 +79,7 @@ async def collect(
                 if previous[0]["mode"] != "PAPER" or not previous[0]["body"]["execute"]:
                     raise ValueError("Managed run must refer to an executing PAPER run")
                 resume = managed_run
-        if multi_model and paper and not resume:
-            closed = {r["opportunity_id"] for r in store.list(kind="trade_result", mode="PAPER", limit=None)}
-            buys = {
-                r["opportunity_id"]
-                for r in store.list(kind="fill", mode="PAPER", limit=None)
-                if r["body"]["action"] == "buy"
-            }
-            if buys - closed:
-                raise RuntimeError("Unresolved paper positions: resume their original model group")
-
-        from .models import ModelGroup
-
-        engine_type = ModelGroup if multi_model else Engine
-        engine = engine_type(
+        engine = Engine(
             store,
             config,
             "PAPER",
@@ -103,36 +98,52 @@ async def collect(
             }
             if buys - closed:
                 raise RuntimeError("Unresolved paper positions: use paper --resume RUN_ID")
-            (engine.restore_daily_history() if multi_model else engine.executor.restore_daily_history())
+            engine.executor.restore_daily_history()
         if paper:
             # Even a run with no fills must be resumable after a clean service restart.
-            (
-                engine.checkpoint()
-                if multi_model
-                else store.checkpoint(engine.run_id, engine.executor.snapshot())
-            )
+            store.checkpoint(engine.run_id, engine.executor.snapshot())
+        if stop_confirmation_shadow:
+            if not paper:
+                raise ValueError("Stop comparison requires paper purchases")
+            from .stop_shadow import StopShadow
+
+            try:
+                shadow = StopShadow(engine, Path(settings.data_dir) / "stop-confirmation-shadow.db")
+            except Exception as exc:
+                store.add(
+                    "stop_shadow_status",
+                    dict(status="FAILED", error=str(exc)),
+                    engine.run_id,
+                    engine.mode,
+                    time.time(),
+                )
         recorder = (
             RawRecorder(Path(settings.data_dir) / "raw", chunk_size=2000)
             if record_all
             else CompactRecorder(Path(settings.data_dir) / "raw")
         )
         journal = recorder.directory / (recorder.session + ".jsonl") if record_all else recorder.path
-        for member in engine.engines if multi_model else [engine]:
-            member.raw_archive = True
-            store.add(
-                "raw_source",
-                {
-                    "journal": str(journal),
-                    "format": "jsonl" if record_all else "jsonl.gz",
-                    "parent_run": engine.run_id,
-                },
-                member.run_id,
-                "PAPER",
-                time.time(),
-            )
-        queue = asyncio.Queue(maxsize=20000)
+        engine.raw_archive = True
+        store.add(
+            "raw_source",
+            {
+                "journal": str(journal),
+                "format": "jsonl" if record_all else "jsonl.gz",
+                "parent_run": engine.run_id,
+            },
+            engine.run_id,
+            "PAPER",
+            time.time(),
+        )
+        queue = asyncio.Queue(maxsize=QUEUE_CAPACITY)
+        pending_receipts = deque()
+        recovery = CollectorRecovery(config, time.time())
+        engine.collector_pause = recovery.paused
+        engine.executor.collector_pause = recovery.paused
         overflow_rows = []
         reconnect = asyncio.Event()
+        drained = asyncio.Event()
+        refresh_requested = asyncio.Event()
         stop = stop_event if stop_event is not None else asyncio.Event()
         metadata_ready = asyncio.Event()
         connection = str(uuid.uuid4())
@@ -140,6 +151,10 @@ async def collect(
         tracked = {
             r["market"]: r["body"]["raw"] for r in store.list(kind="market", run_id=engine.run_id, limit=None)
         }
+        for ticker, snapshot in engine.executor.contracts.items():
+            if ticker in engine.executor.positions:
+                tracked[ticker] = snapshot["raw"]
+        settled_tickers = set()
         connected = False
         started = time.monotonic()
         maximum_queue = 0
@@ -148,6 +163,19 @@ async def collect(
         display_reference = None
         receipt_reference = None
         display_tickers = {}
+        last_recovery_status = None
+
+        def request_recovery(reason):
+            recovery.request(reason, time.time())
+            reconnect.set()
+            drained.clear()
+
+        def check_pressure():
+            lag = (time.monotonic_ns() - pending_receipts[0]) / 1e9 if pending_receipts else 0
+            recovery.pressure(lag, len(pending_receipts), queue.maxsize, time.time())
+            if recovery.drain.is_set():
+                reconnect.set()
+            return lag
 
         def emit(payload):
             nonlocal maximum_queue, receipt_reference
@@ -158,16 +186,22 @@ async def collect(
                 connection_id=connection,
                 payload=dumps(payload),
             )
+            if payload.get("type") == "cfbenchmarks_value":
+                # Immutable marker only: the worker still validates/applies the
+                # durable event in order. Receipt cannot supply future model data.
+                engine.executor.latest_reference_receipt = (row["id"], row["received"])
             if overflow_rows:
                 overflow_rows.append(row)
                 raise RuntimeError("Recorder queue overflow; capture stopped")
             try:
                 queue.put_nowait(row)
+                pending_receipts.append(row["monotonic_ns"])
             except asyncio.QueueFull as e:
                 overflow_rows.append(row)
                 stop.set()
                 raise RuntimeError("Recorder queue capacity exceeded; capture stopped") from e
             maximum_queue = max(maximum_queue, queue.qsize())
+            check_pressure()
             if payload.get("type") == "cfbenchmarks_value_5hz":
                 msg = payload.get("msg", {})
                 if msg.get("index_id") == "BRTI":
@@ -179,8 +213,12 @@ async def collect(
 
         def process_batch(rows):
             nonlocal last_status, last_display, display_reference, entries_stopped
-            if multi_model and not stop.is_set():
-                engine.apply_activation(store)
+            nonlocal last_recovery_status
+            # Persist the analysis decision alongside every source frame so replay
+            # also applies the complete sequence without trading on the old backlog.
+            for row in rows:
+                row["analysis_suspended"] = recovery.drain.is_set()
+                row["collector_entries_blocked"] = recovery.paused.is_set()
             if recorder:
                 recorder.append_rows(rows)  # Input capture is durable before analysis.
             valid = True
@@ -189,9 +227,22 @@ async def collect(
                     stop_entries(engine, row["received"])
                     entries_stopped = True
                 if not engine.executor.risk.halted and (Path(settings.data_dir) / "HALT").exists():
-                    (engine.halt(row["received"]) if multi_model else engine.executor.halt(row["received"]))
-                valid = engine.ingest(row) and valid
+                    engine.executor.halt(row["received"])
+                row_valid = engine.ingest(row)
+                valid = row_valid and valid
                 payload = json.loads(row["payload"])
+                if not stop.is_set():
+                    if not row_valid:
+                        recovery.request("DATA_INTEGRITY_FAILURE", time.time())
+                    elif payload.get("type") in ("disconnect", "stale", "error"):
+                        recovery.request("FEED_INTERRUPTED", time.time())
+                recovery.observe(engine, row, payload, row_valid)
+                if shadow is not None:
+                    shadow.process(row, payload)
+                if payload.get("type") == "settlement":
+                    ticker = payload["msg"]["market_ticker"]
+                    if store.state(engine.run_id, ticker) == "CLOSED":
+                        loop.call_soon_threadsafe(settled_tickers.add, ticker)
                 if payload.get("type") == "cfbenchmarks_value_5hz":
                     msg = payload.get("msg", {})
                     display_reference = dict(
@@ -203,6 +254,13 @@ async def collect(
                     msg = payload.get("msg", {})
                     display_tickers[msg.get("market_ticker")] = msg
             now = time.time()
+            lag = (time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9
+            recovery.check(engine, now, lag, queue.qsize(), queue.maxsize, connected, stop.is_set())
+            recovery_status = recovery.status()
+            signature = (recovery_status["state"], tuple(recovery_status["reasons"]), recovery.warning)
+            if signature != last_recovery_status:
+                store.add("collector_recovery", recovery_status, engine.run_id, "PAPER", now)
+                last_recovery_status = signature
             if time.monotonic() - last_display >= 0.05 or not connected:
                 markets = []
                 for ticker, market in engine.markets.items():
@@ -234,10 +292,12 @@ async def collect(
                         markets=markets,
                         reference_5hz=display_reference,
                         processing_lag=(time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9,
+                        recovery=recovery_status,
                     )
                 )
                 last_display = time.monotonic()
             if now - last_status >= 1 or not connected:
+                engine.flush_rejections(now)
                 save_status = store.add if record_all else store.publish_record
                 save_status(
                     "status",
@@ -253,19 +313,29 @@ async def collect(
                                 run_id=e.run_id,
                                 model=e.executor.model_identity,
                                 entries_active=e.entries_active,
+                                strategy_enabled=e.config.enabled,
                                 halted=e.executor.risk.halted,
                                 open_positions=len(e.executor.positions),
                                 realized_pnl=e.executor.risk.realized,
                             )
-                            for e in (engine.engines if multi_model else [engine])
+                            for e in ([engine])
                         ],
                         clock_ok=engine.clock_ok,
                         exchange_open=engine.exchange_open,
                         reference_age=now - engine.ticks[-1].received if engine.ticks else None,
                         processing_lag=(time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9,
                         maximum_queue=maximum_queue,
+                        queue_depth=queue.qsize(),
+                        queue_capacity=queue.maxsize,
+                        recovery=recovery_status,
                         markets=list(engine.markets),
                         positions={k: vars(v) for k, v in engine.executor.positions.items()},
+                        venue_pauses=dict(engine.executor.venue_pauses),
+                        settlement_recovery={
+                            k: v
+                            for k, v in engine.executor.quarantines.items()
+                            if k in engine.executor.positions
+                        },
                         exposure=sum(engine.executor.risk.reserved.values()),
                         daily=engine.executor.risk.day(now),
                         halted=engine.executor.risk.halted,
@@ -277,18 +347,17 @@ async def collect(
                 if recorder:
                     recorder.flush()
                 if not record_all:
-                    for member in engine.engines if multi_model else [engine]:
-                        if member.latest:
-                            latest = max(member.latest.values(), key=lambda b: b["timestamp"])
-                            store.publish_record(
-                                "evaluation",
-                                latest,
-                                member.run_id,
-                                member.mode,
-                                latest["timestamp"],
-                                latest["ticker"],
-                                member._last_op[latest["ticker"]],
-                            )
+                    if engine.latest:
+                        latest = max(engine.latest.values(), key=lambda b: b["timestamp"])
+                        store.publish_record(
+                            "evaluation",
+                            latest,
+                            engine.run_id,
+                            engine.mode,
+                            latest["timestamp"],
+                            latest["ticker"],
+                            engine._last_op[latest["ticker"]],
+                        )
                 last_status = now
             return valid
 
@@ -308,8 +377,13 @@ async def collect(
                         finished = True
                         break
                     rows.append(item)
-                if not await work(process_batch, rows):
-                    reconnect.set()
+                valid = await work(process_batch, rows)
+                for _ in rows:
+                    pending_receipts.popleft()
+                if not valid:
+                    request_recovery("DATA_INTEGRITY_FAILURE")
+                if recovery.drain.is_set() and not connected and queue.empty():
+                    drained.set()
                 if finished:
                     break
 
@@ -317,6 +391,9 @@ async def collect(
             nonlocal tickers
             while not stop.is_set():
                 try:
+                    # Fence the request before any network await. An in-flight active
+                    # response started before a lifecycle pause cannot release it.
+                    metadata_request_started_at = time.time()
                     series, markets = await client.discover()
                     changes = {}
                     for event in sorted({m["event_ticker"] for m in markets}):
@@ -338,6 +415,9 @@ async def collect(
                             msg=dict(
                                 series=series,
                                 markets=markets,
+                                discovery_resolutions=getattr(client, "discovery_resolutions", []),
+                                source="kalshi_rest",
+                                request_started_at=metadata_request_started_at,
                                 fee_changes=changes,
                                 series_fee_changes=series_changes,
                                 exchange_status=status,
@@ -348,8 +428,12 @@ async def collect(
                     current = sorted(m["ticker"] for m in markets)
                     tickers = current
                     for m in markets:
-                        tracked[m["ticker"]] = m
+                        # Later malformed/changed close times must not postpone held-contract polling.
+                        tracked.setdefault(m["ticker"], m)
                     for ticker, m in list(tracked.items()):
+                        if ticker in settled_tickers:
+                            del tracked[ticker]
+                            continue
                         from .domain import timestamp
 
                         if time.time() >= timestamp(m["close_time"]):
@@ -360,10 +444,13 @@ async def collect(
                                 emit(
                                     dict(
                                         type="settlement",
-                                        msg=dict(market_ticker=ticker, result=raw["result"]),
+                                        msg=dict(
+                                            market_ticker=ticker,
+                                            result=raw["result"],
+                                            evidence=dict(source="kalshi_rest", market=raw, series=series),
+                                        ),
                                     )
                                 )
-                                del tracked[ticker]
                     metadata_ready.set()
                 except (httpx.HTTPError, OSError, ValueError, KeyError) as exc:
                     emit(
@@ -373,16 +460,26 @@ async def collect(
                         )
                     )
                 try:
-                    await asyncio.wait_for(stop.wait(), timeout=15)
+                    await asyncio.wait_for(refresh_requested.wait(), timeout=15)
                 except TimeoutError:
                     pass
+                refresh_requested.clear()
 
         async def receive():
             nonlocal connection, connected
             await metadata_ready.wait()
             backoff = 1
             while not stop.is_set():
-                connection = str(uuid.uuid4())
+                if recovery.drain.is_set():
+                    await drained.wait()
+                    if stop.is_set():
+                        break
+                    await work(recovery.reconnect)
+                    metadata_ready.clear()
+                    refresh_requested.set()
+                    await metadata_ready.wait()
+                    if recovery.drain.is_set():
+                        continue
                 reconnect.clear()
                 try:
                     async with websockets.connect(
@@ -392,6 +489,10 @@ async def collect(
                         ping_timeout=20,
                         max_queue=2048,
                     ) as ws:
+                        # Publish the new identity and its boundary without an
+                        # await; heartbeat/metadata producers keep the old identity
+                        # throughout the handshake, including failed attempts.
+                        connection = str(uuid.uuid4())
                         connected = True
                         emit(dict(type="connected", msg={"tickers": tickers}))
                         for subscription in subscriptions(tickers):
@@ -452,6 +553,8 @@ async def collect(
                     backoff = min(30, backoff * 2)
                 finally:
                     connected = False
+                    if not stop.is_set():
+                        request_recovery("CONNECTION_LOST")
                     emit(dict(type="disconnect", msg={"reason": "reconnect_or_shutdown"}))
 
         async def reference_display():
@@ -473,6 +576,7 @@ async def collect(
                             connected=connected,
                             published_at=time.time(),
                             reference_5hz=receipt_reference,
+                            recovery=recovery.status(),
                         ),
                     )
                     await asyncio.sleep(0.2)
@@ -508,6 +612,9 @@ async def collect(
                 group.create_task(reference_display()),
             ]
             await stop.wait()
+            # Persist shutdown draining just like overload draining. Queued inputs
+            # still update books/settlements, without expensive strategy evaluation.
+            recovery.request("STOPPING", time.time())
             # Bounded cancellation also interrupts slow HTTP refresh/socket waits.
             for task in producers:
                 task.cancel()
@@ -517,15 +624,25 @@ async def collect(
             await worker
         if paper:
             with store.transaction():
-                for member in engine.engines if multi_model else [engine]:
-                    store.checkpoint(member.run_id, member.executor.snapshot())
+                store.checkpoint(engine.run_id, engine.executor.snapshot())
         clean_shutdown = True
         return engine.run_id
     finally:
         try:
             try:
-                if acquired and "engine" in locals() and not clean_shutdown:
-                    await work(stop_entries, engine, time.time())
+                if acquired and "engine" in locals():
+
+                    def finish_audit():
+                        now = time.time()
+                        engine.flush_rejections(now, force=True)
+                        for ticker in engine.executor.positions:
+                            engine.monitoring_state(ticker, now, False, ["COLLECTOR_STOPPED"])
+
+                    try:
+                        await work(finish_audit)
+                    finally:
+                        if not clean_shutdown:
+                            await work(stop_entries, engine, time.time())
             finally:
                 if recorder:
                     # Preserve frames already received even when analysis or a producer fails.
@@ -555,13 +672,12 @@ async def collect(
                     if acquired:
                         with store.transaction():
                             if clean_shutdown:
-                                members = engine.engines if multi_model else [engine]
                                 store.add(
                                     "shutdown_complete",
                                     dict(
                                         run_id=engine.run_id,
-                                        open_positions=sum(len(e.executor.positions) for e in members),
-                                        runs=[e.run_id for e in members],
+                                        open_positions=len(engine.executor.positions),
+                                        runs=[engine.run_id],
                                     ),
                                     owner,
                                     "PAPER",
@@ -570,6 +686,8 @@ async def collect(
                             store.release("collector", owner)
                 finally:
                     pool.shutdown(wait=True)
+                    if shadow is not None:
+                        shadow.store.engine.dispose()
 
 
 def backtest(path, config, store, parent_run=None):

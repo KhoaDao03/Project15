@@ -59,7 +59,7 @@ def test_lifetime_cache_invalidates_on_fills_and_results(store, monkeypatch):
         return original(*args)
 
     monkeypatch.setattr(dashboard, "lifetime_performance", counted)
-    with TestClient(dashboard.create_app(store)) as client:
+    with TestClient(dashboard.create_app(store, config=Strategy())) as client:
         first = client.get("/api/strategies?mode=PAPER").json()
         n = len(calls)
         assert n > 0 and first["lifetime"]["open_exposure"] == 0
@@ -79,3 +79,25 @@ def test_lifetime_cache_invalidates_on_fills_and_results(store, monkeypatch):
         client.get("/api/strategies?mode=PAPER")
         assert len(calls) == n
         assert client.get("/api/strategies?mode=BACKTEST").json()["lifetime"]["net_pnl"] == 0
+
+
+def test_old_evaluation_distinguishes_completed_trade(store, monkeypatch):
+    monkeypatch.setattr(dashboard.time, "time", lambda: 1000)
+    store.add("run", dict(model=identity(Strategy())), "run", "PAPER", 1)
+    store.add(
+        "opportunity",
+        dict(ticker="market", model=identity(Strategy()), decision="NO_TRADE"),
+        "run",
+        "PAPER",
+        744,
+        "market",
+    )
+    store.publish_record("status", dict(connected=True), "run", "PAPER", 999)
+    monkeypatch.setattr(store, "state", lambda *a: "CLOSED")
+    with TestClient(dashboard.create_app(store, config=Strategy())) as client:
+        d = client.get("/api/evaluation?mode=PAPER&run_id=run").json()
+        assert d["evaluation_age"] == 256
+        assert "trading is complete" in d["message"]
+        monkeypatch.setattr(store, "state", lambda *a: "EVALUATING")
+        d = client.get("/api/evaluation?mode=PAPER&run_id=run").json()
+        assert "no fresh evaluation" in d["message"]

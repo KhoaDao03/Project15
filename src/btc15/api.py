@@ -87,6 +87,7 @@ class KalshiClient:
             params["cursor"] = cursor
 
     async def discover(self):
+        self.discovery_resolutions = []
         series = (await self.get("series/KXBTC15M"))["series"]
         index = series.get("exchange_index")
         if index is None:
@@ -100,8 +101,34 @@ class KalshiClient:
             ):
                 if raw is not None:
                     markets.append(raw)
-        # Preserve invalid metadata for research; runner performs strict validation.
-        ordered = sorted(markets, key=lambda m: m["close_time"])
+        # Status-filtered lists are not one atomic snapshot. At market opening,
+        # a ticker can appear in both with conflicting strike publication state.
+        # Resolve overlap from the detail endpoint, rather than choosing whichever
+        # list arrived last or merging fields from incompatible contract versions.
+        unique = {}
+        duplicates = set()
+        for raw in markets:
+            ticker = raw["ticker"]
+            if ticker in unique:
+                duplicates.add(ticker)
+            unique[ticker] = raw
+        for ticker in unique:
+            if ticker in duplicates:
+                resolved = (await self.get("markets/" + ticker, {"exchange_index": index}))["market"]
+                if resolved.get("ticker") != ticker or resolved.get("exchange_index") != index:
+                    raise ValueError("Market detail identity does not match discovery")
+                self.discovery_resolutions.append(
+                    dict(
+                        ticker=ticker,
+                        reason="OVERLAPPING_MARKET_LISTS",
+                        source="kalshi_rest_market_detail",
+                        candidates=[raw for raw in markets if raw["ticker"] == ticker],
+                        resolved=resolved,
+                    )
+                )
+                unique[ticker] = resolved
+        # Preserve invalid canonical metadata for research; runner still validates it.
+        ordered = sorted(unique.values(), key=lambda m: m["close_time"])
         active = [m for m in ordered if m.get("status") == "active"]
         upcoming = [m for m in ordered if m.get("status") != "active"]
         return series, active + upcoming[:1]
