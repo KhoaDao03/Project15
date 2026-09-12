@@ -1,19 +1,20 @@
-# Active paper settings — September 11, 2026
+# Active paper settings — September 12, 2026
 
 The installed collector and dashboard now select `settlement-convergence-v8`,
 using `data/runtime/settlement-convergence-v8.json`. The matching tracked
 configuration is `config/settlement-edge-active-paper.json`.
 
-The user requested this as a direct replacement for the active bot settings:
+Current entry settings (deployment history follows below):
 
 | Entry setting | Value |
 | --- | --- |
 | Minimum raw entry probability | 0.80 standard; 0.85 late |
 | Minimum purchase price | 0.70 |
+| Maximum purchase price | 0.95 |
 | Minimum net edge and EV | 0.01 each |
-| Standard entry window | 120 < seconds remaining <= 600 |
+| Standard entry window | 120 < seconds remaining <= 420 |
 | Late entry window | 15 < seconds remaining <= 120 |
-| Confirming official one-second samples | 3 standard; 5 late |
+| Confirming official one-second samples | 3 standard; 2 late |
 | Minimum normalized settlement lead | 1 standard; 2 late |
 
 Both paths retain [sustained-lead confirmation](SUSTAINED_LEAD.md).
@@ -22,6 +23,9 @@ pricing, probability floors and net EV at submission. Calibration, simulation,
 rounding, reversal stress and disagreement deductions do not reduce entry
 probability. Stress is still recorded as a diagnostic. Exit rules are unchanged.
 Late entries use the expected settlement average to select the favored side.
+
+The profit-value exit is disabled. The separate 0.99 take-profit target, 0.70
+probability-exit threshold, and 0.75 hard-stop multiplier remain enabled.
 
 IOC orders use 10 contracts and allow up to three submissions per market
 (initial plus two retries, at least five seconds apart). After submission,
@@ -46,8 +50,8 @@ not reset or replaced with large arbitrary numbers. Daily counts and exposure
 continue accumulating for audit. The daily loss cap ($30), per-trade cap ($10),
 open-exposure cap ($20), sizing limits, and three-attempt per-market limit remain.
 
-Validation: 157 targeted regression tests passed, including filling beyond the old
-daily caps, preserving counters, enforcing other risk limits, precision boundaries,
+Initial deployment validation: 157 targeted regression tests passed, including
+filling beyond the old daily caps, preserving counters, enforcing other risk limits, precision boundaries,
 reference handling and settings compatibility. Configuration hash:
 `69ec9f4357029f20`. Historical daily totals are preserved; no reset is needed to
 resume eligibility. Normal startup reference warmup still applies.
@@ -114,7 +118,8 @@ before-state backup and config-change evidence:
 `data/runtime/late-two-confirmations-deployment.json`. Future records carry the new
 configuration hash so these results can be separated from the five-confirmation phase.
 
-The active run now enables the [profit-only value exit](EXIT_EXECUTION.md#profit-only-value-exit-paper):
+This deployment enabled the [profit-only value exit](EXIT_EXECUTION.md#profit-only-value-exit-paper)
+(subsequently disabled on September 12):
 $0.20 estimated total net profit, 1 cent per contract advantage over raw settlement
 probability, and two fresh-reference confirmations. Submitted IOC exits keep their price
 floor even if confidence recovers. Entry rules and existing safety thresholds are unchanged.
@@ -141,3 +146,38 @@ disabled stop-confirmation observer is not restarted or migrated. New records
 carry the new configuration hash. See [Bollinger entry filter](BOLLINGER_ENTRY_FILTER.md)
 for exact candle requirements, audit records, startup behavior and evaluation limits.
 Deployment evidence is saved under `data/runtime/bollinger-entry-20260911/`.
+
+## September 12: seven-minute standard entry window
+
+The active paper configuration sets `entry_window_start=420`, so standard entries
+require `120 < seconds_remaining <= 420`. Late entries retain
+`15 < seconds_remaining <= 120`. The only configuration change is the upper
+entry-window limit, from 480 to 420 seconds; all other settings are retained.
+The new configuration hash is `49c03409f6e8844e`.
+
+The collector and dashboard resume the existing `settlement-convergence-v8` run
+after a clean stop and audited checkpoint version update. Trade history and risk
+balances are preserved. Normal startup reference warmup applies. Deployment
+evidence and the database backup are in `data/runtime/entry-window-420-20260912/`.
+
+Validation: 82 targeted regression tests and 16 boundary checks passed. The running
+collector and dashboard both report the new configuration hash after restart.
+
+## September 12: 0.95 entry-price cap and profit-value exit disabled
+
+The active configuration now sets `max_entry_price=0.95` and
+`profit_value_exit_enabled=false`, hash `8eb9db7ebe0ad470`. The price cap is
+inclusive and applies to both entry paths and IOC order limits. The profit-value
+exit no longer submits exits. The separate take-profit target, probability exit,
+hard stop, and all other settings are retained, including the 420-second standard
+entry-window limit and conditional Bollinger entry filter.
+
+The collector and dashboard resume the same paper run after a clean stop and
+audited checkpoint version update, preserving trade history and risk balances.
+Normal startup reference warmup applies. Deployment evidence and the database
+backup are in `data/runtime/entry-price-95-no-profit-value-20260912/`.
+
+Validation: 94 targeted regression tests and 33 checks using the new configuration
+passed. Both running services loaded the new configuration, and the collector
+health probe passed after restart. All 69 existing trade results and risk balances
+were preserved.

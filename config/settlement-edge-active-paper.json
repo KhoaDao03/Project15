@@ -1,9 +1,9 @@
 {
   "enabled": true,
-  "entry_window_start": 480,
+  "entry_window_start": 420,
   "no_new_entry": 120,
   "min_entry_price": 0.7,
-  "max_entry_price": 0.99,
+  "max_entry_price": 0.95,
   "min_probability": 0.8,
   "min_quality": 85,
   "min_edge": 0.01,
@@ -67,5 +67,5 @@
   "taker_fee_rate": 0.07,
   "maker_fee_rate": 0.0175,
   "fee_balance_precision": "0.0001",
-  "profit_value_exit_enabled": true
+  "profit_value_exit_enabled": false
 }
