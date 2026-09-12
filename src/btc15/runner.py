@@ -3,6 +3,7 @@ import json
 import shutil
 import time
 import uuid
+from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -10,10 +11,13 @@ import httpx
 import websockets
 
 from .api import KalshiClient, subscriptions
+from .collector_recovery import CollectorRecovery
 from .domain import dumps
 from .engine import Engine
 from .models import guard_archived_exposure, require_single_run
 from .storage import CompactRecorder, RawRecorder
+
+QUEUE_CAPACITY = 20000
 
 
 def stop_entries(engine, now):
@@ -131,9 +135,15 @@ async def collect(
             "PAPER",
             time.time(),
         )
-        queue = asyncio.Queue(maxsize=20000)
+        queue = asyncio.Queue(maxsize=QUEUE_CAPACITY)
+        pending_receipts = deque()
+        recovery = CollectorRecovery(config, time.time())
+        engine.collector_pause = recovery.paused
+        engine.executor.collector_pause = recovery.paused
         overflow_rows = []
         reconnect = asyncio.Event()
+        drained = asyncio.Event()
+        refresh_requested = asyncio.Event()
         stop = stop_event if stop_event is not None else asyncio.Event()
         metadata_ready = asyncio.Event()
         connection = str(uuid.uuid4())
@@ -153,6 +163,19 @@ async def collect(
         display_reference = None
         receipt_reference = None
         display_tickers = {}
+        last_recovery_status = None
+
+        def request_recovery(reason):
+            recovery.request(reason, time.time())
+            reconnect.set()
+            drained.clear()
+
+        def check_pressure():
+            lag = (time.monotonic_ns() - pending_receipts[0]) / 1e9 if pending_receipts else 0
+            recovery.pressure(lag, len(pending_receipts), queue.maxsize, time.time())
+            if recovery.drain.is_set():
+                reconnect.set()
+            return lag
 
         def emit(payload):
             nonlocal maximum_queue, receipt_reference
@@ -172,11 +195,13 @@ async def collect(
                 raise RuntimeError("Recorder queue overflow; capture stopped")
             try:
                 queue.put_nowait(row)
+                pending_receipts.append(row["monotonic_ns"])
             except asyncio.QueueFull as e:
                 overflow_rows.append(row)
                 stop.set()
                 raise RuntimeError("Recorder queue capacity exceeded; capture stopped") from e
             maximum_queue = max(maximum_queue, queue.qsize())
+            check_pressure()
             if payload.get("type") == "cfbenchmarks_value_5hz":
                 msg = payload.get("msg", {})
                 if msg.get("index_id") == "BRTI":
@@ -188,6 +213,12 @@ async def collect(
 
         def process_batch(rows):
             nonlocal last_status, last_display, display_reference, entries_stopped
+            nonlocal last_recovery_status
+            # Persist the analysis decision alongside every source frame so replay
+            # also applies the complete sequence without trading on the old backlog.
+            for row in rows:
+                row["analysis_suspended"] = recovery.drain.is_set()
+                row["collector_entries_blocked"] = recovery.paused.is_set()
             if recorder:
                 recorder.append_rows(rows)  # Input capture is durable before analysis.
             valid = True
@@ -197,8 +228,15 @@ async def collect(
                     entries_stopped = True
                 if not engine.executor.risk.halted and (Path(settings.data_dir) / "HALT").exists():
                     engine.executor.halt(row["received"])
-                valid = engine.ingest(row) and valid
+                row_valid = engine.ingest(row)
+                valid = row_valid and valid
                 payload = json.loads(row["payload"])
+                if not stop.is_set():
+                    if not row_valid:
+                        recovery.request("DATA_INTEGRITY_FAILURE", time.time())
+                    elif payload.get("type") in ("disconnect", "stale", "error"):
+                        recovery.request("FEED_INTERRUPTED", time.time())
+                recovery.observe(engine, row, payload, row_valid)
                 if shadow is not None:
                     shadow.process(row, payload)
                 if payload.get("type") == "settlement":
@@ -216,6 +254,13 @@ async def collect(
                     msg = payload.get("msg", {})
                     display_tickers[msg.get("market_ticker")] = msg
             now = time.time()
+            lag = (time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9
+            recovery.check(engine, now, lag, queue.qsize(), queue.maxsize, connected, stop.is_set())
+            recovery_status = recovery.status()
+            signature = (recovery_status["state"], tuple(recovery_status["reasons"]), recovery.warning)
+            if signature != last_recovery_status:
+                store.add("collector_recovery", recovery_status, engine.run_id, "PAPER", now)
+                last_recovery_status = signature
             if time.monotonic() - last_display >= 0.05 or not connected:
                 markets = []
                 for ticker, market in engine.markets.items():
@@ -247,6 +292,7 @@ async def collect(
                         markets=markets,
                         reference_5hz=display_reference,
                         processing_lag=(time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9,
+                        recovery=recovery_status,
                     )
                 )
                 last_display = time.monotonic()
@@ -267,6 +313,7 @@ async def collect(
                                 run_id=e.run_id,
                                 model=e.executor.model_identity,
                                 entries_active=e.entries_active,
+                                strategy_enabled=e.config.enabled,
                                 halted=e.executor.risk.halted,
                                 open_positions=len(e.executor.positions),
                                 realized_pnl=e.executor.risk.realized,
@@ -280,6 +327,7 @@ async def collect(
                         maximum_queue=maximum_queue,
                         queue_depth=queue.qsize(),
                         queue_capacity=queue.maxsize,
+                        recovery=recovery_status,
                         markets=list(engine.markets),
                         positions={k: vars(v) for k, v in engine.executor.positions.items()},
                         venue_pauses=dict(engine.executor.venue_pauses),
@@ -329,8 +377,13 @@ async def collect(
                         finished = True
                         break
                     rows.append(item)
-                if not await work(process_batch, rows):
-                    reconnect.set()
+                valid = await work(process_batch, rows)
+                for _ in rows:
+                    pending_receipts.popleft()
+                if not valid:
+                    request_recovery("DATA_INTEGRITY_FAILURE")
+                if recovery.drain.is_set() and not connected and queue.empty():
+                    drained.set()
                 if finished:
                     break
 
@@ -407,16 +460,26 @@ async def collect(
                         )
                     )
                 try:
-                    await asyncio.wait_for(stop.wait(), timeout=15)
+                    await asyncio.wait_for(refresh_requested.wait(), timeout=15)
                 except TimeoutError:
                     pass
+                refresh_requested.clear()
 
         async def receive():
             nonlocal connection, connected
             await metadata_ready.wait()
             backoff = 1
             while not stop.is_set():
-                connection = str(uuid.uuid4())
+                if recovery.drain.is_set():
+                    await drained.wait()
+                    if stop.is_set():
+                        break
+                    await work(recovery.reconnect)
+                    metadata_ready.clear()
+                    refresh_requested.set()
+                    await metadata_ready.wait()
+                    if recovery.drain.is_set():
+                        continue
                 reconnect.clear()
                 try:
                     async with websockets.connect(
@@ -426,6 +489,10 @@ async def collect(
                         ping_timeout=20,
                         max_queue=2048,
                     ) as ws:
+                        # Publish the new identity and its boundary without an
+                        # await; heartbeat/metadata producers keep the old identity
+                        # throughout the handshake, including failed attempts.
+                        connection = str(uuid.uuid4())
                         connected = True
                         emit(dict(type="connected", msg={"tickers": tickers}))
                         for subscription in subscriptions(tickers):
@@ -486,6 +553,8 @@ async def collect(
                     backoff = min(30, backoff * 2)
                 finally:
                     connected = False
+                    if not stop.is_set():
+                        request_recovery("CONNECTION_LOST")
                     emit(dict(type="disconnect", msg={"reason": "reconnect_or_shutdown"}))
 
         async def reference_display():
@@ -507,6 +576,7 @@ async def collect(
                             connected=connected,
                             published_at=time.time(),
                             reference_5hz=receipt_reference,
+                            recovery=recovery.status(),
                         ),
                     )
                     await asyncio.sleep(0.2)
@@ -542,6 +612,9 @@ async def collect(
                 group.create_task(reference_display()),
             ]
             await stop.wait()
+            # Persist shutdown draining just like overload draining. Queued inputs
+            # still update books/settlements, without expensive strategy evaluation.
+            recovery.request("STOPPING", time.time())
             # Bounded cancellation also interrupts slow HTTP refresh/socket waits.
             for task in producers:
                 task.cancel()

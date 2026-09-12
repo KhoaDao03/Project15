@@ -50,6 +50,9 @@ class Position:
     max_favorable: float = 0
     max_adverse: float = 0
     exit_reason: str = ""
+    value_reference: float | None = None
+    value_count: int = 0
+    value_limit: float | None = None
 
 
 def atomic(method):
@@ -95,6 +98,7 @@ class PaperExecutor:
         self.latest_reference_receipt = None
         self.processed_reference_id = None
         self._reference_waits = {}
+        self.collector_pause = None
 
     def pending_reference(self):
         receipt = self.latest_reference_receipt
@@ -378,6 +382,8 @@ class PaperExecutor:
 
         c = self.config
         receipt = self.pending_reference()
+        if self.collector_pause and self.collector_pause.is_set():
+            return reject("COLLECTOR_RECOVERING", "Collector recovery blocks new entries")
         if receipt is not None:
             return reject(
                 "REFERENCE_UPDATE_PENDING",
@@ -692,6 +698,8 @@ class PaperExecutor:
 
     @atomic
     def fill(self, order, quantity, price, now, maker, book=None):
+        if self.collector_pause and self.collector_pause.is_set():
+            return False
         if self.wait_for_reference(order, now):
             return False
         if self.orders.get(order.market) is not order:
@@ -921,7 +929,96 @@ class PaperExecutor:
                 ),
             )
 
-    def monitor(self, market, book, probability, now, event_id):
+    def _profit_value_signal(self, market, book, probability, now, reference_source):
+        """Two fresh reference seconds; full remaining inventory economics, no haircut."""
+        pos = self.positions[market.ticker]
+        raw = (probability or {}).get("p_yes")
+        if type(raw) not in (int, float) or not math.isfinite(raw) or not 0 <= raw <= 1:
+            raw = None
+        p = raw if pos.side == "yes" or raw is None else 1 - raw
+        floor = None
+        if p is not None and reference_source is not None and 0 <= now - reference_source <= 1.5:
+            q = pos.quantity
+
+            def qualifies(price):
+                fee = FeeAccumulator(self.config.fee_balance_precision).charge(
+                    price, q, self.config.taker_fee_rate, "sell"
+                )
+                net = price * q - fee
+                return (
+                    pos.proceeds + net - pos.cost - pos.fees >= 0.20 - 1e-10
+                    and net - p * q >= 0.01 * q - 1e-10
+                )
+
+            if qualifies(1):
+                low, high = 0.0, 1.0
+                for _ in range(40):
+                    mid = (low + high) / 2
+                    if qualifies(mid):
+                        high = mid
+                    else:
+                        low = mid
+                try:
+                    floor = market.snap(high, up=True)
+                except ValueError:
+                    pass
+            levels = book.yes if pos.side == "yes" else book.no
+            depth = sum(
+                max(D(0), qty - D(self.exit_consumed.get((market.ticker, price), 0)))
+                for price, qty in levels.items()
+                if floor is not None and float(price) >= floor and market.valid_tick(float(price))
+            )
+            if depth < D(q):
+                floor = None
+        if floor is None:
+            if pos.value_count != 0 or pos.value_reference is not None:
+                self._set_value_confirmation(market.ticker, 0, None)
+            return None
+        previous = pos.value_reference
+        count = pos.value_count
+        if previous is None or not 0 <= reference_source - previous <= 1.5:
+            count = 1
+        elif int(reference_source) != int(previous):
+            count += 1
+        if count != pos.value_count or reference_source != previous:
+            self._set_value_confirmation(market.ticker, count, reference_source)
+        if count < 2:
+            return None
+        return dict(
+            raw_selected_probability=p,
+            sell_limit=floor,
+            min_net_profit=0.20,
+            min_value_advantage_per_contract=0.01,
+            confirmations=count,
+            reference_source=reference_source,
+            time_in_force="IOC",
+        )
+
+    @atomic
+    def _set_value_confirmation(self, ticker, count, reference):
+        # Quote-level decisions are read-only; only changed confirmation state
+        # needs a portfolio rollback snapshot and durable checkpoint.
+        pos = self.positions[ticker]
+        pos.value_count = count
+        pos.value_reference = reference
+
+    @atomic
+    def _expire_value_exit(self, market, now, reason):
+        pos = self.positions[market.ticker]
+        self.record(
+            "exit_cancelled",
+            dict(previous_reason="PROFIT_VALUE", reason=reason, remaining_quantity=pos.quantity),
+            now,
+            market.ticker,
+            pos.opportunity_id,
+        )
+        pos.exit_reason = ""
+        pos.value_limit = None
+        pos.value_count = 0
+        pos.value_reference = None
+        self._exit_eligible.pop(market.ticker, None)
+
+    def monitor(self, market, book, probability, now, event_id, *, reference_source=None):
         pos = self.positions.get(market.ticker)
         if (
             not pos
@@ -934,6 +1031,22 @@ class PaperExecutor:
         bid = book.bid(pos.side)
         if bid is None or not 0 <= now - book.received <= self.config.book_max_age:
             return
+        if pos.exit_reason == "PROFIT_VALUE":
+            if now > self._exit_eligible[market.ticker] + 2:
+                self._expire_value_exit(market, now, "IOC_DATA_TIMEOUT")
+            else:
+                self._apply_monitor(
+                    market,
+                    book,
+                    bid - pos.cost / pos.bought,
+                    "PROFIT_VALUE",
+                    pos.value_limit,
+                    False,
+                    now,
+                    event_id,
+                )
+                if market.ticker not in self.positions or pos.exit_reason == "PROFIT_VALUE":
+                    return
         entry = pos.cost / pos.bought
         mark = bid - entry
         c = self.config
@@ -965,6 +1078,14 @@ class PaperExecutor:
             )
             else ""
         )
+        value_audit = None
+        if c.profit_value_exit_enabled:
+            value_audit = self._profit_value_signal(
+                market, book, probability if not reason else {}, now, reference_source
+            )
+            if not reason and value_audit:
+                reason = "PROFIT_VALUE"
+                target = value_audit["sell_limit"]
         clear_pending = model_available or pos.exit_reason != "INVALIDATION"
         # Most quote updates change neither the exit decision nor saved extrema.
         # Keep these read-only checks outside the rollback snapshot/SQL transaction.
@@ -979,6 +1100,7 @@ class PaperExecutor:
         if reason and reason != pos.exit_reason:
             hold_ev = conservative - (bid - fee_bound(bid, c) - c.slippage) if model_available else None
             audit = dict(
+                profit_value=value_audit,
                 trigger=(
                     "PROBABILITY_BELOW_EXIT_THRESHOLD"
                     if conservative < c.exit_probability
@@ -1014,8 +1136,51 @@ class PaperExecutor:
             clear_pending=clear_pending,
         )
 
-    @atomic
     def _apply_monitor(
+        self,
+        market,
+        book,
+        mark,
+        reason,
+        target,
+        target_warning,
+        now,
+        event_id,
+        audit=None,
+        *,
+        clear_pending=True,
+    ):
+        pos = self.positions[market.ticker]
+        eligible = getattr(self, "_exit_eligible", {}).get(market.ticker)
+        # Waiting on the same intent changes nothing unless a new extremum or
+        # warning must be saved. Avoid copying the entire portfolio on each quote.
+        if (
+            not target_warning
+            and reason
+            and reason == pos.exit_reason
+            and pos.max_adverse <= mark <= pos.max_favorable
+            and (
+                self.last_exit_event.get(market.ticker) == event_id
+                or eligible is not None
+                and (now < eligible or book.received < eligible)
+            )
+        ):
+            return
+        return self._commit_monitor(
+            market,
+            book,
+            mark,
+            reason,
+            target,
+            target_warning,
+            now,
+            event_id,
+            audit,
+            clear_pending=clear_pending,
+        )
+
+    @atomic
+    def _commit_monitor(
         self,
         market,
         book,
@@ -1062,10 +1227,13 @@ class PaperExecutor:
         if not reason:
             return
         # An exit consumes each observed depth event at most once, after modeled latency.
-        if self.last_exit_event.get(market.ticker) == event_id:
+        if pos.exit_reason and self.last_exit_event.get(market.ticker) == event_id:
             return
         if not pos.exit_reason:
             pos.exit_reason = reason
+            if reason == "PROFIT_VALUE":
+                self.cancel(market.ticker, now, "exit_requested")
+                pos.value_limit = target
             self.last_exit_event[market.ticker] = event_id
             self.record(
                 "exit_intent",
@@ -1097,7 +1265,7 @@ class PaperExecutor:
             if q <= 0 or not market.valid_tick(float(price)):
                 continue
             fill_price = float(price)
-            if reason == "TAKE_PROFIT" and fill_price < target:
+            if reason in ("TAKE_PROFIT", "PROFIT_VALUE") and fill_price < target:
                 continue
             self.exit_consumed[key] = consumed + q
             q_float = float(q)
@@ -1131,7 +1299,9 @@ class PaperExecutor:
                 stress_price = market.snap(D(price) - D(c.slippage))
             except ValueError:
                 stress_price = None
-            stress_fillable = stress_price is not None and (reason != "TAKE_PROFIT" or stress_price >= target)
+            stress_fillable = stress_price is not None and (
+                reason not in ("TAKE_PROFIT", "PROFIT_VALUE") or stress_price >= target
+            )
             stress_fee = (
                 stress_fees.charge(stress_price, q_float, c.taker_fee_rate, "sell")
                 if stress_fillable
@@ -1154,7 +1324,7 @@ class PaperExecutor:
                     else "NOT_FILLABLE_AT_LIMIT"
                     if stress_price is not None
                     else "NO_VALID_TICK",
-                    sell_limit=target if reason == "TAKE_PROFIT" else None,
+                    sell_limit=target if reason in ("TAKE_PROFIT", "PROFIT_VALUE") else None,
                     stressed_fee=stress_fee,
                     stressed_proceeds=q_float * stress_price if stress_fillable else None,
                     primary_proceeds=q_float * fill_price,
@@ -1166,6 +1336,8 @@ class PaperExecutor:
             if remaining == 0:
                 self.finish(market.ticker, now, reason)
                 return
+        if reason == "PROFIT_VALUE":
+            self._expire_value_exit(market, now, "IOC_REMAINDER_EXPIRED")
         self.state(market.ticker, "POSITION_OPEN", now, pos.opportunity_id)
 
     def finish(self, market, now, reason, settlement_result=None):

@@ -103,7 +103,9 @@ class ConfirmationExecutor(PaperExecutor):
         if pos and market.ticker not in self.confirmations:
             bid = book.bid(pos.side)
             if bid is not None and bid > pos.cost / pos.bought * self.config.stop_multiplier:
-                return super().monitor(market, book, p, now, event_id)
+                return super().monitor(
+                    market, book, p, now, event_id, reference_source=reference_source if available else None
+                )
         return self._confirmation_monitor(
             market, book, p, now, event_id, reference_source, available=available
         )
@@ -189,7 +191,9 @@ class ConfirmationExecutor(PaperExecutor):
             # Suppress only the ordinary price stop. Probability and TP stay active.
             if hold:
                 self.config = replace(original, stop_multiplier=0)
-            super().monitor(market, book, p, now, event_id)
+            super().monitor(
+                market, book, p, now, event_id, reference_source=reference_source if available else None
+            )
         finally:
             self.config = original
 
@@ -297,11 +301,15 @@ class StopShadow:
         if kind == "settlement" and ticker in ex.positions:
             ex.settle(restore_market(ex.contracts[ticker]), msg["result"], now, evidence=msg.get("evidence"))
             self.done.add(ticker)
-        if kind in ("disconnect", "stale", "error"):
+        if kind in ("disconnect", "stale", "error") or row.get("analysis_suspended"):
             self.gaps.update(ex.positions)
             for held_ticker in ex.positions:
                 ex.note_gap(held_ticker, now)
-        if kind in ("orderbook_snapshot", "orderbook_delta") and ticker in ex.positions:
+        if (
+            not row.get("analysis_suspended")
+            and kind in ("orderbook_snapshot", "orderbook_delta")
+            and ticker in ex.positions
+        ):
             market, book = e.markets[ticker], e.books[ticker]
             healthy = e.healthy and e.clock_ok and e.exchange_open and market.tradable(now)
             healthy = (

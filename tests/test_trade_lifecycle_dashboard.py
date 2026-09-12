@@ -31,6 +31,7 @@ def test_trade_lifecycle_partial_fills_close_and_scope(store):
         assert data["total"] == 1
         b = data["rows"][0]["body"]
         assert b["status"] == "OPEN" and b["net_pnl"] is None
+        assert b["market_result"] is None
         assert b["quantity"] == 5 and b["entry"] == pytest.approx(0.856)
         assert client.get("/api/trades?run_id=run").json()["total"] == 0
         assert client.get(url + "&search=missing").json()["total"] == 0
@@ -63,5 +64,13 @@ def test_trade_lifecycle_partial_fills_close_and_scope(store):
         assert data["total"] == 1
         b = data["rows"][0]["body"]
         assert b["status"] == "CLOSED" and b["net_pnl"] == 0.43
+        assert b["market_result"] is None
+        # A profitable sale is independent of the eventual market outcome.
+        store.add("settlement", dict(result="yes"), "other", "PAPER", 6, "market")
+        assert client.get(url).json()["rows"][0]["body"]["market_result"] is None
+        store.add("settlement", dict(result="no"), "run", "PAPER", 7, "market")
+        b = client.get(url).json()["rows"][0]["body"]
+        assert b["market_result"] == "no" and b["net_pnl"] == 0.43
+        assert client.get("/api/trades?run_id=run").json()["rows"][0]["body"]["market_result"] == "no"
         assert client.get("/api/trades?include_open=true").json()["total"] == 2
         assert client.get("/api/trades?include_open=true&mode=BACKTEST").json()["total"] == 0

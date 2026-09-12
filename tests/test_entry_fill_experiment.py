@@ -29,6 +29,7 @@ def test_original_hash_and_opt_in(config):
         "max_entry_retries",
         "entry_retry_cooldown",
         "hold_value_exit_enabled",
+        "profit_value_exit_enabled",
         "entry_probability_deductions",
         "sustained_lead_enabled",
         "late_entry_enabled",
@@ -38,11 +39,13 @@ def test_original_hash_and_opt_in(config):
         "late_lead_confirmation_samples",
         "min_lead_sigma",
         "late_min_lead_sigma",
+        "bollinger_entry_filter_enabled",
     ):
         del values[key]
     assert config.version == hashlib.sha256(json.dumps(values, sort_keys=True).encode()).hexdigest()[:16]
     assert replace(config, resting_limit_recheck=True).version != config.version
     assert replace(config, max_entry_retries=1).version != config.version
+    assert replace(config, profit_value_exit_enabled=True).version != config.version
     for kwargs in ({"max_entry_retries": 3}, {"entry_retry_cooldown": 0}):
         with pytest.raises(ValueError):
             replace(config, **kwargs)

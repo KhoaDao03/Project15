@@ -1,5 +1,11 @@
 # Stop-confirmation-v1: parallel paper comparison
 
+The installed collector has this experiment disabled as of September 11, 2026,
+at the user's request. Its startup command omits `--stop-confirmation-shadow`.
+Historical comparisons and the separate ledger are retained. The experiment
+remains available for explicit future activation after its repeated queries of
+completed comparisons have been fixed and validated.
+
 The primary bot keeps its current entry rules, sizes, ordinary stop and probability
 exit. This opt-in experiment copies only committed paper buy fills into a separate
 SQLite ledger (`data/stop-confirmation-shadow.db`). It places no extra primary orders

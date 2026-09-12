@@ -58,6 +58,7 @@
   "late_lead_confirmation_samples": 2,
   "min_lead_sigma": 1.0,
   "late_min_lead_sigma": 2.0,
+  "bollinger_entry_filter_enabled": true,
   "bollinger_period": 20,
   "bollinger_std": 2,
   "rsi_period": 14,
@@ -65,5 +66,6 @@
   "atr_period": 14,
   "taker_fee_rate": 0.07,
   "maker_fee_rate": 0.0175,
-  "fee_balance_precision": "0.0001"
+  "fee_balance_precision": "0.0001",
+  "profit_value_exit_enabled": true
 }

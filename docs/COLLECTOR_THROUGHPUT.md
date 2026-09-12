@@ -1,5 +1,10 @@
 # Collector throughput recovery — September 10, 2026
 
+These are the earlier incident measurements. The subsequent
+[overload recovery implementation](OVERLOAD_RECOVERY.md) adds entry blocking,
+ordered drain/reconnect, and visible freshness/integrity checks. During overload
+draining, book updates remain ordered but strategy evaluations are suspended.
+
 The IOC collector stopped when incoming traffic exhausted the 20,000-event queue.
 The final status showed 13.4 seconds of processing lag. Captured traffic peaked
 at 2,478 events/second. The inactive strategy flag was part of failure shutdown.
@@ -58,8 +63,10 @@ enabled so they are not tied to a terminal/login session.
 The collector restarts after a failure with a 30-second delay, at most three starts
 within five minutes. The dashboard's delay is ten seconds. Clean shutdown does not
 trigger automatic restart. Checkpoint compatibility, HALT/risk flags, writer ownership
-and the 10 GiB disk reserve remain enforced. No automatic stale-lease deletion or
-portfolio reset is installed. A hard kill or repeated failure can require recovery.
+and the 10 GiB disk reserve remain enforced. Writer takeover never follows heartbeat
+age alone. The [overnight fix](OVERNIGHT_FAILURE_FIX_20260911.md) permits recovery
+only with verified dead-process evidence; unknown legacy owners remain blocked.
+No portfolio reset is installed. A hard kill or repeated failure can require recovery.
 
 ```bash
 systemctl --user status btc15-ioc-collector btc15-dashboard

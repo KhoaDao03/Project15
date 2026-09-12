@@ -133,8 +133,6 @@ def restore_contract_history(executor, now):
     history = executor.store.list(kind="market", run_id=executor.run_id, limit=None)
     parsed = [(r, parse_market(r["body"]["raw"], r["body"]["series"])) for r in history]
     markets = {m.ticker: m for _, m in parsed}
-    invalid = executor.store.list(kind="invalid_market", run_id=executor.run_id, limit=None)
-    problems = executor.store.list(kind="health", run_id=executor.run_id, limit=None)
     for ticker in set(executor.orders) | set(executor.positions):
         order = executor.orders.get(ticker)
         if ticker not in executor.positions and not (order and order.active):
@@ -159,12 +157,7 @@ def restore_contract_history(executor, now):
             m.ticker == ticker and r["timestamp"] >= entered and contract_hash(m) != contract_hash(pinned)
             for r, m in parsed
         )
-        invalid_seen = any(r["market"] == ticker and r["timestamp"] >= entered for r in invalid)
-        rules_seen = any(
-            r["market"] == ticker and r["timestamp"] >= entered and r["body"].get("code") == "RULES_CHANGED"
-            for r in problems
-        )
-        if changed or invalid_seen or rules_seen:
+        if changed or executor.store.has_market_integrity_failure(executor.run_id, ticker, entered):
             # Only old checkpoints need legacy classification. Never convert a
             # modern unrelated HALTED state into a recoverable metadata halt.
             reason = "LEGACY_METADATA_QUARANTINE" if legacy_contract else "METADATA_HISTORY_RECONCILIATION"

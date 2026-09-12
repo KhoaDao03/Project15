@@ -60,3 +60,39 @@ The recorded collector result was -$0.5197 overall; processing-clock differences
 neither replay is an exact reconstruction of live collector scheduling. No alternative
 stop confirmations or probability thresholds were added. Local evidence:
 `data/runtime/execution-v2-replay.json` and `data/runtime/replay_execution_v2.py`.
+
+## Profit-only value exit (paper)
+
+The active paper run enables `profit_value_exit_enabled`; historical/default configurations
+leave it disabled. Entry rules are unchanged. Before submission, require two distinct
+reference seconds, no more than 1.5 seconds apart and no more than 1.5 seconds old.
+A cleared condition resets confirmation. Repeated quotes do not count as new references.
+
+Use raw selected-side probability (`p_yes`, or `1-p_yes` for NO). Find a supported sell
+price floor where selling the entire remaining quantity, after quantity-aware taker fees:
+
+- yields at least $0.20 total trade net profit, including earlier proceeds and all paid fees;
+- exceeds raw probability times remaining quantity by at least $0.01 per remaining contract.
+
+Require enough unconsumed supported depth at or above that floor to cover the remaining
+position at decision time. These are conservative full-quantity estimates, not promises
+of a fill. No slippage haircut is subtracted from primary economics or fills.
+
+After the second confirmation, `PROFIT_VALUE` commits a simulated sell IOC with a frozen
+floor and cancels any remaining buy order. Probability recovery does **not** cancel this
+submitted exit. Match once against the first valid post-eligibility observation, at actual
+supported bids no lower than the floor. Any remainder expires (`IOC_REMAINDER_EXPIRED`),
+then gets a new evaluation; partial execution need not realize the full $0.20 threshold.
+If no usable observation arrives within two seconds after eligibility, expire it without
+backfilling (`IOC_DATA_TIMEOUT`) when monitoring resumes. This receipt-based paper model
+is an approximation of exchange IOC execution, not a resting order or a live API call.
+
+Existing hard stop, 99-cent target and adjusted 70% probability exits have priority when
+choosing a new exit. A submitted value IOC completes/expires before a new safety intent
+can be submitted; it cannot execute below its floor. Safety evaluation resumes immediately
+on the same observation if inventory remains. Other conditional exits retain their
+existing trigger-clear behavior described above. Checkpoints retain the committed floor
+and eligibility. The separate stop-confirmation observer uses this same value-exit logic.
+
+`exit_intent.decision.profit_value` records probability, floor, confirmation count and
+thresholds. Fills/results carry reason `PROFIT_VALUE`; haircut stress remains separate.

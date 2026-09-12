@@ -58,6 +58,7 @@ class Strategy:
     take_profit: float | None = 0.99
     exit_probability: float = 0.70
     min_hold_ev: float = 0
+    profit_value_exit_enabled: bool = False
     hold_value_exit_enabled: bool = True
     entry_probability_deductions: bool = True
     sustained_lead_enabled: bool = False
@@ -69,6 +70,7 @@ class Strategy:
     late_lead_confirmation_samples: int = 0
     min_lead_sigma: float = 1.0
     late_min_lead_sigma: float = 2.0
+    bollinger_entry_filter_enabled: bool = False
     bollinger_period: int = 20
     bollinger_std: float = 2
     rsi_period: int = 14
@@ -137,6 +139,7 @@ class Strategy:
             ("max_entry_retries", 0),
             ("entry_retry_cooldown", 5),
             ("hold_value_exit_enabled", True),
+            ("profit_value_exit_enabled", False),
             ("entry_probability_deductions", True),
             ("sustained_lead_enabled", False),
             ("late_entry_enabled", False),
@@ -146,6 +149,7 @@ class Strategy:
             ("late_lead_confirmation_samples", 0),
             ("min_lead_sigma", 1.0),
             ("late_min_lead_sigma", 2.0),
+            ("bollinger_entry_filter_enabled", False),
         ):
             if values[name] == default:
                 del values[name]

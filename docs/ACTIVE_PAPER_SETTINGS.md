@@ -1,7 +1,7 @@
-# Active paper settings — September 10, 2026
+# Active paper settings — September 11, 2026
 
-The installed collector and dashboard now select `settlement-convergence-v7`,
-using `data/runtime/settlement-convergence-v7.json`. The matching tracked
+The installed collector and dashboard now select `settlement-convergence-v8`,
+using `data/runtime/settlement-convergence-v8.json`. The matching tracked
 configuration is `config/settlement-edge-active-paper.json`.
 
 The user requested this as a direct replacement for the active bot settings:
@@ -113,3 +113,31 @@ the services. Inventory, risk, trade history and performance were preserved. Exa
 before-state backup and config-change evidence:
 `data/runtime/late-two-confirmations-deployment.json`. Future records carry the new
 configuration hash so these results can be separated from the five-confirmation phase.
+
+The active run now enables the [profit-only value exit](EXIT_EXECUTION.md#profit-only-value-exit-paper):
+$0.20 estimated total net profit, 1 cent per contract advantage over raw settlement
+probability, and two fresh-reference confirmations. Submitted IOC exits keep their price
+floor even if confidence recovers. Entry rules and existing safety thresholds are unchanged.
+
+## September 11: shadow comparison disabled
+
+The installed collector now omits `--stop-confirmation-shadow`, at the user's
+request. It resumes the same `settlement-convergence-v8` paper run and frozen
+configuration, with primary entries, exits, recording and recovery checks intact.
+The optional comparison no longer processes incoming messages. Its historical
+results and `data/stop-confirmation-shadow.db` remain available for inspection.
+
+## September 11: conditional Bollinger entry filter
+
+The active v8 paper configuration enables `bollinger_entry_filter_enabled=true`,
+with the existing 20-minute period and two-standard-deviation bands. Configuration
+hash: `ebc936c466e8f0bf`. A new YES entry is rejected above the upper band; a new NO
+entry is rejected below the lower band. Equality passes. If fresh bands are
+unavailable, the original entry checks determine eligibility. This applies to
+both standard and late entry paths, using the causal model reference.
+
+The same run, trade history, sizing, risk balances and exits are retained. The
+disabled stop-confirmation observer is not restarted or migrated. New records
+carry the new configuration hash. See [Bollinger entry filter](BOLLINGER_ENTRY_FILTER.md)
+for exact candle requirements, audit records, startup behavior and evaluation limits.
+Deployment evidence is saved under `data/runtime/bollinger-entry-20260911/`.

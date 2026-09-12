@@ -69,6 +69,7 @@ def test_enabled_default_preserves_historical_config_version():
         "max_entry_retries",
         "entry_retry_cooldown",
         "hold_value_exit_enabled",
+        "profit_value_exit_enabled",
         "entry_probability_deductions",
         "sustained_lead_enabled",
         "late_entry_enabled",
@@ -78,6 +79,7 @@ def test_enabled_default_preserves_historical_config_version():
         "late_lead_confirmation_samples",
         "min_lead_sigma",
         "late_min_lead_sigma",
+        "bollinger_entry_filter_enabled",
     ):
         del historical[name]
     expected = hashlib.sha256(json.dumps(historical, sort_keys=True).encode()).hexdigest()[:16]

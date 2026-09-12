@@ -4,7 +4,7 @@
 
 This is a research/paper-trading application, not a claim of profitability. It uses real Kalshi market data when credentials are configured, but orders and fills are simulated. **Real-money submission is blocked in code.**
 
-For this installation, [active paper settings](docs/ACTIVE_PAPER_SETTINGS.md) describe the current paper configuration, including [sustained-lead checks and late entries](docs/SUSTAINED_LEAD.md). See [paper exit execution](docs/EXIT_EXECUTION.md) for post-latency depth matching and separate stress diagnostics. The [stop-confirmation comparison](docs/STOP_CONFIRMATION_SHADOW.md) runs in a separate paper ledger.
+For this installation, [active paper settings](docs/ACTIVE_PAPER_SETTINGS.md) describe the current paper configuration, including [sustained-lead checks and late entries](docs/SUSTAINED_LEAD.md) and the [conditional Bollinger entry filter](docs/BOLLINGER_ENTRY_FILTER.md). See [paper exit execution](docs/EXIT_EXECUTION.md) for post-latency depth matching and separate stress diagnostics. The optional [stop-confirmation comparison](docs/STOP_CONFIRMATION_SHADOW.md) is currently disabled; its separate paper ledger and historical results are retained.
 
 ## Start here
 
@@ -77,6 +77,18 @@ changes an existing frozen run automatically.
 
 For this installation, [collector throughput recovery and service controls](docs/COLLECTOR_THROUGHPUT.md)
 describe the measured performance fix and supervised operation.
+See [overload detection and sequence-safe recovery](docs/OVERLOAD_RECOVERY.md)
+for entry blocking, ordered draining, fresh-data checks, and recovery status.
+The [operational state panel](docs/OPERATIONAL_STATE.md) separates collector health,
+recovery progress, and current entry-blocking reasons.
+See [replay and failure recovery validation](docs/REPLAY_RECOVERY_VALIDATION.md)
+for offline results and the remaining endurance-session acceptance.
+The [overnight recovery fix](docs/OVERNIGHT_FAILURE_FIX_20260911.md) addresses
+draining an established book and writer ownership after an interrupted process.
+The [connection setup fix](docs/CONNECTION_HANDSHAKE_FIX_20260911.md) prevents
+false integrity failures when heartbeats arrive during a WebSocket handshake.
+The [reliability audit](docs/RELIABILITY_AUDIT_20260911.md) adds repair for connected
+but stalled feeds and reduces restart cost after large diagnostic histories.
 
 ## Operating modes
 

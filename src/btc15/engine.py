@@ -110,6 +110,12 @@ class Engine:
         self.last_mono = None
         self.last_wall = None
         self.entries_active = True
+        self.collector_blocked = False
+        self.collector_pause = None
+        self.analysis_suspended = False
+        self._collector_managed = False
+        self._collector_integrity_failed = False
+        self._collector_book_sids = {}
         self.executor = PaperExecutor(store, self.run_id, mode, config)
         try:
             commit = subprocess.check_output(
@@ -224,6 +230,7 @@ class Engine:
                     window_start=self._rejection_flush,
                     window_end=now,
                     counting_unit="recorded decision evaluations; reasons may overlap",
+                    config_version=self.config.version,
                     groups=list(self._rejection_summary.values()),
                 ),
                 self.run_id,
@@ -238,6 +245,10 @@ class Engine:
         log.warning(dumps(dict(code=code, market_id=market, run_id=self.run_id, detail=detail)))
 
     def invalidate(self, now, reason):
+        if self._collector_managed:
+            self._collector_integrity_failed = True
+            self.collector_blocked = True
+            self._collector_book_sids.clear()
         self._lead_history.clear()
         self._model_cache.clear()
         for ticker in self.executor.positions:
@@ -250,6 +261,20 @@ class Engine:
 
     def ingest(self, row):
         now = row["received"]
+        self._collector_managed = type(row.get("collector_entries_blocked")) is bool
+        self.collector_blocked = (
+            row.get("collector_entries_blocked", False) or self._collector_integrity_failed
+        )
+        suspended = row.get("analysis_suspended", False)
+        if suspended:
+            self.collector_blocked = True
+        if suspended and not self.analysis_suspended:
+            # Drain the established stream before invalidating it for replacement.
+            # Clearing its book/SID here rejects otherwise contiguous queued deltas.
+            for ticker, order in list(self.executor.orders.items()):
+                if order.active:
+                    self.executor.cancel(ticker, now, "collector_overload")
+        self.analysis_suspended = suspended
         if now < self.last_received:
             if self.last_mono is not None and row.get("monotonic_ns", 0) / 1e9 <= self.last_mono:
                 raise ValueError("Receive order moved backwards")
@@ -269,6 +294,9 @@ class Engine:
         connection = row.get("connection_id", "")
         if connection != self.connection:
             self.invalidate(now, "connection_changed")
+            if kind == "connected":
+                self._collector_integrity_failed = False
+                self.collector_blocked = row.get("collector_entries_blocked", False)
             self.connection = connection
             self.sequences = {}
             self.last_mono = self.last_wall = None
@@ -281,6 +309,11 @@ class Engine:
             self.invalidate(now, "local_clock_jump")
         self.last_mono, self.last_wall = mono, now
         sid, seq = payload.get("sid"), payload.get("seq")
+        if self._collector_managed and kind in ("orderbook_snapshot", "orderbook_delta"):
+            if type(sid) is not int or type(seq) is not int or sid < 0 or seq < 0:
+                self.invalidate(now, "missing_book_sequence")
+                self.error("MISSING_BOOK_SEQUENCE", now)
+                return False
         if sid is not None and seq is not None:
             previous = self.sequences.get(sid)
             if previous is not None and seq != previous + 1:
@@ -384,10 +417,14 @@ class Engine:
                     continuous = self.books[ticker].valid
                     if kind == "orderbook_snapshot":
                         self.books[ticker].snapshot(msg, now)
+                        if self._collector_managed:
+                            self._collector_book_sids[ticker] = sid
                         # Honor source time when supplied; an old snapshot is not fresh
                         # merely because it was received now (zero is not a fallback).
                         self.books[ticker].source_time = msg.get("ts_ms", now * 1000) / 1000
                     else:
+                        if self._collector_managed and self._collector_book_sids.get(ticker) != sid:
+                            raise ValueError("Delta subscription does not match its snapshot")
                         self.books[ticker].delta(msg, now)
                     if (
                         ticker in self.executor.positions
@@ -424,7 +461,12 @@ class Engine:
             elif kind == "settlement":
                 self.settle(msg["market_ticker"], msg["result"], now, evidence=msg.get("evidence"))
             # 5 Hz/ticker frames remain in raw storage; never counted as 1 Hz settlement samples.
-            if kind not in ("cfbenchmarks_value_5hz", "ticker", "subscribed", "ok"):
+            if not self.analysis_suspended and kind not in (
+                "cfbenchmarks_value_5hz",
+                "ticker",
+                "subscribed",
+                "ok",
+            ):
                 self.process(now, row["id"], kind, msg)
         except (ValueError, KeyError, TypeError, OverflowError) as exc:
             self.invalidate(now, "invalid_data")
@@ -534,6 +576,8 @@ class Engine:
                 extras.append("PROCESSING_LAG")
             if not self.entries_active:
                 extras.append("MODEL_INACTIVE")
+            if self.collector_blocked or (self.collector_pause and self.collector_pause.is_set()):
+                extras.append("COLLECTOR_RECOVERING")
             if not self.healthy:
                 extras.append("FEED_UNHEALTHY")
             if not self.clock_ok:
@@ -682,11 +726,27 @@ class Engine:
                                     expected_fill_price=decision.get("expected_fill_price"),
                                     net_ev=decision.get("net_ev"),
                                     conservative_probability=decision.get("conservative_probability"),
+                                    bollinger_entry_filter=decision.get("bollinger_entry_filter"),
                                 ),
                             )
                             self._rejection_summary[key] = sample
                         sample["count"] += 1
                         sample["last_at"] = now
+                        if (
+                            reason["code"] == "BOLLINGER_EXTENSION"
+                            and len(decision["reasons"]) == 1
+                            and report_quantity > 0
+                        ):
+                            sample["otherwise_eligible_count"] = sample.get("otherwise_eligible_count", 0) + 1
+                            sample.setdefault(
+                                "otherwise_eligible_sample",
+                                dict(
+                                    timestamp=now,
+                                    snapshot_id=event_id,
+                                    model_evaluated_at=model_time,
+                                    **decision,
+                                ),
+                            )
                     self.flush_rejections(now)
                 self.last_evaluation[ticker] = now
                 op = str(uuid.uuid4())
@@ -749,7 +809,10 @@ class Engine:
             management_healthy = bool(
                 inputs_fresh
                 and market.tradable(execution_now)
-                and all(r in ("MODEL_INACTIVE", "KILL_SWITCH", "EXISTING_ENTRY") for r in extras)
+                and all(
+                    r in ("MODEL_INACTIVE", "KILL_SWITCH", "EXISTING_ENTRY", "COLLECTOR_RECOVERING")
+                    for r in extras
+                )
                 and all(r in ("WARMUP", "SHOCK", "REFERENCE_GAP", "MODEL_UNAVAILABLE") for r in q["reasons"])
             )
             if position or (resting and resting.active):
@@ -798,12 +861,21 @@ class Engine:
                 # Price-based exits do not need a probability. Never use a missing
                 # or quality-blocked model to invent a probability-based exit.
                 exit_probability = p if not q["reasons"] else {}
-                self.executor.monitor(market, book, exit_probability, execution_now, event_id)
+                self.executor.monitor(
+                    market,
+                    book,
+                    exit_probability,
+                    execution_now,
+                    event_id,
+                    reference_source=self.ticks[-1].source if self.ticks else None,
+                )
             if decision["decision"] == "TRADE_CANDIDATE" and record_decision:
                 submit_now = self.clock() if self.clock else now
                 self.executor.audit_input = (now, self.ticks[-1].received if self.ticks else None)
                 context = dict(snapshot_id=event_id, decision_timestamp=now, submission_timestamp=submit_now)
                 rechecks = list(freshness_failures)
+                if self.collector_pause and self.collector_pause.is_set():
+                    rechecks.append(dict(code="COLLECTOR_RECOVERING", message="Collector recovery pending"))
                 rechecks.extend(freshness_rechecks(book, self.ticks, now, submit_now, c))
                 rechecks = list({r["code"]: r for r in rechecks}.values())
                 for code in extras + q["reasons"]:

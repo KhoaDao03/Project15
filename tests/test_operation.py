@@ -34,13 +34,44 @@ def test_managed_clean_restart_preserves_run(store, config, tmp_path, raw, serie
 
 
 def test_stop_drains_and_releases_writer(store, config, tmp_path, raw, series, monkeypatch):
+    import time
+
+    from btc15.domain import D
+
     fake_client(monkeypatch, raw, series)
+    engines = []
+    ingest = runner.Engine.ingest
+
+    def slow(engine, row):
+        if not engines:
+            engines.append(engine)
+        if not row.get("analysis_suspended"):
+            time.sleep(0.002)
+        return ingest(engine, row)
+
+    monkeypatch.setattr(runner.Engine, "ingest", slow)
 
     async def run():
         stop = asyncio.Event()
 
         def payloads():
-            yield from (dict(type="ticker", msg={}) for _ in range(50))
+            yield dict(
+                type="orderbook_snapshot",
+                sid=3,
+                seq=1,
+                msg=dict(
+                    market_ticker=raw["ticker"], yes_dollars_fp=[[".80", "3"]], no_dollars_fp=[[".90", "10"]]
+                ),
+            )
+            yield from (
+                dict(
+                    type="orderbook_delta",
+                    sid=3,
+                    seq=i + 2,
+                    msg=dict(market_ticker=raw["ticker"], side="yes", price_dollars=".80", delta_fp="1"),
+                )
+                for i in range(50)
+            )
             # The next recv begins only after the previous frame was enqueued.
             # Stop after delivery, not after a machine-speed-dependent 150 ms.
             stop.set()
@@ -59,7 +90,11 @@ def test_stop_drains_and_releases_writer(store, config, tmp_path, raw, series, m
 
     asyncio.run(run())
     rows = list(read_events(next((tmp_path / "raw").glob("*.jsonl"))))
-    assert sum(r["payload"]["type"] == "ticker" for r in rows) == 50
+    assert sum(r["payload"]["type"] == "orderbook_delta" for r in rows) == 50
+    assert any(r.get("analysis_suspended") and r["payload"]["type"] == "orderbook_delta" for r in rows)
+    assert engines[0].books[raw["ticker"]].yes[D(".80")] == 53
+    assert not [r for r in store.list(kind="health") if r["body"]["code"] == "INVALID_DATA"]
+    assert len(store.list(kind="shutdown_complete")) == 1
     assert rows[-1]["payload"] == dict(type="disconnect", msg={"reason": "shutdown"})
     assert not store.list(kind="status", newest_first=True, limit=1)[0]["body"]["connected"]
     store.acquire("collector", "after-stop")

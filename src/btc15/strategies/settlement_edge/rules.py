@@ -146,11 +146,28 @@ def evaluate(
     check("REGIME", features["regime"] != "EXTREME", features["regime"], "not EXTREME")
     for r in extra_reasons:
         check(r, False)
+    bollinger_filter = dict(enabled=config.bollinger_entry_filter_enabled, status="disabled")
+    if config.bollinger_entry_filter_enabled:
+        bands = features.get("bollinger")
+        reference = features.get("reference")
+        available = bool(bands and features.get("bollinger_fresh") and reference is not None)
+        bound = (bands["upper"] if side == "yes" else bands["lower"]) if available and side else None
+        rejected = bound is not None and (
+            (side == "yes" and reference > bound) or (side == "no" and reference < bound)
+        )
+        bollinger_filter.update(
+            status="unavailable" if not available else "rejected" if rejected else "allowed",
+            reference=reference,
+            lower=bands["lower"] if available else None,
+            upper=bands["upper"] if available else None,
+        )
+        check("BOLLINGER_EXTENSION", not rejected, reference, bound)
     return dict(
         decision="NO_TRADE" if reasons else "TRADE_CANDIDATE",
         side=side,
         entry_path=path,
         lead=lead,
+        bollinger_entry_filter=bollinger_filter,
         reasons=reasons,
         seconds_remaining=remaining,
         conservative_probability=conservative,

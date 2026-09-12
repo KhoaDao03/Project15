@@ -4,6 +4,7 @@ import gzip
 import json
 import math
 import os
+import time
 import uuid
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -35,6 +36,7 @@ from sqlalchemy import (
 from sqlalchemy.exc import IntegrityError
 
 from .domain import dumps
+from .lease_identity import WriterOwnedError, current_process, owner_is_dead
 
 metadata = MetaData()
 records = Table(
@@ -343,6 +345,27 @@ class Store:
                 result = result[:limit] if limit is not None else result
             return result
 
+    def has_market_integrity_failure(self, run_id, market, since):
+        """Check retained evidence without loading an unbounded diagnostic history."""
+        code = (
+            func.json_extract(records.c.body, "$.code")
+            if self.engine.dialect.name == "sqlite"
+            else func.json_extract_path_text(cast(records.c.body, JSON), "code")
+        )
+        query = (
+            select(records.c.id)
+            .where(
+                records.c.run_id == run_id,
+                records.c.market == market,
+                records.c.timestamp >= since,
+                (records.c.kind == "invalid_market")
+                | ((records.c.kind == "health") & (code == "RULES_CHANGED")),
+            )
+            .limit(1)
+        )
+        with self.transaction() as c:
+            return c.execute(query).first() is not None
+
     def state(self, run_id, market):
         existing = self._connection.get()
         if existing is not None:
@@ -449,13 +472,32 @@ class Store:
             return result.scalar_one_or_none() is not None
 
     def acquire(self, key, owner):
+        identity = current_process()
         try:
             with self.transaction() as c:
+                previous = c.execute(select(leases.c.owner).where(leases.c.key == key)).scalar()
+                if previous is not None:
+                    saved = self.read_market_display("lease:" + key) or {}
+                    if saved.get("owner") != previous or not owner_is_dead(saved, identity):
+                        raise WriterOwnedError()
+                    # Compare-and-delete and replacement share one transaction.
+                    # A competing acquirer cannot replace a newer/live owner.
+                    deleted = c.execute(
+                        leases.delete().where(leases.c.key == key, leases.c.owner == previous)
+                    )
+                    if deleted.rowcount != 1:
+                        raise WriterOwnedError()
+                    self.add(
+                        "writer_recovered",
+                        dict(key=key, previous_owner=previous, process=saved),
+                        owner,
+                        "PAPER",
+                        time.time(),
+                    )
                 c.execute(insert(leases).values(key=key, owner=owner))
+                self.publish_market_display(dict(owner=owner, **(identity or {})), "lease:" + key)
         except IntegrityError as e:
-            raise RuntimeError(
-                "A writer owns this database. After a crash inspect the lease before manual recovery."
-            ) from e
+            raise WriterOwnedError() from e
 
     def writer_owner(self):
         with self.transaction() as c:
@@ -463,7 +505,9 @@ class Store:
 
     def release(self, key, owner):
         with self.transaction() as c:
-            c.execute(leases.delete().where(leases.c.key == key, leases.c.owner == owner))
+            deleted = c.execute(leases.delete().where(leases.c.key == key, leases.c.owner == owner))
+            if deleted.rowcount:
+                c.execute(market_display.delete().where(market_display.c.key == "lease:" + key))
 
 
 RAW_SCHEMA = pa.schema(
@@ -473,6 +517,8 @@ RAW_SCHEMA = pa.schema(
         ("monotonic_ns", pa.int64()),
         ("connection_id", pa.string()),
         ("payload", pa.string()),
+        ("analysis_suspended", pa.bool_()),
+        ("collector_entries_blocked", pa.bool_()),
     ]
 )
 
@@ -590,6 +636,9 @@ def read_events(path):
 
     previous = None
     for row in source():
+        for flag in ("analysis_suspended", "collector_entries_blocked"):
+            if row.get(flag) is None:
+                row.pop(flag, None)
         if not math.isfinite(row["received"]):
             raise ValueError("Invalid receive timestamp")
         if previous and row["received"] < previous["received"]:

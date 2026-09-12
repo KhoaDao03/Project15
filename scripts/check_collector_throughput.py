@@ -24,6 +24,8 @@ parser.add_argument("--checkpoint", required=True)
 parser.add_argument("--config", required=True)
 parser.add_argument("--output", required=True)
 parser.add_argument("--profile", action="store_true")
+parser.add_argument("--profile-output", help="Write cProfile statistics for offline analysis")
+parser.add_argument("--shadow", action="store_true", help="Include shadow processing in the isolated replay")
 parser.add_argument("--historical-markets", type=int, default=0)
 parser.add_argument("--min-rate", type=float, default=0)
 parser.add_argument("--compare", help="Prior output whose portfolio and fill results must match")
@@ -82,6 +84,15 @@ with tempfile.TemporaryDirectory(prefix="btc15-burst-") as tmp:
     e.healthy = e.clock_ok = e.exchange_open = True
     e.connection = rows[0]["connection_id"]
     recorder = CompactRecorder(Path(tmp) / "raw")
+    shadow = None
+    if args.shadow:
+        from btc15.stop_shadow import StopShadow
+
+        shadow = StopShadow(e, Path(tmp) / "shadow.db")
+        # The fixture predates shadow recording. Seed identical held exposure for
+        # a processing-load scenario, not evidence of historical shadow returns.
+        shadow.executor.restore({**snap, "mode": "BACKTEST"})
+        shadow.connection = e.connection
 
     def run():
         for offset in range(0, len(rows), 256):
@@ -90,14 +101,20 @@ with tempfile.TemporaryDirectory(prefix="btc15-burst-") as tmp:
             for row in batch:
                 clock[0] = row["received"]
                 assert e.ingest(row), row["id"]
+                if shadow is not None:
+                    payload = row["payload"]
+                    shadow.process(row, json.loads(payload) if isinstance(payload, str) else payload)
+                    assert not shadow.failed, "Shadow processing failed"
         recorder.close()
         if hasattr(e, "flush_rejections"):
             e.flush_rejections(clock[0], force=True)
 
     start = time.perf_counter()
-    if args.profile:
+    if args.profile or args.profile_output:
         p = cProfile.Profile()
         p.runcall(run)
+        if args.profile_output:
+            p.dump_stats(args.profile_output)
         out = io.StringIO()
         pstats.Stats(p, stream=out).sort_stats("cumulative").print_stats(22)
         print(out.getvalue())
@@ -113,6 +130,7 @@ with tempfile.TemporaryDirectory(prefix="btc15-burst-") as tmp:
         raw_bytes=sum(p.stat().st_size for p in (Path(tmp) / "raw").rglob("*") if p.is_file()),
         peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
         events=len(rows),
+        shadow_enabled=args.shadow,
         elapsed=elapsed,
         events_per_second=len(rows) / elapsed,
         snapshot=e.executor.snapshot(),
@@ -133,9 +151,18 @@ with tempfile.TemporaryDirectory(prefix="btc15-burst-") as tmp:
             if r["kind"] in ("order", "fill", "trade_result")
         ],
     )
+    if shadow is not None:
+        output["shadow_snapshot"] = shadow.executor.snapshot()
+        output["shadow_records"] = [
+            {k: r[k] for k in ("kind", "timestamp", "market", "body")}
+            for r in shadow.store.list(limit=None)
+            if r["kind"] not in ("run", "resume")
+        ]
     Path(args.output).write_text(dumps(output))
     print({k: output[k] for k in ("events", "elapsed", "events_per_second")})
     store.engine.dispose()
+    if shadow is not None:
+        shadow.store.engine.dispose()
 
 if args.compare:
     previous = json.loads(Path(args.compare).read_text())
@@ -151,6 +178,15 @@ if args.compare:
         assert sorted(previous["audit_records"], key=sort_key) == sorted(
             output["audit_records"], key=sort_key
         ), "Audit records changed"
+    if "shadow_snapshot" in previous:
+        assert previous["shadow_snapshot"] == json.loads(dumps(output.get("shadow_snapshot"))), (
+            "Shadow portfolio changed"
+        )
+        assert sorted(previous["shadow_records"], key=sort_key) == sorted(
+            output["shadow_records"], key=sort_key
+        ), "Shadow records changed"
     print("Portfolio, execution results, and audit records match the comparison run")
+    if "shadow_snapshot" in previous:
+        print("Shadow portfolio and records match the comparison run")
 if output["events_per_second"] < args.min_rate:
     raise SystemExit("Processing rate is below the required threshold")

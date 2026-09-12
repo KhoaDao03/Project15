@@ -103,6 +103,11 @@ def features(ticks, now, config):
             position=(prices[-1] - (middle - width)) / (2 * width) if width else 0.5,
             distance_outside=max(0, prices[-1] - middle - width, middle - width - prices[-1]),
         )
+    # An older contiguous sequence may survive a missing latest closed minute.
+    # Freshness belongs to this causal model snapshot, including when it is cached.
+    out["bollinger_fresh"] = bool(
+        out["bollinger"] is not None and contiguous[-1][0] == int(now // 60) - 1
+    )
     if len(closes) > config.atr_period:
         tr = [
             max(c[2] - c[3], abs(c[2] - prev[4]), abs(c[3] - prev[4]))

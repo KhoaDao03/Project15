@@ -19,6 +19,7 @@ from .api import KalshiClient
 from .config import Settings, Strategy
 from .domain import dumps
 from .models import history_models, identity, run_model, select_history
+from .operational_state import operational_state
 from .storage import Store
 
 
@@ -62,7 +63,10 @@ def create_app(
                             min_free_bytes=10 * 1024**3 if paper_execution else 0,
                             stop_event=stop,
                         )
-                    except Exception:
+                    except Exception as exc:
+                        from .operation import record_collector_failure
+
+                        record_collector_failure(store, run_id, exc)
                         feed_error = (
                             "Dashboard could not start collection. Check the collector log and writer lease."
                         )
@@ -244,17 +248,29 @@ def create_app(
 
     @app.get("/api/health")
     def health():
-        status = store.list(kind="status", limit=1, newest_first=True)
+        status = store.list(kind="status", mode="PAPER", limit=1, newest_first=True)
         latest = status[0] if status else None
-        age = time.time() - latest["timestamp"] if latest else None
+        now = time.time()
+        age = now - latest["timestamp"] if latest else None
+        current_run = latest["body"].get("run_id", latest["run_id"]) if latest else None
+        evaluations = store.latest_evaluations([current_run], "PAPER") if current_run else {}
+        operational = operational_state(
+            latest,
+            evaluations.get(current_run),
+            now,
+            startup_error=feed_error,
+            reference=store.read_market_display("reference"),
+            failure=store.read_market_display("collector_failure"),
+        )
         return dict(
             database="ok",
-            server_time=time.time(),
+            server_time=now,
             live_enabled=False,
-            collector_startup_error=feed_error,
+            collector_startup_error=(operational.get("failure") or {}).get("message") or feed_error,
             collector=latest["body"] if latest else None,
             status_age=age,
             collector_fresh=age is not None and 0 <= age < 5,
+            operational=operational,
         )
 
     @app.get("/api/runs")
@@ -562,7 +578,19 @@ def create_app(
             rows.sort(
                 key=lambda r: (r["body"].get("opened", r["timestamp"]), r["opportunity_id"]), reverse=True
             )
-        return {"total": len(rows), "rows": rows[offset : offset + limit]}
+        page = rows[offset : offset + limit]
+        outcomes = {}
+        for row in page:
+            key = (row["run_id"], row["market"])
+            if key not in outcomes:
+                settlements = store.list(
+                    kind="settlement", mode=mode, run_id=key[0], market=key[1],
+                    limit=1, newest_first=True,
+                )
+                outcomes[key] = settlements[0]["body"].get("result") if settlements else None
+            result = outcomes[key] or row["body"].get("settlement_result")
+            row["body"]["market_result"] = result if result in ("yes", "no") else None
+        return {"total": len(rows), "rows": page}
 
     @app.get("/api/replay/{opportunity_id}")
     def replay(opportunity_id: str):
