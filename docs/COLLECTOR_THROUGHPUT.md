@@ -97,3 +97,22 @@ market rollover and settlement, bounded resource growth, UTC risk rollover, and
 recovery from network and process interruptions using the same ledger. The previous
 stranded paper position was reconciled through the normal official-settlement path;
 its saved history and risk totals were preserved.
+
+## Inactive-order recovery cost (2026-09-16)
+
+Short nonblocking live profiles found about 79% of BTC and 78% of XRP samples in
+portfolio deepcopy during disconnect/connection-change invalidation. Each collector
+retained roughly 180 paper orders and a 1 MB portfolio checkpoint, with no active
+orders in the sampled checkpoints. `cancel` entered its atomic snapshot before
+checking whether an order was active, so recovery copied unchanged history repeatedly.
+
+Cancellation now checks for an active order before entering the atomic mutation;
+invalidation also skips inactive orders. Actual cancellations retain transactional
+checkpointing and rollback, including risk reservations and partially filled positions.
+All books are still invalidated and collector subscription identities reset. Historical
+records are retained. The five-market-per-asset live dashboard window is separate;
+recovery must continue to handle every active order, even one outside that window.
+
+Regression coverage: inactive/missing cancellations do not snapshot or transact;
+checkpoint failures roll active cancellation back; repeated invalidation of a portfolio
+with 180 historical orders only cancels the active order and preserves book/SID blocking.

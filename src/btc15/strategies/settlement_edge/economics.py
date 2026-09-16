@@ -87,9 +87,9 @@ def entry_economics(
         target_case = dict(status="NO_SUPPORTED_TICK")
     out["target_sale"] = target_case
     try:
-        stop_case = sale(market.snap(entry * D(config.stop_multiplier)))
+        stop_case = sale(market.snap(D(config.stop_price(entry))))
         stop_case.update(
-            trigger_price=float(entry * D(config.stop_multiplier)),
+            trigger_price=float(D(config.stop_price(entry))),
             assumption="Full sale at rounded stop threshold; future depth and gaps unknown. Not a loss cap.",
         )
     except ValueError:

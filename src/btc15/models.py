@@ -10,9 +10,10 @@ LEGACY_REVISION = "b4f291105b2f1bbb8f025b82f922abe9b22084f4"
 def identity(config):
     return dict(
         model_id="settlement-edge",
-        model_name="BTC15 Settlement Edge",
+        model_name=f"{config.asset}15 Settlement Edge",
         model_version="v1",
         config_hash=config.version,
+        **({"asset": config.asset} if config.asset != "BTC" else {}),
     )
 
 

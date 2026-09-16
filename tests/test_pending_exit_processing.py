@@ -55,6 +55,9 @@ def test_exit_executes_at_exact_eligibility_and_preserves_depth(pending, market,
 @pytest.mark.parametrize("change", ["extremum", "clear", "replace", "fill"])
 def test_pending_mutations_remain_atomic(pending, market, book, now, monkeypatch, change):
     ex = pending
+    if change in ("clear", "replace"):
+        # Probability intents remain conditional; committed hard stops do not clear.
+        ex.positions[market.ticker].exit_reason = "INVALIDATION"
     before = copy.deepcopy(ex.snapshot())
     ex.store.checkpoint(ex.run_id, before)
     saved = ex.store.load_checkpoint(ex.run_id)
@@ -64,7 +67,7 @@ def test_pending_mutations_remain_atomic(pending, market, book, now, monkeypatch
     if change == "extremum":
         book.yes = {D(".49"): D("1.25")}
     elif change in ("clear", "replace"):
-        book.yes = {D(".80"): D("1.25")}
+        book.yes = {D(".50" if change == "replace" else ".80"): D("1.25")}
         probability = {"conservative_yes": 0.1 if change == "replace" else 0.99}
     else:
         checked = ex._exit_eligible[market.ticker]

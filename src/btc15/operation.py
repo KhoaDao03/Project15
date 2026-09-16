@@ -23,7 +23,15 @@ def record_collector_failure(store, run_id, exc):
 
 
 async def serve(
-    settings, config, store, run_id, min_free_bytes, duration=None, *, stop_confirmation_shadow=False
+    settings,
+    config,
+    store,
+    run_id,
+    min_free_bytes,
+    duration=None,
+    *,
+    stop_confirmation_shadow=False,
+    separate_paper=False,
 ):
     if not run_id or min_free_bytes <= 0:
         raise ValueError("Service requires a run ID and positive disk reserve")
@@ -43,6 +51,7 @@ async def serve(
             managed_run=run_id,
             stop_event=stop,
             min_free_bytes=min_free_bytes,
+            **({"separate_paper": True} if separate_paper else {}),
             **({"stop_confirmation_shadow": True} if stop_confirmation_shadow else {}),
         )
     except Exception as exc:

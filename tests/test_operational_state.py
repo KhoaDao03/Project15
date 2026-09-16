@@ -260,3 +260,12 @@ def test_standalone_startup_failure_reaches_dashboard_then_clears(
     assert client.get("/api/health").json()["operational"]["failure"] is None
     assert client.get("/api/health").json()["collector_startup_error"] is None
     assert len(store.list(kind="collector_failure")) == 1
+
+
+def test_paper_worker_failure_is_visible_without_blocking_fresh_live_signals():
+    row = status()
+    row["body"]["paper_worker"] = dict(state="FAILED", timestamp=100, reason="Paper queue overflow")
+    result = operational_state(row, evaluation(decision="TRADE_CANDIDATE"), 100)
+    assert result["state"] == "EVALUATING"
+    assert result["entry_status"] == "CANDIDATE"
+    assert any(w["code"] == "PAPER_SIMULATION_UNAVAILABLE" for w in result["warnings"])

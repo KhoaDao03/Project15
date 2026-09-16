@@ -2,6 +2,8 @@
 
 This is the current architecture of the single-strategy branch. Earlier multi-model and initial-repository assessments are historical; use [the documentation index](README.md) to find them. No new framework or distributed service is required.
 
+Each process selects one BTC, ETH, SOL or XRP asset in its frozen strategy configuration. The shared `fleet-dashboard` viewer mounts an asset-scoped dashboard over each ledger and coordinates safe shutdown. Concurrent collectors use separate processes, data directories and paper ledgers; see [crypto paper trading](CRYPTO_PAPER.md). BTC remains the default with compatible historical hashes.
+
 ## Components and flow
 
 ```text
@@ -11,7 +13,7 @@ Authenticated WebSocket receipt + heartbeat/metadata tasks
                          |
 Bounded queue -> one ordered worker -> durable input batch
                          |
-Strict BTC15 validation -> standard reference/book state
+Strict selected-asset contract validation -> standard reference/book state
                          |
 One Settlement Edge Engine: features -> probabilities -> entry checks
                          |
@@ -63,4 +65,6 @@ Default history/results exclude archived strategies. The overview scopes to the 
 
 ## Deliberate limits
 
-NumPy, SQLAlchemy, PyArrow, HTTPX/websockets/cryptography, FastAPI and Uvicorn serve existing requirements. SQLite WAL is the default; PostgreSQL support exists but needs separate backend validation. The frontend has no bundler/runtime build requirement. Live configuration and `LiveTrader.submit` fail closed. No always-on host provisioning, remote dashboard authentication, auto-tuning, automatic raw retention deletion or guaranteed profitability is implemented.
+NumPy, SQLAlchemy, PyArrow, HTTPX/websockets/cryptography, FastAPI and Uvicorn serve existing requirements. SQLite WAL is the default; PostgreSQL support exists but needs separate backend validation. The frontend has no bundler/runtime build requirement. Automated live configuration and `LiveTrader.submit` fail closed. The fleet dashboard
+installs a separate `manual_trading` API for user-confirmed real orders, with a durable
+request journal beside its manifest; it does not call or enable the strategy executor. No always-on host provisioning, remote dashboard authentication, auto-tuning, automatic raw retention deletion or guaranteed profitability is implemented.

@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import ROUND_CEILING, ROUND_FLOOR
@@ -41,7 +42,9 @@ def effective_entry_ceiling(market, conservative, config, *, late=False):
     required = D(max(config.min_edge, config.min_ev))
 
     def affordable(price):
-        return D(conservative) - price - D(fee_bound(price, config)) - D(config.slippage) >= required
+        return not config.entry_value_filters_enabled or (
+            D(conservative) - price - D(fee_bound(price, config)) - D(config.slippage) >= required
+        )
 
     candidates = []
     for band in market.price_ranges:
@@ -68,6 +71,17 @@ def effective_entry_ceiling(market, conservative, config, *, late=False):
                 high = mid - 1
         candidates.append(start + low * step)
     return float(max(candidates)) if candidates else None
+
+
+def component_probability_rejections(values, minimum=0.80, *, project15_enabled=True):
+    """Both models must meet the selected-side component probability floor."""
+    reasons = []
+    for model in ("project15", "bleep") if project15_enabled else ("bleep",):
+        value = values.get(model)
+        if type(value) not in (int, float) or not math.isfinite(value) or not minimum <= value <= 1:
+            actual = value if type(value) in (int, float) and math.isfinite(value) else None
+            reasons.append(dict(code=model.upper() + "_MIN_PROBABILITY", actual=actual, required=minimum))
+    return reasons
 
 
 def evaluate(
@@ -99,6 +113,20 @@ def evaluate(
     slippage = 0 if entry_price is not None and not config.passive else config.slippage
     ev = D(conservative) - D(price) - D(fee) - D(slippage) if price is not None else None
     reasons = []
+    components = {}
+    component_reasons = []
+    if config.both_models_80_enabled:
+        blend = probability.get("blend", {})
+        components = dict(
+            project15=blend.get("project15_p_" + str(side)),
+            bleep=blend.get("bleep", {}).get("p_" + str(side)),
+        )
+        component_reasons = component_probability_rejections(
+            components,
+            config.late_component_min_probability if late else config.standard_component_min_probability,
+            project15_enabled=config.project15_probability_veto_enabled,
+        )
+        reasons.extend(component_reasons)
 
     def check(code, okay, actual=None, required=None):
         if not okay:
@@ -116,7 +144,10 @@ def evaluate(
     if config.sustained_lead_enabled:
         threshold = config.late_min_lead_sigma if path == "late_settlement" else config.min_lead_sigma
         check("LEAD_MODEL", bool(lead) and lead.get("side") == side)
-        check("SETTLEMENT_LEAD", lead.get("lead_sigma", 0) >= threshold, lead.get("lead_sigma"), threshold)
+        if threshold > 0:
+            check(
+                "SETTLEMENT_LEAD", lead.get("lead_sigma", 0) >= threshold, lead.get("lead_sigma"), threshold
+            )
         check(
             "LEAD_CONFIRMATION",
             lead.get("confirmed_late" if path == "late_settlement" else "confirmed_normal", False),
@@ -129,18 +160,19 @@ def evaluate(
     check("MIN_PRICE", price is not None and price >= config.min_entry_price, price, config.min_entry_price)
     check("MAX_PRICE", price is not None and price <= config.max_entry_price, price, config.max_entry_price)
     check("MIN_PROBABILITY", conservative >= minimum_probability, conservative, minimum_probability)
-    check(
-        "MIN_EDGE",
-        ev is not None and ev >= D(config.min_edge),
-        float(ev) if ev is not None else None,
-        config.min_edge,
-    )
-    check(
-        "MIN_EV",
-        ev is not None and ev >= D(config.min_ev),
-        float(ev) if ev is not None else None,
-        config.min_ev,
-    )
+    if config.entry_value_filters_enabled:
+        check(
+            "MIN_EDGE",
+            ev is not None and ev >= D(config.min_edge),
+            float(ev) if ev is not None else None,
+            config.min_edge,
+        )
+        check(
+            "MIN_EV",
+            ev is not None and ev >= D(config.min_ev),
+            float(ev) if ev is not None else None,
+            config.min_ev,
+        )
     check("SPREAD", spread is not None and spread <= config.max_spread, spread, config.max_spread)
     check("LIQUIDITY", liquidity >= config.min_liquidity, liquidity, config.min_liquidity)
     check("REGIME", features["regime"] != "EXTREME", features["regime"], "not EXTREME")
@@ -174,7 +206,10 @@ def evaluate(
         entry_probability_basis="adjusted" if config.entry_probability_deductions else "raw",
         model_disagreement_penalty=penalty,
         expected_fill_price=price,
-        effective_max_entry_price=effective_entry_ceiling(market, conservative, config, late=late),
+        effective_max_entry_price=None
+        if component_reasons
+        else effective_entry_ceiling(market, conservative, config, late=late),
+        **(dict(component_probabilities=components) if config.both_models_80_enabled else {}),
         estimated_fees=fee,
         expected_slippage=slippage,
         raw_edge=conservative - price if price is not None else None,
@@ -297,7 +332,9 @@ def passive_price(market, book, side, conservative, config):
     discount = min(
         D(config.passive_discount),
         (ask - bid) / 2,
-        max(D(0), D(conservative) - ask - D(config.min_edge)),
+        max(D(0), D(conservative) - ask - D(config.min_edge))
+        if config.entry_value_filters_enabled
+        else D(config.passive_discount),
     )
     price = market.snap(ask - discount)
     if D(price) >= ask:

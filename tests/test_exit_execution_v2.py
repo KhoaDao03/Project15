@@ -33,15 +33,12 @@ def test_backlogged_snapshot_cannot_satisfy_latency(store, market, now, config, 
     # Snapshot predates intent as well as eligibility, but is processed afterward.
     ex.monitor(market, quote(now + 1.05, [(".50", 10)], side), p, eligible + 0.01, "queued")
     assert not sells(store)
-    # Fresh recovery cancels, even when its mark lies within existing extrema.
-    ex.monitor(market, quote(eligible + 0.02, [(".90", 10)], side), p, eligible + 0.02, "recovery")
-    assert not ex.positions[market.ticker].exit_reason
-    ex.monitor(market, quote(now + 2, [(".50", 10)], side), p, now + 2, "new-stop")
-    assert ex._exit_eligible[market.ticker] == now + 2.25
-    ex.monitor(market, quote(now + 2.249, [(".50", 10)], side), p, now + 2.3, "still-old")
-    assert not sells(store)
-    ex.monitor(market, quote(now + 2.25, [(".50", 10)], side), p, now + 2.31, "eligible")
-    assert sells(store)[0]["price"] == 0.5
+    # A rebound does not cancel the committed stop or restart its timer.
+    ex.monitor(market, quote(eligible + 0.02, [(".90", 6), (".89", 4)], side), p, eligible + 0.02, "recovery")
+    assert sorted([(f["price"], f["quantity"]) for f in sells(store)], reverse=True) == [(0.9, 6), (0.89, 4)]
+    assert all(f["reason"] == "HARD_STOP" for f in sells(store))
+    assert not store.list(kind="exit_cancelled")
+    assert len(store.list(kind="exit_intent")) == 1
 
 
 @pytest.mark.parametrize("side", ["yes", "no"])
@@ -79,15 +76,16 @@ def test_partial_fill_recovery_restart_preserves_inventory_and_consumed_depth(st
     for t, event in [(1, "intent"), (1.25, "partial")]:
         ex.monitor(market, quote(now + t, [(".5", 3)]), p, now + t, event)
     assert ex.positions[market.ticker].quantity == 7
-    ex.monitor(market, quote(now + 1.3, [(".9", 10)]), p, now + 1.3, "recover")
+    ex.monitor(market, quote(now + 1.3, [(".5", 3)]), p, now + 1.3, "unchanged")
     recovered = PaperExecutor(store, "run", "PAPER", ex.config)
     recovered.restore(store.load_checkpoint("run"))
     assert recovered.positions[market.ticker].quantity == 7
-    assert not recovered.positions[market.ticker].exit_reason
+    assert recovered.positions[market.ticker].exit_reason == "HARD_STOP"
+    assert recovered._exit_eligible[market.ticker] == now + 1.25
     for t, event in [(2, "new"), (2.25, "same-depth")]:
         recovered.monitor(market, quote(now + t, [(".5", 3)]), p, now + t, event)
     assert sum(f["quantity"] for f in sells(store)) == 3
-    recovered.monitor(market, quote(now + 2.3, [(".5", 10)]), p, now + 2.3, "growth")
+    recovered.monitor(market, quote(now + 2.3, [(".9", 7)]), p, now + 2.3, "growth")
     assert sum(f["quantity"] for f in sells(store)) == 10
 
 
@@ -129,8 +127,8 @@ def test_stress_and_cancellation_are_queryable_separately(store, market, now, co
     from btc15.dashboard import create_app
 
     ex = held(store, market, now, config)
-    for t, price in [(1, ".5"), (1.1, ".9"), (2, ".5"), (2.25, ".5")]:
-        ex.monitor(market, quote(now + t, [(price, 10)]), {"conservative_yes": 0.9}, now + t, str(t))
+    for t, probability in [(1, 0.6), (1.1, 0.9), (2, 0.6), (2.25, 0.6)]:
+        ex.monitor(market, quote(now + t, [(".81", 10)]), {"conservative_yes": probability}, now + t, str(t))
     with TestClient(create_app(store, settings=Settings(data_dir=str(tmp_path)), config=ex.config)) as client:
         for kind, count in [
             ("exit_stress", 1),
@@ -142,3 +140,20 @@ def test_stress_and_cancellation_are_queryable_separately(store, market, now, co
             response = client.get("/api/records", params=dict(kind=kind, mode="PAPER", run_id="run"))
             assert response.status_code == 200
             assert len(response.json()["rows"]) == count
+
+
+def test_committed_stop_survives_rebound_before_latency_and_unavailable_book(store, market, now, config):
+    ex = held(store, market, now, config)
+    ex.monitor(market, quote(now + 1, [(".50", 10)]), {}, now + 1, "stop")
+    deadline = ex._exit_eligible[market.ticker]
+    ex.monitor(market, quote(now + 1.1, [(".99", 10)]), {}, now + 1.1, "rebound")
+    assert ex.positions[market.ticker].exit_reason == "HARD_STOP"
+    assert ex._exit_eligible[market.ticker] == deadline
+    assert not sells(store)
+    ex.monitor(market, quote(now + 1.3, []), {}, now + 1.3, "empty")
+    assert ex.positions[market.ticker].exit_reason == "HARD_STOP"
+    ex.monitor(market, quote(now + 1.4, [(".98", 10)]), {}, now + 1.4, "liquidity")
+    assert sells(store)[0]["price"] == 0.98
+    assert sells(store)[0]["reason"] == "HARD_STOP"
+    assert len(store.list(kind="exit_intent")) == 1
+    assert not store.list(kind="exit_cancelled")

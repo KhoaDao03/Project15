@@ -7,10 +7,20 @@ from dataclasses import asdict, dataclass, field
 from decimal import ROUND_CEILING, ROUND_FLOOR, InvalidOperation
 from functools import wraps
 
-from .domain import D, order_direction
-from .recovery import contract_hash, evidence_hash, restore_market, validate_final_evidence
+from .domain import D, order_direction, parse_market
+from .recovery import contract_hash, evidence_hash, older_metadata, restore_market, validate_final_evidence
 from .strategies.settlement_edge.economics import entry_economics
-from .strategies.settlement_edge.rules import FeeAccumulator, Risk, fee_bound, passive_price
+from .strategies.settlement_edge.rules import (
+    FeeAccumulator,
+    Risk,
+    component_probability_rejections,
+    fee_bound,
+    passive_price,
+)
+
+
+class FullEntryInterrupted(Exception):
+    """Abort the complete matching transaction when execution authorization changes."""
 
 
 @dataclass
@@ -99,6 +109,7 @@ class PaperExecutor:
         self.processed_reference_id = None
         self._reference_waits = {}
         self.collector_pause = None
+        self.last_position_closed_at = None
 
     def pending_reference(self):
         receipt = self.latest_reference_receipt
@@ -144,6 +155,7 @@ class PaperExecutor:
             last_exit_event=self.last_exit_event,
             exit_consumed=[[k[0], str(k[1]), str(v)] for k, v in self.exit_consumed.items()],
             exit_eligible=getattr(self, "_exit_eligible", {}),
+            last_position_closed_at=self.last_position_closed_at,
         )
 
     def restore(self, data):
@@ -167,6 +179,10 @@ class PaperExecutor:
                 )
                 if results:
                     order.completed_at = results[0]["timestamp"]
+        self.last_position_closed_at = data.get(
+            "last_position_closed_at",
+            max((o.completed_at for o in self.orders.values() if o.completed_at is not None), default=None),
+        )
         for k, v in data["risk"].items():
             setattr(self.risk, k, v)
         self.seen_trades = set(data["seen_trades"])
@@ -311,13 +327,34 @@ class PaperExecutor:
     def state(self, market, target, now, op=""):
         self.store.transition(self.run_id, self.mode, market, target, now, op)
 
+    def post_close_ready(self, now):
+        return (
+            self.config.post_close_cooldown == 0
+            or self.last_position_closed_at is None
+            or now >= self.last_position_closed_at + self.config.post_close_cooldown
+        )
+
+    def market_trade_limit_reached(self, ticker):
+        if not self.config.one_trade_per_market:
+            return False
+        order = self.orders.get(ticker)
+        # A later cycle proves an earlier filled position closed, even if the
+        # latest order has no fills. These markers already survive restart.
+        return bool(
+            ticker in self.positions
+            or order
+            and (order.remaining < order.quantity or order.completed_at is not None or order.cycle > 1)
+        )
+
     def reentry_ready(self, ticker, now):
         order = self.orders.get(ticker)
         return bool(
-            order
+            not self.config.one_trade_per_market
+            and order
             and not order.active
             and order.completed_at is not None
             and now - order.completed_at >= self.config.entry_retry_cooldown
+            and self.post_close_ready(now)
             and ticker not in self.positions
             and ticker not in self.quarantines
             and ticker not in self.venue_pauses
@@ -327,7 +364,8 @@ class PaperExecutor:
     def retry_ready(self, ticker, now):
         order = self.orders.get(ticker)
         return bool(
-            order
+            not self.market_trade_limit_reached(ticker)
+            and order
             and not order.active
             and order.remaining == order.quantity
             and ticker not in self.positions
@@ -337,6 +375,7 @@ class PaperExecutor:
             and order.attempt <= self.config.max_entry_retries
             and order.cancelled_at is not None
             and now - order.cancelled_at >= self.config.entry_retry_cooldown
+            and self.post_close_ready(now)
             and self.store.state(self.run_id, ticker) == "ORDER_CANCELLED"
         )
 
@@ -393,6 +432,15 @@ class PaperExecutor:
             )
         if not c.enabled:
             return reject("STRATEGY_DISABLED", "Strategy entries are disabled")
+        if self.market_trade_limit_reached(market.ticker):
+            return reject("MARKET_TRADE_LIMIT", "The one-filled-trade limit for this market has been reached")
+        if not self.post_close_ready(now):
+            return reject(
+                "POST_CLOSE_COOLDOWN",
+                "Waiting after the previous position closed",
+                last_position_closed_at=self.last_position_closed_at,
+                next_entry_at=self.last_position_closed_at + c.post_close_cooldown,
+            )
         if market.ticker in self.quarantines:
             return reject("METADATA_QUARANTINED", "Contract metadata requires settlement recovery")
         if market.ticker in self.venue_pauses:
@@ -441,7 +489,7 @@ class PaperExecutor:
             if (
                 decision.get("entry_path") != path
                 or lead.get("side") != decision.get("side")
-                or lead.get("lead_sigma", 0) < threshold
+                or (threshold > 0 and lead.get("lead_sigma", 0) < threshold)
                 or not lead.get("confirmed_late" if late else "confirmed_normal")
                 or (
                     c.entry_probability_deductions
@@ -491,10 +539,24 @@ class PaperExecutor:
                 "Conservative probability must be a finite number in [0, 1]",
                 actual=str(conservative),
             )
+        if c.both_models_80_enabled:
+            component_reasons = component_probability_rejections(
+                decision.get("component_probabilities", {}),
+                c.late_component_min_probability
+                if c.late_entry_enabled and remaining <= c.no_new_entry
+                else c.standard_component_min_probability,
+                project15_enabled=c.project15_probability_veto_enabled,
+            )
+            if component_reasons:
+                return reject(
+                    "COMPONENT_PROBABILITY_RECHECK",
+                    "Both models must meet the component probability floor for this entry path",
+                    reasons=component_reasons,
+                )
         fee = fee_bound(ask, c)
         net_ev = D(conservative) - D(ask) - D(fee) - D(c.slippage)
         required = max(c.min_ev, c.min_edge)
-        if net_ev < D(required):
+        if c.entry_value_filters_enabled and net_ev < D(required):
             return reject(
                 "NET_EDGE_RECHECK",
                 "Current ask no longer leaves the required net edge",
@@ -522,7 +584,7 @@ class PaperExecutor:
             )
         if not c.passive:
             limit_ev = D(conservative) - D(price) - D(fee_bound(price, c))
-            if D(price) < D(ask) or limit_ev < D(required):
+            if D(price) < D(ask) or (c.entry_value_filters_enabled and limit_ev < D(required)):
                 return reject(
                     "IOC_LIMIT_EDGE",
                     "IOC price cap does not leave the required net edge",
@@ -548,6 +610,13 @@ class PaperExecutor:
         if not quantity:
             reason = sizing["reasons"][0]
             return reject(reason["code"], reason["message"], sizing=sizing)
+        if c.full_position_execution and quantity != c.fixed_contracts:
+            return reject(
+                "FULL_SIZE_REQUIRED",
+                "Risk limits cannot fund the entire requested position",
+                requested=c.fixed_contracts,
+                sizing=sizing,
+            )
         attempt = old.attempt + 1 if retry else 1
         cycle = old.cycle + 1 if reentry else old.cycle if retry else 1
         claim = (
@@ -612,6 +681,13 @@ class PaperExecutor:
                     conservative_probability=conservative,
                     entry_probability_basis=decision.get("entry_probability_basis", "adjusted"),
                     min_probability=c.probability_floor(c.late_entry_enabled and remaining <= c.no_new_entry),
+                    both_models_80_enabled=c.both_models_80_enabled,
+                    project15_probability_veto_enabled=c.project15_probability_veto_enabled,
+                    component_min_probability=c.late_component_min_probability
+                    if c.late_entry_enabled and remaining <= c.no_new_entry
+                    else c.standard_component_min_probability,
+                    component_probabilities=decision.get("component_probabilities", {}),
+                    entry_value_filters_enabled=c.entry_value_filters_enabled,
                     min_edge=c.min_edge,
                     min_ev=c.min_ev,
                     min_quality=c.min_quality,
@@ -631,11 +707,16 @@ class PaperExecutor:
             self.aggressive(market, book, now)
         return order
 
-    @atomic
     def cancel(self, market, now, reason, *, details=None):
+        # Historical orders cannot change here; skip rollback snapshots entirely.
         order = self.orders.get(market)
         if not order or not order.active:
             return
+        return self._cancel_active(market, now, reason, details=details)
+
+    @atomic
+    def _cancel_active(self, market, now, reason, *, details=None):
+        order = self.orders[market]
         order.active = False
         order.cancelled_at = now
         order.entry_evidence = None
@@ -700,10 +781,16 @@ class PaperExecutor:
     def fill(self, order, quantity, price, now, maker, book=None):
         if self.collector_pause and self.collector_pause.is_set():
             return False
+        if order.market not in self.positions and not self.post_close_ready(now):
+            self.cancel(order.market, now, "post_close_cooldown")
+            return False
         if self.wait_for_reference(order, now):
             return False
         if self.orders.get(order.market) is not order:
             raise ValueError("Stale paper order reference")
+        if self.config.one_trade_per_market and order.cycle > 1 and order.market not in self.positions:
+            self.cancel(order.market, now, "market_trade_limit")
+            return False
         if not D(price).is_finite() or not 0 < price < 1 or price > order.limit:
             raise ValueError("Fill violates order price")
         if (
@@ -866,8 +953,15 @@ class PaperExecutor:
     def _apply_exit_liquidity(self, updates):
         self.exit_consumed.update(updates)
 
-    @atomic
     def aggressive(self, market, book, now):
+        try:
+            return self._aggressive(market, book, now)
+        except FullEntryInterrupted:
+            # The matching transaction restored inventory, fees and fills first.
+            self.cancel(market.ticker, now, "full_size_interrupted")
+
+    @atomic
+    def _aggressive(self, market, book, now):
         order = self.orders.get(market.ticker)
         if (
             self.config.passive
@@ -899,6 +993,31 @@ class PaperExecutor:
         if reasons:
             self.cancel(market.ticker, now, "ioc_execution_blocked", details=dict(reasons=reasons))
             return
+        if self.config.full_position_execution:
+            # Validate every reachable level before recording any fills.
+            for price, quantity in book.asks(order.side):
+                if D(price) > D(order.limit):
+                    break
+                if not market.valid_tick(price):
+                    self.cancel(market.ticker, now, "invalid_book_tick", details=dict(price=price))
+                    return
+            # Check the post-latency snapshot before recording any fills.
+            available = sum(
+                (
+                    D(q).quantize(D(".01"), rounding=ROUND_FLOOR)
+                    for price, q in book.asks(order.side)
+                    if D(price) <= D(order.limit) and market.valid_tick(price) and D(q) > 0
+                ),
+                D(0),
+            )
+            if available < D(order.remaining):
+                self.cancel(
+                    market.ticker,
+                    now,
+                    "full_size_unavailable",
+                    details=dict(requested=order.remaining, available=float(available), limit=order.limit),
+                )
+                return
         for price, quantity in book.asks(order.side):
             if D(price) > D(order.limit):
                 break
@@ -909,6 +1028,9 @@ class PaperExecutor:
             if quantity <= 0:
                 continue
             if self.fill(order, quantity, price, now, False, book=book) is False:
+                if self.config.full_position_execution:
+                    # Roll back the matching transaction rather than retain a partial entry.
+                    raise FullEntryInterrupted()
                 return
             if not order.active:
                 break
@@ -928,6 +1050,68 @@ class PaperExecutor:
                     ],
                 ),
             )
+
+    def _standard_cashout_signal(self, market, book, now):
+        """Protect ten cents per bought contract using total trade economics."""
+        pos = self.positions[market.ticker]
+        remaining = market.close_time - now
+        # Late entries occur only at <=120 seconds, so this also excludes them.
+        if remaining <= 120 or pos.quantity <= 0 or pos.bought <= 0:
+            return None
+        target_profit = 0.10 * pos.bought
+
+        def qualifies(price):
+            fee = FeeAccumulator(self.config.fee_balance_precision).charge(
+                price, pos.quantity, self.config.taker_fee_rate, "sell"
+            )
+            return pos.proceeds + price * pos.quantity - fee - pos.cost - pos.fees >= target_profit - 1e-10
+
+        bid = book.bid(pos.side)
+        if bid is None or not qualifies(bid):
+            return None
+        floor = None
+        # Search executable ticks only. This runs on each qualifying quote, so
+        # avoid repeatedly solving to unnecessary sub-tick precision.
+        minimum = (D(pos.cost) + D(pos.fees) + D(target_profit) - D(pos.proceeds) - D("1e-10")) / D(
+            pos.quantity
+        )
+        for band in sorted(market.price_ranges, key=lambda item: D(item["start"])):
+            start, end, step = (D(band[key]) for key in ("start", "end", "step"))
+            low = max(0, int(((minimum - start) / step).to_integral_value(rounding=ROUND_CEILING)))
+            high = int(((min(end, D(bid)) - start) / step).to_integral_value(rounding=ROUND_FLOOR))
+            if start + low * step <= 0:
+                low += 1
+            if start + high * step >= 1:
+                high -= 1
+            if low > high or not qualifies(float(start + high * step)):
+                continue
+            while low < high:
+                mid = (low + high) // 2
+                if qualifies(float(start + mid * step)):
+                    high = mid
+                else:
+                    low = mid + 1
+            floor = float(start + low * step)
+            break
+        if floor is None:
+            return None
+        levels = book.yes if pos.side == "yes" else book.no
+        depth = sum(
+            max(D(0), quantity - D(self.exit_consumed.get((market.ticker, price), 0)))
+            for price, quantity in levels.items()
+            if float(price) >= floor and market.valid_tick(float(price))
+        )
+        if depth < D(pos.quantity):
+            return None
+        return dict(
+            sell_limit=floor,
+            min_net_profit=target_profit,
+            net_profit_per_contract=0.10,
+            bought_quantity=pos.bought,
+            remaining_quantity=pos.quantity,
+            time_remaining=remaining,
+            time_in_force="IOC",
+        )
 
     def _profit_value_signal(self, market, book, probability, now, reference_source):
         """Two fresh reference seconds; full remaining inventory economics, no haircut."""
@@ -1007,7 +1191,7 @@ class PaperExecutor:
         pos = self.positions[market.ticker]
         self.record(
             "exit_cancelled",
-            dict(previous_reason="PROFIT_VALUE", reason=reason, remaining_quantity=pos.quantity),
+            dict(previous_reason=pos.exit_reason, reason=reason, remaining_quantity=pos.quantity),
             now,
             market.ticker,
             pos.opportunity_id,
@@ -1031,21 +1215,33 @@ class PaperExecutor:
         bid = book.bid(pos.side)
         if bid is None or not 0 <= now - book.received <= self.config.book_max_age:
             return
-        if pos.exit_reason == "PROFIT_VALUE":
-            if now > self._exit_eligible[market.ticker] + 2:
+        if self.config.full_position_execution and pos.exit_reason:
+            self._apply_monitor(
+                market, book, bid - pos.cost / pos.bought, pos.exit_reason, None, False, now, event_id
+            )
+            return
+        if pos.exit_reason in ("PROFIT_VALUE", "STANDARD_CASHOUT"):
+            committed_reason = pos.exit_reason
+            if committed_reason == "STANDARD_CASHOUT" and market.close_time - now <= 120:
+                self._expire_value_exit(market, now, "CASHOUT_WINDOW_ENDED")
+            elif committed_reason == "STANDARD_CASHOUT" and bid <= self.config.stop_price(
+                pos.cost / pos.bought
+            ):
+                self._expire_value_exit(market, now, "HARD_STOP_OVERRIDE")
+            elif now > self._exit_eligible[market.ticker] + 2:
                 self._expire_value_exit(market, now, "IOC_DATA_TIMEOUT")
             else:
                 self._apply_monitor(
                     market,
                     book,
                     bid - pos.cost / pos.bought,
-                    "PROFIT_VALUE",
+                    committed_reason,
                     pos.value_limit,
                     False,
                     now,
                     event_id,
                 )
-                if market.ticker not in self.positions or pos.exit_reason == "PROFIT_VALUE":
+                if market.ticker not in self.positions or pos.exit_reason == committed_reason:
                     return
         entry = pos.cost / pos.bought
         mark = bid - entry
@@ -1062,13 +1258,25 @@ class PaperExecutor:
         except ValueError:
             target = None
             target_warning = True
+        take_profit_target = target
+        cashout_audit = None
+        # Once requested, a hard stop stays committed through rebounds and partial fills.
+        # The persisted reason and eligibility timestamp also survive checkpoint recovery.
         reason = (
             "HARD_STOP"
-            if bid <= entry * c.stop_multiplier
+            if pos.exit_reason == "HARD_STOP" or bid <= c.stop_price(entry)
             else "TAKE_PROFIT"
             if target is not None and bid >= target
-            else "INVALIDATION"
-            if model_available
+            else ""
+        )
+        if not reason and c.standard_cashout_enabled:
+            cashout_audit = self._standard_cashout_signal(market, book, now)
+            if cashout_audit:
+                reason = "STANDARD_CASHOUT"
+                target = cashout_audit["sell_limit"]
+        if (
+            not reason
+            and model_available
             and (
                 conservative < c.exit_probability
                 or (
@@ -1076,8 +1284,8 @@ class PaperExecutor:
                     and conservative - (bid - fee_bound(bid, c) - c.slippage) < c.min_hold_ev
                 )
             )
-            else ""
-        )
+        ):
+            reason = "INVALIDATION"
         value_audit = None
         if c.profit_value_exit_enabled:
             value_audit = self._profit_value_signal(
@@ -1101,6 +1309,7 @@ class PaperExecutor:
             hold_ev = conservative - (bid - fee_bound(bid, c) - c.slippage) if model_available else None
             audit = dict(
                 profit_value=value_audit,
+                standard_cashout=cashout_audit,
                 trigger=(
                     "PROBABILITY_BELOW_EXIT_THRESHOLD"
                     if conservative < c.exit_probability
@@ -1116,8 +1325,8 @@ class PaperExecutor:
                 hold_value_exit_enabled=c.hold_value_exit_enabled,
                 bid=bid,
                 average_entry=entry,
-                hard_stop_price=entry * c.stop_multiplier,
-                take_profit_price=target,
+                hard_stop_price=c.stop_price(entry),
+                take_profit_price=take_profit_target,
                 fee_estimate=fee_bound(bid, c),
                 slippage=c.slippage,
                 snapshot_id=event_id,
@@ -1166,6 +1375,29 @@ class PaperExecutor:
             )
         ):
             return
+        # A partial persistent exit may wait through many quotes with no new
+        # executable quantity. Do not checkpoint an empty IOC on every update.
+        # Value/cashout IOCs must still run their remainder-expiry behavior.
+        order = self.orders.get(market.ticker)
+        if (
+            not target_warning
+            and (
+                self.config.full_position_execution or reason in ("HARD_STOP", "TAKE_PROFIT", "INVALIDATION")
+            )
+            and reason == pos.exit_reason
+            and pos.quantity < pos.bought
+            and pos.max_adverse <= mark <= pos.max_favorable
+            and not (order and order.active)
+        ):
+            levels = book.yes if pos.side == "yes" else book.no
+            if not any(
+                min(D(pos.quantity), quantity - D(self.exit_consumed.get((market.ticker, price), 0)))
+                >= D(".01")
+                and market.valid_tick(float(price))
+                and (self.config.full_position_execution or reason != "TAKE_PROFIT" or float(price) >= target)
+                for price, quantity in levels.items()
+            ):
+                return
         return self._commit_monitor(
             market,
             book,
@@ -1231,9 +1463,9 @@ class PaperExecutor:
             return
         if not pos.exit_reason:
             pos.exit_reason = reason
-            if reason == "PROFIT_VALUE":
+            if c.full_position_execution or reason in ("HARD_STOP", "PROFIT_VALUE", "STANDARD_CASHOUT"):
                 self.cancel(market.ticker, now, "exit_requested")
-                pos.value_limit = target
+                pos.value_limit = None if reason == "HARD_STOP" else target
             self.last_exit_event[market.ticker] = event_id
             self.record(
                 "exit_intent",
@@ -1265,10 +1497,25 @@ class PaperExecutor:
             if q <= 0 or not market.valid_tick(float(price)):
                 continue
             fill_price = float(price)
-            if reason in ("TAKE_PROFIT", "PROFIT_VALUE") and fill_price < target:
+            if (
+                not c.full_position_execution
+                and reason in ("TAKE_PROFIT", "PROFIT_VALUE", "STANDARD_CASHOUT")
+                and fill_price < target
+            ):
                 continue
-            self.exit_consumed[key] = consumed + q
             q_float = float(q)
+            if not c.full_position_execution and reason == "STANDARD_CASHOUT" and q == position_quantity:
+                # Splitting one IOC across levels can add fee rounding versus the
+                # signal estimate. Never label a completed cashout below target.
+                final_fee = FeeAccumulator(c.fee_balance_precision, fees.carry).charge(
+                    fill_price, q_float, c.taker_fee_rate, "sell"
+                )
+                if (
+                    pos.proceeds + q_float * fill_price - final_fee - pos.cost - pos.fees
+                    < 0.10 * pos.bought - 1e-10
+                ):
+                    continue
+            self.exit_consumed[key] = consumed + q
             fee = fees.charge(fill_price, q_float, c.taker_fee_rate, "sell")
             remaining = (position_quantity - q).quantize(D(".01"))
             pos.quantity = float(remaining)
@@ -1300,7 +1547,9 @@ class PaperExecutor:
             except ValueError:
                 stress_price = None
             stress_fillable = stress_price is not None and (
-                reason not in ("TAKE_PROFIT", "PROFIT_VALUE") or stress_price >= target
+                c.full_position_execution
+                or reason not in ("TAKE_PROFIT", "PROFIT_VALUE", "STANDARD_CASHOUT")
+                or stress_price >= target
             )
             stress_fee = (
                 stress_fees.charge(stress_price, q_float, c.taker_fee_rate, "sell")
@@ -1324,7 +1573,10 @@ class PaperExecutor:
                     else "NOT_FILLABLE_AT_LIMIT"
                     if stress_price is not None
                     else "NO_VALID_TICK",
-                    sell_limit=target if reason in ("TAKE_PROFIT", "PROFIT_VALUE") else None,
+                    sell_limit=target
+                    if not c.full_position_execution
+                    and reason in ("TAKE_PROFIT", "PROFIT_VALUE", "STANDARD_CASHOUT")
+                    else None,
                     stressed_fee=stress_fee,
                     stressed_proceeds=q_float * stress_price if stress_fillable else None,
                     primary_proceeds=q_float * fill_price,
@@ -1336,12 +1588,13 @@ class PaperExecutor:
             if remaining == 0:
                 self.finish(market.ticker, now, reason)
                 return
-        if reason == "PROFIT_VALUE":
+        if not c.full_position_execution and reason in ("PROFIT_VALUE", "STANDARD_CASHOUT"):
             self._expire_value_exit(market, now, "IOC_REMAINDER_EXPIRED")
         self.state(market.ticker, "POSITION_OPEN", now, pos.opportunity_id)
 
     def finish(self, market, now, reason, settlement_result=None):
         pos = self.positions.pop(market)
+        self.last_position_closed_at = max(now, self.last_position_closed_at or now)
         pnl = pos.proceeds - pos.cost - pos.fees
         self.risk.close(market, pnl, now)
         self.record(
@@ -1388,6 +1641,65 @@ class PaperExecutor:
         op = order.opportunity_id if order else ""
         self.record("metadata_quarantine", dict(**body, observed=observed), now, ticker, op)
         self.state(ticker, "HALTED", now, op)
+
+    def recover_stale_metadata(self, market, series, now, *, request_started_at, source, clock_ok):
+        ticker = market.ticker
+        blocked = self.quarantines.get(ticker)
+        if (
+            not blocked
+            or blocked["reason"] != "METADATA_INVALID"
+            or self.risk.halted
+            or ticker in self.venue_pauses
+            or self.store.state(self.run_id, ticker) != "HALTED"
+            or source != "kalshi_rest"
+            or not clock_ok
+            or not market.tradable(now)
+            or type(request_started_at) not in (int, float)
+            or not blocked["since"] < request_started_at <= now
+            or now - request_started_at > 30
+            or contract_hash(market) != blocked["expected_contract_hash"]
+        ):
+            return False
+        pinned = restore_market(self.contracts[ticker])
+        records = self.store.list(kind="metadata_quarantine", run_id=self.run_id, market=ticker, limit=1)
+        if not records or records[0]["body"]["since"] != blocked["since"]:
+            return False
+        observed = records[0]["body"].get("observed") or {}
+        if observed.get("floor_strike") is not None or not older_metadata(observed, pinned.raw):
+            return False
+        # Recover only the known unpublished-strike regression, never changed terms.
+        try:
+            candidate = {**observed, "floor_strike": pinned.spec.strike}
+            for field in ("strike_type", "custom_strike"):
+                if candidate.get(field) is None and field in pinned.raw:
+                    candidate[field] = pinned.raw[field]
+            repaired = parse_market(candidate, series)
+        except (ValueError, KeyError, TypeError, AttributeError, ArithmeticError):
+            return False
+        if contract_hash(repaired) != blocked["expected_contract_hash"]:
+            return False
+        return self._recover_stale_metadata(market, now, records[0]["id"], request_started_at)
+
+    @atomic
+    def _recover_stale_metadata(self, market, now, quarantine_id, request_started_at):
+        ticker = market.ticker
+        target = "POSITION_OPEN" if ticker in self.positions else "EVALUATING"
+        proof = self.record(
+            "metadata_recovery",
+            dict(
+                quarantine_id=quarantine_id,
+                target=target,
+                contract_hash=contract_hash(market),
+                request_started_at=request_started_at,
+                source="kalshi_rest",
+            ),
+            now,
+            ticker,
+            "",
+        )
+        self.store.transition(self.run_id, self.mode, ticker, target, now, metadata_recovery_id=proof)
+        del self.quarantines[ticker]
+        return True
 
     def _blocked_settlement(self, ticker, now, result, reason, evidence_id=None):
         # Repeated WS hints/polls are not new accounting, nor a reconnect request.

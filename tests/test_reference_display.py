@@ -14,6 +14,8 @@ def test_reference_clock_lead_does_not_flash_and_stale_data_still_clears():
     source = Path("src/btc15/static/app.js").read_text()
     start = source.index("const marketStream=")
     handler = source[start : source.index("\nrefreshOfficial();", start)]
+    formatters = source[source.index("const fmt=") : source.index("\nconst describeReason=")]
+    formatters += "\n" + source[source.index("let referenceDigits=") : source.index("\nlet shuttingDown=")]
     setup = """
 const assert=require('node:assert/strict');
 const nodes=new Map();
@@ -24,11 +26,12 @@ const $=id=>{
   }
   return nodes.get(id);
 };
-const money=v=>'$'+Number(v).toFixed(2), fmt=v=>String(v);
+const money=v=>'$'+Number(v).toFixed(2);
 let liveReference=null,livePrices=false,lastMarketEvent=0,marketClockOffset=0,now=1000,watchdog;
 const performance={now:()=>now};
 const setInterval=fn=>watchdog=fn;
 class EventSource {}
+const apiPath=path=>path;
 const updateLiveReference=v=>liveReference=v;
 const clearLiveQuotes=()=>{liveReference=null;};
 const renderQuotes=()=>{},renderMarkets=()=>{};
@@ -42,18 +45,23 @@ for(const [stamp,source] of [[100,100.65],[100.2,100.65],[100.21,100.85],[100.4,
   const data=fresh();data.server_time=stamp;data.reference.published_at=stamp-.01;
   data.reference.reference_5hz.received=stamp-.02;data.reference.reference_5hz.source_ts_ms=source*1000;
   send(data);
-  assert.equal($('live-reference').textContent,'$79200.00');
+  assert.equal($('live-reference').textContent,'$79,200.00');
   assert.equal(liveReference,79200);
   assert.equal($('reference-status').textContent,'Live · 5 Hz reference');
 }
 assert.equal($('live-reference').writes,1,'Identical prices should not be redrawn for every quote');
 const changed=fresh();changed.reference.reference_5hz.value='79201';send(changed);
-assert.equal($('live-reference').textContent,'$79201.00');
+assert.equal($('live-reference').textContent,'$79,201.00');
+
+// SOL/XRP retain sub-cent reference precision.
+referenceDigits=4;const precise=fresh();precise.reference.reference_5hz.value='1.2345';send(precise);
+assert.equal($('live-reference').textContent,'$1.2345');
+referenceDigits=2;
 
 // A fresh display does not authorize entries or require a healthy strategy worker.
 const recovering=fresh();recovering.reference.recovery={entries_blocked:true,state:'DRAINING',reasons:['PROCESSING_OVERLOAD']};
 send(recovering);
-assert.equal($('live-reference').textContent,'$79200.00');
+assert.equal($('live-reference').textContent,'$79,200.00');
 assert.match($('official-status').textContent,/Entries blocked/);
 
 for(const invalidate of [
@@ -77,5 +85,7 @@ send(fresh());now+=2501;watchdog();
 assert.equal($('live-reference').textContent,'—');
 assert.equal(liveReference,null);
 """
-    result = subprocess.run([node, "-e", setup + handler + checks], capture_output=True, text=True)
+    result = subprocess.run(
+        [node, "-e", setup + formatters + handler + checks], capture_output=True, text=True
+    )
     assert result.returncode == 0, result.stderr

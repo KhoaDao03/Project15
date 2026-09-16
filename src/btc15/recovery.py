@@ -10,7 +10,15 @@ import time
 import uuid
 from dataclasses import asdict
 
-from .domain import Market, SettlementSpecification, dumps, parse_market
+from .domain import Market, SettlementSpecification, dumps, parse_market, timestamp
+
+
+def older_metadata(observed, accepted):
+    """Only comparable, explicit venue revisions establish an older response."""
+    try:
+        return timestamp(observed["updated_time"]) < timestamp(accepted["updated_time"])
+    except (KeyError, TypeError, ValueError, AttributeError, OverflowError):
+        return False
 
 
 def restore_market(snapshot):

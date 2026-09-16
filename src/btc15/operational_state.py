@@ -109,6 +109,19 @@ def operational_state(status, evaluation, now, *, startup_error=None, reference=
         if not connected:
             blockers.append(reason("DISCONNECTED"))
     warnings = [reason("BACKLOG_WARNING")] if fresh and recovery.get("warning") else []
+    paper = body.get("paper_worker")
+    if (
+        fresh
+        and paper
+        and (paper.get("state") not in ("READY", "RUNNING") or now - paper.get("timestamp", 0) > 3)
+    ):
+        warnings.append(
+            reason(
+                "PAPER_SIMULATION_UNAVAILABLE",
+                paper.get("reason")
+                or "Paper simulation is interrupted or behind; paper position totals may be stale.",
+            )
+        )
     if fresh:
         if body.get("reference_age") is None or not 0 <= body["reference_age"] <= 2:
             warnings.append(reason("REFERENCE_AGE_WARNING"))

@@ -2,7 +2,7 @@ import argparse
 import asyncio
 import logging
 import os
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 
 from .analytics import metrics
@@ -16,11 +16,17 @@ def main():
     parser = argparse.ArgumentParser(description="Kalshi BTC15 settlement research; LIVE disabled")
     parser.add_argument("--config", help="JSON strategy overrides (all defaults are assumptions)")
     parser.add_argument("--database", help="SQLAlchemy database URL override")
+    parser.add_argument("--data-dir", help="Separate runtime directory; defaults its database to paper.db")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("init-db")
     commands.add_parser("config")
     p = commands.add_parser("paper-service", help="Managed PAPER operation; no real orders")
     p.add_argument("--run-id", required=True)
+    p.add_argument(
+        "--separate-paper",
+        action="store_true",
+        help="Run paper simulation in a separate bounded worker process",
+    )
     p.add_argument("--min-free-gb", type=float, default=10)
     p.add_argument("--seconds", type=float, help="Optional bounded acceptance session")
     p.add_argument(
@@ -56,6 +62,11 @@ def main():
     p = commands.add_parser("export")
     p.add_argument("opportunity_id")
     p.add_argument("--output", default="data/trade_packets")
+    p = commands.add_parser("live-execution", help="Independent real-order execution service")
+    p.add_argument("manifest", help="JSON asset/run/database manifest")
+    p = commands.add_parser("fleet-dashboard", help="One viewer for separate crypto paper services")
+    p.add_argument("manifest", help="JSON asset/run/database manifest")
+    p.add_argument("--port", type=int, default=8000)
     p = commands.add_parser("dashboard")
     dashboard_mode = p.add_mutually_exclusive_group()
     dashboard_mode.add_argument(
@@ -77,6 +88,40 @@ def main():
     args = parser.parse_args()
     settings = Settings.env()
     settings.guard()
+    if args.data_dir:
+        settings = replace(
+            settings,
+            data_dir=args.data_dir,
+            database_url="sqlite:///" + str(Path(args.data_dir) / "paper.db"),
+        )
+    if args.command == "live-execution":
+        import uvicorn
+
+        from .execution_service import create_execution_app, execution_socket
+
+        os.umask(0o077)
+        socket_path = execution_socket(args.manifest)
+        socket_path.parent.mkdir(mode=0o700, exist_ok=True)
+        socket_path.parent.chmod(0o700)
+        app = create_execution_app(args.manifest)
+        server = uvicorn.Server(
+            uvicorn.Config(
+                app,
+                uds=str(execution_socket(args.manifest)),
+                log_level="warning",
+                timeout_graceful_shutdown=30,
+            )
+        )
+        app.state.shutdown_server = lambda: setattr(server, "should_exit", True)
+        server.run()
+        if app.state.worker_failed:
+            raise RuntimeError("Execution worker stopped unexpectedly")
+        return
+    if args.command == "fleet-dashboard":
+        from .fleet import create_fleet_app
+
+        serve_dashboard(create_fleet_app(args.manifest), args.port)
+        return
     if args.command == "settlement-recovery":
         from .recovery import recover_settlement
 
@@ -99,6 +144,7 @@ def main():
         return
     saved_config = Path(settings.data_dir) / "strategy.json"
     config = Strategy.load(args.config or (saved_config if saved_config.exists() else None))
+    settings = replace(settings, asset=config.asset)
     logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO").upper(), format="%(message)s")
     if args.command == "config":
         print(dumps(asdict(config)))
@@ -106,7 +152,7 @@ def main():
     if args.command == "demo":
         from .demo import generate
 
-        print(generate(args.output))
+        print(generate(args.output, asset=config.asset))
         return
     if args.command == "halt":
         Path(settings.data_dir).mkdir(parents=True, exist_ok=True)
@@ -140,7 +186,7 @@ def main():
                 else:
                     data = await client.get(
                         "cfbenchmarks/history/values",
-                        dict(id="BRTI", timespan="HOUR", timestamp=args.timestamp),
+                        dict(id=config.asset_spec.index, timespan="HOUR", timestamp=args.timestamp),
                         True,
                     )
                     target = Path(args.output)
@@ -169,6 +215,7 @@ def main():
                     int(args.min_free_gb * 1024**3),
                     args.seconds,
                     stop_confirmation_shadow=args.stop_confirmation_shadow,
+                    separate_paper=args.separate_paper,
                 )
             )
         )
@@ -214,8 +261,6 @@ def main():
     elif args.command == "export":
         print(export_packet(store, args.opportunity_id, args.output))
     elif args.command == "dashboard":
-        import uvicorn
-
         from .dashboard import create_app
 
         app = create_app(
@@ -226,16 +271,15 @@ def main():
             paper_execution=not args.observe_only,
             run_id=args.run_id,
         )
-        server = uvicorn.Server(
-            uvicorn.Config(
-                app,
-                host="127.0.0.1",
-                port=args.port,
-                timeout_graceful_shutdown=5,
-            )
-        )
-        app.state.shutdown_server = lambda: setattr(server, "should_exit", True)
-        server.run()
+        serve_dashboard(app, args.port)
+
+
+def serve_dashboard(app, port):
+    import uvicorn
+
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, timeout_graceful_shutdown=5))
+    app.state.shutdown_server = lambda: setattr(server, "should_exit", True)
+    server.run()
 
 
 if __name__ == "__main__":

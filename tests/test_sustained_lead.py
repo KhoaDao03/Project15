@@ -192,7 +192,7 @@ def test_compatibility_and_validation():
     assert Strategy.load("config/settlement-edge-fill-taker-paper.json").version == "1b7ffae5ec144248"
     for changes in [
         dict(late_entry_enabled=True),
-        dict(lead_confirmation_samples=1),
+        dict(lead_confirmation_samples=0),
         dict(late_no_new_entry=120),
         dict(min_lead_sigma=3),
     ]:
@@ -287,7 +287,7 @@ def test_late_overrides_validate_and_preserve_old_hash():
     assert Strategy.load("config/settlement-edge-fill-taker-paper.json").version == "1b7ffae5ec144248"
     for kwargs in [
         dict(late_min_probability=1.1),
-        dict(late_lead_confirmation_samples=1),
+        dict(late_lead_confirmation_samples=-1),
         dict(late_lead_confirmation_samples=2.5),
     ]:
         with pytest.raises(ValueError):

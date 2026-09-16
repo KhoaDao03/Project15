@@ -6,10 +6,12 @@
 **Frozen configuration hash:** `1b7ffae5ec144248`  
 **Mode:** PAPER — live market inputs with simulated orders and fills
 
-This document describes the implemented strategy and the frozen configuration
-used by the installed collector. It is an explanation of current behavior, not
-an assertion that the strategy is profitable or that paper fills will match
-exchange fills. No strategy or service settings were changed to produce it.
+This document records the strategy and frozen configuration used on September 10.
+Its settings and exit table are historical. The installed collector's current
+configuration, including disabled standard-entry cashout, the 60% probability
+exit and sixty-second pause after full closure, is documented in
+[active paper settings](ACTIVE_PAPER_SETTINGS.md). Paper results do not establish
+profitability or equivalent exchange fills.
 
 ## 1. Strategy in plain language
 
@@ -361,3 +363,7 @@ when the local runtime file is unavailable or future settings change.
   "fee_balance_precision": "0.0001"
 }
 ```
+
+Active Bleep update: historical exchange candles seed only Bleep indicators; its
+75% favored-side safety cap applies below 0.5 sigma before the 50/50 probability
+average. See [Bleep blend](BLEEP_BLEND.md).

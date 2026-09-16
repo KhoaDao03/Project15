@@ -14,7 +14,8 @@ from .config import Strategy
 from .domain import Book, dumps, parse_market, timestamp
 from .execution import PaperExecutor
 from .models import require_single_run
-from .recovery import contract_hash, restore_contract_history, restore_market
+from .recovery import contract_hash, older_metadata, restore_contract_history, restore_market
+from .strategies.settlement_edge.bleep import blend_probability
 from .strategies.settlement_edge.economics import entry_economics
 from .strategies.settlement_edge.model import Tick, features, lead_evidence, probability, quality
 from .strategies.settlement_edge.rules import evaluate
@@ -74,20 +75,31 @@ class Engine:
         clock=None,
         resume=False,
         record_evaluations=True,
+        signal_only=False,
     ):
         if mode not in ("PAPER", "BACKTEST"):
             raise ValueError("Research modes only")
         if type(config) is not Strategy:
             raise ValueError("Only BTC15 Settlement Edge is executable")
+        if mode == "PAPER":
+            for existing in store.run_summaries("PAPER"):
+                if (existing["body"].get("model") or {}).get("asset", "BTC") != config.asset:
+                    raise ValueError("Use a separate paper database for each asset")
         if resume:
             require_single_run(store, run_id)
         self.store, self.config, self.mode = store, config, mode
         self.run_id = run_id or str(uuid.uuid4())
+        if signal_only and (execute or resume):
+            raise ValueError("Signal engines cannot execute or restore paper portfolios")
+        self.signal_only = signal_only
         self.execute, self.clock = execute, clock
         self.record_evaluations = record_evaluations
         self.raw_archive = record_evaluations
         self.markets, self.books, self.last_evaluation, self.latest = {}, {}, {}, {}
         self.ticks = []
+        self._preload_last_source = None
+        self.bleep_candles = {}
+        self.bleep_seed = None
         self.sequences = {}
         self.connection = None
         self.healthy = False
@@ -136,6 +148,14 @@ class Engine:
         source_hash = hashlib.sha256(dumps(source_snapshot).encode()).hexdigest()
         self.versions = {
             **VERSIONS,
+            "probability": ("bleep-settlement-reference-v2" if config.bleep_probability_only_enabled
+                            else "settlement-bleep-equal-v2")
+            if config.bleep_settlement_model_enabled
+            else "bleep-mode-b-v1"
+            if config.bleep_probability_only_enabled
+            else "settlement-bleep-equal-v1"
+            if config.bleep_enabled
+            else VERSIONS["probability"],
             "config": config.version,
             "git_commit": commit,
             "working_tree_dirty": dirty,
@@ -256,11 +276,37 @@ class Engine:
         self.healthy = False
         for book in self.books.values():
             book.valid = False
-        for ticker in list(self.executor.orders):
-            self.executor.cancel(ticker, now, reason)
+        for ticker, order in list(self.executor.orders.items()):
+            if order.active:
+                self.executor.cancel(ticker, now, reason)
 
     def ingest(self, row):
         now = row["received"]
+        payload = row["payload"]
+        if isinstance(payload, str):
+            payload = json.loads(payload)
+        if payload.get("type") == "bleep_seed":
+            from .bleep_seed import validate_seed
+
+            if self.config.bleep_exchange_seed_enabled:
+                body = payload.get("msg", {})
+                self.bleep_candles = validate_seed(body, now, self.config.asset)
+                self.bleep_seed = dict(
+                    provider=body["provider"], received=now, last_minute=max(self.bleep_candles)
+                )
+                self._model_cache.clear()
+            return True
+        if payload.get("type") == "reference_history":
+            # First-event-only history: no live receipt, confirmations, orders or
+            # settlements are synthesized. Embedded samples make replay causal.
+            from .reference_history import validate_history
+
+            if self.last_received != -float("inf") or self.ticks:
+                raise ValueError("Reference preload must be the first event")
+            self.ticks = validate_history(payload.get("msg", {}), now, self.config)
+            self._preload_last_source = self.ticks[-1].source if self.ticks else None
+            self.last_received = now
+            return True
         self._collector_managed = type(row.get("collector_entries_blocked")) is bool
         self.collector_blocked = (
             row.get("collector_entries_blocked", False) or self._collector_integrity_failed
@@ -286,9 +332,6 @@ class Engine:
             # Monotonic receipt still establishes causal order. Apply the frame so the
             # book stays consistent; reconnecting would create an avoidable data gap.
         self.last_received = now
-        payload = row["payload"]
-        if isinstance(payload, str):
-            payload = json.loads(payload)
         kind = payload.get("type")
         msg = payload.get("msg", {})
         connection = row.get("connection_id", "")
@@ -325,6 +368,8 @@ class Engine:
         try:
             if kind == "metadata":
                 series = msg["series"]
+                if series.get("ticker") != self.config.asset_spec.series:
+                    raise ValueError("Metadata asset does not match the frozen run")
                 self.series_fees = series
                 self.series_fee_changes = msg.get("series_fee_changes")
                 self.fee_changes = msg.get("fee_changes", {})
@@ -335,6 +380,9 @@ class Engine:
                         "metadata_resolution", resolution, self.run_id, self.mode, now, resolution["ticker"]
                     )
                 for raw in msg["markets"]:
+                    accepted = self.markets.get(raw.get("ticker"))
+                    if accepted and older_metadata(raw, accepted.raw):
+                        continue
                     try:
                         market = parse_market(raw, series)
                     except (ValueError, KeyError, TypeError, AttributeError, ArithmeticError) as exc:
@@ -361,6 +409,22 @@ class Engine:
                         market.ticker,
                     )
                     old = self.markets.get(market.ticker)
+                    if (
+                        market.ticker in self.executor.quarantines
+                        and self.healthy
+                        and not self._collector_integrity_failed
+                        and not freshness_rechecks(
+                            self.books.get(market.ticker, Book()), self.ticks, now, now, self.config
+                        )
+                    ):
+                        self.executor.recover_stale_metadata(
+                            market,
+                            series,
+                            now,
+                            request_started_at=msg.get("request_started_at"),
+                            source=msg.get("source"),
+                            clock_ok=self.clock_ok,
+                        )
                     if old and contract_hash(old) != contract_hash(market):
                         self.executor.quarantine(old, now, "METADATA_CHANGED", raw)
                         self.error("RULES_CHANGED", now, market.ticker)
@@ -399,8 +463,12 @@ class Engine:
             elif kind == "cfbenchmarks_value":
                 self.executor.processed_reference_id = row["id"]
                 raw = json.loads(msg["data"])
-                if msg["index_id"] != "BRTI" or raw.get("id") != "BRTI" or raw.get("type") != "value":
-                    raise ValueError("Not an official BRTI tick")
+                if (
+                    msg["index_id"] != self.config.asset_spec.index
+                    or raw.get("id") != self.config.asset_spec.index
+                    or raw.get("type") != "value"
+                ):
+                    raise ValueError("Not the configured official reference tick")
                 tick = Tick(float(raw["time"]) / 1000, now, float(raw["value"]))
                 if tick.source > now + self.config.max_clock_skew:
                     raise ValueError("Future reference tick")
@@ -475,6 +543,8 @@ class Engine:
         return True
 
     def settle(self, ticker, result, now, *, evidence=None):
+        if self.signal_only:
+            return  # The paper worker owns settlement identity, evidence and accounting.
         market = self.markets.get(ticker)
         if ticker in self.executor.contracts:
             market = restore_market(self.executor.contracts[ticker])
@@ -520,6 +590,7 @@ class Engine:
             state = self.store.state(self.run_id, ticker)
             if (
                 state == "CLOSED"
+                and not c.one_trade_per_market
                 and ticker in self.executor.orders
                 and self.executor.orders[ticker].completed_at is not None
                 and market.tradable(now)
@@ -608,6 +679,8 @@ class Engine:
                 extras.append("UNVERIFIED_FEES")
             if self.executor.risk.halted:
                 extras.append("KILL_SWITCH")
+            if not self.executor.post_close_ready(now):
+                extras.append("POST_CLOSE_COOLDOWN")
             if position or (
                 resting
                 and not (self.executor.retry_ready(ticker, now) or self.executor.reentry_ready(ticker, now))
@@ -624,6 +697,18 @@ class Engine:
             if model_recomputed:
                 try:
                     f = features(self.ticks, now, c)
+                    if c.bleep_exchange_seed_enabled and self.bleep_seed:
+                        from .bleep_seed import seeded_inputs
+
+                        f["bleep"] = seeded_inputs(
+                            self.bleep_candles, self.bleep_seed["last_minute"], self.ticks, now
+                        )
+                        f["bleep_seed"] = {
+                            **self.bleep_seed,
+                            "remaining_candles": sum(
+                                m <= self.bleep_seed["last_minute"] for m in self.bleep_candles
+                            ),
+                        }
                     p = probability(market.spec, self.ticks, now, f["sigma"], c)
                     if c.sustained_lead_enabled:
                         lead = lead_evidence(market.spec, self.ticks, now, f, p, c)
@@ -635,7 +720,12 @@ class Engine:
                             or int(lead["source"]) - int(history[-1]["source"]) > 1
                         ):
                             history.clear()
-                        if not history or int(lead["source"]) > int(history[-1]["source"]):
+                        fresh_confirmation = (
+                            self._preload_last_source is None or lead["source"] > self._preload_last_source
+                        )
+                        if fresh_confirmation and (
+                            not history or int(lead["source"]) > int(history[-1]["source"])
+                        ):
                             history.append(lead.copy())
                             del history[: -max(c.confirmation_count(), c.confirmation_count(True))]
                         for late, key, threshold in (
@@ -643,11 +733,22 @@ class Engine:
                             (True, "confirmed_late", c.late_min_lead_sigma),
                         ):
                             count = c.confirmation_count(late)
-                            lead[key] = len(history) >= count and all(
-                                h["lead_sigma"] >= threshold for h in history[-count:]
+                            lead[key] = len(history) >= count and (
+                                threshold == 0 or all(h["lead_sigma"] >= threshold for h in history[-count:])
                             )
                         lead["confirmation_samples"] = len(history)
                         p["lead"] = lead
+                    if c.bleep_enabled:
+                        p = blend_probability(
+                            p,
+                            market.spec,
+                            f,
+                            now,
+                            clamp=c.bleep_safety_clamp_enabled,
+                            bleep_only=c.bleep_probability_only_enabled,
+                            settlement_aware=c.bleep_settlement_model_enabled,
+                            ticks=self.ticks,
+                        )
                     cached = (now, market.spec, f, p, None, self.ticks[-1] if self.ticks else None)
                 except ValueError as exc:
                     self._lead_history.pop(ticker, None)
@@ -782,6 +883,8 @@ class Engine:
                 self._last_op[ticker] = op
             else:
                 op = self._last_op[ticker]
+            if self.signal_only:
+                continue  # Publish the signal without running simulated submissions/fills/stops.
             transition_decision = record_decision and (
                 self.record_evaluations or decision["decision"] == "TRADE_CANDIDATE"
             )
@@ -810,7 +913,14 @@ class Engine:
                 inputs_fresh
                 and market.tradable(execution_now)
                 and all(
-                    r in ("MODEL_INACTIVE", "KILL_SWITCH", "EXISTING_ENTRY", "COLLECTOR_RECOVERING")
+                    r
+                    in (
+                        "MODEL_INACTIVE",
+                        "KILL_SWITCH",
+                        "EXISTING_ENTRY",
+                        "COLLECTOR_RECOVERING",
+                        "POST_CLOSE_COOLDOWN",
+                    )
                     for r in extras
                 )
                 and all(r in ("WARMUP", "SHOCK", "REFERENCE_GAP", "MODEL_UNAVAILABLE") for r in q["reasons"])

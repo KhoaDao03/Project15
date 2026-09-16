@@ -1,5 +1,12 @@
 # Sustained lead and late entries
 
+Current active presets disable both sigma-distance floors with `min_lead_sigma=0`
+and `late_min_lead_sigma=0`. Three standard / two late same-side confirming samples
+remain required. The historical positive-floor behavior described below remains
+available for older configurations. Zero disables the floor at evaluation,
+confirmation and submission; it does not disable late side selection or data quality.
+
+
 The active v5 paper configuration enables shared sustained-lead checks and a late
 settlement entry path. These are testing parameters, not calibrated guarantees.
 

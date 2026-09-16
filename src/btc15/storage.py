@@ -84,7 +84,7 @@ TRANSITIONS = {
     "WARMUP": {"MONITORING", "ENTRY_WINDOW", "SETTLEMENT_PENDING"},
     "MONITORING": {"ENTRY_WINDOW", "SETTLEMENT_PENDING"},
     "ENTRY_WINDOW": {"EVALUATING", "SETTLEMENT_PENDING"},
-    "EVALUATING": {"NO_TRADE", "TRADE_CANDIDATE"},
+    "EVALUATING": {"NO_TRADE", "TRADE_CANDIDATE", "SETTLEMENT_PENDING"},
     "NO_TRADE": {"EVALUATING", "SETTLEMENT_PENDING"},
     "TRADE_CANDIDATE": {"ORDER_PENDING", "NO_TRADE"},
     "ORDER_PENDING": {"ORDER_PARTIALLY_FILLED", "POSITION_OPEN", "ORDER_CANCELLED"},
@@ -385,6 +385,7 @@ class Store:
         *,
         record_history=True,
         settlement_recovery_id=None,
+        metadata_recovery_id=None,
     ):
         with self.transaction() as c:
             row = (
@@ -396,6 +397,37 @@ class Store:
             if old == target:
                 return
             recovering = False
+            if metadata_recovery_id is not None:
+                proof = c.execute(
+                    select(records.c.body).where(
+                        records.c.id == metadata_recovery_id,
+                        records.c.kind == "metadata_recovery",
+                        records.c.run_id == run_id,
+                        records.c.mode == mode,
+                        records.c.market == market,
+                    )
+                ).scalar()
+                body = json.loads(proof) if proof else {}
+                quarantine = c.execute(
+                    select(records.c.body).where(
+                        records.c.id == body.get("quarantine_id"),
+                        records.c.kind == "metadata_quarantine",
+                        records.c.run_id == run_id,
+                        records.c.mode == mode,
+                        records.c.market == market,
+                    )
+                ).scalar()
+                blocked = json.loads(quarantine) if quarantine else {}
+                if (
+                    old != "HALTED"
+                    or target not in ("EVALUATING", "POSITION_OPEN")
+                    or body.get("target") != target
+                    or blocked.get("reason") != "METADATA_INVALID"
+                    or not body.get("contract_hash")
+                    or body["contract_hash"] != blocked.get("expected_contract_hash")
+                ):
+                    raise ValueError("Invalid metadata recovery transition")
+                recovering = True
             if settlement_recovery_id is not None:
                 recovery = c.execute(
                     select(records.c.body).where(

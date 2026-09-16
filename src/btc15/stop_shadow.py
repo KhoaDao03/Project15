@@ -102,7 +102,7 @@ class ConfirmationExecutor(PaperExecutor):
         pos = self.positions.get(market.ticker)
         if pos and market.ticker not in self.confirmations:
             bid = book.bid(pos.side)
-            if bid is not None and bid > pos.cost / pos.bought * self.config.stop_multiplier:
+            if bid is not None and bid > self.config.stop_price(pos.cost / pos.bought):
                 return super().monitor(
                     market, book, p, now, event_id, reference_source=reference_source if available else None
                 )
@@ -119,7 +119,7 @@ class ConfirmationExecutor(PaperExecutor):
         if bid is None:
             return
         entry = pos.cost / pos.bought
-        threshold = entry * self.config.stop_multiplier
+        threshold = self.config.stop_price(entry)
         adjusted = p.get("conservative_" + pos.side)
         model_ok = type(adjusted) in (float, int) and math.isfinite(adjusted) and 0 <= adjusted <= 1
         state = self.confirmations.get(market.ticker)
@@ -190,7 +190,7 @@ class ConfirmationExecutor(PaperExecutor):
         try:
             # Suppress only the ordinary price stop. Probability and TP stay active.
             if hold:
-                self.config = replace(original, stop_multiplier=0)
+                self.config = replace(original, stop_multiplier=0, fixed_stop_price=0)
             super().monitor(
                 market, book, p, now, event_id, reference_source=reference_source if available else None
             )

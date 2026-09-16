@@ -226,3 +226,18 @@ def test_zero_liquidity_minimum_allows_thin_entry(market, book, config, now):
     assert relaxed["decision"] == "TRADE_CANDIDATE"
     book.no.clear()
     assert evaluate(*args, replace(config, min_liquidity=0))["decision"] == "NO_TRADE"
+
+
+def test_hard_stop_immediately_cancels_unfilled_entry_remainder(store, market, book, now, config):
+    from btc15.domain import D
+
+    ex = ready(store, market, now, config)
+    order = ex.submit(market, book, decision(), "op", now, True)
+    ex.fill(order, 1, order.limit, now + 0.5, True)
+    assert order.active
+    book.yes = {D(".50"): D("10")}
+    book.received = now + 1
+    ex.monitor(market, book, {"conservative_yes": 0.9}, now + 1, "stop")
+    assert not order.active
+    assert ex.positions[market.ticker].quantity == 1
+    assert ex.positions[market.ticker].exit_reason == "HARD_STOP"

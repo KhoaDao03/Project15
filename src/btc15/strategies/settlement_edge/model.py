@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from .bleep import indicator_inputs
+
 
 @dataclass(frozen=True)
 class Tick:
@@ -123,6 +125,19 @@ def features(ticks, now, config):
             rsi.append(100 * gain / (gain + loss) if gain + loss else 50)
         r = rsi[-config.stochastic_period :]
         out["stochastic_rsi"] = (r[-1] - min(r)) / (max(r) - min(r)) if max(r) > min(r) else 0.5
+    if config.bleep_enabled:
+        # Retain Project15's complete-candle checks; Bleep also uses the live candle.
+        bleep_candles = list(contiguous)
+        minute = int(now // 60)
+        current = np.flatnonzero(ts // 60 == minute)
+        if len(current):
+            if not bleep_candles or bleep_candles[-1][0] != minute - 1:
+                bleep_candles = []
+            p = prices[current]
+            bleep_candles.append((minute, float(p[0]), float(max(p)), float(min(p)), float(p[-1])))
+        elif not bleep_candles or bleep_candles[-1][0] != minute - 1:
+            bleep_candles = []
+        out["bleep"] = indicator_inputs(bleep_candles)
     return out
 
 
@@ -162,12 +177,13 @@ def probability(spec, ticks, now, sigma, config, *, price_shift=0):
         previous = target
     averages = sums / 60
     # Decimal rounding only affects exact ties; NumPy handles bulk, ties bracketed below.
-    rounded = np.round(averages, 2)
+    rounded = np.round(averages, spec.round_digits)
     op = {">=": np.greater_equal, ">": np.greater, "<": np.less, "<=": np.less_equal}[
         spec.comparison_operator
     ]
     yes = op(rounded, spec.strike)
-    half = np.isclose(averages * 100 - np.floor(averages * 100), 0.5, atol=1e-8, rtol=0)
+    scale = 10**spec.round_digits
+    half = np.isclose(averages * scale - np.floor(averages * scale), 0.5, atol=1e-8, rtol=0)
     ambiguity = 0
     for idx in np.flatnonzero(half):
         a, b = spec.yes(float(averages[idx]), "half_even"), spec.yes(float(averages[idx]), "half_up")
@@ -220,8 +236,8 @@ def lead_evidence(spec, ticks, now, f, p, config):
     )
     stressed = probability(spec, ticks, now, f["sigma"], config, price_shift=-direction * adverse)
     margin = direction * (p["settlement_mean"] - spec.strike)
-    # A cent floor avoids infinite diagnostic ratios at deterministic settlement.
-    lead_sigma = margin / max(0.01, p["settlement_std"])
+    # One settlement unit avoids infinite ratios without imposing BTC precision on XRP.
+    lead_sigma = margin / max(10**-spec.round_digits, p["settlement_std"])
     return dict(
         side=side,
         source=ticks[-1].source,

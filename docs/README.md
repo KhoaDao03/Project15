@@ -1,12 +1,13 @@
 # Documentation — Settlement Edge-only milestone
 
-The branch `fix/fractional-passive-fills` operates **BTC15 Settlement Edge only**. Finish software and authentic-data paper validation before considering additional strategies. Documentation below distinguishes current procedures from historical development evidence.
+The branch `fix/fractional-passive-fills` operates **one Settlement Edge strategy for BTC, ETH, SOL and XRP**. Finish software and authentic-data paper validation before considering additional strategies. Documentation below distinguishes current procedures from historical development evidence.
 
 ## Current operating guides
 
 | Task | Guide |
 | --- | --- |
 | Install from an empty directory; first demo/feed/paper run | [Getting started](GETTING_STARTED.md) |
+| Run BTC, ETH, SOL and XRP in separate paper portfolios | [Crypto paper trading](CRYPTO_PAPER.md) |
 | Start, monitor, stop and resume | [Paper trading](PAPER_TRADING.md) |
 | Understand thresholds, original/moderate presets and saved settings | [Strategy](STRATEGY.md) |
 | Diagnose no orders/fills, startup errors, wrong database or stale data | [Troubleshooting](TROUBLESHOOTING.md) |

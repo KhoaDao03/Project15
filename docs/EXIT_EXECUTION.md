@@ -1,7 +1,16 @@
 # Paper exit execution: displayed-depth-v2
 
-This execution update does not change entry rules, sizing, probability/stop thresholds,
-or the configured latency. Historical fills and performance records remain immutable.
+Current active presets use [full-position execution](FULL_POSITION_EXECUTION.md):
+all sell decisions remain committed and consume highest bids first until the
+held quantity closes. In that mode take-profit prices are triggers rather than
+minimum execution prices. The conditional/price-limited behavior below remains
+the historical default when `full_position_execution=false`.
+
+
+The original execution update preserved entry rules, sizing, probability/stop thresholds,
+and the configured latency. Later opt-in exit rules are described below, with current
+thresholds in [active paper settings](ACTIVE_PAPER_SETTINGS.md).
+Historical fills and performance records remain immutable.
 New sell fills identify their execution model as `displayed-depth-v2`.
 
 ## Matching and pending intent
@@ -18,7 +27,14 @@ Each matching event is an IOC child execution. Its fills share one fee accumulat
 later matching events start new accumulators. There is no additional automatic haircut
 in primary fills. The slippage setting still governs existing entry behavior.
 
-Pending exits are conditional. If the triggering reason clears, cancel the intent and
+Hard-stop exits are committed once triggered. Recovery above the stop does not cancel
+them or restart latency. Pending entry orders are cancelled immediately; the exit sells
+remaining contracts into the highest available supported bids after the original
+eligibility time. Partial fills and checkpoints retain the commitment. Freshness,
+market-pause and liquidity checks still apply: this guarantees continued exit attempts
+on eligible observations, not a minimum price or a fill when no liquidity exists.
+
+Other ordinary pending exits are conditional. If the triggering reason clears, cancel the intent and
 clear its eligibility timer. A different triggering reason also starts a new intent and
 latency period. Completed partial fills are final; cancellation only affects the unsold
 remainder. Unchanged displayed liquidity remains consumed across cancellation and
@@ -63,8 +79,8 @@ stop confirmations or probability thresholds were added. Local evidence:
 
 ## Profit-only value exit (paper)
 
-The active paper run enables `profit_value_exit_enabled`; historical/default configurations
-leave it disabled. Entry rules are unchanged. Before submission, require two distinct
+The active paper run disables `profit_value_exit_enabled`; the following describes
+the retained optional rule. Before submission, require two distinct
 reference seconds, no more than 1.5 seconds apart and no more than 1.5 seconds old.
 A cleared condition resets confirmation. Repeated quotes do not count as new references.
 
@@ -87,7 +103,7 @@ If no usable observation arrives within two seconds after eligibility, expire it
 backfilling (`IOC_DATA_TIMEOUT`) when monitoring resumes. This receipt-based paper model
 is an approximation of exchange IOC execution, not a resting order or a live API call.
 
-Existing hard stop, 99-cent target and adjusted 70% probability exits have priority when
+Existing hard stop, 99-cent target and configured adjusted-probability exits have priority when
 choosing a new exit. A submitted value IOC completes/expires before a new safety intent
 can be submitted; it cannot execute below its floor. Safety evaluation resumes immediately
 on the same observation if inventory remains. Other conditional exits retain their
@@ -96,3 +112,43 @@ and eligibility. The separate stop-confirmation observer uses this same value-ex
 
 `exit_intent.decision.profit_value` records probability, floor, confirmation count and
 thresholds. Fills/results carry reason `PROFIT_VALUE`; haircut stress remains separate.
+
+## Standard-entry net-profit cashout (paper)
+
+The active configuration disables `standard_cashout_enabled`. When enabled, only positions entered
+through the standard entry path qualify, and strictly more than 120 seconds must
+remain both when submitting and matching the exit. At exactly 120 seconds the rule
+is unavailable. Late entries retain their other exits.
+
+Require enough unconsumed supported bid depth for the entire remaining position at
+a sell-price floor satisfying:
+
+```text
+prior sale proceeds + remaining sale proceeds - total purchase cost
+  - all paid fees - estimated exit fees >= $0.10 * total contracts purchased
+```
+
+The calculation uses quantity-aware taker fees and balance rounding. For ten
+contracts, the target is $1.00 total net profit. No probability comparison or
+reference confirmations are required. A position bought near 90–95 cents cannot
+reach this target after fees, even with a winning settlement.
+
+The priority for new exits is hard stop, 99-cent take-profit, standard cashout,
+probability exit, hold-value exit, and the older profit-value exit. The last two
+remain disabled in the active configuration. A cashout records `STANDARD_CASHOUT`
+and `exit_intent.decision.standard_cashout`, including its supported sell limit,
+profit target, remaining time and IOC policy.
+
+After the configured 250ms delay, the first fresh eligible quote supplies one IOC
+matching event. Each fill must meet the committed supported price floor. Probability
+changes do not cancel a submitted cashout, but a hard stop can override it. A
+remainder expires after that observation and is evaluated again; partial execution
+does not establish that the whole trade earned its target. If the remaining time
+falls to 120 seconds or below, cancel the cashout. If no usable quote arrives within
+two seconds after eligibility, expire without backfilling. Inventory then remains
+subject to the other exits and settlement.
+
+The sixty-second pause starts only after the position fully closes; see
+[sequential trades](REENTRY.md). This cashout differs from the older profit-value
+rule above: it targets a fixed net gain per purchased contract and does not require
+sale value to exceed modeled settlement value.

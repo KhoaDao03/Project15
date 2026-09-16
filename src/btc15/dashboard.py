@@ -140,7 +140,7 @@ def create_app(
         saved = Strategy.load(strategy_path) if strategy_path.exists() else session_config
         return dict(
             id="settlement_edge",
-            name="BTC15 Settlement Edge",
+            name=identity(saved)["model_name"],
             config=asdict(saved),
             version=saved.version,
             session_version=session_config.version,
@@ -159,6 +159,8 @@ def create_app(
             if not isinstance(body, dict):
                 raise ValueError("Expected strategy settings")
             saved = Strategy(**body)
+            if saved.asset != session_config.asset:
+                raise ValueError("Select another asset using a separate paper run and data directory")
         except (TypeError, ValueError) as exc:
             raise HTTPException(422, str(exc)) from exc
         strategy_path.parent.mkdir(parents=True, exist_ok=True)
@@ -213,7 +215,7 @@ def create_app(
         async with official_lock:
             if time.monotonic() >= next_refresh:
                 # Public discovery needs no credentials or collector writer lease.
-                client = KalshiClient(Settings())
+                client = KalshiClient(Settings(asset=session_config.asset))
                 try:
                     async with asyncio.timeout(8):
                         _, markets = await client.discover()
@@ -263,6 +265,9 @@ def create_app(
             failure=store.read_market_display("collector_failure"),
         )
         return dict(
+            asset=session_config.asset,
+            reference_index=session_config.asset_spec.index,
+            reference_digits=session_config.asset_spec.round_digits,
             database="ok",
             server_time=now,
             live_enabled=False,
@@ -393,7 +398,7 @@ def create_app(
         fresh = bool(status and 0 <= now - status["timestamp"] < 5 and status["body"].get("connected"))
         age = now - row["timestamp"] if row else None
         if mode == "LIVE":
-            message = "LIVE execution is disabled. Select PAPER for current research evaluations."
+            message = "Automated LIVE execution is disabled. Select PAPER for current research evaluations."
         elif mode == "BACKTEST":
             message = (
                 "Recorded backtest evaluation." if row else "No backtest evaluations for this selection."
@@ -555,6 +560,7 @@ def create_app(
                                 fees=0,
                                 opened=r["timestamp"],
                                 status="OPEN",
+                                source=b.get("source"),
                                 net_pnl=None,
                             ),
                         },

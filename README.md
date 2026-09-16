@@ -1,10 +1,30 @@
 # Project15 — BTC15 Settlement Edge
 
-**This branch has one executable strategy: BTC15 Settlement Edge.** The current milestone is to make its data collection, paper execution, recovery and evaluation dependable before adding any other strategy. Conservative Confirmed Momentum and Volatility-Regime Momentum are not executable here. Their retained history is read-only.
+**This branch has one executable strategy: Settlement Edge, supporting BTC, ETH, SOL and XRP 15-minute paper markets.** The current milestone is to make its data collection, paper execution, recovery and evaluation dependable before adding any other strategy. Conservative Confirmed Momentum and Volatility-Regime Momentum are not executable here. Their retained history is read-only.
 
-This is a research/paper-trading application, not a claim of profitability. It uses real Kalshi market data when credentials are configured, but orders and fills are simulated. **Real-money submission is blocked in code.**
+This is a research/paper-trading application, not a claim of profitability. It uses real Kalshi market data when credentials are configured. Collector orders and fills remain simulated; blanket CLI live execution remains blocked. The shared dashboard offers [manual real-money buy/sell orders](docs/MANUAL_TRADING.md) and [explicitly enabled per-asset live automation](docs/LIVE_AUTOMATION.md). Live automation defaults off and requires confirmation per asset, then stays enabled across markets and restarts until switched off, with a maximum of 20 contracts per market.
+
+All four current paper bots use a 50/50 blend of Project15 and Bleep Mode B,
+with exchange-seeded Bleep indicators and its safety clamp. Both standard and
+late entries require Bleep ≥80%; the blended entry minimum is disabled.
+Bleep now models the final-minute settlement average using observed samples and
+the higher of ATR-based and recent reference-price volatility.
+Project15 has no individual probability veto. One fresh same-side confirmation sample is required for either entry window;
+quality checks remain; modeled-sigma lead minimums are disabled.
+The BTC paper experiment retains these settings:
+The purchase range is $0.80–$0.95, with standard entries at 7–2 minutes
+remaining and late entries at 2 minutes–15 seconds remaining.
+The only enabled exit trigger is the fixed hard stop at a held-side bid of 55¢;
+remaining positions settle at expiration. Net-edge and expected-value entry
+filters are disabled. See [the blend specification](docs/BLEEP_BLEND.md).
+
+All four active paper bots use [full-position execution](docs/FULL_POSITION_EXECUTION.md):
+buy 10 contracts or none within the entry price cap, and commit sells until the
+whole held position closes as liquidity permits.
 
 For this installation, [active paper settings](docs/ACTIVE_PAPER_SETTINGS.md) describe the current paper configuration, including [sustained-lead checks and late entries](docs/SUSTAINED_LEAD.md) and the [conditional Bollinger entry filter](docs/BOLLINGER_ENTRY_FILTER.md). See [paper exit execution](docs/EXIT_EXECUTION.md) for post-latency depth matching and separate stress diagnostics. The optional [stop-confirmation comparison](docs/STOP_CONFIRMATION_SHADOW.md) is currently disabled; its separate paper ledger and historical results are retained.
+
+See [multi-asset paper trading](docs/CRYPTO_PAPER.md) for the shared BTC/ETH/SOL/XRP dashboard, concurrent paper collectors, and asset-specific settlement precision. Existing BTC runs retain their configuration and history.
 
 ## Start here
 
@@ -140,3 +160,29 @@ Entry safety: [reference receipt and model revalidation](docs/ENTRY_REFERENCE_RE
 Entry reporting: [settlement, target-sale and stop-exit economics](docs/ENTRY_ECONOMICS.md).
 
 Sequential paper trades: [same-market re-entry](docs/REENTRY.md).
+
+Active Bleep update: historical exchange candles seed only Bleep indicators; its
+75% favored-side safety cap applies below 0.5 sigma before the 50/50 probability
+average. See [Bleep blend](docs/BLEEP_BLEND.md).
+
+Current setting: the directional Bollinger entry veto is enabled for BTC, ETH,
+SOL and XRP, including the strategy decisions used by live automation. Entries
+beyond the selected-direction band are rejected; unavailable/stale bands preserve
+the existing entry checks. Bollinger indicators also remain part of Bleep.
+Deployment and runtime verification: `data/runtime/bollinger-on-all-20260915/`.
+
+## Fixed 55¢ hard stop across all assets
+
+BTC, ETH, SOL and XRP now use `fixed_stop_price=0.62`: the hard stop
+triggers when the held-side bid is at or below 55¢, regardless of entry price.
+This replaces BTC’s 49¢ stop and the other assets’ entry-price multiplier.
+Other per-asset entries, exits and probability settings are preserved.
+The trigger is not a guaranteed execution price. Paper history and balances
+are retained. Deployment evidence: `data/runtime/stop62-all-v1/`.
+
+## September 15 purchase range: 80–95 cents
+
+All four active assets now use `min_entry_price=0.80` and
+`max_entry_price=0.95`, including entry decisions used by live automation.
+Bollinger filtering and all other current settings remain in place.
+Deployment evidence: `data/runtime/price80-95-all-20260915/`.
