@@ -31,6 +31,7 @@ def create_app(
     config=None,
     paper_execution=True,
     run_id="dashboard-paper",
+    cache_recent_trades=False,
 ):
     store = store or Store(Settings.env().database_url)
     strategy_path = Path((settings or Settings.env()).data_dir) / "strategy.json"
@@ -486,8 +487,7 @@ def create_app(
             return dict(total=len(summaries), evaluations=len(rows), rows=summaries[offset : offset + limit])
         return dict(total=len(rows), rows=rows[offset : offset + limit])
 
-    @app.get("/api/trades")
-    def trades(
+    def build_trades(
         mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"),
         scope: str = Query("settlement", pattern="^(settlement|archive)$"),
         run_id: str | None = None,
@@ -590,13 +590,92 @@ def create_app(
             key = (row["run_id"], row["market"])
             if key not in outcomes:
                 settlements = store.list(
-                    kind="settlement", mode=mode, run_id=key[0], market=key[1],
-                    limit=1, newest_first=True,
+                    kind="settlement",
+                    mode=mode,
+                    run_id=key[0],
+                    market=key[1],
+                    limit=1,
+                    newest_first=True,
                 )
                 outcomes[key] = settlements[0]["body"].get("result") if settlements else None
             result = outcomes[key] or row["body"].get("settlement_result")
             row["body"]["market_result"] = result if result in ("yes", "no") else None
         return {"total": len(rows), "rows": page}
+
+    recent_snapshot = None
+    recent_error = False
+    recent_revision = None
+    recent_checked_at = 0
+    app.state.recent_trade_version = 0
+    configured_run = run_id
+
+    def refresh_recent_trades():
+        nonlocal recent_snapshot, recent_error, recent_revision, recent_checked_at
+        try:
+            revision = store.history_revision("PAPER", configured_run)
+            if recent_snapshot is not None and revision == recent_revision:
+                recent_checked_at = time.time()
+                recent_error = False
+                return
+            # One consistent paper snapshot; the live fallback is frozen for this build.
+            context = store.history_snapshot() if hasattr(store, "history_snapshot") else store.transaction()
+            with context as connection:
+                if (
+                    connection is not None
+                    and connection.dialect.name == "sqlite"
+                    and not connection.connection.driver_connection.in_transaction
+                ):
+                    connection.exec_driver_sql("BEGIN")
+                result = build_trades(
+                    mode="PAPER",
+                    scope="settlement",
+                    run_id=configured_run,
+                    search="",
+                    include_open=True,
+                    offset=0,
+                    limit=5,
+                )
+            recent_snapshot = {**result, "updated_at": time.time()}
+            recent_revision = revision
+            recent_checked_at = time.time()
+            app.state.recent_trade_version += 1
+            recent_error = False
+        except Exception:
+            recent_error = True
+            logging.getLogger("btc15").exception("Recent trade snapshot refresh failed")
+
+    app.state.refresh_recent_trades = refresh_recent_trades
+    app.state.recent_trades_stale = lambda: recent_error or time.time() - recent_checked_at > 15
+
+    @app.get("/api/trades")
+    async def trades(
+        mode: str = Query("PAPER", pattern="^(PAPER|BACKTEST|LIVE)$"),
+        scope: str = Query("settlement", pattern="^(settlement|archive)$"),
+        run_id: str | None = None,
+        search: str = "",
+        include_open: bool = False,
+        offset: int = Query(0, ge=0),
+        limit: int = Query(100, ge=1, le=500),
+    ):
+        if (
+            cache_recent_trades
+            and mode == "PAPER"
+            and scope == "settlement"
+            and run_id == configured_run
+            and not search
+            and include_open
+            and offset == 0
+            and limit <= 5
+        ):
+            snapshot = recent_snapshot
+            if snapshot is None:
+                raise HTTPException(503, "Recent trades are loading; update delayed")
+            return {
+                **snapshot,
+                "rows": snapshot["rows"][:limit],
+                "stale": recent_error or time.time() - recent_checked_at > 15,
+            }
+        return await asyncio.to_thread(build_trades, mode, scope, run_id, search, include_open, offset, limit)
 
     @app.get("/api/replay/{opportunity_id}")
     def replay(opportunity_id: str):

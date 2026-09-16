@@ -11,8 +11,6 @@ from contextvars import ContextVar
 from datetime import datetime, timezone
 from pathlib import Path
 
-import pyarrow as pa
-import pyarrow.parquet as pq
 from sqlalchemy import (
     JSON,
     Column,
@@ -188,6 +186,17 @@ class Store:
                     .order_by(records.c.kind)
                 ).all()
             )
+
+    def history_revision(self, mode, run_id=None):
+        """Check immutable history changes without loading record bodies."""
+        query = select(records.c.kind, func.count(), func.max(records.c.id)).where(
+            records.c.mode == mode,
+            records.c.kind.in_(("run", "opportunity", "fill", "trade_result", "settlement")),
+        )
+        if run_id is not None:
+            query = query.where(records.c.run_id == run_id)
+        with self.transaction() as c:
+            return tuple(c.execute(query.group_by(records.c.kind).order_by(records.c.kind)).all())
 
     def publish_record(self, kind, body, run_id, mode, now, market="", opportunity_id=""):
         row = dict(
@@ -542,21 +551,18 @@ class Store:
                 c.execute(market_display.delete().where(market_display.c.key == "lease:" + key))
 
 
-RAW_SCHEMA = pa.schema(
-    [
-        ("id", pa.string()),
-        ("received", pa.float64()),
-        ("monotonic_ns", pa.int64()),
-        ("connection_id", pa.string()),
-        ("payload", pa.string()),
-        ("analysis_suspended", pa.bool_()),
-        ("collector_entries_blocked", pa.bool_()),
-    ]
-)
+def parquet_modules():
+    try:
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+    except ImportError as exc:
+        raise RuntimeError("Parquet requires the research extra: uv sync --extra research") from exc
+    return pa, pq
 
 
 class RawRecorder:
     def __init__(self, directory, chunk_size=500):
+        parquet_modules()
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True)
         self.session = str(uuid.uuid4())
@@ -589,7 +595,13 @@ class RawRecorder:
             return
         target = self.directory / f"{self.session}-{self.chunk:06d}.parquet"
         temporary = target.with_suffix(".tmp")
-        pq.write_table(pa.Table.from_pylist(self.buffer, schema=RAW_SCHEMA), temporary, compression="zstd")
+        pa, pq = parquet_modules()
+        schema = pa.schema([
+            ("id", pa.string()), ("received", pa.float64()), ("monotonic_ns", pa.int64()),
+            ("connection_id", pa.string()), ("payload", pa.string()),
+            ("analysis_suspended", pa.bool_()), ("collector_entries_blocked", pa.bool_()),
+        ])
+        pq.write_table(pa.Table.from_pylist(self.buffer, schema=schema), temporary, compression="zstd")
         with temporary.open("rb") as f:
             os.fsync(f.fileno())
         temporary.replace(target)
@@ -655,6 +667,7 @@ def read_events(path):
 
     def source():
         if path.suffix == ".parquet":
+            _, pq = parquet_modules()
             parquet = pq.ParquetFile(path)
             for batch in parquet.iter_batches(batch_size=4096):
                 yield from batch.to_pylist()
@@ -683,6 +696,7 @@ def read_events(path):
 
 
 def export_packet(store, opportunity_id, directory):
+    pa, pq = parquet_modules()
     rows = store.list(opportunity_id=opportunity_id)
     if not rows:
         raise ValueError("Unknown opportunity")

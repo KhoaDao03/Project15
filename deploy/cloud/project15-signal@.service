@@ -1,0 +1,20 @@
+[Unit]
+Description=Project15 %i live signal collector
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Project15
+EnvironmentFile=%h/Project15/data/cloud/credentials.env
+Environment=TRADING_MODE=PAPER
+Environment=ENABLE_LIVE_TRADING=false
+Environment=LOG_LEVEL=WARNING
+ExecStart=%h/Project15/.venv/bin/btc15 --config %h/Project15/data/cloud/%i.json --data-dir %h/Project15/data/cloud/%i signal-service --run-id %i-live-signals
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=60
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

@@ -80,7 +80,7 @@ function renderBotVersion(health){
   }
   tag.title=collector?.run_id?[
     'Run: '+collector.run_id,
-    'Mode: '+collector.mode,
+    'Mode: '+(liveOnlyFleet?'Live':collector.mode),
     member?.model?.model_version?'Model: '+member.model.model_version:null,
     member?.model?.config_hash?'Configuration: '+member.model.config_hash:null,
     health.collector_fresh?'Collector status is current.':'Collector status is stale; this version is not confirmed running.'
@@ -107,7 +107,7 @@ async function runs(){
 $('mode').onchange=async()=>{runSelectionExplicit=false;generation++;$('run').value='';refreshOfficial();await runs();offset=0;if(active==='replay')tab('trades');else refresh();};$('run').onchange=()=>{runSelectionExplicit=true;generation++;offset=0;if(active==='replay')tab('trades');else refresh();};
 $('reload').onclick=()=>{offset=0;refresh();};$('more').onclick=()=>{offset+=100;refresh();};$('record-kind').onchange=()=>{offset=0;refresh();};$('decision-filter').onchange=()=>{offset=0;refresh();};$('search').onchange=()=>{offset=0;refresh();};$('close-replay').onclick=()=>tab('trades');
 function chart(id,series,domain=null){const svg=$(id);svg.replaceChildren();const ns='http://www.w3.org/2000/svg';const el=(tag,attrs,value)=>{const e=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(value!==undefined)e.textContent=value;svg.append(e);return e;};const points=series.flatMap(s=>s.values).filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1]));if(!points.length){el('text',{x:30,y:100,fill:'#92a6a9'},'No observations available');return;}const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]);const xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=domain?domain[0]:Math.min(...ys),ymax=domain?domain[1]:Math.max(...ys);const X=x=>55+(x-xmin)/(xmax-xmin||1)*510,Y=y=>195-(y-ymin)/(ymax-ymin||1)*155;for(let i=0;i<=4;i++){const v=ymin+(ymax-ymin)*i/4;el('line',{x1:55,x2:565,y1:Y(v),y2:Y(v),stroke:'#304043'});el('text',{x:2,y:Y(v)+4,fill:'#92a6a9','font-size':10},fmt(v));}for(const s of series){const p=s.values.filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1]));el('polyline',{points:p.map(([x,y])=>X(x)+','+Y(y)).join(' '),fill:'none',stroke:s.color||'#94e1c0','stroke-width':2});}el('text',{x:55,y:222,fill:'#92a6a9','font-size':10},series.map(s=>s.label).join(' / '));}
-async function refresh(){if(shuttingDown)return;const gen=++generation;try{$('mode-label').textContent=$('mode').value+' RESEARCH';$('error').textContent='';if(active==='monitor'){const [health,data,strategies,recentTrades]=await Promise.all([get('/api/health'),get('/api/evaluation?'+query()),get('/api/strategies?'+query()),get('/api/trades?'+query()+'&limit=5&include_open=true')]);if(gen!==generation)return;referenceDigits=health.reference_digits||2;$('reference-label').textContent=health.asset+' · '+health.reference_index;renderBotVersion(health);renderRecentTrades(recentTrades);renderStrategies('strategy-overview',strategies);$('strategy-overview-status').textContent=(health.asset||'BTC')+'15 Settlement Edge · '+$('mode').value+' · one strategy; configuration and run are shown below';const b=data.record?.body;renderEntryEconomics('entry-economics',b?.entry_economics);$('evaluation-title').textContent='Evaluation details · '+(b?.model?.model_name||(b?'BTC15 Settlement Edge':'no selection'));$('evaluation-status').textContent=(!health.collector_fresh&&health.collector_startup_error?health.collector_startup_error:data.message)+(data.evaluation_age===null?'':' Last evaluated '+fmt(Math.max(0,data.evaluation_age),0)+' seconds ago.');const collector=health.collector;const member=collector?.mode===$('mode').value?collector?.models?.find(m=>m.run_id===($('run').value||data.record?.run_id)):null;const c=collector?.mode===$('mode').value&&(!$('run').value||$('run').value===collector.run_id)?collector:null;$('health').textContent=health.collector_fresh&&collector?.connected&&(c||member)?'Collector connected · '+collector.mode:'Collector offline or stale';$('clock').textContent='Backend · '+new Date(health.server_time*1000).toLocaleTimeString();tiles('main-tiles',[['P(YES)',pct(b?.probability?.p_yes),'Uncalibrated model'],['Quality',fmt(b?.quality?.score,0)+'/100','Model score'],['Entry filter EV / contract',money(b?.net_ev),'Settlement-based entry filter']]);$('market-name').textContent=b?b.ticker+' · recorded '+new Date(b.timestamp*1000).toLocaleTimeString():'No market observations yet';$('recommendation').textContent=b?.decision||'WAIT';$('reasons').replaceChildren(...(b?.reasons?.length?b.reasons.map(r=>text('div',describeReason(r),'reason')):[text('div',b?'All configured entry filters passed; execution performs its own checks.':'Waiting for recorded market data.','muted')]));metrics('decision-metrics',[['Project15 YES probability',pct(b?.probability?.blend?.project15_p_yes)],['Bleep YES probability',pct(b?.probability?.blend?.bleep?.p_yes)],['Reference used in evaluation',referenceMoney(b?.features?.reference)],['Model age at decision',b?.model_age_seconds==null?'—':fmt(b.model_age_seconds*1000,0)+' ms'],['Bollinger entry filter',({disabled:'Disabled',unavailable:'Unavailable · original checks apply',allowed:'Passed',rejected:'Entry blocked'})[b?.bollinger_entry_filter?.status]||'—'],['Entry path',b?.entry_path||'standard'],['Confirmed samples',fmt(b?.lead?.confirmation_samples,0)],['Settlement lead / uncertainty',fmt(b?.lead?.lead_sigma)],['Reversal stress probability',pct(b?.lead?.stressed_probability)],['Known settlement samples',fmt(b?.lead?.known_samples,0)],['Required remaining average to reach strike',referenceMoney(b?.lead?.required_remaining_average)],['Entry P(side) · '+(b?.entry_probability_basis||'adjusted'),pct(b?.conservative_probability)],['Uncertainty',pct(b?.probability?.uncertainty)],['Entry filter EV / contract',money(b?.net_ev)],['Effective entry ceiling',b?.effective_max_entry_price===undefined?'—':b.effective_max_entry_price===null?'No eligible price':money(b.effective_max_entry_price)],['Configured price ceiling',money(b?.config?.max_entry_price)],['Raw edge',pct(b?.raw_edge)],['Fee estimate',money(b?.estimated_fees)],['Slippage allowance',money(b?.expected_slippage)],['Signed distance',referenceMoney(b?.signed_distance)],['Time remaining at evaluation',fmt(b?.seconds_remaining,0)+' s']]);if($('mode').value==='BACKTEST')renderQuotes(b?.book,b?b.ticker+' · saved evaluation':'No recorded quotes',true);else if(!livePrices)renderQuotes(null,'Waiting for live quotes');metrics('features',[['Regime',b?.features?.regime||'—'],['Spread',pct(b?.book?.spread)],['ATR',referenceMoney(b?.features?.atr)],['Stochastic RSI',pct(b?.features?.stochastic_rsi)],['YES depth',fmt(b?.book?.yes_depth)],['NO depth',fmt(b?.book?.no_depth)],['60s momentum',pct(b?.features?.momentum_60)],['Bollinger position',pct(b?.features?.bollinger?.position)]]);metrics('positions', [['Worst-case exposure',money(c?.exposure)],['Daily realized P&L',money(c?.daily?.pnl)],['Kill switch',(c?.halted??member?.halted)?'HALTED':(c||member)?'Inactive':'—'],...Object.entries(c?.venue_pauses||{}).map(([ticker,p])=>[ticker+' · venue status','Trading blocked: '+p.event]),...(member&&!c?[['Strategy',member.model.model_name],['Open positions',fmt(member.open_positions,0)],['Realized P&L',money(member.realized_pnl)],['Entries',member.entries_active?'Enabled':'Inactive']]:[]),...Object.entries(c?.positions||{}).map(([ticker,p])=>[ticker,p.side.toUpperCase()+' · '+fmt(p.quantity)+' contracts at '+money(p.cost/p.bought)])]);}
+async function refresh(){if(shuttingDown)return;const gen=++generation;try{$('mode-label').hidden=liveOnlyFleet;$('mode-label').textContent=liveOnlyFleet?'':$('mode').value+' RESEARCH';$('error').textContent='';if(active==='monitor'){const [health,data,strategies,recentTrades]=await Promise.all([get('/api/health'),get('/api/evaluation?'+query()),get('/api/strategies?'+query()),get('/api/trades?'+query()+'&limit=5&include_open=true')]);if(gen!==generation)return;referenceDigits=health.reference_digits||2;$('reference-label').textContent=health.asset+' · '+health.reference_index;renderBotVersion(health);renderRecentTrades(recentTrades);renderStrategies('strategy-overview',strategies);$('strategy-overview-status').textContent=(health.asset||'BTC')+'15 Settlement Edge · '+(liveOnlyFleet?'LIVE':$('mode').value)+' · one strategy; configuration and run are shown below';const b=data.record?.body;renderEntryEconomics('entry-economics',b?.entry_economics);$('evaluation-title').textContent='Evaluation details · '+(b?.model?.model_name||(b?'BTC15 Settlement Edge':'no selection'));$('evaluation-status').textContent=(!health.collector_fresh&&health.collector_startup_error?health.collector_startup_error:data.message)+(data.evaluation_age===null?'':' Last evaluated '+fmt(Math.max(0,data.evaluation_age),0)+' seconds ago.');const collector=health.collector;const member=collector?.mode===$('mode').value?collector?.models?.find(m=>m.run_id===($('run').value||data.record?.run_id)):null;const c=collector?.mode===$('mode').value&&(!$('run').value||$('run').value===collector.run_id)?collector:null;$('health').textContent=health.collector_fresh&&collector?.connected&&(c||member)?'Collector connected · '+(liveOnlyFleet?'LIVE':collector.mode):'Collector offline or stale';$('clock').textContent='Backend · '+new Date(health.server_time*1000).toLocaleTimeString();tiles('main-tiles',[['P(YES)',pct(b?.probability?.p_yes),'Uncalibrated model'],['Quality',fmt(b?.quality?.score,0)+'/100','Model score'],['Entry filter EV / contract',money(b?.net_ev),'Settlement-based entry filter']]);$('market-name').textContent=b?b.ticker+' · recorded '+new Date(b.timestamp*1000).toLocaleTimeString():'No market observations yet';$('recommendation').textContent=b?.decision||'WAIT';$('reasons').replaceChildren(...(b?.reasons?.length?b.reasons.map(r=>text('div',describeReason(r),'reason')):[text('div',b?'All configured entry filters passed; execution performs its own checks.':'Waiting for recorded market data.','muted')]));metrics('decision-metrics',[['Project15 YES probability',pct(b?.probability?.blend?.project15_p_yes)],['Bleep YES probability',pct(b?.probability?.blend?.bleep?.p_yes)],['Reference used in evaluation',referenceMoney(b?.features?.reference)],['Model age at decision',b?.model_age_seconds==null?'—':fmt(b.model_age_seconds*1000,0)+' ms'],['Bollinger entry filter',({disabled:'Disabled',unavailable:'Unavailable · original checks apply',allowed:'Passed',rejected:'Entry blocked'})[b?.bollinger_entry_filter?.status]||'—'],['Entry path',b?.entry_path||'standard'],['Confirmed samples',fmt(b?.lead?.confirmation_samples,0)],['Settlement lead / uncertainty',fmt(b?.lead?.lead_sigma)],['Reversal stress probability',pct(b?.lead?.stressed_probability)],['Known settlement samples',fmt(b?.lead?.known_samples,0)],['Required remaining average to reach strike',referenceMoney(b?.lead?.required_remaining_average)],['Entry P(side) · '+(b?.entry_probability_basis||'adjusted'),pct(b?.conservative_probability)],['Uncertainty',pct(b?.probability?.uncertainty)],['Entry filter EV / contract',money(b?.net_ev)],['Effective entry ceiling',b?.effective_max_entry_price===undefined?'—':b.effective_max_entry_price===null?'No eligible price':money(b.effective_max_entry_price)],['Configured price ceiling',money(b?.config?.max_entry_price)],['Raw edge',pct(b?.raw_edge)],['Fee estimate',money(b?.estimated_fees)],['Slippage allowance',money(b?.expected_slippage)],['Signed distance',referenceMoney(b?.signed_distance)],['Time remaining at evaluation',fmt(b?.seconds_remaining,0)+' s']]);if($('mode').value==='BACKTEST')renderQuotes(b?.book,b?b.ticker+' · saved evaluation':'No recorded quotes',true);else if(!livePrices)renderQuotes(null,'Waiting for live quotes');metrics('features',[['Regime',b?.features?.regime||'—'],['Spread',pct(b?.book?.spread)],['ATR',referenceMoney(b?.features?.atr)],['Stochastic RSI',pct(b?.features?.stochastic_rsi)],['YES depth',fmt(b?.book?.yes_depth)],['NO depth',fmt(b?.book?.no_depth)],['60s momentum',pct(b?.features?.momentum_60)],['Bollinger position',pct(b?.features?.bollinger?.position)]]);metrics('positions', [['Worst-case exposure',money(c?.exposure)],['Daily realized P&L',money(c?.daily?.pnl)],['Kill switch',(c?.halted??member?.halted)?'HALTED':(c||member)?'Inactive':'—'],...Object.entries(c?.venue_pauses||{}).map(([ticker,p])=>[ticker+' · venue status','Trading blocked: '+p.event]),...(member&&!c?[['Strategy',member.model.model_name],['Open positions',fmt(member.open_positions,0)],['Realized P&L',money(member.realized_pnl)],['Entries',member.entries_active?'Enabled':'Inactive']]:[]),...Object.entries(c?.positions||{}).map(([ticker,p])=>[ticker,p.side.toUpperCase()+' · '+fmt(p.quantity)+' contracts at '+money(p.cost/p.bought)])]);}
 else if(active==='trades'){
   const q=query();q.set('search',$('search').value);q.set('decision',$('decision-filter').value);q.set('offset',offset);
   const kind=$('record-kind').value,completed=kind==='trades',ledger=['order','fill','execution_rejection'].includes(kind);
@@ -132,8 +132,8 @@ async function poll(){
   try {
     if(!shuttingDown&&!document.hidden){
       if(active!=='monitor')renderBotVersion(await get('/api/health'));
-      if(Date.now()-lastRuns>15000){await runs();lastRuns=Date.now();}
-      if(active==='monitor'||active==='analytics')await refresh();
+      if(active==='monitor'&&Date.now()-lastRuns>15000){await runs();lastRuns=Date.now();}
+      if(active==='monitor')await refresh();
     }
   } catch(e){$('error').textContent=e.message;}
   finally{setTimeout(poll,active==='monitor'?1000:5000);}
@@ -273,11 +273,11 @@ function tradeDollars(value, fixed=false){
 }
 function renderRecentTrades(data){
   const root=$('recent-trades'),signature=JSON.stringify(data);
-  $('recent-trades-status').textContent='Latest 5 trades · open and closed · updated '+new Date().toLocaleTimeString();
+  $('recent-trades-status').textContent=(data.stale?'Update delayed · ':'')+'Latest 5 trades · open and closed · updated '+new Date(data.updated_at?data.updated_at*1000:Date.now()).toLocaleTimeString();
   if(root.dataset.snapshot===signature)return;
-  root.dataset.snapshot=signature;root.replaceChildren();
-  if(data.rows.length)renderTradeTable(data,'recent-trades',0);
-  else root.append(text('p','No purchases filled in this selection yet.','muted'));
+  root.dataset.snapshot=signature;
+  if(data.rows.length){if(!$('recent-trade-body'))root.replaceChildren();renderTradeTable(data,'recent-trades',0);}
+  else root.replaceChildren(text('p','No purchases filled in this selection yet.','muted'));
 }
 function tradeTime(label,timestamp){
   const line=text('small',label+': ','muted');
@@ -299,9 +299,16 @@ function renderTradeTable(data,target='trade-rows',pageOffset=offset){
     head.append(headers);body=text('tbody','');body.id=bodyId;
     table.append(head,body);wrap.append(table);$(target).append(wrap);
   }
+  const retained=target==='recent-trades'?new Map([...body.children].map(row=>[row.dataset.tradeId,row])):new Map();
+  const visible=new Set();
   data.rows.forEach((record,index)=>{
+    const key=record.run_id+':'+(record.body.trade_id||record.opportunity_id),signature=JSON.stringify([record,data.total-pageOffset-index]);
+    visible.add(key);
+    const existing=retained.get(key);
+    if(existing?.dataset.signature===signature){body.append(existing);return;}
+    if(existing)existing.remove();
     const b=record.body,isOpen=b.status==='OPEN',row=text('tr',''),identity=text('th','');identity.scope='row';
-    row.dataset.tradeId=record.run_id+':'+(b.trade_id||record.opportunity_id);
+    row.dataset.tradeId=key;row.dataset.signature=signature;
     identity.append(text('strong',String(data.total-pageOffset-index)),text('small',record.market,'muted'));
     identity.append(text('small',isOpen?'OPEN':'CLOSED',isOpen?'pnl-positive':'muted'));
     if(b.source==='LIVE_FALLBACK')identity.append(text('small','Live fallback · confirmed exchange fills','muted'));else{const details=text('button','View details');details.onclick=()=>replay(record.opportunity_id);identity.append(details);}
@@ -319,6 +326,7 @@ function renderTradeTable(data,target='trade-rows',pageOffset=offset){
     marketResult.title='Recorded final market outcome, independent of the side bought or the trade’s profit. Pending means no confirmed outcome has been recorded.';
     row.append(identity,bought,exit,marketResult,fees,net);body.append(row);
   });
+  for(const [key,row] of retained)if(!visible.has(key))row.remove();
 }
 function activityCard(r,completed){
   const b=r.body,card=text('article','','activity-card');
@@ -398,7 +406,7 @@ function renderStrategies(id,data){
   if(id==='strategy-overview'){
     const total=data.lifetime;
     const summary=$('lifetime-summary');
-    summary.replaceChildren(text('div',data.mode==='BACKTEST'?'Replay net P&L':'Realized net P&L · '+data.mode,'label'),pnlValue(total.net_pnl));
+    summary.replaceChildren(text('div',data.mode==='BACKTEST'?'Replay net P&L':'Realized net P&L · '+(liveOnlyFleet?'LIVE':data.mode),'label'),pnlValue(total.net_pnl));
     const stats=text('div','','overview-stats');
     for(const [label,value] of [['Completed',fmt(total.completed_trades,0)],['Win rate',pct(total.win_rate)],['Drawdown',money(total.max_drawdown)],['Open trades',fmt(total.open_trades,0)]]){
       const cell=text('div','');cell.append(text('small',label),text('strong',value));stats.append(cell);
@@ -416,7 +424,7 @@ function renderStrategies(id,data){
     const heading=text('div','','section-title');
     heading.append(text('h3',m.model_name),text('span',m.model_version,'badge'));
     card.append(heading,text('p','Config '+m.config_hash.slice(0,12)+' · '+entry.runs.length+' run(s)','muted'));
-    card.append(text('p',entry.feed_status==='current'?'Evaluations current · '+(entry.paper_execution?'paper execution on':'observation only'):entry.feed_status==='waiting_or_stale'?'Waiting for a fresh evaluation':'Strategy stopped · showing saved history','strategy-state'));
+    card.append(text('p',entry.feed_status==='current'?'Evaluations current · '+(liveOnlyFleet?'live signal feed':entry.paper_execution?'paper execution on':'observation only'):entry.feed_status==='waiting_or_stale'?'Waiting for a fresh evaluation':'Strategy stopped · showing saved history','strategy-state'));
     card.append(text('p',entry.entries_enabled===null?'Historical configuration':entry.entries_enabled?'Entries enabled in configuration':'Entries inactive','strategy-state'));
     const performance=text('div','','strategy-performance');
     performance.append(text('small',data.mode==='BACKTEST'?'All-time replay net P&L':'Lifetime realized net P&L','muted'),pnlValue(entry.lifetime.net_pnl),text('small',fmt(entry.lifetime.completed_trades,0)+' completed trades · this configuration, all runs · after recorded fees','muted'));
@@ -447,7 +455,7 @@ function renderStrategies(id,data){
 }
 
 $('shutdown').onclick=async()=>{
-  if(!window.confirm((fleetMode?'Stop ALL crypto paper collectors and this dashboard? ':'Shut down the bot and dashboard? ')+ ' New entries will stop, unfilled orders will be cancelled, and open paper positions will be saved without liquidation. Resume the same paper run later to continue position management and settlement.'))return;
+  if(!window.confirm(liveOnlyFleet?'Stop live signal collection and this dashboard? New live entries will be disabled. Real positions remain at the exchange; resume signal collection for automatic stop monitoring.':(fleetMode?'Stop ALL crypto paper collectors and this dashboard? ':'Shut down the bot and dashboard? ')+ ' New entries will stop, unfilled orders will be cancelled, and open paper positions will be saved without liquidation. Resume the same paper run later to continue position management and settlement.'))return;
   const button=$('shutdown'),status=$('shutdown-status');
   shuttingDown=true;generation++;button.disabled=true;status.hidden=false;
   status.textContent='Requesting safe shutdown…';
@@ -531,13 +539,33 @@ function ledgerCard(record){
 document.body.classList.toggle('overview-active',active==='monitor');
 
 
+let liveOnlyFleet=false;
 const fleetCards=new Map();
+function markTradesDelayed(card){
+  card.tradesDelayed=true;
+  let notice=card.trades.querySelector('.trade-update-delayed');
+  if(!notice){notice=text('p','Update delayed · showing last available trades','muted trade-update-delayed');card.trades.append(notice);}
+  if(!card.trades.querySelector('.fleet-trade'))notice.textContent='Update delayed · waiting for trade history';
+}
 async function refreshFleet(){
   try{
+    if(document.hidden||active!=='monitor')return;
     const response=await fetch('/api/fleet',{cache:'no-store',signal:AbortSignal.timeout(5000)});
     if(response.status===404)return;
     if(!response.ok)throw Error('Portfolio status unavailable');
     const data=await response.json();
+    liveOnlyFleet=Boolean(data.live_only);
+    if(liveOnlyFleet){
+      $('mode-label').hidden=true;
+      document.querySelector('#strategies .badge').hidden=true;
+      document.querySelector('#fleet-panel h2').textContent='All markets';
+      $('fleet-panel').setAttribute('aria-label','Live portfolios');
+      $('mode').value='PAPER';
+      $('mode').closest('label').hidden=true;
+      $('history-scope').value='settlement';
+      $('history-scope').closest('label').hidden=true;
+      document.querySelector('.aside-bottom').textContent='Live trading · Settlement Edge';
+    }
     if(!fleetMode){$('asset-details').open=false;$('asset-details-label').hidden=false;document.body.classList.add('fleet-mode');window.dispatchEvent(new Event('fleet-ready'));}
     fleetMode=true;
     $('manual-open').hidden=false;
@@ -545,7 +573,7 @@ async function refreshFleet(){
     $('fleet-panel').hidden=false;$('shutdown').textContent='Stop all safely';
     const selected=assetBase.split('/')[2]||data.default_asset;
     $('asset-details-label').textContent=selected+' · decisions, positions and feed details';
-    $('fleet-status').textContent='Active paper runs · P&L after recorded fees · latest 3 purchases per asset · updated '+new Date(data.server_time*1000).toLocaleTimeString()+'. Select an asset for full history and settings.';
+    $('fleet-status').textContent=(liveOnlyFleet?'Live bots · P&L after recorded fees · latest 3 purchases per asset · updated ':'Active paper runs · P&L after recorded fees · latest 3 purchases per asset · updated ')+new Date(data.server_time*1000).toLocaleTimeString()+'. Select an asset for full history and settings.';
     if(data.live?.available===false)$('fleet-status').textContent+=' Live execution unavailable; order and position status cannot be confirmed.';
     $('fleet-total').textContent=(data.totals_complete?'Realized net P&L · ':'Partial realized net P&L · ')+money(data.realized_pnl);
     for(const row of data.assets){
@@ -613,7 +641,7 @@ async function refreshFleet(){
       card.state.textContent=row.operational?.state||'UNKNOWN';
       card.detail.textContent=row.operational?.summary||'Waiting for collector';
       if(row.paper_worker){const p=row.paper_worker;card.detail.textContent+=' Paper simulation: '+p.state.toLowerCase()+(p.reason?' — '+p.reason:'')+'.';}
-      card.result.replaceChildren(text('small','Recorded net P&L · paper + live fallback'),pnlValue(row.realized_pnl),text('small',(row.completed_trades??'—')+' completed · '+(row.open_positions??'—')+' open'));
+      card.result.replaceChildren(text('small',liveOnlyFleet?'Recorded live net P&L':'Recorded net P&L · paper + live fallback'),pnlValue(row.realized_pnl),text('small',(row.completed_trades??'—')+' completed · '+(row.open_positions??'—')+' open'));
       const streak=row.current_streak;
       const streakLabel=streak==null||!row.completed_trades?'—':streak>0?streak+(streak===1?' win':' wins'):streak<0?Math.abs(streak)+(streak===-1?' loss':' losses'):'None · break-even';
       const stats=text('div','','fleet-performance');
@@ -645,22 +673,31 @@ async function refreshFleet(){
     await Promise.all(data.assets.map(async row=>{
       const card=fleetCards.get(row.asset);
       try{
+        if(row.recent_trades_stale)markTradesDelayed(card);
+        if(row.recent_trade_version!==undefined&&card.recentTradeVersion===row.recent_trade_version&&!card.tradesDelayed)return;
         const response=await fetch(row.url+'api/trades?mode=PAPER&scope=settlement&include_open=true&limit=3&run_id='+encodeURIComponent(row.run_id),{cache:'no-store',signal:AbortSignal.timeout(5000)});
         if(!response.ok)throw Error('Trade history unavailable');
         const trades=await response.json();
+        const retainedTrades=new Map([...card.trades.querySelectorAll('.fleet-trade')].map(item=>[item.dataset.tradeId,item]));
         card.trades.replaceChildren(text('h3','Recent trades'));
         if(!trades.rows.length)card.trades.append(text('p','No filled purchases yet.','muted'));
         for(const trade of trades.rows){
-          const b=trade.body,item=text('div','','fleet-trade');
+          const b=trade.body,key=trade.run_id+':'+(b.trade_id||trade.opportunity_id),signature=JSON.stringify(trade);
+          const retained=retainedTrades.get(key);
+          if(retained?.dataset.signature===signature){card.trades.append(retained);continue;}
+          const item=text('div','','fleet-trade');item.dataset.tradeId=key;item.dataset.signature=signature;
           if(b.source==='LIVE_FALLBACK')item.append(text('small','Live fallback · confirmed exchange fills','muted'));
           item.append(text('small',trade.market,'fleet-ticker'),text('p',fmt(b.bought,0)+' '+(b.side||'').toUpperCase()+' at '+cents(b.entry)),text('small',new Date((b.opened??trade.timestamp)*1000).toLocaleString()));
           item.append(text('strong',b.status==='OPEN'?'OPEN · result pending':money(b.net_pnl)+' net',b.status==='OPEN'?'muted':b.net_pnl>=0?'pnl-positive':'pnl-negative'));
           card.trades.append(item);
         }
-      }catch(error){card.trades.replaceChildren(text('h3','Recent trades'),text('p','Trade history unavailable','muted'));}
+        card.recentTradeVersion=row.recent_trade_version;
+        card.tradesDelayed=Boolean(trades.stale);
+        if(trades.stale)markTradesDelayed(card);
+      }catch(error){markTradesDelayed(card);}
     }));
 
-  }catch(error){if(fleetMode){$('fleet-status').textContent='Overview unavailable · saved P&L and trades may be stale.';for(const card of fleetCards.values()){card.updateLive('',null);card.bought.replaceChildren(text('p','Purchase totals unavailable','muted'));card.tradeButton.disabled=true;for(const button of card.quickBuys)button.disabled=true;card.quickSell.disabled=true;card.tradeButton.dataset.ticker='';card.price.textContent='—';card.contract.replaceChildren(text('p','Live contract unavailable','muted'));}}}
+  }catch(error){if(fleetMode){$('fleet-status').textContent='Overview unavailable · saved P&L and trades may be stale.';for(const card of fleetCards.values()){markTradesDelayed(card);card.updateLive('',null);card.bought.replaceChildren(text('p','Purchase totals unavailable','muted'));card.tradeButton.disabled=true;for(const button of card.quickBuys)button.disabled=true;card.quickSell.disabled=true;card.tradeButton.dataset.ticker='';card.price.textContent='—';card.contract.replaceChildren(text('p','Live contract unavailable','muted'));}}}
   finally{if(!shuttingDown)setTimeout(refreshFleet,2000);}
 }
 refreshFleet();

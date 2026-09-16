@@ -50,7 +50,13 @@ def portfolios(tmp_path):
             "PAPER",
             now,
         )
-        store.add("trade_result", dict(net_pnl=number), run_id, "PAPER", now)
+        store.add(
+            "trade_result",
+            dict(net_pnl=number, cost=8, bought=10, proceeds=8 + number, fees=0),
+            run_id,
+            "PAPER",
+            now,
+        )
         store.publish_market_display(
             dict(
                 run_id=run_id,
@@ -309,12 +315,13 @@ def test_quote_request_does_not_scan_trade_history(portfolios, monkeypatch):
 
     monkeypatch.setattr(Store, "list", listing)
     with TestClient(fleet.create_fleet_app(manifest)) as client:
-        assert len(scans) == 4
+        initial_scans = len(scans)
+        assert initial_scans >= 4
         for _ in range(2):
             response = client.get("/api/fleet").json()
             assert response["totals_complete"] and response["realized_pnl"] == 6
             assert all(r["performance_updated_at"] for r in response["assets"])
-        assert len(scans) == 4
+        assert len(scans) == initial_scans
 
 
 def test_performance_failure_does_not_hide_quotes(portfolios, monkeypatch):

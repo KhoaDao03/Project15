@@ -6,6 +6,8 @@ The branch `fix/fractional-passive-fills` operates **one Settlement Edge strateg
 
 | Task | Guide |
 | --- | --- |
+| Set up an IONOS VPS, domain, private controls and shutdown passcode | [Step-by-step IONOS setup](IONOS_VPS_SETUP.md) |
+| Deploy live bots and the dashboard without paper simulation | [Live-only cloud deployment](CLOUD.md) |
 | Install from an empty directory; first demo/feed/paper run | [Getting started](GETTING_STARTED.md) |
 | Run BTC, ETH, SOL and XRP in separate paper portfolios | [Crypto paper trading](CRYPTO_PAPER.md) |
 | Start, monitor, stop and resume | [Paper trading](PAPER_TRADING.md) |

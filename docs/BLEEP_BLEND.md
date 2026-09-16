@@ -8,7 +8,7 @@ P(YES) = (Project15 P(YES) + safety-clamped Bleep Mode B P(YES)) / 2
 P(NO) = 1 − P(YES)
 ```
 
-Both standard and late entries require Bleep probability ≥80%; the blended minimum is disabled. Project15 contributes half the blend but has no
+Both standard and late entries require Bleep probability ≥78%; the blended minimum is disabled. Project15 contributes half the blend but has no
 individual veto. Same-side sample confirmation and quality checks remain;
 modeled-sigma floors stay disabled. The purchase range is 80–95¢ and the hard
 stop is 55¢. Full-position execution remains enabled.
@@ -127,7 +127,7 @@ at 420 seconds remaining (7 minutes); the late cutoff remains 15 seconds. The
 flag defaults off and is omitted from historical configuration hashes when off,
 so recorded v1 runs still use their original formulas. Current blended records
 use `settlement-bleep-equal-v2`; the Bleep component identifies
-`bleep-settlement-reference-v2`. There is no blended entry minimum; Bleep ≥80%
+`bleep-settlement-reference-v2`. There is no blended entry minimum; Bleep ≥78%
 remains the component requirement.
 
 The new normal approximation models the arithmetic average on the contract's
@@ -165,3 +165,5 @@ volatility estimates and the selected volatility source. These identify changes
 in confidence for later evaluation. The implementation was tested for accounting
 of observed samples, causality, gaps, comparisons, volatility response and entry
 boundaries; profitability has not been established by these tests.
+
+Current standard and late Bleep entry thresholds were lowered to 78% at the user’s request. The 75% safety-clamp ceiling remains unchanged. Evidence: `data/runtime/bleep78-all-20260916/`.

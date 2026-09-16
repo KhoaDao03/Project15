@@ -1,0 +1,18 @@
+[Unit]
+Description=Project15 private live dashboard
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Project15
+Environment=TRADING_MODE=PAPER
+Environment=ENABLE_LIVE_TRADING=false
+ExecStart=%h/Project15/.venv/bin/btc15 fleet-dashboard %h/Project15/data/cloud/manifest.json --port 8000
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=60
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

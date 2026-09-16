@@ -14,7 +14,7 @@ import websockets
 from .api import KalshiClient, subscriptions
 from .collector_recovery import CollectorRecovery
 from .decision_notifications import notify_decision
-from .domain import dumps
+from .domain import Book, dumps, parse_market
 from .engine import Engine
 from .models import guard_archived_exposure, require_single_run
 from .reference_history import load_history, save_history
@@ -46,11 +46,16 @@ async def collect(
     record_all=None,
     stop_confirmation_shadow=False,
     separate_paper=False,
+    live_signals=False,
 ):
     """Independent receipt/metadata tasks; one ordered durable analysis worker."""
+    if live_signals and (paper or resume or separate_paper or stop_confirmation_shadow or record_all):
+        raise ValueError("Live signals require a separate non-executing collector")
+    if live_signals and not managed_run:
+        raise ValueError("Live signals require a named run")
     settings = replace(settings, asset=config.asset)
     settings.guard()
-    record_all = not paper if record_all is None else record_all
+    record_all = not (paper or live_signals) if record_all is None else record_all
     Path(settings.data_dir).mkdir(parents=True, exist_ok=True)
     if settings.mode != "PAPER":
         raise ValueError("Collector requires PAPER mode")
@@ -78,7 +83,16 @@ async def collect(
         if paper:
             require_single_run(store, resume or managed_run)
             guard_archived_exposure(store)
-        if managed_run:
+        if live_signals:
+            existing = store.run_summaries("PAPER")
+            for run in existing:
+                if (run["run_id"] != managed_run
+                        or run["body"]["versions"]["config"] != config.version):
+                    raise ValueError("Live signals require their own database and unchanged configuration")
+            previous = store.list(kind="run", run_id=managed_run, limit=1, newest_first=True)
+            if previous and previous[0]["body"].get("live_signals") is not True:
+                raise ValueError("Live signals require their own database, not a paper or observation run")
+        if managed_run and not live_signals:
             if not paper or resume:
                 raise ValueError("Managed runs require paper execution without explicit resume")
             previous = store.list(kind="run", run_id=managed_run, limit=1)
@@ -121,6 +135,8 @@ async def collect(
                 clock=time.time,
                 resume=bool(resume),
                 record_evaluations=record_all,
+                signal_only=live_signals,
+                signal_settlements=live_signals,
             )
         if paper and not resume and not separate_paper:
             closed = {r["opportunity_id"] for r in store.list(kind="trade_result", mode="PAPER", limit=None)}
@@ -150,26 +166,28 @@ async def collect(
                     engine.mode,
                     time.time(),
                 )
-        recorder = (
-            RawRecorder(Path(settings.data_dir) / "raw", chunk_size=2000)
-            if record_all
-            else CompactRecorder(Path(settings.data_dir) / "raw")
-        )
-        journal = recorder.directory / (recorder.session + ".jsonl") if record_all else recorder.path
-        engine.raw_archive = True
-        store.add(
-            "raw_source",
-            {
-                "journal": str(journal),
-                "format": "jsonl" if record_all else "jsonl.gz",
-                "parent_run": engine.run_id,
-            },
-            engine.run_id,
-            "PAPER",
-            time.time(),
-        )
+        journal = None
+        if not live_signals:
+            recorder = (
+                RawRecorder(Path(settings.data_dir) / "raw", chunk_size=2000)
+                if record_all
+                else CompactRecorder(Path(settings.data_dir) / "raw")
+            )
+            journal = recorder.directory / (recorder.session + ".jsonl") if record_all else recorder.path
+            engine.raw_archive = True
+            store.add(
+                "raw_source",
+                {
+                    "journal": str(journal),
+                    "format": "jsonl" if record_all else "jsonl.gz",
+                    "parent_run": engine.run_id,
+                },
+                engine.run_id,
+                "PAPER",
+                time.time(),
+            )
         preload = dict(status="DISABLED", samples=0)
-        if paper and config.bleep_enabled:
+        if (paper or live_signals) and config.bleep_enabled:
             recordings = [
                 r
                 for r in store.list(kind="raw_source", mode="PAPER", limit=20)
@@ -185,7 +203,8 @@ async def collect(
                 connection_id="reference-preload",
                 payload=dict(type="reference_history", msg=body),
             )
-            await work(recorder.append_rows, [history_row])
+            if recorder:
+                await work(recorder.append_rows, [history_row])
             await work(engine.ingest, history_row)
             if paper_worker:
                 paper_worker.submit([history_row])
@@ -203,10 +222,11 @@ async def collect(
         metadata_ready = asyncio.Event()
         connection = str(uuid.uuid4())
         tickers = []
-        tracked = {
-            r["market"]: r["body"]["raw"] for r in store.list(kind="market", run_id=engine.run_id, limit=None)
+        retained_markets = {
+            r["market"]: r["body"] for r in store.list(kind="market", run_id=engine.run_id, limit=None)
         }
-        if paper_worker:
+        tracked = {ticker: body["raw"] for ticker, body in retained_markets.items()}
+        if paper_worker or live_signals:
             # Completed history does not need another REST settlement request at startup.
             with store.transaction():
                 tracked = {
@@ -214,6 +234,13 @@ async def collect(
                     for ticker, raw in tracked.items()
                     if store.state(engine.run_id, ticker) != "CLOSED"
                 }
+        if live_signals:
+            # Old live fills still need official results after a collector restart.
+            # Restore validated identities, never a stale execution book/reference.
+            for ticker in tracked:
+                body = retained_markets[ticker]
+                engine.markets[ticker] = parse_market(body["raw"], body["series"])
+                engine.books[ticker] = Book()
         for ticker, snapshot in engine.executor.contracts.items():
             if ticker in engine.executor.positions:
                 tracked[ticker] = snapshot["raw"]
@@ -337,7 +364,7 @@ async def collect(
                     msg = payload.get("msg", {})
                     display_tickers[msg.get("market_ticker")] = msg
             now = time.time()
-            if paper and config.bleep_enabled and time.monotonic() - last_history_save >= 30:
+            if (paper or live_signals) and config.bleep_enabled and time.monotonic() - last_history_save >= 30:
                 save_history(settings.data_dir, engine.ticks, now, config)
                 last_history_save = time.monotonic()
             lag = (time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9
@@ -359,7 +386,7 @@ async def collect(
             )
             live_version = (latest_live["ticker"], latest_live["timestamp"]) if latest_live else None
             publish_live = bool(
-                paper
+                (paper or live_signals)
                 and latest_live
                 and live_version != last_live_decision
                 and (eligible_live or live_decision_eligible)
@@ -410,8 +437,9 @@ async def collect(
                         run_id=engine.run_id,
                         mode="PAPER",
                         paper_execution=paper,
+                        live_signals=live_signals,
                         paper_worker=simulation,
-                        recording="full" if record_all else "trades_with_compact_inputs",
+                        recording="signals_only" if live_signals else "full" if record_all else "trades_with_compact_inputs",
                         reference_preload=preload,
                         live_enabled=False,
                         models=[
@@ -735,7 +763,7 @@ async def collect(
                 await asyncio.sleep(0.5)
 
         async def seed_bleep():
-            if not (paper and config.bleep_enabled and config.bleep_exchange_seed_enabled):
+            if not ((paper or live_signals) and config.bleep_enabled and config.bleep_exchange_seed_enabled):
                 return
             from .bleep_seed import fetch_seed
 
@@ -797,7 +825,7 @@ async def collect(
 
                     def finish_audit():
                         now = time.time()
-                        if paper and config.bleep_enabled:
+                        if (paper or live_signals) and config.bleep_enabled:
                             save_history(settings.data_dir, engine.ticks, now, config)
                         engine.flush_rejections(now, force=True)
                         for ticker in engine.executor.positions:

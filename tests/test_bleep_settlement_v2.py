@@ -183,7 +183,7 @@ def test_deployed_entry_window(market, asset, remaining, allowed):
     c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
     assert c.entry_window_start == 420 and c.bleep_settlement_model_enabled
     assert c.min_probability == c.late_min_probability == 0
-    assert c.standard_component_min_probability == c.late_component_min_probability == 0.8
+    assert c.standard_component_min_probability == c.late_component_min_probability == 0.78
     now = market.close_time - remaining
     p = dict(
         p_yes=0.7,

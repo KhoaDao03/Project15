@@ -32,6 +32,7 @@ async def serve(
     *,
     stop_confirmation_shadow=False,
     separate_paper=False,
+    live_signals=False,
 ):
     if not run_id or min_free_bytes <= 0:
         raise ValueError("Service requires a run ID and positive disk reserve")
@@ -46,7 +47,8 @@ async def serve(
             settings,
             config,
             store,
-            paper=True,
+            paper=not live_signals,
+            live_signals=live_signals,
             duration=duration,
             managed_run=run_id,
             stop_event=stop,
@@ -81,9 +83,11 @@ def health(store, run_id, now=None):
     reasons = []
     if not 0 <= age <= 5:
         reasons.append("STALE_STATUS")
-    for key in ("connected", "clock_ok", "paper_execution", "exchange_open"):
+    for key in ("connected", "clock_ok", "exchange_open"):
         if not body.get(key):
             reasons.append(key.upper())
+    if not (body.get("paper_execution") or body.get("live_signals")):
+        reasons.append("PAPER_EXECUTION")
     if body.get("halted"):
         reasons.append("HALTED")
     if body.get("settlement_recovery"):

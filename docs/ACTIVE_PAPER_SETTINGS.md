@@ -9,10 +9,10 @@ using `data/runtime/settlement-both-models-80-v1.json`. The matching tracked
 configuration is `config/settlement-edge-active-paper.json`.
 
 All four current paper bots use a 50/50 Project15–Bleep blend. Both entry windows
-require Bleep probability ≥80%; the blended entry minimum is disabled. Project15 has no
+require Bleep probability ≥78%; the blended entry minimum is disabled. Project15 has no
 individual veto. Sigma floors remain disabled; same-side sample confirmation
 and quality checks remain. Latest deployment hashes and evidence:
-`data/runtime/bleep-average-volatility-7m-20260916/`.
+`data/runtime/bleep78-all-20260916/`.
 See [Bleep blend](BLEEP_BLEND.md) for formulas and component recording.
 [Startup preload](REFERENCE_PRELOAD.md) restores validated saved BRTI history;
 exchange seeding avoids the roughly 33-minute Bleep cold warmup when a provider
@@ -527,3 +527,7 @@ At the user’s request, both standard and late blended probability floors are z
 ## September 16: Bleep settlement average, reference volatility and seven-minute start
 
 All four bots enable `bleep_settlement_model_enabled` and set `entry_window_start=420`. Bleep uses observed settlement samples and the discrete-average uncertainty of future samples, with the higher of floored ATR-based volatility and recent official-reference volatility. Bleep ≥80%, the disabled blended floor, entry prices, Bollinger filter and exits are retained. See [Bleep model details](BLEEP_BLEND.md). Evidence: `data/runtime/bleep-average-volatility-7m-20260916/`.
+
+## September 16: Bleep entry minimum lowered to 78%
+
+The user requested a 78% live entry threshold. The shared standard and late Bleep component floors are now `0.78` across BTC, ETH, SOL and XRP, including deployed configs and saved presets. The Bleep v2 calculation, 420-second entry start, 15-second cutoff, disabled blended floor, 55¢ hard stop and 99¢ live take-profit remain unchanged. Evidence: `data/runtime/bleep78-all-20260916/`.

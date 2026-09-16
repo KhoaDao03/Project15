@@ -272,7 +272,7 @@ future-dated merely because it is newer than the request's start time. The exist
 two-second display freshness limits remain unchanged, including rejection of truly
 future-dated snapshots. The response server time is sampled when building the response.
 
-Fleet historical performance refreshes in the background every five seconds, with
+Fleet historical performance checks for changes in the background every five seconds, with
 `performance_updated_at` exposed per asset. Quote requests do not scan completed-trade
 history. If a history refresh fails, performance is unavailable and fleet totals are
 marked incomplete; fresh contract quotes can still be served. Trading decisions and
@@ -324,3 +324,31 @@ This removes paper execution CPU work from the collector process, but repeats
 strategy calculations in the simulator and shares the host and SQLite database.
 It does not eliminate CPU/disk contention. Verify per-process CPU, queue lag and
 paper-worker warnings during the monitored session after deployment.
+
+### Recent-trade refreshes
+
+Fleet recent-trade cards and the current-run five-trade panel use a background
+snapshot checked with the historical statistics worker (five seconds after each
+check completes). Unchanged history reuses the cached snapshot and performance totals.
+Record revisions and a persistent SQLite journal connection's `data_version` detect
+new fills, updates to existing orders, closed trades, and settlements without parsing
+the order journal on every poll. Other journal writes can also invalidate the cache.
+Requests for up to five current-run trades do not rebuild
+journals. Paper records are read within one database transaction, and the live-fill
+fallback is computed once per build. Other history filters and pagination retain
+the full-history endpoint behavior.
+
+Responses include `updated_at` and `stale`. A failed refresh keeps the previous
+snapshot; checks delayed by more than 15 seconds are marked stale. Before the first
+successful snapshot the endpoint returns 503 rather than inventing an empty history.
+The stale threshold measures time since the last successful change check, so unchanged
+history does not become stale merely because it has not been rebuilt.
+The fleet cards retain their last successful rows and show “Update delayed” on
+request failure or stale data. A successful fresh response clears the notice.
+
+Trade history loads on tab entry, filter changes, pagination, or manual Refresh;
+it does not poll. Analytics also loads on demand. Overview polling pauses while
+another tab is selected or the browser document is hidden. Recent trades are fetched
+only when their snapshot version changes (or an earlier request needs retrying), and
+unchanged trade rows retain their existing rendered content. Closed results can still
+refresh when a later settlement or order reconciliation changes the recorded outcome.

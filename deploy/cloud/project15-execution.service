@@ -1,0 +1,19 @@
+[Unit]
+Description=Project15 real-order execution
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Project15
+EnvironmentFile=%h/Project15/data/cloud/credentials.env
+Environment=TRADING_MODE=PAPER
+Environment=ENABLE_LIVE_TRADING=false
+ExecStart=%h/Project15/.venv/bin/btc15 live-execution %h/Project15/data/cloud/manifest.json
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=60
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

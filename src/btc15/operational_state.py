@@ -98,7 +98,7 @@ def operational_state(status, evaluation, now, *, startup_error=None, reference=
         blockers.append(reason("STRATEGY_DISABLED"))
     if member.get("entries_active") is False:
         blockers.append(reason("MODEL_INACTIVE"))
-    if body.get("paper_execution") is False:
+    if body.get("paper_execution") is False and not body.get("live_signals"):
         blockers.append(reason("OBSERVE_ONLY"))
     recovery_reasons = [reason(c) for c in recovery.get("reasons", [])] if fresh else []
     if fresh and not recovery.get("entries_blocked"):

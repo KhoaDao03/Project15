@@ -77,10 +77,10 @@
   "bleep_safety_clamp_enabled": true,
   "entry_value_filters_enabled": false,
   "both_models_80_enabled": true,
-  "standard_component_min_probability": 0.8,
+  "standard_component_min_probability": 0.78,
   "project15_probability_veto_enabled": false,
   "fixed_stop_price": 0.55,
   "full_position_execution": true,
-  "late_component_min_probability": 0.8,
+  "late_component_min_probability": 0.78,
   "bleep_settlement_model_enabled": true
 }

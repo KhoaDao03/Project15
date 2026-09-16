@@ -2,7 +2,10 @@
 
 import json
 import sqlite3
+import threading
 from collections import defaultdict
+from contextlib import contextmanager
+from contextvars import ContextVar
 from decimal import Decimal
 from pathlib import Path
 
@@ -12,11 +15,62 @@ from .domain import timestamp
 class LiveFallbackStore:
     def __init__(self, store, journal, run_id, asset):
         self.store, self.journal, self.run_id, self.asset = store, Path(journal), run_id, asset
+        self._history = ContextVar("live_fallback_snapshot", default=None)
+        self._journal_reader = None
+        self._revision_lock = threading.Lock()
+        self._cached_revision = None
+        self._cached_fallback = None
+
+    def history_revision(self, mode, run_id=None):
+        revision = self.store.history_revision(mode, run_id)
+        if mode != "PAPER" or not self.journal.exists():
+            return revision, None
+        with self._revision_lock:
+            if self._journal_reader is None:
+                self._journal_reader = sqlite3.connect(
+                    self.journal.resolve().as_uri() + "?mode=ro", uri=True, check_same_thread=False
+                )
+            # data_version is comparable only on the same connection. It detects
+            # committed updates even when an existing order ID is reconciled.
+            version = self._journal_reader.execute("PRAGMA data_version").fetchone()[0]
+        return revision, version
+
+    def close_history(self):
+        with self._revision_lock:
+            if self._journal_reader is not None:
+                self._journal_reader.close()
+                self._journal_reader = None
 
     def __getattr__(self, name):
         return getattr(self.store, name)
 
+    @contextmanager
+    def history_snapshot(self):
+        with self.store.transaction() as connection:
+            # sqlite3 legacy transaction mode does not BEGIN for SELECT alone.
+            if (
+                connection.dialect.name == "sqlite"
+                and not connection.connection.driver_connection.in_transaction
+            ):
+                connection.exec_driver_sql("BEGIN")
+            token = self._history.set(self.fallback())
+            try:
+                yield
+            finally:
+                self._history.reset(token)
+
     def fallback(self):
+        frozen = self._history.get()
+        if frozen is not None:
+            return frozen
+        revision = self.history_revision("PAPER", self.run_id)
+        with self._revision_lock:
+            if self._cached_revision != revision or self._cached_fallback is None:
+                self._cached_fallback = self._fallback()
+                self._cached_revision = revision
+            return self._cached_fallback
+
+    def _fallback(self):
         if not self.journal.exists():
             return []
         paper = self.store.list("fill", self.run_id, "PAPER", limit=None)
@@ -210,7 +264,4 @@ class LiveFallbackStore:
         return rows if limit is None else rows[:limit]
 
     def trade_revision(self, mode):
-        extra = self.fallback() if mode == "PAPER" else []
-        return self.store.trade_revision(mode) + tuple(
-            (r["id"], r["timestamp"], r["body"].get("quantity"), r["body"].get("net_pnl")) for r in extra
-        )
+        return self.history_revision(mode)

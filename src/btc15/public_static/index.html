@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Project15 · Market viewer</title><link rel="stylesheet" href="/viewer.css"><script src="/viewer.js" defer></script></head>
+<body><main><header><div><p class="eyebrow">PROJECT15 · VISITOR DASHBOARD</p><h1>Market dashboard</h1></div><p id="connection" role="status">Connecting…</p></header>
+<section class="total"><div><p id="basis">Recorded performance</p><h2 id="pnl">—</h2></div><p id="updated">Waiting for data</p></section>
+<div id="assets"></div>
+<section id="owner-section" hidden><h2>Owner controls</h2>
+<form id="unlock-form"><label>Owner passcode<input id="owner-passcode" type="password" autocomplete="off" minlength="16" maxlength="256" required></label><button type="submit">Unlock for 1 minute</button></form>
+<p id="unlock-status" role="status">Locked · enter the passcode to make changes.</p>
+<form id="live-form"><label>Asset <select id="live-asset"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option></select></label>
+<fieldset id="live-fields" disabled><legend>Live trading</legend>
+<p id="live-current">Waiting for live settings…</p>
+<label><input id="live-enabled" type="checkbox"> Enable new live buys for this asset and future markets</label>
+<label>Contracts per entry <input id="live-contracts" type="number" min="1" max="20" step="1" required></label>
+<label><input id="live-confirm" type="checkbox"> I confirm these real-money settings.</label>
+<button type="submit">Save live settings</button></fieldset></form><p id="live-message" role="status"></p>
+<h3>Shut down all bots</h3><p>Shutdown is blocked while a live position or order still needs management. This does not sell your contracts. Disabling new buys above keeps automatic exits running.</p>
+<form id="stop-form"><fieldset id="stop-fields" disabled><label><input id="stop-confirm" type="checkbox" required> I confirm I want to shut down all four bots.</label><button id="stop-submit" type="submit">Shut down all bots</button></fieldset></form><p id="stop-message" role="status"></p></section>
+<footer>Refreshes every 5 seconds. P&amp;L uses recorded fills and fees. Open positions have no final result.</footer>
+</main></body></html>

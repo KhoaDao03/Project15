@@ -1,12 +1,18 @@
 # Project15 — BTC15 Settlement Edge
 
+For the live-only cloud runtime (no paper workers or raw feed tapes), see [Cloud deployment](docs/CLOUD.md).
+
+For a complete server and domain setup walkthrough, use [IONOS VPS setup](docs/IONOS_VPS_SETUP.md).
+
+For a public domain, use the separate [visitor dashboard](docs/CLOUD.md#optional-public-view-only-dashboard), with optional one-minute passcode unlocks for live buy settings, contract quantity and safe shutdown. Keep the full dashboard with trading controls private over SSH.
+
 **This branch has one executable strategy: Settlement Edge, supporting BTC, ETH, SOL and XRP 15-minute paper markets.** The current milestone is to make its data collection, paper execution, recovery and evaluation dependable before adding any other strategy. Conservative Confirmed Momentum and Volatility-Regime Momentum are not executable here. Their retained history is read-only.
 
 This is a research/paper-trading application, not a claim of profitability. It uses real Kalshi market data when credentials are configured. Collector orders and fills remain simulated; blanket CLI live execution remains blocked. The shared dashboard offers [manual real-money buy/sell orders](docs/MANUAL_TRADING.md) and [explicitly enabled per-asset live automation](docs/LIVE_AUTOMATION.md). Live automation defaults off and requires confirmation per asset, then stays enabled across markets and restarts until switched off, with a maximum of 20 contracts per market.
 
 All four current paper bots use a 50/50 blend of Project15 and Bleep Mode B,
 with exchange-seeded Bleep indicators and its safety clamp. Both standard and
-late entries require Bleep ≥80%; the blended entry minimum is disabled.
+late entries require Bleep ≥78%; the blended entry minimum is disabled.
 Bleep now models the final-minute settlement average using observed samples and
 the higher of ATR-based and recent reference-price volatility.
 Project15 has no individual probability veto. One fresh same-side confirmation sample is required for either entry window;

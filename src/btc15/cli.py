@@ -32,6 +32,10 @@ def main():
     p.add_argument(
         "--stop-confirmation-shadow", action="store_true", help="Compare stops in an isolated shadow ledger"
     )
+    p = commands.add_parser("signal-service", help="Live strategy feed without paper simulation or raw tapes")
+    p.add_argument("--run-id", required=True)
+    p.add_argument("--min-free-gb", type=float, default=1)
+    p.add_argument("--seconds", type=float)
     p = commands.add_parser("paper-health", help="Read-only probe; exit 1 when unhealthy")
     p.add_argument("--run-id", required=True)
     p = commands.add_parser(
@@ -67,6 +71,9 @@ def main():
     p = commands.add_parser("fleet-dashboard", help="One viewer for separate crypto paper services")
     p.add_argument("manifest", help="JSON asset/run/database manifest")
     p.add_argument("--port", type=int, default=8000)
+    p = commands.add_parser("public-dashboard", help="Public visitor dashboard with optional passcode-protected owner controls")
+    p.add_argument("--port", type=int, default=8001)
+    p.add_argument("--admin-port", type=int, default=8000)
     p = commands.add_parser("dashboard")
     dashboard_mode = p.add_mutually_exclusive_group()
     dashboard_mode.add_argument(
@@ -86,6 +93,13 @@ def main():
     p.add_argument("--timestamp", required=True)
     p.add_argument("--output", required=True)
     args = parser.parse_args()
+    if args.command == "public-dashboard":
+        from .public_dashboard import create_public_app
+
+        if args.port == args.admin_port:
+            parser.error("Public and private dashboard ports must differ")
+        serve_dashboard(create_public_app(args.admin_port), args.port)
+        return
     settings = Settings.env()
     settings.guard()
     if args.data_dir:
@@ -202,7 +216,7 @@ def main():
     store = Store(args.database or settings.database_url)
     if args.command == "init-db":
         print("Database initialized")
-    elif args.command == "paper-service":
+    elif args.command in ("paper-service", "signal-service"):
         from .operation import serve
 
         print(
@@ -214,8 +228,9 @@ def main():
                     args.run_id,
                     int(args.min_free_gb * 1024**3),
                     args.seconds,
-                    stop_confirmation_shadow=args.stop_confirmation_shadow,
-                    separate_paper=args.separate_paper,
+                    stop_confirmation_shadow=getattr(args, "stop_confirmation_shadow", False),
+                    separate_paper=getattr(args, "separate_paper", False),
+                    live_signals=args.command == "signal-service",
                 )
             )
         )

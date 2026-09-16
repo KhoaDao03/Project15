@@ -1,0 +1,20 @@
+[Unit]
+Description=Project15 visitor dashboard with protected owner controls
+After=project15-dashboard.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Project15
+ExecStart=%h/Project15/.venv/bin/btc15 public-dashboard --port 8001 --admin-port 8000
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=15
+UMask=0077
+NoNewPrivileges=true
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PROJECT15_SHUTDOWN_SECRET_FILE=%h/Project15/data/cloud/public-shutdown.json
+UnsetEnvironment=KALSHI_API_KEY_ID KALSHI_PRIVATE_KEY_PATH
+
+[Install]
+WantedBy=default.target

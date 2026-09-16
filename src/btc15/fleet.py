@@ -3,6 +3,7 @@
 import asyncio
 import json
 import math
+import sqlite3
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -15,10 +16,10 @@ from .assets import asset_spec
 from .config import Settings, Strategy
 from .dashboard import create_app
 from .execution_service import ExecutionClient, install_execution_proxy
+from .live_fallback import LiveFallbackStore
 from .operation import health
 from .shutdown import finish_shutdown
 from .storage import Store
-from .live_fallback import LiveFallbackStore
 
 
 def load_members(path):
@@ -47,6 +48,7 @@ def load_members(path):
             data_dir=str(directory),
             database_url="sqlite:///" + str(db_path),
             run_id=row["run_id"],
+            live_only=row.get("live_only", False),
         )
     return members
 
@@ -80,26 +82,41 @@ def create_fleet_app(manifest):
     members = load_members(manifest)
     stores = open_fleet_stores(members)
     history_stores = {
-        asset: LiveFallbackStore(stores[asset], Path(manifest).resolve().parent / 'manual-orders.sqlite', member['run_id'], asset)
+        asset: LiveFallbackStore(
+            stores[asset], Path(manifest).resolve().parent / "manual-orders.sqlite", member["run_id"], asset
+        )
         for asset, member in members.items()
     }
     execution = ExecutionClient(manifest)
     shutdown_state = dict(status="idle", message="")
     shutdown_task = None
 
+    children = {}
     performance_cache = {}
+    performance_revisions = {}
     performance_stop = asyncio.Event()
 
     def calculate_performance(asset, member):
         try:
-            results = history_stores[asset].list("trade_result", run_id=member["run_id"], mode="PAPER", limit=None)
-            fills = [r for r in history_stores[asset].fallback() if r['kind'] == 'fill']
-            return dict(
+            revision = history_stores[asset].history_revision("PAPER", member["run_id"])
+            if (
+                performance_cache.get(asset, {}).get("performance_updated_at") is not None
+                and performance_revisions.get(asset) == revision
+            ):
+                return performance_cache[asset]
+            with history_stores[asset].history_snapshot():
+                results = history_stores[asset].list(
+                    "trade_result", run_id=member["run_id"], mode="PAPER", limit=None
+                )
+                fills = [r for r in history_stores[asset].fallback() if r["kind"] == "fill"]
+            result = dict(
                 **lifetime_performance(results, fills),
                 realized_pnl=math.fsum(r["body"]["net_pnl"] for r in results),
                 performance_updated_at=time.time(),
             )
-        except (SQLAlchemyError, OSError):
+            performance_revisions[asset] = revision
+            return result
+        except (SQLAlchemyError, sqlite3.Error, OSError):
             return dict(realized_pnl=None, performance_updated_at=None)
 
     async def refresh_performance():
@@ -107,6 +124,9 @@ def create_fleet_app(manifest):
             *(asyncio.to_thread(calculate_performance, asset, member) for asset, member in members.items())
         )
         performance_cache.update(zip(members, values))
+        await asyncio.gather(
+            *(asyncio.to_thread(child.state.refresh_recent_trades) for child in children.values())
+        )
 
     async def performance_worker():
         while not performance_stop.is_set():
@@ -129,6 +149,8 @@ def create_fleet_app(manifest):
             performance_stop.set()
             await performance_task
             await execution.close()
+            for history in history_stores.values():
+                history.close_history()
             for store in stores.values():
                 store.engine.dispose()
 
@@ -182,11 +204,13 @@ def create_fleet_app(manifest):
                 ]
             return dict(
                 **base,
+                recent_trade_version=children[asset].state.recent_trade_version,
+                recent_trades_stale=children[asset].state.recent_trades_stale(),
                 healthy=report["healthy"],
                 operational=report["operational"],
                 paper_worker=status.get("paper_worker"),
                 price=price,
-                open_positions=len(status.get("positions", {})) + performance.get('open_trades', 0),
+                open_positions=len(status.get("positions", {})) + performance.get("open_trades", 0),
                 realized_pnl=performance.get("realized_pnl"),
                 performance_updated_at=performance.get("performance_updated_at"),
                 completed_trades=performance.get("completed_trades"),
@@ -228,6 +252,7 @@ def create_fleet_app(manifest):
         known = [r["realized_pnl"] for r in rows if r.get("realized_pnl") is not None]
         return dict(
             assets=rows,
+            live_only=all(m.get("live_only") for m in members.values()),
             live=execution_status["live"],
             server_time=time.time(),
             default_asset=next(iter(members)),
@@ -312,7 +337,9 @@ def create_fleet_app(manifest):
             settings=Settings(data_dir=member["data_dir"], asset=asset),
             config=member["config"],
             run_id=member["run_id"],
+            cache_recent_trades=True,
         )
+        children[asset] = child
         app.mount(f"/assets/{asset}", child)
         if asset == next(iter(members)):
             default = child

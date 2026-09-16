@@ -76,6 +76,7 @@ class Engine:
         resume=False,
         record_evaluations=True,
         signal_only=False,
+        signal_settlements=False,
     ):
         if mode not in ("PAPER", "BACKTEST"):
             raise ValueError("Research modes only")
@@ -92,6 +93,7 @@ class Engine:
         if signal_only and (execute or resume):
             raise ValueError("Signal engines cannot execute or restore paper portfolios")
         self.signal_only = signal_only
+        self.signal_settlements = signal_settlements
         self.execute, self.clock = execute, clock
         self.record_evaluations = record_evaluations
         self.raw_archive = record_evaluations
@@ -193,6 +195,7 @@ class Engine:
                     model=self.executor.model_identity,
                     versions=self.versions,
                     execute=execute,
+                    live_signals=signal_settlements,
                     recording="full" if record_evaluations else "trades_only",
                     source_snapshot=source_snapshot,
                 ),
@@ -543,7 +546,7 @@ class Engine:
         return True
 
     def settle(self, ticker, result, now, *, evidence=None):
-        if self.signal_only:
+        if self.signal_only and not self.signal_settlements:
             return  # The paper worker owns settlement identity, evidence and accounting.
         market = self.markets.get(ticker)
         if ticker in self.executor.contracts:

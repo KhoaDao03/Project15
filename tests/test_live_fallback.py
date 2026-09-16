@@ -39,7 +39,35 @@ def fallback(tmp_path):
             db.execute("INSERT OR REPLACE INTO manual_orders VALUES (?,?)", (ident, json.dumps(row)))
 
     yield view, store, save
+    view.close_history()
     store.engine.dispose()
+
+
+def test_cached_history_detects_updates_to_existing_orders(fallback, monkeypatch):
+    view, store, save = fallback
+    save("buy", "buy", 4, 3.6)
+    original = view._fallback
+    rebuilds = []
+
+    def rebuild():
+        rebuilds.append(True)
+        return original()
+
+    monkeypatch.setattr(view, "_fallback", rebuild)
+    first = view.fallback()
+    assert view.fallback() is first
+    assert len(rebuilds) == 1
+
+    # Reconciliation changes an existing order without increasing the row count.
+    save("buy", "buy", 10, 9)
+    updated = view.fallback()
+    assert updated != first
+    assert len(rebuilds) == 2
+    assert view.fallback() is updated
+
+    store.add("settlement", dict(result="no"), "sol-paper", "PAPER", 200, "KXSOL15M-test")
+    assert view.list("trade_result")[0]["body"]["net_pnl"] == pytest.approx(0.9)
+    assert len(rebuilds) == 3
 
 
 def test_live_open_partial_and_closed_accounting(fallback):
@@ -99,3 +127,27 @@ def test_settlement_closes_only_on_recorded_outcome(fallback):
     b = view.list("trade_result")[0]["body"]
     assert b["net_pnl"] == pytest.approx(0.9)
     assert b["reason"] == "SETTLEMENT"
+
+
+def test_history_snapshot_freezes_live_fill_reads(fallback):
+    view, _, save = fallback
+    save("buy", "buy", 10, 8)
+    with view.history_snapshot():
+        before = view.fallback()
+        save("sell", "sell", 10, 3)
+        assert view.fallback() == before
+        assert not any(r["kind"] == "trade_result" for r in before)
+    assert any(r["kind"] == "trade_result" for r in view.fallback())
+
+
+def test_history_snapshot_does_not_mix_paper_commits(fallback):
+    view, store, _ = fallback
+    writer = Store(str(store.engine.url))
+    try:
+        with view.history_snapshot():
+            assert not view.list("trade_result", run_id=view.run_id, mode="PAPER")
+            writer.add("trade_result", dict(net_pnl=1), view.run_id, "PAPER", 120, "new-market", "new-trade")
+            assert not view.list("trade_result", run_id=view.run_id, mode="PAPER")
+        assert len(view.list("trade_result", run_id=view.run_id, mode="PAPER")) == 1
+    finally:
+        writer.engine.dispose()
