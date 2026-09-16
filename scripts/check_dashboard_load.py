@@ -17,9 +17,8 @@ import uvicorn
 
 from btc15.config import Strategy
 from btc15.dashboard import create_app
-from btc15.models import ModelGroup, activate, register
+from btc15.engine import Engine
 from btc15.storage import CompactRecorder, Store, read_events
-from btc15.strategies.momentum import Momentum, volatility_model
 from btc15.strategies.settlement_edge.model import Tick
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -35,16 +34,11 @@ if arrivals != sorted(arrivals):
 
 with tempfile.TemporaryDirectory(prefix="btc15-dashboard-load-") as directory:
     store = Store("sqlite:///" + directory + "/test.db")
-    for model in [Momentum(), volatility_model()]:
-        activate(store, register(store, model), True)
-    group = ModelGroup(store, Strategy(), mode="BACKTEST", execute=True, record_evaluations=False)
+    engine = Engine(store, Strategy(), mode="BACKTEST", execute=True, record_evaluations=False)
     # Exercise warmed models; this synthetic history is a load fixture, not trading evidence.
     start = math.floor(rows[0]["received"])
-    for engine in group.engines:
-        engine.ticks = [
-            Tick(start - 3600 + i, start - 3600 + i, 79200 + math.sin(i) * 2) for i in range(3600)
-        ]
-        engine.raw_archive = True
+    engine.ticks = [Tick(start - 3600 + i, start - 3600 + i, 79200 + math.sin(i) * 2) for i in range(3600)]
+    engine.raw_archive = True
     recorder = CompactRecorder(Path(directory) / "raw")
     listener = socket.socket()
     listener.bind(("127.0.0.1", 0))
@@ -68,7 +62,7 @@ with tempfile.TemporaryDirectory(prefix="btc15-dashboard-load-") as directory:
                     try:
                         params = {"mode": "BACKTEST"}
                         if endpoint == "evaluation":
-                            params["run_id"] = group.run_id
+                            params["run_id"] = engine.run_id
                         response = client.get("/api/" + endpoint, params=params)
                         response.raise_for_status()
                         requests.append(
@@ -107,9 +101,8 @@ with tempfile.TemporaryDirectory(prefix="btc15-dashboard-load-") as directory:
             end = min(available, offset + 256)
             batch = rows[offset:end]
             recorder.append_rows(batch)
-            group.apply_activation(store)
             for index, row in enumerate(batch, offset):
-                group.ingest(row)
+                engine.ingest(row)
                 lags.append(max(0, time.perf_counter() - started - arrivals[index]))
             offset = end
             if elapsed - last_display >= 0.05:
@@ -118,18 +111,18 @@ with tempfile.TemporaryDirectory(prefix="btc15-dashboard-load-") as directory:
                     dict(
                         published_at=now,
                         connected=True,
-                        run_id=group.run_id,
+                        run_id=engine.run_id,
                         processing_lag=lags[-1],
                         markets=[
-                            dict(ticker=ticker, book=group.books[ticker].summary())
-                            for ticker in group.markets
-                            if ticker in group.books
+                            dict(ticker=ticker, book=engine.books[ticker].summary())
+                            for ticker in engine.markets
+                            if ticker in engine.books
                         ],
                     )
                 )
                 store.publish_market_display(
                     dict(
-                        price=group.ticks[-1].price if group.ticks else None,
+                        price=engine.ticks[-1].price if engine.ticks else None,
                         received=now,
                         published_at=now,
                     ),
@@ -137,18 +130,17 @@ with tempfile.TemporaryDirectory(prefix="btc15-dashboard-load-") as directory:
                 )
                 last_display = elapsed
             if elapsed - last_publish >= 1:
-                for engine in group.engines:
-                    if engine.latest:
-                        latest = max(engine.latest.values(), key=lambda b: b["timestamp"])
-                        store.publish_record(
-                            "evaluation",
-                            latest,
-                            engine.run_id,
-                            engine.mode,
-                            latest["timestamp"],
-                            latest["ticker"],
-                            engine._last_op[latest["ticker"]],
-                        )
+                if engine.latest:
+                    latest = max(engine.latest.values(), key=lambda b: b["timestamp"])
+                    store.publish_record(
+                        "evaluation",
+                        latest,
+                        engine.run_id,
+                        engine.mode,
+                        latest["timestamp"],
+                        latest["ticker"],
+                        engine._last_op[latest["ticker"]],
+                    )
                 store.publish_record(
                     "status",
                     dict(
@@ -157,7 +149,7 @@ with tempfile.TemporaryDirectory(prefix="btc15-dashboard-load-") as directory:
                         processing_lag=lags[-1],
                         maximum_queue=maximum_queue,
                     ),
-                    group.run_id,
+                    engine.run_id,
                     "BACKTEST",
                     time.time(),
                 )
@@ -175,7 +167,7 @@ with tempfile.TemporaryDirectory(prefix="btc15-dashboard-load-") as directory:
         events=len(rows),
         recorded_seconds=arrivals[-1],
         elapsed_seconds=elapsed,
-        models=len(group.engines),
+        models=1,
         synthetic_warmup=True,
         maximum_queue=maximum_queue,
         processing_lag_ms=dict(p95=float(np.percentile(lags, 95)) * 1000, maximum=max(lags) * 1000),

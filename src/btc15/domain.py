@@ -5,6 +5,9 @@ import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_EVEN, ROUND_HALF_UP, Decimal
+from numbers import Integral
+
+from .assets import ASSETS
 
 
 def D(x):
@@ -33,15 +36,20 @@ class SettlementSpecification:
     rules_hash: str = ""
 
     def __post_init__(self):
-        if self.reference_source != "CF Benchmarks" or self.index_name != "BRTI":
-            raise ValueError("Official BTC reference required")
+        asset = next((a for a in ASSETS.values() if a.index == self.index_name), None)
+        if self.reference_source != "CF Benchmarks" or asset is None:
+            raise ValueError("Official supported crypto reference required")
         if self.comparison_operator not in (">=", ">", "<=", "<"):
             raise ValueError("Unsupported comparison")
         if not math.isfinite(self.strike) or self.strike <= 0:
             raise ValueError("Invalid strike")
         if self.settlement_end - self.settlement_start != self.averaging_window_seconds:
             raise ValueError("Invalid settlement window")
-        if self.sample_frequency != 1 or self.averaging_window_seconds != 60 or self.round_digits != 2:
+        if (
+            self.sample_frequency != 1
+            or self.averaging_window_seconds != 60
+            or self.round_digits != asset.round_digits
+        ):
             raise ValueError("Unverified settlement methodology")
         if self.rounding not in ("ambiguous_half_tie", "half_even", "half_up"):
             raise ValueError("Unknown rounding")
@@ -58,7 +66,7 @@ class SettlementSpecification:
                 raise ValueError("Ambiguous settlement rounding tie")
             return a
         value = D(average).quantize(
-            D("0.01"), rounding=ROUND_HALF_EVEN if r == "half_even" else ROUND_HALF_UP
+            D(1).scaleb(-self.round_digits), rounding=ROUND_HALF_EVEN if r == "half_even" else ROUND_HALF_UP
         )
         strike = D(self.strike)
         return {">=": value >= strike, ">": value > strike, "<=": value <= strike, "<": value < strike}[
@@ -115,26 +123,27 @@ class Market:
 
 
 def parse_market(raw, series):
-    if series.get("ticker") != "KXBTC15M" or series.get("frequency") != "fifteen_min":
-        raise ValueError("Not the BTC15 series")
-    if not re.fullmatch(r"KXBTC15M-[A-Z0-9]+-\d+", raw.get("ticker", "")):
-        raise ValueError("Not a BTC15 market")
-    if raw.get("market_type") != "binary" or not raw.get("event_ticker", "").startswith("KXBTC15M-"):
+    asset = next((a for a in ASSETS.values() if a.series == series.get("ticker")), None)
+    if asset is None or series.get("frequency") != "fifteen_min":
+        raise ValueError("Not a supported crypto 15-minute series")
+    if not re.fullmatch(re.escape(asset.series) + r"-[A-Z0-9]+-\d+", raw.get("ticker", "")):
+        raise ValueError("Market does not match the selected series")
+    if raw.get("market_type") != "binary" or not raw.get("event_ticker", "").startswith(asset.series + "-"):
         raise ValueError("Invalid market identity")
     if raw.get("floor_strike") is None:
         raise ValueError("Strike not yet published")
     primary, secondary = raw.get("rules_primary", ""), raw.get("rules_secondary", "")
     # Deliberately narrow grammar. Changed/additional conditions require a parser review.
     pattern = (
-        r"If the simple average of the sixty seconds of CF Benchmarks' BRTI before (.+?) "
+        rf"If the simple average of the sixty seconds of CF Benchmarks' {asset.rule_index} before (.+?) "
         r"is (at least|greater than|less than|at most) the simple average of the sixty seconds "
-        r"of CF Benchmarks' BRTI before (.+?), then the market resolves to Yes\."
+        rf"of CF Benchmarks' {asset.rule_index} before (.+?), then the market resolves to Yes\."
     )
     match = re.fullmatch(pattern, primary)
     if (
         not match
         or "60 RTI prices are collected" not in secondary
-        or "rounded to the nearest 2 decimal places" not in secondary
+        or f"rounded to the nearest {asset.round_digits} decimal places" not in secondary
     ):
         raise ValueError("Unrecognized settlement wording")
     operator = {"at least": ">=", "greater than": ">", "less than": "<", "at most": "<="}[match[2]]
@@ -171,16 +180,17 @@ def parse_market(raw, series):
             raise ValueError("Invalid price grid")
     if raw.get("notional_value_dollars") != "1.0000":
         raise ValueError("Unexpected payout")
-    if str(raw.get("custom_strike", {}).get("round_digits")) != "2":
+    if str(raw.get("custom_strike", {}).get("round_digits")) != str(asset.round_digits):
         raise ValueError("Unknown rounding precision")
     strike = float(raw["floor_strike"])
     spec = SettlementSpecification(
         "CF Benchmarks",
-        "BRTI",
+        asset.index,
         strike,
         end - 60,
         end,
         operator,
+        round_digits=asset.round_digits,
         rules_hash=hashlib.sha256((primary + secondary).encode()).hexdigest(),
     )
     return Market(
@@ -259,9 +269,16 @@ class Book:
         other = self.no if side == "yes" else self.yes
         return sorted((float(1 - p), float(q)) for p, q in other.items())
 
-    def ask(self, side):
+    def ask_level(self, side):
+        """Best ask and its quantity without sorting the full depth ladder."""
         other = self.no if side == "yes" else self.yes
-        return float(1 - max(other)) if other else None
+        if not other:
+            return None, 0
+        price = max(other)
+        return float(1 - price), float(other[price])
+
+    def ask(self, side):
+        return self.ask_level(side)[0]
 
     def summary(self):
         yb, nb, ya, na = self.bid("yes"), self.bid("no"), self.ask("yes"), self.ask("no")
@@ -271,7 +288,7 @@ class Book:
             yes_ask=ya,
             no_bid=nb,
             no_ask=na,
-            spread=ya - yb if ya is not None and yb is not None else None,
+            spread=float(D(ya) - D(yb)) if ya is not None and yb is not None else None,
             midpoint=(ya + yb) / 2 if ya is not None and yb is not None else None,
             yes_depth=float(yd),
             no_depth=float(nd),
@@ -295,6 +312,8 @@ def jsonable(obj):
         return asdict(obj)
     if isinstance(obj, Decimal):
         return str(obj)
+    if isinstance(obj, Integral):
+        return int(obj)
     raise TypeError(type(obj).__name__)
 
 

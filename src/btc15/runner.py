@@ -3,26 +3,33 @@ import json
 import shutil
 import time
 import uuid
+from collections import deque
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import replace
 from pathlib import Path
 
 import httpx
 import websockets
 
 from .api import KalshiClient, subscriptions
+from .collector_recovery import CollectorRecovery
+from .decision_notifications import notify_decision
 from .domain import dumps
 from .engine import Engine
+from .models import guard_archived_exposure, require_single_run
+from .reference_history import load_history, save_history
 from .storage import CompactRecorder, RawRecorder
+
+QUEUE_CAPACITY = 20000
 
 
 def stop_entries(engine, now):
     """Stop new entries and cancel pending remainders without liquidating positions."""
-    for member in getattr(engine, "engines", [engine]):
-        member.execute = False
-        member.entries_active = False
-        for ticker in list(member.executor.orders):
-            if member.executor.orders[ticker].active:
-                member.executor.cancel(ticker, now, "safe_shutdown")
+    engine.execute = False
+    engine.entries_active = False
+    for ticker in list(engine.executor.orders):
+        if engine.executor.orders[ticker].active:
+            engine.executor.cancel(ticker, now, "safe_shutdown")
 
 
 async def collect(
@@ -36,10 +43,12 @@ async def collect(
     stop_event=None,
     managed_run=None,
     min_free_bytes=0,
-    multi_model=False,
     record_all=None,
+    stop_confirmation_shadow=False,
+    separate_paper=False,
 ):
     """Independent receipt/metadata tasks; one ordered durable analysis worker."""
+    settings = replace(settings, asset=config.asset)
     settings.guard()
     record_all = not paper if record_all is None else record_all
     Path(settings.data_dir).mkdir(parents=True, exist_ok=True)
@@ -53,6 +62,9 @@ async def collect(
     recorder = None
     clean_shutdown = False
     entries_stopped = False
+    shadow = None
+    paper_worker = None
+    signal_store = None
     pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="btc15-recorder")
     loop = asyncio.get_running_loop()
 
@@ -63,6 +75,9 @@ async def collect(
         client.headers("GET", "/trade-api/ws/v2")
         store.acquire("collector", owner)
         acquired = True
+        if paper:
+            require_single_run(store, resume or managed_run)
+            guard_archived_exposure(store)
         if managed_run:
             if not paper or resume:
                 raise ValueError("Managed runs require paper execution without explicit resume")
@@ -71,30 +86,43 @@ async def collect(
                 if previous[0]["mode"] != "PAPER" or not previous[0]["body"]["execute"]:
                     raise ValueError("Managed run must refer to an executing PAPER run")
                 resume = managed_run
-        if multi_model and paper and not resume:
-            closed = {r["opportunity_id"] for r in store.list(kind="trade_result", mode="PAPER", limit=None)}
-            buys = {
-                r["opportunity_id"]
-                for r in store.list(kind="fill", mode="PAPER", limit=None)
-                if r["body"]["action"] == "buy"
-            }
-            if buys - closed:
-                raise RuntimeError("Unresolved paper positions: resume their original model group")
+        if separate_paper:
+            if not paper or stop_confirmation_shadow:
+                raise ValueError("Separate paper simulation requires paper mode without shadow comparison")
+            from .paper_worker import PaperWorker, SignalStore
 
-        from .models import ModelGroup
-
-        engine_type = ModelGroup if multi_model else Engine
-        engine = engine_type(
-            store,
-            config,
-            "PAPER",
-            run_id=resume or managed_run,
-            execute=paper,
-            clock=time.time,
-            resume=bool(resume),
-            record_evaluations=record_all,
-        )
-        if paper and not resume:
+            paper_worker = PaperWorker(
+                str(store.engine.url),
+                config,
+                resume or managed_run or str(uuid.uuid4()),
+                bool(resume),
+                record_all,
+                settings.data_dir,
+            )
+            initial_paper = await work(paper_worker.start)
+            signal_store = SignalStore()
+            engine = Engine(
+                signal_store,
+                config,
+                "PAPER",
+                run_id=initial_paper["run_id"],
+                execute=False,
+                clock=time.time,
+                record_evaluations=False,
+                signal_only=True,
+            )
+        else:
+            engine = Engine(
+                store,
+                config,
+                "PAPER",
+                run_id=resume or managed_run,
+                execute=paper,
+                clock=time.time,
+                resume=bool(resume),
+                record_evaluations=record_all,
+            )
+        if paper and not resume and not separate_paper:
             closed = {r["opportunity_id"] for r in store.list(kind="trade_result", mode="PAPER", limit=None)}
             buys = {
                 r["opportunity_id"]
@@ -103,36 +131,74 @@ async def collect(
             }
             if buys - closed:
                 raise RuntimeError("Unresolved paper positions: use paper --resume RUN_ID")
-            (engine.restore_daily_history() if multi_model else engine.executor.restore_daily_history())
-        if paper:
+            engine.executor.restore_daily_history()
+        if paper and not separate_paper:
             # Even a run with no fills must be resumable after a clean service restart.
-            (
-                engine.checkpoint()
-                if multi_model
-                else store.checkpoint(engine.run_id, engine.executor.snapshot())
-            )
+            store.checkpoint(engine.run_id, engine.executor.snapshot())
+        if stop_confirmation_shadow:
+            if not paper:
+                raise ValueError("Stop comparison requires paper purchases")
+            from .stop_shadow import StopShadow
+
+            try:
+                shadow = StopShadow(engine, Path(settings.data_dir) / "stop-confirmation-shadow.db")
+            except Exception as exc:
+                store.add(
+                    "stop_shadow_status",
+                    dict(status="FAILED", error=str(exc)),
+                    engine.run_id,
+                    engine.mode,
+                    time.time(),
+                )
         recorder = (
             RawRecorder(Path(settings.data_dir) / "raw", chunk_size=2000)
             if record_all
             else CompactRecorder(Path(settings.data_dir) / "raw")
         )
         journal = recorder.directory / (recorder.session + ".jsonl") if record_all else recorder.path
-        for member in engine.engines if multi_model else [engine]:
-            member.raw_archive = True
-            store.add(
-                "raw_source",
-                {
-                    "journal": str(journal),
-                    "format": "jsonl" if record_all else "jsonl.gz",
-                    "parent_run": engine.run_id,
-                },
-                member.run_id,
-                "PAPER",
-                time.time(),
+        engine.raw_archive = True
+        store.add(
+            "raw_source",
+            {
+                "journal": str(journal),
+                "format": "jsonl" if record_all else "jsonl.gz",
+                "parent_run": engine.run_id,
+            },
+            engine.run_id,
+            "PAPER",
+            time.time(),
+        )
+        preload = dict(status="DISABLED", samples=0)
+        if paper and config.bleep_enabled:
+            recordings = [
+                r
+                for r in store.list(kind="raw_source", mode="PAPER", limit=20)
+                if r["body"]["journal"] != str(journal)
+            ]
+            body, preload = await work(load_history, settings.data_dir, recordings, time.time(), config)
+            # Write exactly the inputs restored, before any new live event. Do not
+            # replay old market events through the executing engine.
+            history_row = dict(
+                id=str(uuid.uuid4()),
+                received=time.time(),
+                monotonic_ns=time.monotonic_ns(),
+                connection_id="reference-preload",
+                payload=dict(type="reference_history", msg=body),
             )
-        queue = asyncio.Queue(maxsize=20000)
+            await work(recorder.append_rows, [history_row])
+            await work(engine.ingest, history_row)
+            if paper_worker:
+                paper_worker.submit([history_row])
+            store.add("reference_preload", preload, engine.run_id, "PAPER", history_row["received"])
+        queue = asyncio.Queue(maxsize=QUEUE_CAPACITY)
+        pending_receipts = deque()
+        recovery = CollectorRecovery(config, time.time())
+        engine.collector_pause = recovery.paused
+        engine.executor.collector_pause = recovery.paused
         overflow_rows = []
         reconnect = asyncio.Event()
+        drained = asyncio.Event()
+        refresh_requested = asyncio.Event()
         stop = stop_event if stop_event is not None else asyncio.Event()
         metadata_ready = asyncio.Event()
         connection = str(uuid.uuid4())
@@ -140,14 +206,45 @@ async def collect(
         tracked = {
             r["market"]: r["body"]["raw"] for r in store.list(kind="market", run_id=engine.run_id, limit=None)
         }
+        if paper_worker:
+            # Completed history does not need another REST settlement request at startup.
+            with store.transaction():
+                tracked = {
+                    ticker: raw
+                    for ticker, raw in tracked.items()
+                    if store.state(engine.run_id, ticker) != "CLOSED"
+                }
+        for ticker, snapshot in engine.executor.contracts.items():
+            if ticker in engine.executor.positions:
+                tracked[ticker] = snapshot["raw"]
+        if paper_worker:
+            for ticker, snapshot in initial_paper.get("contracts", {}).items():
+                tracked[ticker] = snapshot["raw"]
+        settled_tickers = set()
         connected = False
         started = time.monotonic()
         maximum_queue = 0
         last_status = 0
         last_display = 0
+        last_live_decision = None
+        live_decision_eligible = False
         display_reference = None
         receipt_reference = None
         display_tickers = {}
+        last_recovery_status = None
+        last_history_save = time.monotonic()
+
+        def request_recovery(reason):
+            recovery.request(reason, time.time())
+            reconnect.set()
+            drained.clear()
+
+        def check_pressure():
+            lag = (time.monotonic_ns() - pending_receipts[0]) / 1e9 if pending_receipts else 0
+            recovery.pressure(lag, len(pending_receipts), queue.maxsize, time.time())
+            if recovery.drain.is_set():
+                reconnect.set()
+            return lag
 
         def emit(payload):
             nonlocal maximum_queue, receipt_reference
@@ -158,19 +255,30 @@ async def collect(
                 connection_id=connection,
                 payload=dumps(payload),
             )
+            if (
+                payload.get("type") == "cfbenchmarks_value"
+                and payload.get("msg", {}).get("index_id") == config.asset_spec.index
+            ):
+                # Immutable marker only: the worker still validates/applies the
+                # durable event in order. Receipt cannot supply future model data.
+                engine.executor.latest_reference_receipt = (row["id"], row["received"])
+                if paper_worker:
+                    paper_worker.reference(row)
             if overflow_rows:
                 overflow_rows.append(row)
                 raise RuntimeError("Recorder queue overflow; capture stopped")
             try:
                 queue.put_nowait(row)
+                pending_receipts.append(row["monotonic_ns"])
             except asyncio.QueueFull as e:
                 overflow_rows.append(row)
                 stop.set()
                 raise RuntimeError("Recorder queue capacity exceeded; capture stopped") from e
             maximum_queue = max(maximum_queue, queue.qsize())
+            check_pressure()
             if payload.get("type") == "cfbenchmarks_value_5hz":
                 msg = payload.get("msg", {})
-                if msg.get("index_id") == "BRTI":
+                if msg.get("index_id") == config.asset_spec.index:
                     receipt_reference = dict(
                         value=msg.get("value_usd"),
                         received=row["received"],
@@ -179,20 +287,46 @@ async def collect(
 
         def process_batch(rows):
             nonlocal last_status, last_display, display_reference, entries_stopped
-            if multi_model and not stop.is_set():
-                engine.apply_activation(store)
+            nonlocal last_live_decision, live_decision_eligible
+            nonlocal last_recovery_status
+            nonlocal last_history_save
+            # Persist the analysis decision alongside every source frame so replay
+            # also applies the complete sequence without trading on the old backlog.
+            for row in rows:
+                row["analysis_suspended"] = recovery.drain.is_set()
+                row["collector_entries_blocked"] = recovery.paused.is_set()
+                if paper_worker:
+                    row["paper_stopping"] = stop.is_set()
             if recorder:
                 recorder.append_rows(rows)  # Input capture is durable before analysis.
+            if paper_worker:
+                paper_worker.submit(rows)
             valid = True
             for row in rows:
                 if stop.is_set() and not entries_stopped:
                     stop_entries(engine, row["received"])
                     entries_stopped = True
                 if not engine.executor.risk.halted and (Path(settings.data_dir) / "HALT").exists():
-                    (engine.halt(row["received"]) if multi_model else engine.executor.halt(row["received"]))
-                valid = engine.ingest(row) and valid
+                    engine.executor.halt(row["received"])
+                row_valid = engine.ingest(row)
+                valid = row_valid and valid
                 payload = json.loads(row["payload"])
-                if payload.get("type") == "cfbenchmarks_value_5hz":
+                if not stop.is_set():
+                    if not row_valid:
+                        recovery.request("DATA_INTEGRITY_FAILURE", time.time())
+                    elif payload.get("type") in ("disconnect", "stale", "error"):
+                        recovery.request("FEED_INTERRUPTED", time.time())
+                recovery.observe(engine, row, payload, row_valid)
+                if shadow is not None:
+                    shadow.process(row, payload)
+                if payload.get("type") == "settlement":
+                    ticker = payload["msg"]["market_ticker"]
+                    if store.state(engine.run_id, ticker) == "CLOSED":
+                        loop.call_soon_threadsafe(settled_tickers.add, ticker)
+                if (
+                    payload.get("type") == "cfbenchmarks_value_5hz"
+                    and payload.get("msg", {}).get("index_id") == config.asset_spec.index
+                ):
                     msg = payload.get("msg", {})
                     display_reference = dict(
                         value=msg.get("value_usd"),
@@ -203,7 +337,34 @@ async def collect(
                     msg = payload.get("msg", {})
                     display_tickers[msg.get("market_ticker")] = msg
             now = time.time()
-            if time.monotonic() - last_display >= 0.05 or not connected:
+            if paper and config.bleep_enabled and time.monotonic() - last_history_save >= 30:
+                save_history(settings.data_dir, engine.ticks, now, config)
+                last_history_save = time.monotonic()
+            lag = (time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9
+            recovery.check(engine, now, lag, queue.qsize(), queue.maxsize, connected, stop.is_set())
+            recovery_status = recovery.status()
+            signature = (recovery_status["state"], tuple(recovery_status["reasons"]), recovery.warning)
+            if signature != last_recovery_status:
+                store.add("collector_recovery", recovery_status, engine.run_id, "PAPER", now)
+                last_recovery_status = signature
+            latest_live = max(engine.latest.values(), key=lambda b: b["timestamp"]) if engine.latest else None
+            eligible_live = bool(
+                latest_live
+                and latest_live.get("decision") in ("NO_TRADE", "TRADE_CANDIDATE")
+                and not [
+                    r
+                    for r in latest_live.get("reasons", [])
+                    if r["code"] not in ("EXISTING_ENTRY", "POST_CLOSE_COOLDOWN")
+                ]
+            )
+            live_version = (latest_live["ticker"], latest_live["timestamp"]) if latest_live else None
+            publish_live = bool(
+                paper
+                and latest_live
+                and live_version != last_live_decision
+                and (eligible_live or live_decision_eligible)
+            )
+            if time.monotonic() - last_display >= 0.05 or not connected or publish_live:
                 markets = []
                 for ticker, market in engine.markets.items():
                     if not market.tradable(now):
@@ -234,10 +395,13 @@ async def collect(
                         markets=markets,
                         reference_5hz=display_reference,
                         processing_lag=(time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9,
+                        recovery=recovery_status,
                     )
                 )
                 last_display = time.monotonic()
             if now - last_status >= 1 or not connected:
+                engine.flush_rejections(now)
+                simulation = paper_worker.poll() if paper_worker else None
                 save_status = store.add if record_all else store.publish_record
                 save_status(
                     "status",
@@ -246,29 +410,51 @@ async def collect(
                         run_id=engine.run_id,
                         mode="PAPER",
                         paper_execution=paper,
+                        paper_worker=simulation,
                         recording="full" if record_all else "trades_with_compact_inputs",
+                        reference_preload=preload,
                         live_enabled=False,
                         models=[
                             dict(
                                 run_id=e.run_id,
                                 model=e.executor.model_identity,
                                 entries_active=e.entries_active,
+                                strategy_enabled=e.config.enabled,
                                 halted=e.executor.risk.halted,
-                                open_positions=len(e.executor.positions),
-                                realized_pnl=e.executor.risk.realized,
+                                open_positions=len(simulation.get("positions", {}))
+                                if simulation
+                                else len(e.executor.positions),
+                                realized_pnl=simulation.get("realized_pnl")
+                                if simulation
+                                else e.executor.risk.realized,
                             )
-                            for e in (engine.engines if multi_model else [engine])
+                            for e in ([engine])
                         ],
                         clock_ok=engine.clock_ok,
                         exchange_open=engine.exchange_open,
                         reference_age=now - engine.ticks[-1].received if engine.ticks else None,
                         processing_lag=(time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9,
                         maximum_queue=maximum_queue,
+                        queue_depth=queue.qsize(),
+                        queue_capacity=queue.maxsize,
+                        recovery=recovery_status,
                         markets=list(engine.markets),
-                        positions={k: vars(v) for k, v in engine.executor.positions.items()},
-                        exposure=sum(engine.executor.risk.reserved.values()),
-                        daily=engine.executor.risk.day(now),
-                        halted=engine.executor.risk.halted,
+                        positions=simulation.get("positions", {})
+                        if simulation
+                        else {k: vars(v) for k, v in engine.executor.positions.items()},
+                        venue_pauses=dict(engine.executor.venue_pauses),
+                        settlement_recovery=simulation.get("settlement_recovery", {})
+                        if simulation
+                        else {
+                            k: v
+                            for k, v in engine.executor.quarantines.items()
+                            if k in engine.executor.positions
+                        },
+                        exposure=simulation.get("exposure", 0)
+                        if simulation
+                        else sum(engine.executor.risk.reserved.values()),
+                        daily=simulation.get("daily", {}) if simulation else engine.executor.risk.day(now),
+                        halted=simulation.get("halted", False) if simulation else engine.executor.risk.halted,
                     ),
                     engine.run_id,
                     "PAPER",
@@ -276,20 +462,33 @@ async def collect(
                 )
                 if recorder:
                     recorder.flush()
-                if not record_all:
-                    for member in engine.engines if multi_model else [engine]:
-                        if member.latest:
-                            latest = max(member.latest.values(), key=lambda b: b["timestamp"])
-                            store.publish_record(
-                                "evaluation",
-                                latest,
-                                member.run_id,
-                                member.mode,
-                                latest["timestamp"],
-                                latest["ticker"],
-                                member._last_op[latest["ticker"]],
-                            )
+                if not record_all and not publish_live:
+                    if engine.latest:
+                        latest = max(engine.latest.values(), key=lambda b: b["timestamp"])
+                        store.publish_record(
+                            "evaluation",
+                            latest,
+                            engine.run_id,
+                            engine.mode,
+                            latest["timestamp"],
+                            latest["ticker"],
+                            engine._last_op[latest["ticker"]],
+                        )
                 last_status = now
+            if publish_live:
+                store.publish_record(
+                    "evaluation",
+                    latest_live,
+                    engine.run_id,
+                    engine.mode,
+                    latest_live["timestamp"],
+                    latest_live["ticker"],
+                    engine._last_op[latest_live["ticker"]],
+                )
+                last_live_decision = live_version
+                live_decision_eligible = eligible_live
+                if eligible_live and store.engine.dialect.name == "sqlite":
+                    notify_decision(store.engine.url.database)
             return valid
 
         async def consume():
@@ -308,8 +507,13 @@ async def collect(
                         finished = True
                         break
                     rows.append(item)
-                if not await work(process_batch, rows):
-                    reconnect.set()
+                valid = await work(process_batch, rows)
+                for _ in rows:
+                    pending_receipts.popleft()
+                if not valid:
+                    request_recovery("DATA_INTEGRITY_FAILURE")
+                if recovery.drain.is_set() and not connected and queue.empty():
+                    drained.set()
                 if finished:
                     break
 
@@ -317,6 +521,9 @@ async def collect(
             nonlocal tickers
             while not stop.is_set():
                 try:
+                    # Fence the request before any network await. An in-flight active
+                    # response started before a lifecycle pause cannot release it.
+                    metadata_request_started_at = time.time()
                     series, markets = await client.discover()
                     changes = {}
                     for event in sorted({m["event_ticker"] for m in markets}):
@@ -328,7 +535,8 @@ async def collect(
                         ]
                     series_changes = (
                         await client.get(
-                            "series/fee_changes", {"series_ticker": "KXBTC15M", "show_historical": True}
+                            "series/fee_changes",
+                            {"series_ticker": config.asset_spec.series, "show_historical": True},
                         )
                     ).get("series_fee_change_arr", [])
                     status = await client.get("exchange/status")
@@ -338,6 +546,9 @@ async def collect(
                             msg=dict(
                                 series=series,
                                 markets=markets,
+                                discovery_resolutions=getattr(client, "discovery_resolutions", []),
+                                source="kalshi_rest",
+                                request_started_at=metadata_request_started_at,
                                 fee_changes=changes,
                                 series_fee_changes=series_changes,
                                 exchange_status=status,
@@ -348,8 +559,12 @@ async def collect(
                     current = sorted(m["ticker"] for m in markets)
                     tickers = current
                     for m in markets:
-                        tracked[m["ticker"]] = m
+                        # Later malformed/changed close times must not postpone held-contract polling.
+                        tracked.setdefault(m["ticker"], m)
                     for ticker, m in list(tracked.items()):
+                        if ticker in settled_tickers:
+                            del tracked[ticker]
+                            continue
                         from .domain import timestamp
 
                         if time.time() >= timestamp(m["close_time"]):
@@ -360,10 +575,13 @@ async def collect(
                                 emit(
                                     dict(
                                         type="settlement",
-                                        msg=dict(market_ticker=ticker, result=raw["result"]),
+                                        msg=dict(
+                                            market_ticker=ticker,
+                                            result=raw["result"],
+                                            evidence=dict(source="kalshi_rest", market=raw, series=series),
+                                        ),
                                     )
                                 )
-                                del tracked[ticker]
                     metadata_ready.set()
                 except (httpx.HTTPError, OSError, ValueError, KeyError) as exc:
                     emit(
@@ -373,16 +591,26 @@ async def collect(
                         )
                     )
                 try:
-                    await asyncio.wait_for(stop.wait(), timeout=15)
+                    await asyncio.wait_for(refresh_requested.wait(), timeout=15)
                 except TimeoutError:
                     pass
+                refresh_requested.clear()
 
         async def receive():
             nonlocal connection, connected
             await metadata_ready.wait()
             backoff = 1
             while not stop.is_set():
-                connection = str(uuid.uuid4())
+                if recovery.drain.is_set():
+                    await drained.wait()
+                    if stop.is_set():
+                        break
+                    await work(recovery.reconnect)
+                    metadata_ready.clear()
+                    refresh_requested.set()
+                    await metadata_ready.wait()
+                    if recovery.drain.is_set():
+                        continue
                 reconnect.clear()
                 try:
                     async with websockets.connect(
@@ -392,9 +620,13 @@ async def collect(
                         ping_timeout=20,
                         max_queue=2048,
                     ) as ws:
+                        # Publish the new identity and its boundary without an
+                        # await; heartbeat/metadata producers keep the old identity
+                        # throughout the handshake, including failed attempts.
+                        connection = str(uuid.uuid4())
                         connected = True
                         emit(dict(type="connected", msg={"tickers": tickers}))
-                        for subscription in subscriptions(tickers):
+                        for subscription in subscriptions(tickers, config.asset):
                             await ws.send(json.dumps(subscription))
                         backoff = 1
                         market_sids = {}
@@ -452,6 +684,8 @@ async def collect(
                     backoff = min(30, backoff * 2)
                 finally:
                     connected = False
+                    if not stop.is_set():
+                        request_recovery("CONNECTION_LOST")
                     emit(dict(type="disconnect", msg={"reason": "reconnect_or_shutdown"}))
 
         async def reference_display():
@@ -473,6 +707,7 @@ async def collect(
                             connected=connected,
                             published_at=time.time(),
                             reference_5hz=receipt_reference,
+                            recovery=recovery.status(),
                         ),
                     )
                     await asyncio.sleep(0.2)
@@ -499,6 +734,35 @@ async def collect(
                     break
                 await asyncio.sleep(0.5)
 
+        async def seed_bleep():
+            if not (paper and config.bleep_enabled and config.bleep_exchange_seed_enabled):
+                return
+            from .bleep_seed import fetch_seed
+
+            async with httpx.AsyncClient() as seed_client:
+                while not stop.is_set():
+                    try:
+                        body = await fetch_seed(seed_client, time.time(), config.asset)
+                    except ValueError as exc:
+                        store.add(
+                            "bleep_seed_status",
+                            dict(status="RETRYING", error=str(exc)),
+                            engine.run_id,
+                            "PAPER",
+                            time.time(),
+                        )
+                        await asyncio.sleep(20)
+                        continue
+                    emit(dict(type="bleep_seed", msg=body))
+                    store.add(
+                        "bleep_seed_status",
+                        dict(status="LOADED", provider=body["provider"], candles=len(body["candles"])),
+                        engine.run_id,
+                        "PAPER",
+                        time.time(),
+                    )
+                    return
+
         async with asyncio.TaskGroup() as group:
             worker = group.create_task(consume())
             producers = [
@@ -506,8 +770,12 @@ async def collect(
                 group.create_task(receive()),
                 group.create_task(clock()),
                 group.create_task(reference_display()),
+                group.create_task(seed_bleep()),
             ]
             await stop.wait()
+            # Persist shutdown draining just like overload draining. Queued inputs
+            # still update books/settlements, without expensive strategy evaluation.
+            recovery.request("STOPPING", time.time())
             # Bounded cancellation also interrupts slow HTTP refresh/socket waits.
             for task in producers:
                 task.cancel()
@@ -515,17 +783,31 @@ async def collect(
             emit(dict(type="disconnect", msg={"reason": "shutdown"}))
             await queue.put(None)
             await worker
-        if paper:
+        if paper and not separate_paper:
             with store.transaction():
-                for member in engine.engines if multi_model else [engine]:
-                    store.checkpoint(member.run_id, member.executor.snapshot())
-        clean_shutdown = True
+                store.checkpoint(engine.run_id, engine.executor.snapshot())
+        if paper_worker:
+            await work(paper_worker.close)
+        clean_shutdown = not paper_worker or not paper_worker.failed.is_set()
         return engine.run_id
     finally:
         try:
             try:
-                if acquired and "engine" in locals() and not clean_shutdown:
-                    await work(stop_entries, engine, time.time())
+                if acquired and "engine" in locals():
+
+                    def finish_audit():
+                        now = time.time()
+                        if paper and config.bleep_enabled:
+                            save_history(settings.data_dir, engine.ticks, now, config)
+                        engine.flush_rejections(now, force=True)
+                        for ticker in engine.executor.positions:
+                            engine.monitoring_state(ticker, now, False, ["COLLECTOR_STOPPED"])
+
+                    try:
+                        await work(finish_audit)
+                    finally:
+                        if not clean_shutdown:
+                            await work(stop_entries, engine, time.time())
             finally:
                 if recorder:
                     # Preserve frames already received even when analysis or a producer fails.
@@ -555,13 +837,14 @@ async def collect(
                     if acquired:
                         with store.transaction():
                             if clean_shutdown:
-                                members = engine.engines if multi_model else [engine]
                                 store.add(
                                     "shutdown_complete",
                                     dict(
                                         run_id=engine.run_id,
-                                        open_positions=sum(len(e.executor.positions) for e in members),
-                                        runs=[e.run_id for e in members],
+                                        open_positions=len(paper_worker.status.get("positions", {}))
+                                        if paper_worker
+                                        else len(engine.executor.positions),
+                                        runs=[engine.run_id],
                                     ),
                                     owner,
                                     "PAPER",
@@ -569,7 +852,13 @@ async def collect(
                                 )
                             store.release("collector", owner)
                 finally:
+                    if paper_worker:
+                        await work(paper_worker.close)
+                    if signal_store:
+                        signal_store.close()
                     pool.shutdown(wait=True)
+                    if shadow is not None:
+                        shadow.store.engine.dispose()
 
 
 def backtest(path, config, store, parent_run=None):

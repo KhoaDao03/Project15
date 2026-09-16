@@ -6,10 +6,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from .assets import asset_spec
 from .domain import dumps
 
 
-def generate(path, start=1788901200.0):
+def generate(path, start=1788901200.0, asset="BTC"):
+    selected = asset_spec(asset)
+    scale = {"BTC": 1, "ETH": 0.04, "SOL": 0.002, "XRP": 0.00002}[asset]
     start = float(start)  # Fixed reproducible timestamp, unrelated to a recorded market.
     close = start + 900
 
@@ -23,9 +26,9 @@ def generate(path, start=1788901200.0):
     def iso(ts):
         return datetime.fromtimestamp(ts, timezone.utc).isoformat()
 
-    ticker = f"KXBTC15M-SYNTHETIC{int(start)}-00"
+    ticker = f"{selected.series}-SYNTHETIC{int(start)}-00"
     series = dict(
-        ticker="KXBTC15M",
+        ticker=selected.series,
         frequency="fifteen_min",
         exchange_index=2,
         fee_type="quadratic",
@@ -34,20 +37,20 @@ def generate(path, start=1788901200.0):
     )
     market = dict(
         ticker=ticker,
-        event_ticker="KXBTC15M-SYNTHETIC",
+        event_ticker=selected.series + "-SYNTHETIC",
         market_type="binary",
-        title="SYNTHETIC BTC15 fixture",
+        title=f"SYNTHETIC {asset}15 fixture",
         open_time=iso(start),
         close_time=iso(close),
         expiration_time=iso(close + 604800),
         status="active",
-        floor_strike=78000,
+        floor_strike=78000 * scale,
         exchange_index=2,
         notional_value_dollars="1.0000",
         strike_type="greater_or_equal",
-        custom_strike={"round_digits": "2"},
-        rules_primary=f"If the simple average of the sixty seconds of CF Benchmarks' BRTI before {prose(close)} is at least the simple average of the sixty seconds of CF Benchmarks' BRTI before {prose(start)}, then the market resolves to Yes.",
-        rules_secondary="60 RTI prices are collected. The average is rounded to the nearest 2 decimal places.",
+        custom_strike={"round_digits": str(selected.round_digits)},
+        rules_primary=f"If the simple average of the sixty seconds of CF Benchmarks' {selected.rule_index} before {prose(close)} is at least the simple average of the sixty seconds of CF Benchmarks' {selected.rule_index} before {prose(start)}, then the market resolves to Yes.",
+        rules_secondary=f"60 RTI prices are collected. The average is rounded to the nearest {selected.round_digits} decimal places.",
         price_ranges=[
             dict(start="0.00", end="0.10", step="0.001"),
             dict(start="0.10", end="0.90", step="0.01"),
@@ -85,15 +88,15 @@ def generate(path, start=1788901200.0):
     # Thirty minutes of causal warmup plus the complete contract, with independent channels.
     for i in range(-1799, 902):
         now = start + i
-        price = 78200 + 8 * math.sin(i * 0.11) + 3 * math.sin(i * 0.43)
+        price = (78200 + 8 * math.sin(i * 0.11) + 3 * math.sin(i * 0.43)) * scale
         add(
             dict(
                 type="cfbenchmarks_value",
                 sid=1,
                 seq=i + 1800,
                 msg=dict(
-                    index_id="BRTI",
-                    data=json.dumps(dict(type="value", id="BRTI", time=now * 1000, value=str(price))),
+                    index_id=selected.index,
+                    data=json.dumps(dict(type="value", id=selected.index, time=now * 1000, value=str(price))),
                 ),
             ),
             now,

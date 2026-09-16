@@ -1,56 +1,55 @@
-# Backtesting and held-out research
+# Backtesting and held-out research — Settlement Edge
 
-`btc15 backtest <journal.jsonl>` runs the same causal engine and paper executor in
-BACKTEST mode. Raw receipt order is preserved. Reversals in both wall and monotonic
-order reject the tape. Forward-monotonic wall-clock steps are retained and block
-paper decisions until clock health is reverified. No sorting hides the anomaly.
-Repeated IDs across inputs/mirrors are deduplicated using an on-disk index;
-conflicting IDs fail before replay. JSONL and Parquet are streamed in bounded batches. Source timestamps govern feature availability;
-settlement is visible only once its event arrives. Future reference observations
-never enter the probability or volatility estimate.
+Replay uses the same single Engine and PaperExecutor in BACKTEST mode. It simulates against recorded receipt order, not against current market prices, and writes a **new** experiment/run. It never retroactively fixes the paper ledger or guarantees that a live session could achieve its fills.
 
-A session journal includes metadata, snapshots, deltas, reference ticks, trades,
-health and settlement results. One Parquet file can also be replayed but is often
-insufficient for warmup or settlement. `research.replay_files(paths, config, store)`
-accepts several chronological nonoverlapping captures, preserving risk across
-markets. No order book or reference history is synthesized from contract candles.
+## First verify the synthetic flow
 
-Every counterfactual has a new run and experiment record containing parent run,
-input hashes, dataset audit, real/synthetic provenance, config version, event count
-and unsettled-position indicator. Input mutation during replay records a failed
-experiment. `btc15 audit first.jsonl second.jsonl` exposes gaps, clock steps,
-settlement coverage and available official-average comparisons.
-Original decisions, predictions and results remain immutable. Reports never mark
-an open position at a forecasted $1 payout merely because it looks likely to win.
+Use the [Getting started demo](GETTING_STARTED.md#offline-smoke-test-first). Synthetic inputs test software behavior only. Do not mix their results with authentic recordings or select only successful contracts.
+
+## Audit and replay authentic inputs
+
+Gather the complete chronological source tapes and the frozen strategy configuration for the experiment. They are local artifacts, not bundled in Git. Use a separate replay database; keep the live PAPER environment flags unchanged.
+
+```bash
+uv run --locked btc15 audit data/raw/SESSION.jsonl.gz
+uv run --locked btc15 --config data/runtime/settlement-original.json --database sqlite:///data/replay.db backtest data/raw/SESSION.jsonl.gz
+```
+
+Replace `SESSION` and the config path with actual matching files. Additional files may be passed in causal capture order:
+
+```bash
+uv run --locked btc15 audit data/raw/FIRST.jsonl.gz data/raw/SECOND.jsonl.gz
+uv run --locked btc15 --config data/runtime/settlement-original.json --database sqlite:///data/replay.db backtest data/raw/FIRST.jsonl.gz data/raw/SECOND.jsonl.gz
+uv run --locked btc15 --database sqlite:///data/replay.db analytics --mode BACKTEST --run REPLAY_RUN_ID
+uv run --locked btc15 --database sqlite:///data/replay.db dashboard --no-collect --port 8001
+```
+
+Choose BACKTEST and the replay ID in the UI. `backtest` prints metrics that identify its run. `--parent-run PAPER_RUN_ID` records a relationship only: **it does not load a parent portfolio/checkpoint**. The current CLI has no automatic starting-checkpoint import for replay. A later resumed session alone cannot reconstruct earlier inventory, warmup, prior risk usage or downtime. State those limitations in any comparison.
+
+JSONL, `.jsonl.gz` and Parquet inputs are supported. One Parquet chunk can lack required warmup, metadata or settlement. Prefer complete tapes. Identical IDs across mirrors are deduplicated; conflicting IDs fail. The audit reports data quality; a replay's completion is not by itself a declaration that the dataset passed all research acceptance checks. Walk-forward has stricter audit rejection gates.
+
+## Causality and provenance
+
+The reader preserves physical receive order. Backward wall time with forward monotonic order is retained and audited; backwards order in both clocks is rejected. Do not sort timestamps to hide clock issues. Source timestamps govern availability; official results are visible only after their event arrives. Do not synthesize reference history/order books from candles, backfill receipt times or replace missing official prices with a proxy feed.
+
+Experiments retain input hashes, audit results, config identity, event count and remaining-position indicators. Inputs changing during replay cause a failed experiment. An open position at the end is unfinished, not a predicted payout. A missing final settlement can legitimately leave results incomplete.
+
+## Interpreting comparisons
+
+A counterfactual compares the same source inputs under a declared config/source revision; it does not replay wall-clock processing delays automatically. Keep immutable paper orders/fills/results as the record of actual operation. Report zero qualifying signals, unfilled cancellations, losses, data-quality failures and insufficient samples, not just completed winners.
+
+Calibration uses retained eligible predictions with known outcomes. Full BACKTEST/observation can evaluate more markets than compact paper first-fill evidence. Repeated quote checks within a market are correlated. Do not pool independent replays or differing config versions as one continuous portfolio.
 
 ## Walk-forward runner
 
-`btc15 walk-forward config/walk-forward.example.json` reads predeclared candidate
-configurations and ordered train/test file lists. It rejects overlapping train/test
-timestamps, shared train/test markets and overlapping holdout folds. All folds are
-checked before any selection; an optional `embargo_seconds` extends the separation.
-Failed dataset audits and mixed synthetic/authentic folds are rejected. It limits
-candidates to 12, requires a
-minimum count of settled training markets, chooses by primary market-level Brier
-score (stable candidate-order tiebreak), then evaluates the frozen configuration
-on the next holdout. Insufficient data is a recorded negative finding. There is
-no P&L-based “best strategy” promotion, no automatic live update and no thousands-
-combination optimizer. Training can expand across folds; holdouts cannot overlap.
+[walk-forward.example.json](../config/walk-forward.example.json) is a template, not a downloadable historical dataset. Copy/edit a manifest to reference real train/test files relative to the manifest and predeclare candidate configurations:
 
-Do not supply a tape whose “received” timestamps were backfilled from publication
-times; historical source times are not proof that the strategy had the data then.
-Do not manually select successful contracts. Capture consecutive markets including
-feed failures, illiquid intervals and rejected opportunities.
+```bash
+uv run --locked btc15 --database sqlite:///data/walk-forward.db walk-forward config/walk-forward.example.json
+```
+
+This command requires the template's referenced captures to exist first. The runner permits 1–12 predeclared configurations, checks overlap/shared markets/holdouts and dataset audits before selection, applies an optional embargo, selects by market-level Brier score with stable tie-breaking, and evaluates the frozen selection on the next holdout. It does not optimize by maximum P&L or promote a model to live operation. Insufficient training markets are a result, not a reason to fabricate data.
 
 ## Validation needed
 
-Use contiguous market/day blocks, calibration first, realistic cost sensitivity
-second. Examine Brier/log loss/ECE, observed bucket frequency and independent
-market counts. Evaluate passivity against pessimistic queues and latency sweeps.
-Inspect outcomes by regime, side, time remaining and price/edge buckets. Report
-negative P&L, no-fill results and insufficient sample sizes. Deterministic UTC-day
-cluster bootstrap intervals for Brier and per-trade P&L require at least 20 days;
-the minimum is a disclosed research guard, not proof of independence. The method
-retains intraday dependence but does not establish independence between days.
-Survivorship audits and parameter stability assessment still require research judgment. Synthetic demo results validate only
-software behavior and must not be included in claims about market performance.
+Evaluate contiguous markets/day blocks, calibration, realistic queue/latency/fee/slippage sensitivity and negative outcomes on independent holdouts. UTC-day bootstrap intervals require at least 20 days in the implemented analysis; that threshold is a research guard, not proof that days are independent. Authentic replay, current feed operation, multi-day endurance and profitability remain distinct from [software tests](VALIDATION.md).

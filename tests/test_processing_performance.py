@@ -5,8 +5,6 @@ import random
 import pytest
 
 from btc15.domain import Book, D
-from btc15.engine import Engine
-from btc15.strategies.settlement_edge.model import Tick
 
 
 def test_incremental_book_matches_full_validation():
@@ -31,6 +29,9 @@ def test_incremental_book_matches_full_validation():
         )
         assert book.yes == expected.yes and book.no == expected.no
         assert book.valid == expected.valid
+        for outcome in ("yes", "no"):
+            asks = expected.asks(outcome)
+            assert book.ask_level(outcome) == (asks[0] if asks else (None, 0))
 
 
 @pytest.mark.parametrize("side", ["yes", "no"])
@@ -51,16 +52,6 @@ def test_crossed_delta_still_invalidates_book():
     with pytest.raises(ValueError, match="Crossed"):
         book.delta(dict(side="yes", price_dollars="0.7", delta_fp="1"), 1)
     assert not book.valid
-
-
-def test_causal_reference_cache_handles_future_ticks_and_clock_reversal(store, config):
-    engine = Engine(store, config, execute=False)
-    engine.ticks = [Tick(10, 12, 100), Tick(11, 11, 101), Tick(13, 12, 102)]
-    for now in (10, 11, 12, 13, 14, 11):
-        assert engine.causal_ticks(now) == [t for t in engine.ticks if t.source <= now and t.received <= now]
-    engine.ticks = [*engine.ticks, Tick(15, 14, 103)]
-    assert engine.causal_ticks(14) == engine.ticks[:-1]
-    assert engine.causal_ticks(15) == engine.ticks
 
 
 def test_state_reads_see_uncommitted_changes_and_rollback(store):

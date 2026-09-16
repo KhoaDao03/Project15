@@ -59,13 +59,8 @@ def test_observe_only_has_no_managed_paper_run(store, monkeypatch):
 def test_dashboard_default_resumes_all_paper_checkpoints(store, config, tmp_path, raw, series, monkeypatch):
     from test_collection import fake_client, fake_socket
 
-    from btc15.models import activate, register
-    from btc15.strategies.momentum import Momentum, volatility_model
-
     fake_client(monkeypatch, raw, series)
     fake_socket(monkeypatch, [])
-    for model in (Momentum(), volatility_model()):
-        activate(store, register(store, model), True)
     settings = Settings(data_dir=str(tmp_path / "paper-data"), api_key_id="test", private_key_path="unused")
     for attempt in range(2):
         with TestClient(dashboard.create_app(store, collect_live=True, settings=settings, config=config)):
@@ -74,8 +69,8 @@ def test_dashboard_default_resumes_all_paper_checkpoints(store, config, tmp_path
                 rows = store.list(kind="run")
                 resumes = store.list(kind="resume")
                 if (
-                    len(rows) == 3
-                    and len(resumes) == attempt * 3
+                    len(rows) == 1
+                    and len(resumes) == attempt
                     and all(store.load_checkpoint(row["run_id"]) for row in rows)
                 ):
                     break
@@ -85,4 +80,4 @@ def test_dashboard_default_resumes_all_paper_checkpoints(store, config, tmp_path
                 assert row["body"]["execute"] is True
                 assert store.load_checkpoint(row["run_id"])
         assert store.writer_owner() is None
-    assert len(store.list(kind="model_group", run_id="dashboard-paper")) == 1
+    assert not store.list(kind="model_group", run_id="dashboard-paper")

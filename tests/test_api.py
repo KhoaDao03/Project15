@@ -66,3 +66,107 @@ def test_discovery_pagination_shard_and_next_market(raw, series):
     assert subs[2]["params"]["use_yes_price"] is True
     assert subs[0]["params"]["index_ids"] == ["BRTI"]
     assert "market_tickers" not in subs[1]["params"]
+
+
+def test_discovery_resolves_overlapping_lists_with_fresh_detail(raw, series, store, config, now):
+    incomplete = {**raw, "floor_strike": None}
+    upcoming = {
+        **raw,
+        "ticker": "KXBTC15M-NEXT-00",
+        "status": "initialized",
+        "close_time": "2026-09-08T22:15:00Z",
+        "floor_strike": None,
+    }
+
+    async def run():
+        client = KalshiClient(Settings())
+        calls = []
+
+        async def get(path, params=None, authenticated=False):
+            calls.append((path, params))
+            if path == "series/KXBTC15M":
+                return {"series": series}
+            if path == "markets":
+                return {"markets": [raw] if params["status"] == "open" else [incomplete, upcoming]}
+            assert path == "markets/" + raw["ticker"]
+            assert params == {"exchange_index": series["exchange_index"]}
+            return {"market": raw}
+
+        client.get = get
+        result_series, markets = await client.discover()
+        assert result_series == series
+        assert markets == [raw, upcoming]
+        assert client.discovery_resolutions[0]["candidates"] == [raw, incomplete]
+        assert client.discovery_resolutions[0]["resolved"] == raw
+        from btc15.engine import Engine
+
+        engine = Engine(store, config, "BACKTEST", execute=False)
+        assert engine.ingest(
+            dict(
+                id="resolved-metadata",
+                received=now,
+                monotonic_ns=int(now * 1e9),
+                connection_id="test",
+                payload=dict(
+                    type="metadata",
+                    msg=dict(
+                        series=series,
+                        markets=markets,
+                        discovery_resolutions=client.discovery_resolutions,
+                        clock_skew=0,
+                        exchange_status={"trading_active": True},
+                        fee_changes={},
+                        series_fee_changes=[],
+                    ),
+                ),
+            )
+        )
+        assert raw["ticker"] in engine.markets
+        assert not engine.executor.quarantines
+        assert not store.list(kind="invalid_market", run_id=engine.run_id)
+        assert len(store.list(kind="metadata_resolution", run_id=engine.run_id)) == 1
+        assert len([c for c in calls if c[0].startswith("markets/")]) == 1
+        await client.close()
+
+    asyncio.run(run())
+
+
+def test_discovery_does_not_hide_changed_or_incomplete_canonical_metadata(raw, series):
+    async def run():
+        client = KalshiClient(Settings())
+        for canonical in ({**raw, "floor_strike": raw["floor_strike"] + 100}, {**raw, "floor_strike": None}):
+
+            async def get(path, params=None, authenticated=False):
+                if path == "series/KXBTC15M":
+                    return {"series": series}
+                if path == "markets":
+                    return {"markets": [raw]}
+                return {"market": canonical}
+
+            client.get = get
+            _, markets = await client.discover()
+            assert markets == [canonical]
+        await client.close()
+
+    asyncio.run(run())
+
+
+def test_discovery_rejects_wrong_detail_identity(raw, series):
+    import pytest
+
+    async def run():
+        client = KalshiClient(Settings())
+
+        async def get(path, params=None, authenticated=False):
+            if path == "series/KXBTC15M":
+                return {"series": series}
+            if path == "markets":
+                return {"markets": [raw]}
+            return {"market": {**raw, "ticker": "WRONG"}}
+
+        client.get = get
+        with pytest.raises(ValueError, match="identity"):
+            await client.discover()
+        await client.close()
+
+    asyncio.run(run())

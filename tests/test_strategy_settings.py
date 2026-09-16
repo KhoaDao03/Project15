@@ -2,6 +2,7 @@ import hashlib
 import json
 from dataclasses import asdict, replace
 
+import pytest
 from fastapi.testclient import TestClient
 from test_execution import decision, ready
 
@@ -61,10 +62,96 @@ def test_disabled_strategy_blocks_candidates_and_submission(store, market, book,
 def test_enabled_default_preserves_historical_config_version():
     config = Strategy()
     historical = asdict(config)
-    del historical["enabled"]
+    for name in (
+        "asset",
+        "full_position_execution",
+        "enabled",
+        "entry_value_filters_enabled",
+        "daily_entry_limits_enabled",
+        "resting_limit_recheck",
+        "revalidate_entry_signal",
+        "max_entry_retries",
+        "entry_retry_cooldown",
+        "post_close_cooldown",
+        "one_trade_per_market",
+        "hold_value_exit_enabled",
+        "profit_value_exit_enabled",
+        "standard_cashout_enabled",
+        "entry_probability_deductions",
+        "bleep_probability_blend_enabled",
+        "bleep_probability_only_enabled",
+        "both_models_80_enabled",
+        "standard_component_min_probability",
+        "late_component_min_probability",
+        "fixed_stop_price",
+        "project15_probability_veto_enabled",
+        "bleep_exchange_seed_enabled",
+        "bleep_safety_clamp_enabled",
+        "sustained_lead_enabled",
+        "late_entry_enabled",
+        "late_no_new_entry",
+        "lead_confirmation_samples",
+        "late_min_probability",
+        "late_lead_confirmation_samples",
+        "min_lead_sigma",
+        "late_min_lead_sigma",
+        "bollinger_entry_filter_enabled",
+    ):
+        del historical[name]
     expected = hashlib.sha256(json.dumps(historical, sort_keys=True).encode()).hexdigest()[:16]
     assert config.version == expected
     assert replace(config, enabled=False).version != expected
+
+
+def test_cashout_and_post_close_config_preserve_old_versions_and_validate():
+    config = Strategy()
+    assert config.version == "1766c001ffaa6835"
+    active = Strategy.load("config/settlement-edge-active-paper.json")
+    assert active.standard_cashout_enabled is False
+    assert active.min_entry_price == 0.80
+    assert active.max_entry_price == 0.95
+    assert active.post_close_cooldown == 60
+    assert active.entry_retry_cooldown == 0
+    assert active.exit_probability == 0.0
+    historical = replace(
+        active,
+        standard_cashout_enabled=False,
+        min_entry_price=0.70,
+        entry_value_filters_enabled=True,
+        bleep_probability_blend_enabled=False,
+        bleep_probability_only_enabled=False,
+        both_models_80_enabled=False,
+        standard_component_min_probability=0.80,
+        late_component_min_probability=0.80,
+        min_probability=0.80,
+        min_lead_sigma=1.0,
+        late_min_lead_sigma=2.0,
+        full_position_execution=False,
+        fixed_stop_price=0,
+        project15_probability_veto_enabled=True,
+        entry_window_start=420,
+        lead_confirmation_samples=3,
+        late_lead_confirmation_samples=2,
+        entry_retry_cooldown=5,
+        min_edge=0.01,
+        min_ev=0.01,
+        bollinger_entry_filter_enabled=True,
+        bleep_exchange_seed_enabled=False,
+        bleep_safety_clamp_enabled=False,
+        post_close_cooldown=0,
+        exit_probability=0.70,
+        take_profit=0.99,
+        one_trade_per_market=False,
+    )
+    assert historical.version == "8eb9db7ebe0ad470"
+    assert replace(config, standard_cashout_enabled=True).version != config.version
+    assert replace(config, post_close_cooldown=60).version != config.version
+    for value in ("true", 1, None):
+        with pytest.raises(ValueError, match="standard_cashout_enabled requires a boolean"):
+            replace(config, standard_cashout_enabled=value)
+    for value in (-1, float("inf"), float("nan"), "60", True, None):
+        with pytest.raises(ValueError, match="post_close_cooldown"):
+            replace(config, post_close_cooldown=value)
 
 
 def test_cli_uses_saved_settings_unless_explicit_config(tmp_path, monkeypatch, capsys):
@@ -83,3 +170,13 @@ def test_cli_uses_saved_settings_unless_explicit_config(tmp_path, monkeypatch, c
     monkeypatch.setattr(sys, "argv", ["btc15", "--config", str(explicit), "config"])
     cli.main()
     assert json.loads(capsys.readouterr().out)["enabled"] is True
+
+
+def test_all_crypto_presets_allow_one_sample_and_immediate_retries():
+    for asset in ["active", "eth", "sol", "xrp"]:
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+        assert c.entry_window_start == 480
+        assert c.confirmation_count() == c.confirmation_count(True) == 1
+        assert c.entry_retry_cooldown == 0
+        assert c.max_entry_retries == 2
+        assert c.sustained_lead_enabled and c.entry_cutoff == 15

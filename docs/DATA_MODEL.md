@@ -1,45 +1,34 @@
-# Persistence design
+# Persistence design — current single-strategy runtime
 
-SQLAlchemy supports PostgreSQL and SQLite WAL. `records` stores indexed ID, run,
-mode, kind, market, opportunity ID, event timestamp and immutable JSON payload.
-Indexes support research lookup without imposing speculative relational fields.
-This is a versioned event log with operational projections, not a fully normalized
-financial ledger. Current schema version is the initial 0.1 schema.
+SQLite WAL is the default (`sqlite:///data/btc15.db`); SQLAlchemy also supports the existing PostgreSQL setup. `DATA_DIR` and `DATABASE_URL` are independent settings. Initializing a Store creates missing tables/indexes and history protections; it is not a reset or a general migration framework.
 
-Record kinds: run, raw_source, market, pending_market, invalid_market, opportunity,
-transition, order, fill, exit_intent, execution_rejection, settlement, trade_result,
-health, status, experiment and walk_forward. Full effective configs and model,
-source and Git versions accompany predictions; runs retain source/lock snapshots.
-Historical prediction updates/deletes are rejected by database triggers.
+## Tables
 
-`states` stores per-run/per-market state and optimistic version. Each transition
-updates the version and appends history in one transaction. `claims` uniquely
-reserves entry/settlement intents. `leases` prevents concurrent collector writers.
-Paper objects have a single owner; no multi-worker execution is supported.
+| Table | Role / mutability |
+| --- | --- |
+| `records` | Indexed record ID, run, mode, kind, market, opportunity ID, timestamp and JSON body; append-only history |
+| `states` | Current run/market state and optimistic version; replaceable operational state |
+| `claims` | Unique run/key claims for entry/settlement and retained historical registry claims |
+| `leases` | Collector ownership; no automatic expiry/stealing |
+| `paper_checkpoints` | Latest accounting snapshot for each run; updated with execution actions |
+| `market_display` | Replaceable current display, reference, evaluation and status projections |
 
-Raw recording first appends and fsyncs JSONL, preserving the original wire payload,
-local receive/processing timestamp, monotonic timestamp, connection ID and event
-UUID. Exchange/source timestamp and sequence remain in the wire payload. Buffered
-rows are written to Zstd Parquet using a fixed schema and atomic rename. The
-journal remains the authoritative full-session recovery file; it is not deleted.
-Malformed trailing lines produce an explicit replay error, not silent truncation.
+The two compound record indexes target kind/mode/run/time and kind/mode/time lookups. Startup also installs them on existing tables. Not every dashboard filter/pagination operation is executed in SQL; see [Architecture](ARCHITECTURE.md).
 
-A process crash may leave an incomplete temporary Parquet chunk and a complete
-journal. Replay the journal into a new BACKTEST run. It may also leave the writer
-lease and pending execution claims; these require review before clearing. Raw
-recording and SQL evaluation are not one distributed transaction. The raw journal
-precedes each SQL decision; replay repairs missing research outputs in a new run.
+## Evidence versus projections
 
-Limitations: per-event fsync is deliberately durable but needs throughput testing;
-current dashboard aggregation loads selected records in memory; raw journals and
-Parquet duplicate storage; lifecycle retention/compaction needs an operator policy;
-initial schema has no migration tool. There are no unreviewed data-deletion jobs.
+Runs retain effective config, identity, source/version information and a source snapshot. `raw_source` links each collection session to its tape. Market metadata, orders/cancellations, fills, fees, results, settlements and exceptional health information remain historical records.
 
-## Recoverable paper projections
+In compact PAPER execution, rejected evaluations and routine status replace projections. A candidate's evidence is held in the pending order checkpoint and appended as an `opportunity` only on first fill. Unfilled cancellations retain order records but not opportunity evidence. Observation and BACKTEST retain full evaluation records. Read [Recording](TRADE_RECORDING.md) before interpreting counts.
 
-`paper_checkpoints` stores the latest mutable accounting projection by run ID.
-Execution ledger records remain immutable; each execution action commits its
-records, claims, state transitions and checkpoint together. The checkpoint includes
-positions, orders, fee carry, daily risk, duplicate trade IDs and consumed exit depth.
-`resume` records append the code/config provenance of explicit restarts. Checkpoints
-from legacy runs are not manufactured from incomplete state.
+Execution ledger writes, duplicate claims, state transitions and the checkpoint commit atomically. Checkpoints include positions, orders/queues, pending entry evidence, fee carry, duplicate trades, consumed exit depth and daily risk totals. Failed actions roll back SQL and in-memory accounting. No missing historical checkpoint is fabricated on resume.
+
+## Raw inputs and recovery
+
+Paper records one `.jsonl.gz` tape of ordered source envelopes. Observation records an fsynced JSONL journal plus compressed Parquet chunks. IDs, local receipt/monotonic timestamps, connection IDs and original payloads preserve inputs; exchange timestamps/sequences remain in the payload. Durable raw batches precede analysis, but the filesystem and SQL are not a distributed transaction.
+
+Readers fail explicitly on damaged records/torn compressed batches. Preserve originals; any repair must be an audited copy. Replaying incomplete files does not invent absent reference history, a starting portfolio or downtime fills. [Backtesting](BACKTESTING.md) and [Safety](SAFETY.md) cover those limits.
+
+## Retained legacy data
+
+Archived identities, groups, model definitions, claims and old results may remain in the same database. They are data, not executable models. Default read APIs filter them out of Settlement Edge views; explicit archive scope exposes retained evidence. Startup guards reject incompatible group resumes and unresolved archived exposure. No automatic purge, checkpoint conversion or trading-history rewrite is performed. [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md) identifies the recovery revision.

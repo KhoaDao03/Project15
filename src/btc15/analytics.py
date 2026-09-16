@@ -6,6 +6,8 @@ from math import fsum
 
 import numpy as np
 
+from .models import history_models, select_history
+
 BUCKETS = [0, 0.5, 0.8, 0.85, 0.9, 0.92, 0.95, 0.97, 0.99, 1.0000001]
 
 
@@ -62,8 +64,13 @@ def daily_block_interval(observations, minimum_days=20, samples=2000):
     return result
 
 
-def metrics(store, mode="PAPER", run_id=None):
-    ops = store.list("opportunity", run_id, mode, limit=None)
+def metrics(store, mode="PAPER", run_id=None, *, scope="settlement"):
+    models = history_models(store, mode)
+
+    def read(kind):
+        return select_history(store.list(kind, run_id, mode, limit=None), models, scope)
+
+    ops = read("opportunity")
     identities = {
         (
             r["body"].get("model", {}).get("model_id", "settlement-edge"),
@@ -73,13 +80,11 @@ def metrics(store, mode="PAPER", run_id=None):
         for r in ops
     }
     if run_id is None and len(identities) > 1:
-        from .models import comparison
-
-        result = metrics(store, mode, "__no_pooled_model_results__")
+        result = metrics(store, mode, "__no_pooled_model_results__", scope=scope)
         result.update(
             run_id=None,
             mixed_models=True,
-            model_comparison=comparison(store, mode),
+            model_comparison=[],
             trades=None,
             wins=None,
             losses=None,
@@ -90,14 +95,11 @@ def metrics(store, mode="PAPER", run_id=None):
         )
         result["limitations"].insert(
             0,
-            "Multiple model/config versions: select a run or use model-comparison; pooled results are suppressed",
+            "Multiple configurations or archived strategies: select a run; pooled results are suppressed",
         )
         return result
-    results = store.list("trade_result", run_id, mode, limit=None)
-    settlements = {
-        (r["run_id"], r["market"]): r["body"]["result"]
-        for r in store.list("settlement", run_id, mode, limit=None)
-    }
+    results = read("trade_result")
+    settlements = {(r["run_id"], r["market"]): r["body"]["result"] for r in read("settlement")}
     pairs = []
     grouped = defaultdict(list)
     # One last eligible entry-window prediction per market for primary calibration.
@@ -111,7 +113,12 @@ def metrics(store, mode="PAPER", run_id=None):
             continue
         pair = (b["probability"]["p_yes"], int(settlements[key] == "yes"))
         all_predictions.append(pair)
-        if b["config"]["no_new_entry"] < b["seconds_remaining"] <= b["config"]["entry_window_start"]:
+        cutoff = (
+            b["config"].get("late_no_new_entry", 15)
+            if b["config"].get("late_entry_enabled")
+            else b["config"]["no_new_entry"]
+        )
+        if cutoff < b["seconds_remaining"] <= b["config"]["entry_window_start"]:
             last[key] = (r, pair)
     for r, pair in last.values():
         pairs.append(pair)
@@ -121,6 +128,7 @@ def metrics(store, mode="PAPER", run_id=None):
             ("model", b["versions"]["probability"]),
             ("entry_minute", int(b["seconds_remaining"] // 60)),
             ("side", b.get("side")),
+            ("entry_path", b.get("entry_path", "standard")),
         ]:
             grouped[f"{name}:{value}"].append(pair)
     pnl = [r["body"]["net_pnl"] for r in results]
@@ -129,9 +137,9 @@ def metrics(store, mode="PAPER", run_id=None):
     wins = [p for p in pnl if p > 0]
     losses = [p for p in pnl if p < 0]
     reasons = Counter(r["body"]["reason"] for r in results)
-    orders = store.list("order", run_id, mode, limit=None)
+    orders = read("order")
     submitted = [r for r in orders if r["body"].get("status") == "submitted"]
-    fills = store.list("fill", run_id, mode, limit=None)
+    fills = read("fill")
     entry_fills = [r for r in fills if r["body"]["action"] == "buy"]
     filled_ids = {r["opportunity_id"] for r in entry_fills}
     partial_ids = {r["opportunity_id"] for r in entry_fills if r["body"].get("remaining", 0) > 0}
@@ -142,6 +150,7 @@ def metrics(store, mode="PAPER", run_id=None):
         b = op_map.get(r["opportunity_id"], {})
         for name, value in [
             ("side", r["body"]["side"]),
+            ("entry_path", b.get("entry_path", "standard")),
             ("regime", b.get("features", {}).get("regime")),
             ("model", b.get("versions", {}).get("probability")),
             ("entry_minute", int(b.get("seconds_remaining", 0) // 60)),
@@ -160,13 +169,9 @@ def metrics(store, mode="PAPER", run_id=None):
     return dict(
         mode=mode,
         run_id=run_id,
-        dataset_audits=[
-            r["body"].get("dataset_audit") for r in store.list("experiment", run_id, mode, limit=None)
-        ],
-        failed_experiments=[
-            dict(run_id=r["run_id"], **r["body"])
-            for r in store.list("experiment_failed", run_id, mode, limit=None)
-        ],
+        history_scope=scope,
+        dataset_audits=[r["body"].get("dataset_audit") for r in read("experiment")],
+        failed_experiments=[dict(run_id=r["run_id"], **r["body"]) for r in read("experiment_failed")],
         opportunities=len(ops),
         trades=len(results),
         wins=len(wins),

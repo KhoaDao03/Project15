@@ -3,12 +3,17 @@
 import asyncio
 import base64
 import time
+from contextvars import ContextVar
 from pathlib import Path
 from urllib.parse import urlparse
 
 import httpx
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
+
+from .assets import asset_spec
+
+read_timings = ContextVar("kalshi_read_timings", default=None)
 
 
 class KalshiClient:
@@ -41,25 +46,61 @@ class KalshiClient:
         }
 
     async def get(self, path, params=None, authenticated=False):
+        measurements = read_timings.get()
+        if measurements is None:
+            return await self._get(path, params, authenticated, None)
+        metric = dict(
+            endpoint=path.split("?")[0],
+            attempts=0,
+            rate_wait_ms=0.0,
+            network_ms=0.0,
+            retry_wait_ms=0.0,
+            started_at=time.time(),
+        )
+        started = time.monotonic()
+        try:
+            return await self._get(path, params, authenticated, metric)
+        except BaseException as exc:
+            metric["error"] = type(exc).__name__
+            raise
+        finally:
+            metric["total_ms"] = (time.monotonic() - started) * 1000
+            measurements.append(metric)
+
+    async def _get(self, path, params, authenticated, metric):
         for attempt in range(4):
             # Budget our client at 50 read tokens/second, including retries.
             # Ordinary reads cost 10; CF passthrough reads cost 50.
+            wait_started = time.monotonic()
             async with self._read_lock:
                 await asyncio.sleep(max(0, self._next_read - time.monotonic()))
                 self._next_read = time.monotonic() + (
                     1.0 if path.lstrip("/").startswith("cfbenchmarks/") else 0.2
                 )
+            if metric is not None:
+                metric["attempts"] += 1
+                metric["rate_wait_ms"] += (time.monotonic() - wait_started) * 1000
             signed_path = urlparse(self.settings.rest_url).path + "/" + path.lstrip("/")
             headers = self.headers("GET", signed_path) if authenticated else {}
             start = time.time()
-            response = await self.http.get(path.lstrip("/"), params=params, headers=headers)
+            network_started = time.monotonic()
+            try:
+                response = await self.http.get(path.lstrip("/"), params=params, headers=headers)
+                if metric is not None:
+                    metric["http_status"] = response.status_code
+            finally:
+                if metric is not None:
+                    metric["network_ms"] += (time.monotonic() - network_started) * 1000
             if response.status_code == 429 or response.status_code >= 500:
                 if attempt < 3:
                     try:
                         delay = float(response.headers.get("Retry-After", 2**attempt))
                     except ValueError:
                         delay = 2**attempt
+                    retry_started = time.monotonic()
                     await asyncio.sleep(min(10, max(0.1, delay)))
+                    if metric is not None:
+                        metric["retry_wait_ms"] += (time.monotonic() - retry_started) * 1000
                     continue
             response.raise_for_status()
             if response.headers.get("Date"):
@@ -87,7 +128,11 @@ class KalshiClient:
             params["cursor"] = cursor
 
     async def discover(self):
-        series = (await self.get("series/KXBTC15M"))["series"]
+        self.discovery_resolutions = []
+        selected = asset_spec(self.settings.asset)
+        series = (await self.get("series/" + selected.series))["series"]
+        if series.get("ticker") != selected.series:
+            raise ValueError("Discovery returned a different asset series")
         index = series.get("exchange_index")
         if index is None:
             raise ValueError("Series exchange index missing")
@@ -96,12 +141,38 @@ class KalshiClient:
             async for raw in self.pages(
                 "markets",
                 "markets",
-                dict(series_ticker="KXBTC15M", status=status, limit=100, exchange_index=index),
+                dict(series_ticker=selected.series, status=status, limit=100, exchange_index=index),
             ):
                 if raw is not None:
                     markets.append(raw)
-        # Preserve invalid metadata for research; runner performs strict validation.
-        ordered = sorted(markets, key=lambda m: m["close_time"])
+        # Status-filtered lists are not one atomic snapshot. At market opening,
+        # a ticker can appear in both with conflicting strike publication state.
+        # Resolve overlap from the detail endpoint, rather than choosing whichever
+        # list arrived last or merging fields from incompatible contract versions.
+        unique = {}
+        duplicates = set()
+        for raw in markets:
+            ticker = raw["ticker"]
+            if ticker in unique:
+                duplicates.add(ticker)
+            unique[ticker] = raw
+        for ticker in unique:
+            if ticker in duplicates:
+                resolved = (await self.get("markets/" + ticker, {"exchange_index": index}))["market"]
+                if resolved.get("ticker") != ticker or resolved.get("exchange_index") != index:
+                    raise ValueError("Market detail identity does not match discovery")
+                self.discovery_resolutions.append(
+                    dict(
+                        ticker=ticker,
+                        reason="OVERLAPPING_MARKET_LISTS",
+                        source="kalshi_rest_market_detail",
+                        candidates=[raw for raw in markets if raw["ticker"] == ticker],
+                        resolved=resolved,
+                    )
+                )
+                unique[ticker] = resolved
+        # Preserve invalid canonical metadata for research; runner still validates it.
+        ordered = sorted(unique.values(), key=lambda m: m["close_time"])
         active = [m for m in ordered if m.get("status") == "active"]
         upcoming = [m for m in ordered if m.get("status") != "active"]
         return series, active + upcoming[:1]
@@ -124,10 +195,11 @@ class KalshiClient:
         await self.http.aclose()
 
 
-def subscriptions(tickers):
+def subscriptions(tickers, asset="BTC"):
+    index = asset_spec(asset).index
     return [
-        dict(id=1, cmd="subscribe", params=dict(channels=["cfbenchmarks_value"], index_ids=["BRTI"])),
-        dict(id=2, cmd="subscribe", params=dict(channels=["cfbenchmarks_value_5hz"], index_ids=["BRTI"])),
+        dict(id=1, cmd="subscribe", params=dict(channels=["cfbenchmarks_value"], index_ids=[index])),
+        dict(id=2, cmd="subscribe", params=dict(channels=["cfbenchmarks_value_5hz"], index_ids=[index])),
         dict(
             id=3,
             cmd="subscribe",

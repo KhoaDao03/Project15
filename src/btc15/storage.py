@@ -4,6 +4,7 @@ import gzip
 import json
 import math
 import os
+import time
 import uuid
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -35,6 +36,7 @@ from sqlalchemy import (
 from sqlalchemy.exc import IntegrityError
 
 from .domain import dumps
+from .lease_identity import WriterOwnedError, current_process, owner_is_dead
 
 metadata = MetaData()
 records = Table(
@@ -82,16 +84,16 @@ TRANSITIONS = {
     "WARMUP": {"MONITORING", "ENTRY_WINDOW", "SETTLEMENT_PENDING"},
     "MONITORING": {"ENTRY_WINDOW", "SETTLEMENT_PENDING"},
     "ENTRY_WINDOW": {"EVALUATING", "SETTLEMENT_PENDING"},
-    "EVALUATING": {"NO_TRADE", "TRADE_CANDIDATE"},
+    "EVALUATING": {"NO_TRADE", "TRADE_CANDIDATE", "SETTLEMENT_PENDING"},
     "NO_TRADE": {"EVALUATING", "SETTLEMENT_PENDING"},
     "TRADE_CANDIDATE": {"ORDER_PENDING", "NO_TRADE"},
     "ORDER_PENDING": {"ORDER_PARTIALLY_FILLED", "POSITION_OPEN", "ORDER_CANCELLED"},
     "ORDER_PARTIALLY_FILLED": {"POSITION_OPEN", "ORDER_CANCELLED"},
-    "ORDER_CANCELLED": {"POSITION_OPEN", "SETTLEMENT_PENDING"},
+    "ORDER_CANCELLED": {"EVALUATING", "POSITION_OPEN", "SETTLEMENT_PENDING"},
     "POSITION_OPEN": {"EXITING", "SETTLEMENT_PENDING"},
     "EXITING": {"POSITION_OPEN", "CLOSED", "SETTLEMENT_PENDING"},
     "SETTLEMENT_PENDING": {"CLOSED"},
-    "CLOSED": set(),
+    "CLOSED": {"MONITORING"},
     "ERROR": {"HALTED"},
     "HALTED": set(),
 }
@@ -343,6 +345,27 @@ class Store:
                 result = result[:limit] if limit is not None else result
             return result
 
+    def has_market_integrity_failure(self, run_id, market, since):
+        """Check retained evidence without loading an unbounded diagnostic history."""
+        code = (
+            func.json_extract(records.c.body, "$.code")
+            if self.engine.dialect.name == "sqlite"
+            else func.json_extract_path_text(cast(records.c.body, JSON), "code")
+        )
+        query = (
+            select(records.c.id)
+            .where(
+                records.c.run_id == run_id,
+                records.c.market == market,
+                records.c.timestamp >= since,
+                (records.c.kind == "invalid_market")
+                | ((records.c.kind == "health") & (code == "RULES_CHANGED")),
+            )
+            .limit(1)
+        )
+        with self.transaction() as c:
+            return c.execute(query).first() is not None
+
     def state(self, run_id, market):
         existing = self._connection.get()
         if existing is not None:
@@ -351,7 +374,19 @@ class Store:
         with self.engine.connect() as c:
             return c.execute(self._state_query, dict(run=run_id, ticker=market)).scalar()
 
-    def transition(self, run_id, mode, market, target, now, opportunity_id="", *, record_history=True):
+    def transition(
+        self,
+        run_id,
+        mode,
+        market,
+        target,
+        now,
+        opportunity_id="",
+        *,
+        record_history=True,
+        settlement_recovery_id=None,
+        metadata_recovery_id=None,
+    ):
         with self.transaction() as c:
             row = (
                 c.execute(select(states).where(states.c.run_id == run_id, states.c.market == market))
@@ -361,7 +396,66 @@ class Store:
             old = row["state"] if row else None
             if old == target:
                 return
-            if target not in ({"DISCOVER_MARKET"} if old is None else TRANSITIONS[old] | {"ERROR", "HALTED"}):
+            recovering = False
+            if metadata_recovery_id is not None:
+                proof = c.execute(
+                    select(records.c.body).where(
+                        records.c.id == metadata_recovery_id,
+                        records.c.kind == "metadata_recovery",
+                        records.c.run_id == run_id,
+                        records.c.mode == mode,
+                        records.c.market == market,
+                    )
+                ).scalar()
+                body = json.loads(proof) if proof else {}
+                quarantine = c.execute(
+                    select(records.c.body).where(
+                        records.c.id == body.get("quarantine_id"),
+                        records.c.kind == "metadata_quarantine",
+                        records.c.run_id == run_id,
+                        records.c.mode == mode,
+                        records.c.market == market,
+                    )
+                ).scalar()
+                blocked = json.loads(quarantine) if quarantine else {}
+                if (
+                    old != "HALTED"
+                    or target not in ("EVALUATING", "POSITION_OPEN")
+                    or body.get("target") != target
+                    or blocked.get("reason") != "METADATA_INVALID"
+                    or not body.get("contract_hash")
+                    or body["contract_hash"] != blocked.get("expected_contract_hash")
+                ):
+                    raise ValueError("Invalid metadata recovery transition")
+                recovering = True
+            if settlement_recovery_id is not None:
+                recovery = c.execute(
+                    select(records.c.body).where(
+                        records.c.id == settlement_recovery_id,
+                        records.c.kind == "settlement_recovery",
+                        records.c.run_id == run_id,
+                        records.c.mode == mode,
+                        records.c.market == market,
+                    )
+                ).scalar()
+                if old != "HALTED" or target != "SETTLEMENT_PENDING" or not recovery:
+                    raise ValueError("Invalid settlement recovery transition")
+                body = json.loads(recovery)
+                proof = c.execute(
+                    select(records.c.body).where(
+                        records.c.id == body["evidence_id"],
+                        records.c.kind == "settlement_evidence",
+                        records.c.run_id == run_id,
+                        records.c.mode == mode,
+                        records.c.market == market,
+                    )
+                ).scalar()
+                if not proof or json.loads(proof)["result"] != body["result"]:
+                    raise ValueError("Settlement recovery evidence mismatch")
+                recovering = True
+            if not recovering and target not in (
+                {"DISCOVER_MARKET"} if old is None else TRANSITIONS[old] | {"ERROR", "HALTED"}
+            ):
                 raise ValueError(f"Invalid transition {old} -> {target}")
             if row:
                 result = c.execute(
@@ -380,7 +474,11 @@ class Store:
             if record_history:
                 self.add(
                     "transition",
-                    dict(previous=old, state=target),
+                    dict(
+                        previous=old,
+                        state=target,
+                        **({"settlement_recovery_id": settlement_recovery_id} if recovering else {}),
+                    ),
                     run_id,
                     mode,
                     now,
@@ -406,13 +504,32 @@ class Store:
             return result.scalar_one_or_none() is not None
 
     def acquire(self, key, owner):
+        identity = current_process()
         try:
             with self.transaction() as c:
+                previous = c.execute(select(leases.c.owner).where(leases.c.key == key)).scalar()
+                if previous is not None:
+                    saved = self.read_market_display("lease:" + key) or {}
+                    if saved.get("owner") != previous or not owner_is_dead(saved, identity):
+                        raise WriterOwnedError()
+                    # Compare-and-delete and replacement share one transaction.
+                    # A competing acquirer cannot replace a newer/live owner.
+                    deleted = c.execute(
+                        leases.delete().where(leases.c.key == key, leases.c.owner == previous)
+                    )
+                    if deleted.rowcount != 1:
+                        raise WriterOwnedError()
+                    self.add(
+                        "writer_recovered",
+                        dict(key=key, previous_owner=previous, process=saved),
+                        owner,
+                        "PAPER",
+                        time.time(),
+                    )
                 c.execute(insert(leases).values(key=key, owner=owner))
+                self.publish_market_display(dict(owner=owner, **(identity or {})), "lease:" + key)
         except IntegrityError as e:
-            raise RuntimeError(
-                "A writer owns this database. After a crash inspect the lease before manual recovery."
-            ) from e
+            raise WriterOwnedError() from e
 
     def writer_owner(self):
         with self.transaction() as c:
@@ -420,7 +537,9 @@ class Store:
 
     def release(self, key, owner):
         with self.transaction() as c:
-            c.execute(leases.delete().where(leases.c.key == key, leases.c.owner == owner))
+            deleted = c.execute(leases.delete().where(leases.c.key == key, leases.c.owner == owner))
+            if deleted.rowcount:
+                c.execute(market_display.delete().where(market_display.c.key == "lease:" + key))
 
 
 RAW_SCHEMA = pa.schema(
@@ -430,6 +549,8 @@ RAW_SCHEMA = pa.schema(
         ("monotonic_ns", pa.int64()),
         ("connection_id", pa.string()),
         ("payload", pa.string()),
+        ("analysis_suspended", pa.bool_()),
+        ("collector_entries_blocked", pa.bool_()),
     ]
 )
 
@@ -547,6 +668,9 @@ def read_events(path):
 
     previous = None
     for row in source():
+        for flag in ("analysis_suspended", "collector_entries_blocked"):
+            if row.get(flag) is None:
+                row.pop(flag, None)
         if not math.isfinite(row["received"]):
             raise ValueError("Invalid receive timestamp")
         if previous and row["received"] < previous["received"]:

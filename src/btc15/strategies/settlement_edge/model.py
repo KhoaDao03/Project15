@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from .bleep import indicator_inputs
+
 
 @dataclass(frozen=True)
 class Tick:
@@ -103,6 +105,11 @@ def features(ticks, now, config):
             position=(prices[-1] - (middle - width)) / (2 * width) if width else 0.5,
             distance_outside=max(0, prices[-1] - middle - width, middle - width - prices[-1]),
         )
+    # An older contiguous sequence may survive a missing latest closed minute.
+    # Freshness belongs to this causal model snapshot, including when it is cached.
+    out["bollinger_fresh"] = bool(
+        out["bollinger"] is not None and contiguous[-1][0] == int(now // 60) - 1
+    )
     if len(closes) > config.atr_period:
         tr = [
             max(c[2] - c[3], abs(c[2] - prev[4]), abs(c[3] - prev[4]))
@@ -118,10 +125,23 @@ def features(ticks, now, config):
             rsi.append(100 * gain / (gain + loss) if gain + loss else 50)
         r = rsi[-config.stochastic_period :]
         out["stochastic_rsi"] = (r[-1] - min(r)) / (max(r) - min(r)) if max(r) > min(r) else 0.5
+    if config.bleep_enabled:
+        # Retain Project15's complete-candle checks; Bleep also uses the live candle.
+        bleep_candles = list(contiguous)
+        minute = int(now // 60)
+        current = np.flatnonzero(ts // 60 == minute)
+        if len(current):
+            if not bleep_candles or bleep_candles[-1][0] != minute - 1:
+                bleep_candles = []
+            p = prices[current]
+            bleep_candles.append((minute, float(p[0]), float(max(p)), float(min(p)), float(p[-1])))
+        elif not bleep_candles or bleep_candles[-1][0] != minute - 1:
+            bleep_candles = []
+        out["bleep"] = indicator_inputs(bleep_candles)
     return out
 
 
-def probability(spec, ticks, now, sigma, config):
+def probability(spec, ticks, now, sigma, config, *, price_shift=0):
     if not math.isfinite(sigma) or sigma < 0:
         raise ValueError("Invalid sigma")
     past = [t for t in ticks if t.source <= now and t.received <= now]
@@ -140,7 +160,9 @@ def probability(spec, ticks, now, sigma, config):
     if set(observed) != set(range(1, expected_known + 1)):
         raise ValueError("Missing past settlement observations")
     rng = np.random.default_rng(config.seed)
-    paths = np.full(config.paths, latest.price, dtype=float)
+    if not math.isfinite(price_shift) or latest.price + price_shift <= 0:
+        raise ValueError("Invalid stress price")
+    paths = np.full(config.paths, latest.price + price_shift, dtype=float)
     sums = np.full(config.paths, sum(observed.values()), dtype=float)
     previous = latest.source
     for i, target in enumerate(spec.sample_times, 1):
@@ -155,12 +177,13 @@ def probability(spec, ticks, now, sigma, config):
         previous = target
     averages = sums / 60
     # Decimal rounding only affects exact ties; NumPy handles bulk, ties bracketed below.
-    rounded = np.round(averages, 2)
+    rounded = np.round(averages, spec.round_digits)
     op = {">=": np.greater_equal, ">": np.greater, "<": np.less, "<=": np.less_equal}[
         spec.comparison_operator
     ]
     yes = op(rounded, spec.strike)
-    half = np.isclose(averages * 100 - np.floor(averages * 100), 0.5, atol=1e-8, rtol=0)
+    scale = 10**spec.round_digits
+    half = np.isclose(averages * scale - np.floor(averages * scale), 0.5, atol=1e-8, rtol=0)
     ambiguity = 0
     for idx in np.flatnonzero(half):
         a, b = spec.yes(float(averages[idx]), "half_even"), spec.yes(float(averages[idx]), "half_up")
@@ -185,10 +208,44 @@ def probability(spec, ticks, now, sigma, config):
         conservative_yes=max(0, p - penalty),
         conservative_no=max(0, 1 - p - penalty),
         known_samples=len(observed),
+        settlement_mean=float(np.mean(averages)),
+        settlement_std=float(np.std(averages)),
+        required_remaining_average=(60 * spec.strike - sum(observed.values())) / (60 - len(observed))
+        if len(observed) < 60
+        else None,
         paths=config.paths,
         seed=config.seed,
         calibrated=False,
         model="settlement-mc-logwalk-v1",
+    )
+
+
+def lead_evidence(spec, ticks, now, f, p, config):
+    """Entry-only stress; known settlement samples are never altered."""
+    late = config.late_entry_enabled and spec.settlement_end - now <= config.no_new_entry
+    side = spec.favored(p["settlement_mean"] if late else ticks[-1].price)
+    direction = 1 if (side == "yes") == (spec.comparison_operator in (">=", ">")) else -1
+    recent = [t for t in ticks if now - 61 <= t.source <= now and t.received <= now]
+    adverse = max(
+        (
+            max(0, -direction * (b.price - a.price))
+            for a, b in zip(recent, recent[1:])
+            if 0 < b.source - a.source <= 1.5
+        ),
+        default=0,
+    )
+    stressed = probability(spec, ticks, now, f["sigma"], config, price_shift=-direction * adverse)
+    margin = direction * (p["settlement_mean"] - spec.strike)
+    # One settlement unit avoids infinite ratios without imposing BTC precision on XRP.
+    lead_sigma = margin / max(10**-spec.round_digits, p["settlement_std"])
+    return dict(
+        side=side,
+        source=ticks[-1].source,
+        lead_sigma=lead_sigma,
+        adverse_move=adverse,
+        stressed_probability=stressed.get("conservative_" + side, 0) if side else 0,
+        known_samples=p["known_samples"],
+        required_remaining_average=p["required_remaining_average"],
     )
 
 

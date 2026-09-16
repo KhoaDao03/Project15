@@ -34,25 +34,67 @@ def test_managed_clean_restart_preserves_run(store, config, tmp_path, raw, serie
 
 
 def test_stop_drains_and_releases_writer(store, config, tmp_path, raw, series, monkeypatch):
+    import time
+
+    from btc15.domain import D
+
     fake_client(monkeypatch, raw, series)
-    fake_socket(monkeypatch, [dict(type="ticker", msg={}) for _ in range(50)])
+    engines = []
+    ingest = runner.Engine.ingest
+
+    def slow(engine, row):
+        if not engines:
+            engines.append(engine)
+        if not row.get("analysis_suspended"):
+            time.sleep(0.002)
+        return ingest(engine, row)
+
+    monkeypatch.setattr(runner.Engine, "ingest", slow)
 
     async def run():
         stop = asyncio.Event()
-        asyncio.get_running_loop().call_later(0.15, stop.set)
-        return await runner.collect(
-            Settings(data_dir=str(tmp_path)),
-            config,
-            store,
-            paper=True,
-            managed_run="stopped",
-            record_all=True,
-            stop_event=stop,
-        )
+
+        def payloads():
+            yield dict(
+                type="orderbook_snapshot",
+                sid=3,
+                seq=1,
+                msg=dict(
+                    market_ticker=raw["ticker"], yes_dollars_fp=[[".80", "3"]], no_dollars_fp=[[".90", "10"]]
+                ),
+            )
+            yield from (
+                dict(
+                    type="orderbook_delta",
+                    sid=3,
+                    seq=i + 2,
+                    msg=dict(market_ticker=raw["ticker"], side="yes", price_dollars=".80", delta_fp="1"),
+                )
+                for i in range(50)
+            )
+            # The next recv begins only after the previous frame was enqueued.
+            # Stop after delivery, not after a machine-speed-dependent 150 ms.
+            stop.set()
+
+        fake_socket(monkeypatch, payloads())
+        async with asyncio.timeout(10):
+            return await runner.collect(
+                Settings(data_dir=str(tmp_path)),
+                config,
+                store,
+                paper=True,
+                managed_run="stopped",
+                record_all=True,
+                stop_event=stop,
+            )
 
     asyncio.run(run())
     rows = list(read_events(next((tmp_path / "raw").glob("*.jsonl"))))
-    assert sum(r["payload"]["type"] == "ticker" for r in rows) == 50
+    assert sum(r["payload"]["type"] == "orderbook_delta" for r in rows) == 50
+    assert any(r.get("analysis_suspended") and r["payload"]["type"] == "orderbook_delta" for r in rows)
+    assert engines[0].books[raw["ticker"]].yes[D(".80")] == 53
+    assert not [r for r in store.list(kind="health") if r["body"]["code"] == "INVALID_DATA"]
+    assert len(store.list(kind="shutdown_complete")) == 1
     assert rows[-1]["payload"] == dict(type="disconnect", msg={"reason": "shutdown"})
     assert not store.list(kind="status", newest_first=True, limit=1)[0]["body"]["connected"]
     store.acquire("collector", "after-stop")
@@ -115,3 +157,35 @@ def test_health_uses_latest_status_and_rejects_staleness(store):
     assert health(store, "service", now=106)["reasons"] == ["STALE_STATUS"]
     store.add("status", {**body, "halted": True}, "service", "PAPER", 107)
     assert health(store, "service", now=108)["reasons"] == ["HALTED"]
+
+
+@pytest.mark.parametrize("initialization_failure", [False, True])
+def test_managed_shadow_is_opt_in_and_failure_does_not_stop_primary(
+    store, config, tmp_path, raw, series, monkeypatch, initialization_failure
+):
+    from btc15 import stop_shadow
+
+    fake_client(monkeypatch, raw, series)
+    fake_socket(monkeypatch, [])
+    if initialization_failure:
+
+        def fail(*args):
+            raise OSError("isolated shadow ledger unavailable")
+
+        monkeypatch.setattr(stop_shadow, "StopShadow", fail)
+    run = asyncio.run(
+        runner.collect(
+            Settings(data_dir=str(tmp_path)),
+            config,
+            store,
+            paper=True,
+            duration=0.1,
+            managed_run="shadow-enabled",
+            stop_confirmation_shadow=True,
+        )
+    )
+    assert run == "shadow-enabled"
+    statuses = store.list(kind="stop_shadow_status")
+    assert statuses[0]["body"]["status"] == ("FAILED" if initialization_failure else "STARTED")
+    assert not store.list(kind="fill")
+    assert store.load_checkpoint(run) is not None

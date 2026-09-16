@@ -29,7 +29,7 @@ def test_cancel_remainder_preserves_position(store, market, book, now, config):
     )
     position = executor.snapshot()["positions"]
     member = SimpleNamespace(execute=True, entries_active=True, executor=executor)
-    runner.stop_entries(SimpleNamespace(engines=[member]), now + 2)
+    runner.stop_entries(member, now + 2)
     assert not member.execute and not member.entries_active
     assert not any(order.active for order in executor.orders.values())
     assert executor.snapshot()["positions"] == position
@@ -37,19 +37,11 @@ def test_cancel_remainder_preserves_position(store, market, book, now, config):
     assert store.load_checkpoint("run")["positions"] == position
 
 
-@pytest.mark.parametrize("multi_model", [False, True])
 def test_request_stops_runner_and_acknowledges_after_checkpoint(
-    store, config, tmp_path, raw, series, monkeypatch, multi_model
+    store, config, tmp_path, raw, series, monkeypatch
 ):
     fake_client(monkeypatch, raw, series)
     fake_socket(monkeypatch, [])
-
-    if multi_model:
-        from btc15.models import activate, register
-        from btc15.strategies.momentum import Momentum, volatility_model
-
-        for model in [Momentum(), volatility_model()]:
-            activate(store, register(store, model), True)
 
     async def run():
         task = asyncio.create_task(
@@ -59,7 +51,6 @@ def test_request_stops_runner_and_acknowledges_after_checkpoint(
                 store,
                 paper=True,
                 managed_run="shutdown-test",
-                multi_model=multi_model,
             )
         )
         for _ in range(100):
@@ -72,7 +63,7 @@ def test_request_stops_runner_and_acknowledges_after_checkpoint(
         await asyncio.wait_for(task, 5)
         assert store.writer_owner() is None
         runs = store.list("shutdown_complete", owner)[0]["body"]["runs"]
-        assert len(runs) == (3 if multi_model else 1)
+        assert len(runs) == 1
         assert all(store.load_checkpoint(run_id) is not None for run_id in runs)
 
     asyncio.run(run())

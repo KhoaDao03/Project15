@@ -1,21 +1,9 @@
-# Live trading: NOT READY
+# Real-money trading is out of scope
 
-This release never submits production orders. Both activation flags and the live
-adapter fail closed. `live_payload` implements the documented V2 bid/ask direction,
-YES-leg price, fixed-point count, shard, pause cancellation and reduce-only intent
-for review/testing. `KalshiClient.reconciliation` retrieves paginated orders,
-fills and positions read-only. Neither is an execution/reconciliation state machine.
+This branch is deliberately limited to proving **BTC15 Settlement Edge** in research and paper operation before considering anything else. There is no live-activation runbook and no supported real-money order path.
 
-Required before production activation: explicit user approval after reviewing
-calibration and paper evidence; persistent account/position/order reconciliation;
-unknown-submission recovery by client order ID; actual fee/account alignment;
-exchange-specific live risk and collateral; pause/lifecycle/cancel-race testing;
-clock and stale-data rechecks through network submission; rate-limit accounting;
-kill-switch/cancellation recovery; and deployment/secrets/access review.
+Both [Settings](../src/btc15/config.py) and [LiveTrader](../src/btc15/execution.py) fail closed. Keep `TRADING_MODE=PAPER` and `ENABLE_LIVE_TRADING=false`. Changing either to LIVE/true causes rejection; it is not an upgrade procedure. Authenticated market data is needed for live-connected paper testing, but those local simulated orders are not exchange orders.
 
-Changing .env flags is insufficient. A separately reviewed code change is required
-to implement live submission. This choice is stricter than two environment flags
-because the requested live prerequisites have not been empirically validated.
-The cycle remains collect → analyze → hypothesis → replay → held-out validation →
-paper → review → explicit user approval → live change. No analyst endpoint can
-promote a model or alter live parameters automatically.
+The existing `live_payload` helper and read-only `KalshiClient.reconciliation` are code-review/test boundaries only. They do not provide a functioning order-submission, unknown-submission recovery or account-reconciliation state machine. No dashboard history filter, next-session settings save, analyst output or passing test enables them.
+
+Any future real-money work would require a separately authorized scope and implementation review, authentic paper evidence, account/fee/collateral reconciliation, network-time and unknown-order recovery, tested cancellation/risk controls and secured deployment. Those are not current capabilities or a promise to expand this branch. For this milestone use [Getting started](GETTING_STARTED.md), [Paper trading](PAPER_TRADING.md) and [Validation](VALIDATION.md).

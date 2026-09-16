@@ -6,6 +6,7 @@ from .strategies.settlement_edge.config import Strategy as Strategy
 
 @dataclass(frozen=True)
 class Settings:
+    asset: str = "BTC"
     mode: str = "PAPER"
     enable_live: bool = False
     database_url: str = "sqlite:///data/btc15.db"
