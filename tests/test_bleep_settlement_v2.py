@@ -5,7 +5,7 @@ import pytest
 from test_sustained_lead import reference, setup_engine
 
 from btc15.config import Strategy
-from btc15.strategies.settlement_edge.bleep import blend_probability, settlement_distribution
+from btc15.strategies.settlement_edge.bleep import probability, settlement_distribution
 from btc15.strategies.settlement_edge.model import Tick
 
 
@@ -27,15 +27,8 @@ def inputs(spot):
 
 
 def predict(spec, ticks, now, f=None):
-    return blend_probability(
-        dict(p_yes=0.5, p_no=0.5, uncertainty=0.02),
-        spec,
-        f or inputs(ticks[-1].price),
-        now,
-        settlement_aware=True,
-        ticks=ticks,
-        clamp=True,
-    )["blend"]["bleep"]
+    return probability(spec, ticks, now, f or inputs(ticks[-1].price), Strategy())
+
 
 
 @pytest.mark.parametrize("known", [0, 1, 30, 59, 60])
@@ -61,7 +54,7 @@ def test_pre_window_shared_uncertainty(market):
     assert d["variance_time"] == pytest.approx(240 + sum(k * k for k in range(1, 61)) / 3600)
 
 
-def test_observed_average_changes_probability_with_same_spot(market):
+def test_observed_average_remains_evidence_not_finish_probability(market):
     spec = market.spec
     now = spec.settlement_start + 30
     spot = spec.strike + 1
@@ -74,12 +67,13 @@ def test_observed_average_changes_probability_with_same_spot(market):
 
     low = predict(spec, path(-20), now)
     high = predict(spec, path(20), now)
-    assert low["p_yes"] < 0.1 and high["p_yes"] > 0.9
+    assert low["p_yes"] == high["p_yes"]
+    assert low["settlement_mean"] < high["settlement_mean"]
     assert low["known_samples"] == high["known_samples"] == 30
     assert low["remaining_samples"] == 30
 
 
-def test_volatility_spike_reduces_confidence(market):
+def test_reference_volatility_changes_evidence_not_atr_finish_probability(market):
     spec = market.spec
     now = spec.settlement_start - 120
     spot = spec.strike + 20
@@ -89,7 +83,7 @@ def test_volatility_spike_reduces_confidence(market):
     spike = predict(spec, ticks, now, {**f, "rv_30": 0.002})
     assert calm["volatility_source"] == "atr" and spike["volatility_source"] == "reference"
     assert spike["settlement_std"] > calm["settlement_std"]
-    assert abs(spike["p_yes"] - 0.5) < abs(calm["p_yes"] - 0.5)
+    assert spike["p_yes"] == calm["p_yes"]
 
 
 @pytest.mark.parametrize("operator", [">=", ">", "<", "<="])
@@ -141,20 +135,12 @@ def test_causal_samples_and_missing_or_duplicate_slots(market):
         predict(spec, ticks, now, {**inputs(spec.strike + 1), "rv_30": float("nan")})
 
 
-def test_historical_config_hash_unchanged():
-    c = Strategy()
-    assert c.version == "1766c001ffaa6835"
-    legacy = replace(c, bleep_probability_blend_enabled=True)
-    assert replace(legacy, bleep_settlement_model_enabled=True).version != legacy.version
 
 
 @pytest.mark.parametrize("remaining", [300, 40])
 def test_engine_records_new_model(store, market, config, remaining):
     c = replace(
         config,
-        bleep_probability_blend_enabled=True,
-        bleep_settlement_model_enabled=True,
-        entry_probability_deductions=False,
         entry_window_start=420,
     )
     now = market.close_time - remaining
@@ -164,16 +150,16 @@ def test_engine_records_new_model(store, market, config, remaining):
     for i in range(5):
         reference(e, market, now + i, spot)
     d = e.latest[market.ticker]
-    assert d["versions"]["probability"] == d["probability"]["model"] == "settlement-bleep-equal-v2"
-    assert d["probability"]["blend"]["bleep"]["model"] == "bleep-settlement-reference-v2"
-    assert d["probability"]["blend"]["bleep"]["known_samples"] == max(0, 60 - remaining + 4)
+    assert d["versions"]["probability"] == d["probability"]["model"] == "bleep-reference-atr-finish-v5"
+    assert d["probability"]["model"] == "bleep-reference-atr-finish-v5"
+    assert d["probability"]["known_samples"] == max(0, 60 - remaining + 4)
     assert market.ticker in e.executor.orders
 
 
 @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
 @pytest.mark.parametrize(
     "remaining,allowed",
-    [(480, False), (420.01, False), (420, True), (419, True), (120, True), (15.01, True), (15, False)],
+    [(480.01, False), (480, True), (420, True), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
 )
 def test_deployed_entry_window(market, asset, remaining, allowed):
     from test_strategy_reverification import make_book
@@ -181,14 +167,12 @@ def test_deployed_entry_window(market, asset, remaining, allowed):
     from btc15.strategies.settlement_edge.rules import evaluate
 
     c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
-    assert c.entry_window_start == 420 and c.bleep_settlement_model_enabled
-    assert c.min_probability == c.late_min_probability == 0
-    assert c.standard_component_min_probability == c.late_component_min_probability == 0.78
+    assert c.entry_window_start == 480
+    assert c.min_probability == c.late_min_probability == 0.83
     now = market.close_time - remaining
     p = dict(
-        p_yes=0.7,
-        p_no=0.3,
-        blend=dict(project15_p_yes=0.55, bleep=dict(p_yes=0.85)),
+        p_yes=0.85,
+        p_no=0.15,
         lead=dict(side="yes", confirmed_normal=True, confirmed_late=True, confirmation_samples=1),
     )
     d = evaluate(

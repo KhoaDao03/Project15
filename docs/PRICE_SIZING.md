@@ -55,7 +55,7 @@ configuration hashes. There is no schema migration, new setting, dependency,
 manual bypass, history rewrite or automatic configuration switch. Previously
 recorded artifacts are not silently repaired; stored legacy values are used as
 recorded. This is not a conversion of every model/P&L/reporting float to Decimal.
-The Monte Carlo, evaluation formulas, fee accumulator and strategy presets remain
+The probability model, evaluation formulas, fee accumulator and strategy presets remain
 unchanged. Source revision must accompany results: corrected prices/sizes can
 change fill eligibility and P&L, even with the same configuration hash.
 

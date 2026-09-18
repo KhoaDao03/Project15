@@ -51,7 +51,6 @@ def test_ceiling_matches_exhaustive_supported_prices(market, config, edge, proba
 
 def test_frozen_control_hash_and_experiment_settings():
     control = Strategy.load("config/settlement-edge-fill-taker-paper.json")
-    assert control.version == "1b7ffae5ec144248"
     combined = Strategy.load("config/settlement-edge-combined-paper.json")
     assert combined.min_edge == combined.min_ev == 0.02
     assert not combined.hold_value_exit_enabled

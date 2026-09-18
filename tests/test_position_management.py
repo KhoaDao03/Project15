@@ -43,7 +43,9 @@ def scenario(store, config, market, raw, series, now, monkeypatch):
             clock[0] += delay[0]
             if failure[0]:
                 raise ValueError("Insufficient reference history (synthetic test)")
-            return dict(probabilities)
+            return dict(
+                probabilities, conservative_yes=probabilities["p_yes"], conservative_no=probabilities["p_no"]
+            )
 
         monkeypatch.setattr(module, "features", lambda *args: dict(features))
         monkeypatch.setattr(module, "probability", model)
@@ -216,7 +218,7 @@ def test_price_exits_work_without_usable_model(
 @pytest.mark.parametrize("problem", ["warmup", "shock", "reference_gap", "unavailable"])
 def test_unusable_model_never_invents_invalidation(scenario, store, market, now, mode, problem):
     s = scenario(mode)
-    s.p["conservative_yes"] = 0.01
+    s.p["p_yes"] = 0.01
     if problem == "warmup":
         s.f["history_seconds"] = 1
     elif problem == "shock":
@@ -237,7 +239,7 @@ def test_unusable_model_never_invents_invalidation(scenario, store, market, now,
 def test_valid_model_invalidation_still_works_while_halted(scenario, store, market, now, mode, side):
     s = scenario(mode, side)
     s.e.executor.halt(now + 1)
-    s.p["conservative_" + side] = 0.60
+    s.p["p_" + side] = 0.60
     for i in (2, 3):
         s.refresh(now + i, ".80")
         process(s, market, now + i, str(i))

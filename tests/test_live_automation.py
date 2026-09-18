@@ -18,14 +18,26 @@ def anyio_backend():
 
 
 @pytest.fixture
-def live(venue, monkeypatch):  # noqa: F811
+def live(venue, monkeypatch, request):  # noqa: F811
     _, state, manual, _ = venue
-    config = Strategy.load("config/settlement-edge-eth-paper.json")
+    asset = getattr(request, "param", "ETH")
+    import sys
+
+    import test_manual_trading
+
+    ticker = TICKER.replace("KXETH", "KX" + asset)
+    monkeypatch.setattr(sys.modules[__name__], "TICKER", ticker)
+    monkeypatch.setattr(test_manual_trading, "TICKER", ticker)
+    state["ticker"] = ticker
+    config = Strategy.load(f"config/settlement-edge-{asset.lower()}-paper.json")
     now = time.time()
     clock = [now]
     data = dict(bid=0.89, ask=0.90, reasons=[], side="yes", healthy=True, fresh=True)
 
     class Store:
+        def list(self, *args, **kwargs):
+            return []
+
         def read_market_display(self, key=None):
             if key:
                 return dict(
@@ -60,7 +72,7 @@ def live(venue, monkeypatch):  # noqa: F811
 
     monkeypatch.setattr(module, "time", SimpleNamespace(time=lambda: clock[0]))
     monkeypatch.setattr(module, "health", lambda *args: dict(healthy=data["healthy"]))
-    worker = LiveAutomation(manual, {"ETH": dict(config=config, run_id="eth-paper")}, {"ETH": Store()})
+    worker = LiveAutomation(manual, {asset: dict(config=config, run_id="eth-paper")}, {asset: Store()})
     worker.running = True
     state["fill_count"] = "10.00"
     control = worker.configure(
@@ -82,6 +94,7 @@ def test_cap_snaps_in_yes_and_no_price_space():
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_buy_full_quantity_once_and_restart(live):
     worker, state, manual, control, data, clock = live
     await worker.step_market(control)
@@ -100,6 +113,7 @@ async def test_buy_full_quantity_once_and_restart(live):
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_disabled_buys_keep_stop_exits_and_sell_only_held(live):
     worker, state, manual, control, data, clock = live
     await worker.step_market(control)
@@ -114,6 +128,7 @@ async def test_disabled_buys_keep_stop_exits_and_sell_only_held(live):
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_take_profit_floor_and_hard_stop_override_after_no_fill(live):
     worker, state, manual, control, data, clock = live
     state["price_ranges"] = [dict(start=".001", end=".999", step=".001")]
@@ -142,6 +157,7 @@ async def test_manual_takeover_blocks_all_automation(live):
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_unknown_ack_never_creates_replacement(live):
     worker, state, manual, control, data, clock = live
     state["post_error"] = "timeout"
@@ -156,6 +172,7 @@ async def test_unknown_ack_never_creates_replacement(live):
 
 @pytest.mark.parametrize("block", ["stale", "health", "probability", "price"])
 @pytest.mark.anyio
+@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_entry_gates_block_real_post(live, block):
     worker, state, manual, control, data, clock = live
     if block == "stale":
@@ -295,6 +312,24 @@ async def test_shutdown_requires_resolving_or_taking_over_live_position(live):
     worker.takeover(TICKER)
     worker.prepare_shutdown()
     assert not worker.controls()[TICKER]["enabled"]
+
+
+@pytest.mark.anyio
+async def test_asset_shutdown_ignores_other_assets_managed_position(live):
+    worker, state, manual, control, data, clock = live
+    await worker.step_market(control)
+    worker.members["BTC"] = dict(config=Strategy(), run_id="btc")
+    worker.write_asset(dict(asset="BTC", enabled=True, revision=1, contracts=10))
+    btc = dict(control, ticker="KXBTC15M-TEST-00", asset="BTC")
+    worker.write(btc)
+    before = worker.assets()["ETH"]
+    worker.prepare_shutdown("BTC")
+    assert worker.assets()["ETH"] == before
+    assert worker.controls()[TICKER]["enabled"]
+    assert not worker.assets()["BTC"]["enabled"]
+    assert not worker.controls()[btc["ticker"]]["enabled"]
+    with pytest.raises(HTTPException, match="Live position"):
+        worker.prepare_shutdown("ETH")
 
 
 def test_asset_setting_survives_rollover_and_restart(live, monkeypatch):
@@ -481,14 +516,17 @@ async def test_preflight_failures_preserve_attempts_across_restart(live, monkeyp
     assert len(state["posts"]) == 3
 
 
-@pytest.mark.parametrize("extra", [
-    {"timing": {}},  # Legacy records cannot prove the order was never sent.
-    {"timing": {"preflight_started_at": 1, "submitted_at": 2}},
-    {"state": "unknown"},
-    {"order_id": "exchange-order"},
-    {"acknowledgement": {"order_id": "exchange-order"}},
-    {"exchange_order": {"fill_count_fp": "0"}},
-])
+@pytest.mark.parametrize(
+    "extra",
+    [
+        {"timing": {}},  # Legacy records cannot prove the order was never sent.
+        {"timing": {"preflight_started_at": 1, "submitted_at": 2}},
+        {"state": "unknown"},
+        {"order_id": "exchange-order"},
+        {"acknowledgement": {"order_id": "exchange-order"}},
+        {"exchange_order": {"fill_count_fp": "0"}},
+    ],
+)
 def test_uncertain_or_exchange_attempts_still_consume_allowance(extra):
     row = {"state": "rejected", "timing": {"preflight_started_at": 1}, **extra}
     assert consumes_entry_attempt(row)
@@ -497,6 +535,7 @@ def test_uncertain_or_exchange_attempts_still_consume_allowance(extra):
 @pytest.mark.anyio
 @pytest.mark.parametrize("side", ["yes", "no"])
 @pytest.mark.parametrize("bid,exits", [(0.989, False), (0.99, True), (0.999, True)])
+@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
     worker, state, manual, control, data, clock = live
     data["side"] = side
@@ -518,6 +557,7 @@ async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("side", ["yes", "no"])
+@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_live_buy_headroom_preserves_95_cent_entry_filter(live, side):
     worker, state, manual, control, data, clock = live
     data.update(side=side, bid=0.94, ask=0.951)
@@ -529,3 +569,29 @@ async def test_live_buy_headroom_preserves_95_cent_entry_filter(live, side):
     order = state["posts"][-1]
     assert order["price"] == ("0.9600" if side == "yes" else "0.0400")
     assert order["time_in_force"] == "fill_or_kill"
+
+
+@pytest.mark.parametrize("side", ["yes", "no"])
+def test_live_submission_rechecks_market_cap_against_new_book(live, side):
+    from dataclasses import replace
+
+    worker, state, manual, control, data, clock = live
+    config = replace(worker.members["ETH"]["config"], min_entry_price=0.5)
+    worker.members["ETH"]["config"] = config
+    # Fixture decision keeps its original version, so override only that field.
+    read = worker.stores["ETH"].read_market_display
+
+    def current(key=None):
+        result = read(key)
+        if key:
+            result["body"]["versions"]["config"] = config.version
+        return result
+
+    worker.stores["ETH"].read_market_display = current
+    control = dict(control, config_version=config.version)
+    data.update(side=side, bid=0.76, ask=0.78)
+    assert worker.entry(control, clock[0])[0] == side  # 77% mid + 6pp = 83%.
+    data.update(bid=0.75, ask=0.77)
+    with pytest.raises(HTTPException, match="market-respect cap"):
+        worker.entry(control, clock[0])
+    assert not state["posts"]

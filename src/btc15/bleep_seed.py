@@ -1,4 +1,4 @@
-"""Recorded exchange candles for Bleep indicators only; never settlement samples."""
+"""Recorded historical candles for Bleep indicators only; never settlement samples."""
 
 import math
 from datetime import datetime, timezone
@@ -11,7 +11,13 @@ from .strategies.settlement_edge.bleep import indicator_inputs
 def validate_seed(body, now, asset="BTC"):
     if body.get("asset", "BTC") != asset:
         raise ValueError("Bleep seed asset does not match this run")
-    if body.get("version") != 1 or body.get("provider") not in ("coinbase", "kraken", "binance"):
+    from .assets import asset_spec
+
+    spec = asset_spec(asset)
+    providers = ("pyth",) if spec.commodity else ("coinbase", "kraken", "binance")
+    if spec.commodity and body.get("index") != spec.index:
+        raise ValueError("Pyth seed index does not match this run")
+    if body.get("version") != 1 or body.get("provider") not in providers:
         raise ValueError("Invalid Bleep seed provider/version")
     candles = body.get("candles", [])
     if not 33 <= len(candles) <= 120:
@@ -102,3 +108,39 @@ def seeded_inputs(candles, seed_last_minute, ticks, now):
             del candles[minute]
     ordered = [candles[k] for k in sorted(candles)]
     return indicator_inputs(ordered)
+
+
+async def fetch_pyth_seed(client, now, asset, api_key):
+    """Official commodity OHLC for indicators only, never synthetic live ticks."""
+    from .assets import asset_spec
+
+    spec = asset_spec(asset)
+    if not spec.commodity or not api_key:
+        raise ValueError("Pyth commodity history requires PYTH_PRO_API_KEY")
+    try:
+        response = await client.get(
+            "https://pyth.dourolabs.app/v1/real_time/history",
+            params={"symbol": spec.index, "resolution": "1", "from": int(now) - 101 * 60, "to": int(now)},
+            headers={"Authorization": "Bearer " + api_key},
+            timeout=8,
+        )
+        response.raise_for_status()
+        data = response.json()
+        if data.get("s") != "ok":
+            raise ValueError("Pyth history is unavailable")
+        arrays = [data[k] for k in ("t", "o", "h", "l", "c")]
+        if any(not isinstance(a, list) for a in arrays) or len({len(a) for a in arrays}) != 1:
+            raise ValueError("Pyth OHLC arrays are not aligned")
+        candles = []
+        for timestamp, op, high, low, close in zip(*arrays):
+            if type(timestamp) not in (int, float) or not math.isfinite(timestamp) or timestamp % 60:
+                raise ValueError("Invalid Pyth candle timestamp")
+            if timestamp + 60 <= now:
+                candles.append((timestamp / 60, op, high, low, close))
+        body = dict(version=1, provider="pyth", asset=asset, index=spec.index, candles=candles[-100:])
+        validate_seed(body, now, asset)
+        return body
+    except (httpx.HTTPError, ValueError, KeyError, TypeError) as exc:
+        # Never log authentication headers or remote bodies.
+        status = exc.response.status_code if isinstance(exc, httpx.HTTPStatusError) else None
+        raise ValueError(f"Pyth history unavailable ({status or type(exc).__name__})") from None

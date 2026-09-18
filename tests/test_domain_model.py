@@ -2,9 +2,11 @@ import math
 from dataclasses import replace
 
 import pytest
+from bleep_helpers import inputs
 
 from btc15.domain import Book, D, SettlementSpecification, order_direction, parse_market
-from btc15.strategies.settlement_edge.model import Tick, features, probability, quality
+from btc15.strategies.settlement_edge.bleep import probability
+from btc15.strategies.settlement_edge.model import Tick, features, quality
 
 
 def test_current_contract_fixture(market, raw):
@@ -69,24 +71,24 @@ def test_tapered_ticks(market, price, down, up):
 
 def test_bounds_seed_and_no_future_data(market, config, now):
     ticks = [Tick(now - 1, now - 1, market.spec.strike)]
-    a = probability(market.spec, ticks, now, 0.0001, config)
-    b = probability(market.spec, ticks + [Tick(now + 1, now + 1, 1e9)], now, 0.0001, config)
+    a = probability(market.spec, ticks, now, inputs(ticks[-1].price), config)
+    b = probability(market.spec, ticks + [Tick(now + 1, now + 1, 1e9)], now, inputs(ticks[-1].price), config)
     assert a == b
     assert 0 <= a["conservative_yes"] <= a["p_yes"] <= 1
     assert 0 <= a["conservative_no"] <= a["p_no"] <= 1
     assert a["p_yes"] + a["p_no"] == 1
-    assert a["simulation_uncertainty"] > 0
+    assert a["conservative_yes"] == a["p_yes"]
 
 
 def test_final_minute_known_observations_not_resimulated(config):
     spec = SettlementSpecification("CF Benchmarks", "BRTI", 100, 940, 1000, ">=")
     ticks = [Tick(940 + i, 940 + i, 200 if i <= 59 else 1) for i in range(1, 61)]
-    p = probability(spec, ticks, 1000, 100, config)
+    p = probability(spec, ticks, 1000, inputs(ticks[-1].price), config)
     assert p["known_samples"] == 60 and p["p_yes"] == 1
-    with pytest.raises(ValueError, match="Missing past"):
-        probability(spec, ticks[1:], 1000, 0.001, config)
+    with pytest.raises(ValueError, match="missing observed"):
+        probability(spec, ticks[1:], 1000, inputs(ticks[-1].price), config)
     # Sample at start boundary is excluded; final close sample included.
-    assert probability(spec, [Tick(940, 940, 1e9)] + ticks, 1000, 100, config) == p
+    assert probability(spec, [Tick(940, 940, 1e9)] + ticks, 1000, inputs(ticks[-1].price), config) == p
 
 
 def test_rounding_tie_ambiguity(config):
@@ -125,7 +127,7 @@ def test_pending_strike_is_not_inferred(raw, series):
 @pytest.mark.parametrize(
     "overrides",
     [
-        {"paths": 100.5},
+        {"warmup_seconds": 100.5},
         {"passive": "true"},
         {"min_edge": "NaN"},
         {"bankroll": float("nan")},

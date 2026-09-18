@@ -3,25 +3,15 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
-# Keep runtime state private, but allow trade databases and recordings.
-data/**
-!data/**/
-!data/**/*.db
-!data/**/*.sqlite
-!data/**/*.sqlite3
-!data/**/*.jsonl
-!data/**/*.jsonl.gz
-!data/**/*.parquet
-!data/**/*.log
-!data/**/*.log.*
-# SQLite working files and process locks are not portable recordings.
-data/**/*-wal
-data/**/*-shm
-data/**/*-journal
-data/**/*.lock
+# Runtime databases, recordings, backups, and other generated state.
+/data/
 .env
 .env.*
 *.env
 !.env.example
 *.pem
 *.key
+
+# Runtime logs, including rotated and compressed logs.
+*.log
+*.log.*

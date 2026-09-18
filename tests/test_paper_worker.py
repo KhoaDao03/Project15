@@ -147,7 +147,7 @@ def test_worker_replay_matches_inline_results(tmp_path, config, monkeypatch):
     from btc15.demo import generate
     from btc15.storage import read_events
 
-    config = replace(config, paths=100)
+    config = replace(config)
     rows = list(read_events(generate(tmp_path / "replay.jsonl")))
     inline = Store("sqlite:///" + str(tmp_path / "inline.db"))
     replay = Store("sqlite:///" + str(tmp_path / "replay.db"))

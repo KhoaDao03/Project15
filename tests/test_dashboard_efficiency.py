@@ -13,7 +13,7 @@ def test_run_picker_excludes_large_source_and_config(store):
             model=identity(Strategy()),
             versions=dict(config="v1"),
             source_snapshot={"source.py": "x" * 1_000_000},
-            config={"paths": 4000},
+            config={"min_probability": 0.78},
         ),
         "run",
         "PAPER",

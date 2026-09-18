@@ -17,7 +17,7 @@ def fleet_data():
             win_rate=2/3, current_streak=-1, longest_win_streak=2, longest_loss_streak=1,
             operational=dict(state='COLLECTING', failure='private-file-path'),
             markets=[dict(ticker=asset + '-market', fresh=True, manual_purchases={'secret': 1})],
-        ) for asset in ('BTC', 'ETH', 'SOL', 'XRP')],
+        ) for asset in ('BTC', 'ETH', 'SOL', 'XRP', 'GOLD', 'SILVER', 'WTI')],
     )
 
 
@@ -41,7 +41,7 @@ def test_snapshot_reads_fixed_paths_and_removes_private_fields(market_result):
             return await public.read_snapshot(client)
 
     snapshot = asyncio.run(run())
-    assert len(snapshot['assets']) == 4
+    assert len(snapshot['assets']) == 7
     assert snapshot['live_only'] is True
     assert snapshot['assets'][0]['trades'][0]['net_pnl'] == .3
     assert snapshot['assets'][0]['trades'][0]['market_result'] == market_result
@@ -52,9 +52,9 @@ def test_snapshot_reads_fixed_paths_and_removes_private_fields(market_result):
     assert snapshot['assets'][0]['longest_loss_streak'] == 1
     assert 'secret' not in str(snapshot)
     assert 'private-' not in str(snapshot)
-    assert len(calls) == 5
+    assert len(calls) == 8
     assert all(request.method == 'GET' for request in calls)
-    assert {r.url.path for r in calls} == {'/api/fleet', *[f'/assets/{a}/api/trades' for a in ('BTC', 'ETH', 'SOL', 'XRP')]}
+    assert {r.url.path for r in calls} == {'/api/fleet', *[f'/assets/{a}/api/trades' for a in ('BTC', 'ETH', 'SOL', 'XRP', 'GOLD', 'SILVER', 'WTI')]}
     assert all(r.url.params['limit'] == '5' for r in calls[1:])
 
 
@@ -152,7 +152,7 @@ def owner_app(monkeypatch, tmp_path):
     original = httpx.AsyncClient
     monkeypatch.setattr(public.httpx, 'AsyncClient', lambda **kwargs: original(
         **kwargs, transport=httpx.MockTransport(handler)))
-    snapshot = dict(assets=[dict(asset=a, markets=[dict(ticker=a+'-market', fresh=True)], live_policy=dict(enabled=False, contracts=10, revision=1)) for a in ('BTC','ETH','SOL','XRP')], live_available=True, updated_at=public.time.time())
+    snapshot = dict(assets=[dict(asset=a, markets=[dict(ticker=a+'-market', fresh=True)], live_policy=dict(enabled=False, contracts=10, revision=1)) for a in ('BTC','ETH','SOL','XRP','GOLD','SILVER','WTI')], live_available=True, updated_at=public.time.time())
 
     async def read(client):
         return snapshot
@@ -172,14 +172,15 @@ def live_payload(asset='BTC'):
     return dict(asset=asset, ticker=asset+'-market', enabled=True, contracts=12, revision=1, confirm='ENABLE_REAL_TRADING')
 
 
-def test_unlock_required_for_every_action(owner_app):
+@pytest.mark.parametrize("asset", ["BTC", "GOLD", "SILVER", "WTI"])
+def test_unlock_required_for_every_action(owner_app, asset):
     app, code, requests, _, _, _ = owner_app
     with TestClient(app) as client:
-        for route, body in [('/api/control', live_payload()), ('/api/stop', {'confirm': True})]:
+        for route, body in [('/api/control', live_payload(asset)), ('/api/stop', {'confirm': True})]:
             assert client.post(route, headers={'Origin': 'http://testserver'}, json={**body, 'passcode': code}).status_code == 401
         assert not requests
         headers = unlock(client, code)
-        response = client.post('/api/control', headers=headers, json=live_payload())
+        response = client.post('/api/control', headers=headers, json=live_payload(asset))
         assert response.status_code == 200
         assert response.json() == dict(enabled=True, contracts=12, revision=2)
         assert requests[-1].url.path == '/api/live/control'
@@ -223,15 +224,15 @@ def test_invalid_live_settings_and_stale_data_are_blocked(owner_app):
         assert client.post('/api/control', headers=headers, json=live_payload()).status_code == 409
 
 
-def test_live_disable_and_all_four_assets(owner_app):
+def test_live_disable_and_all_seven_assets(owner_app):
     app, code, requests, _, _, _ = owner_app
     with TestClient(app) as client:
         headers = unlock(client, code)
-        for asset in ('BTC', 'ETH', 'SOL', 'XRP'):
+        for asset in ('BTC', 'ETH', 'SOL', 'XRP', 'GOLD', 'SILVER', 'WTI'):
             response = client.post('/api/control', headers=headers, json={**live_payload(asset), 'enabled': False, 'contracts': 1, 'confirm': ''})
             assert response.status_code == 200
             assert response.json()['enabled'] is False
-        assert len(requests) == 4
+        assert len(requests) == 7
 
 
 def test_wrong_passcodes_rate_limited_even_with_spoofed_ip(owner_app):
@@ -285,3 +286,64 @@ def test_origin_body_limit_and_no_passcode_configuration(owner_app, monkeypatch)
     with TestClient(public.create_public_app()) as client:
         assert not client.get('/api/stop').json()['enabled']
         assert client.post('/api/unlock', json={'passcode': code}).status_code == 503
+
+
+@pytest.mark.parametrize('asset', ['BTC', 'ETH', 'SOL', 'XRP', 'GOLD', 'SILVER', 'WTI'])
+def test_individual_shutdown_is_scoped_and_all_stop_remains_available(owner_app, asset):
+    import json
+
+    app, code, requests, replies, _, _ = owner_app
+    replies['status'] = 'stopping'
+    with TestClient(app) as client:
+        payload = dict(asset=asset, confirm=True)
+        assert client.post('/api/stop', headers={'Origin': 'http://testserver'}, json=payload).status_code == 401
+        assert not requests
+        headers = unlock(client, code)
+        assert client.post('/api/stop', headers=headers, json=payload).status_code == 202
+        posts = [r for r in requests if r.method == 'POST']
+        assert len(posts) == 1
+        assert posts[0].url.path == f'/api/bots/{asset}/shutdown'
+        assert json.loads(posts[0].content) == {'confirm': True}
+        status = client.get('/api/stop').json()
+        assert status['status'] == 'idle'
+        assert status['assets'][asset]['status'] == 'stopping'
+        assert client.post('/api/stop', headers=headers, json=payload).status_code == 202
+        assert len([r for r in requests if r.method == 'POST']) == 1
+        assert client.post('/api/control', headers=headers, json=live_payload(asset)).status_code == 409
+        other = 'ETH' if asset == 'BTC' else 'BTC'
+        assert client.post('/api/control', headers=headers, json=live_payload(other)).status_code == 200
+        assert client.post('/api/stop', headers=headers, json={'confirm': True}).status_code == 202
+        assert requests[-1].url.path == '/api/shutdown' or any(r.method == 'POST' and r.url.path == '/api/shutdown' for r in requests)
+
+
+def test_individual_stop_validation_and_exchange_guard(owner_app):
+    app, code, requests, replies, _, _ = owner_app
+    with TestClient(app) as client:
+        headers = unlock(client, code)
+        for asset in ('DOGE', '../shutdown', None, [], 1):
+            assert client.post('/api/stop', headers=headers, json=dict(asset=asset, confirm=True)).status_code == 422
+        assert client.post('/api/stop', headers=headers, json=dict(asset='GOLD', confirm=False)).status_code == 422
+        assert not requests
+        replies['post'] = 409
+        response = client.post('/api/stop', headers=headers, json=dict(asset='GOLD', confirm=True))
+        assert response.status_code == 409
+        assert 'private-secret' not in response.text
+        assert client.get('/api/stop').json()['assets']['GOLD']['status'] == 'idle'
+
+
+def test_individual_stop_tracks_confirmed_completion(owner_app):
+    import time
+
+    app, code, _, _, _, _ = owner_app
+    with TestClient(app) as client:
+        headers = unlock(client, code)
+        assert client.post('/api/stop', headers=headers, json=dict(asset='WTI', confirm=True)).status_code == 202
+        for _ in range(50):
+            state = client.get('/api/stop').json()
+            if state['assets']['WTI']['status'] == 'stopped':
+                break
+            time.sleep(.01)
+        assert state['assets']['WTI']['status'] == 'stopped'
+        assert state['status'] == 'idle'
+        html = client.get('/').text
+        assert 'id="asset-stop-form"' in html and 'id="stop-form"' in html

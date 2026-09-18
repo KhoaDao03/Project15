@@ -1,7 +1,38 @@
-"""Bleep Mode B formulas with optional favored-side safety clamp."""
+"""Bleep settlement-average probability and indicator calculations."""
 
 import math
 from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
+
+SIGMA_MULTIPLIERS = {
+    "BTC": 1.35,
+    "ETH": 1.25,
+    "SOL": 1.0,
+    "XRP": 1.0,
+    "GOLD": 1.35,
+    "SILVER": 1.35,
+    "WTI": 1.35,
+}
+
+
+def model_name(asset):
+    return "bleep-reference-atr-finish-v5" if asset in SIGMA_MULTIPLIERS else "bleep-settlement-reference-v2"
+
+
+def capped_confidence(probability, bid, ask, asset):
+    """Selected-side confidence; capping one side must not inflate the other."""
+    if type(probability) not in (int, float) or not math.isfinite(probability) or not 0 <= probability <= 1:
+        return None
+    if asset not in SIGMA_MULTIPLIERS:
+        return probability
+    if any(type(v) not in (int, float) or not math.isfinite(v) or not 0 <= v <= 1 for v in (bid, ask)):
+        return None
+    if bid > ask:
+        return None
+    # Preserve decimal quote boundaries (e.g. exactly 77c mid + 6pp = 83%).
+    mid = min(Decimal(".99"), max(Decimal(".01"), (Decimal(str(bid)) + Decimal(str(ask))) / 2))
+    premium = Decimal(".06") if asset in ("BTC", "ETH", "GOLD", "SILVER", "WTI") else Decimal(".10")
+    cap = float(min(Decimal(".98"), max(Decimal(".02"), mid + premium)))
+    return min(probability, cap)
 
 
 def settlement_distribution(spec, ticks, now, features, atr):
@@ -14,16 +45,22 @@ def settlement_distribution(spec, ticks, now, features, atr):
     past = [t for t in ticks if t.source <= now and t.received <= now]
     if not past or any(b.source <= a.source for a, b in zip(past, past[1:])):
         raise ValueError("BLEEP_REFERENCE: missing or unordered causal reference")
+    samples = len(spec.sample_times)
     observed = {}
-    for t in past:
-        slot = math.floor(t.source - spec.settlement_start + 1e-6)
-        if 1 <= slot <= 60:
-            if slot in observed:
-                raise ValueError("BLEEP_SETTLEMENT: duplicate sample slot")
-            observed[slot] = t.price
-    known = min(60, max(0, math.floor(now - spec.settlement_start + 1e-6)))
-    if set(observed) != set(range(1, known + 1)):
-        raise ValueError("BLEEP_SETTLEMENT: missing observed sample")
+    if spec.reference_source == "Pyth":
+        if now >= spec.settlement_end:
+            raise ValueError("Await official commodity settlement after close")
+    else:
+        for t in past:
+            slot = math.floor(t.source - spec.settlement_start + 1e-6)
+            if 1 <= slot <= 60:
+                if slot in observed:
+                    raise ValueError("BLEEP_SETTLEMENT: duplicate sample slot")
+                observed[slot] = t.price
+        known = min(60, max(0, math.floor(now - spec.settlement_start + 1e-6)))
+        if set(observed) != set(range(1, known + 1)):
+            raise ValueError("BLEEP_SETTLEMENT: missing observed sample")
+    known = len(observed)
     estimates = [features.get(k) for k in ("rv_30", "rv_60", "ewma")]
     if any(type(v) not in (int, float) or not math.isfinite(v) or v < 0 for v in estimates):
         raise ValueError("BLEEP_VOLATILITY: missing valid recent reference estimates")
@@ -38,9 +75,9 @@ def settlement_distribution(spec, ticks, now, features, atr):
         dt = target - previous
         if dt < 0:
             raise ValueError("BLEEP_SETTLEMENT: reference ahead of sample grid")
-        variance_time += dt * ((len(future) - i) / 60) ** 2
+        variance_time += dt * ((len(future) - i) / samples) ** 2
         previous = target
-    mean = (sum(observed.values()) + len(future) * spot) / 60
+    mean = (sum(observed.values()) + len(future) * spot) / samples
     # Apply the contract's rounded-price comparison, including strict inequalities.
     unit = Decimal(1).scaleb(-spec.round_digits)
     strict_up = spec.comparison_operator in (">", "<=")
@@ -124,49 +161,58 @@ def indicator_lean(spot, inputs):
     position = (spot - inputs["bb_middle"]) / max((upper - lower) / 2, 1e-9)
     outside_up, outside_down = spot > upper, spot < lower
     reversal = 0
-    if k < 20 and rising:
-        reversal = 0.8
-    elif k > 80 and falling:
-        reversal = -0.8
-    elif position <= -0.8 and not outside_down:
-        reversal = 0.6
-    elif position >= 0.8 and not outside_up:
-        reversal = -0.6
+    if k < 25 and rising:
+        reversal = 0.85
+    elif k > 75 and falling:
+        reversal = -0.85
+    elif position <= -0.75 and not outside_down and (rising or k < 35):
+        reversal = 0.7
+    elif position >= 0.75 and not outside_up and (falling or k > 65):
+        reversal = -0.7
     elif outside_down and rising:
-        reversal = 0.4
+        reversal = 0.55
     elif outside_up and falling:
-        reversal = -0.4
+        reversal = -0.55
+    elif position <= -0.75 and k <= 40:
+        reversal = 0.45
+    elif position >= 0.75 and k >= 60:
+        reversal = -0.45
     if outside_up and rising:
         momentum, reversal = max(momentum, 0.7), 0
     elif outside_down and falling:
         momentum, reversal = min(momentum, -0.7), 0
-    if abs(momentum) >= abs(reversal) + 0.12:
+    if abs(momentum) >= abs(reversal) + 0.1:
         lean = momentum
-    elif abs(reversal) > abs(momentum) + 0.12:
+    elif abs(reversal) > abs(momentum) + 0.1:
         lean = reversal
     elif abs(momentum) < 0.2 and abs(reversal) < 0.2:
         lean = 0
+    elif abs(reversal) >= 0.45 and abs(reversal) >= abs(momentum):
+        lean = reversal
     else:
         lean = 0.5 * momentum + 0.5 * reversal
     return min(1, max(-1, lean))
 
 
-def safety_clamp(p_up, safety):
-    return min(p_up, 0.75) if p_up >= 0.5 and safety < 0.5 else max(p_up, 0.25) if safety < 0.5 else p_up
+def safety_clamp(p_up, safety, limit=0.75):
+    return (
+        min(p_up, limit) if p_up >= 0.5 and safety < 0.5 else max(p_up, 1 - limit) if safety < 0.5 else p_up
+    )
 
 
-def mode_b_probability(spec, spot, seconds_left, inputs, *, clamp=False, distribution=None):
+def mode_b_probability(spec, spot, seconds_left, inputs, *, clamp=False, distribution, asset=None):
     """Return contract YES, not confidence in whichever side happens to lead."""
     if inputs is None:
         raise ValueError("BLEEP_WARMUP: need 33 contiguous causal one-minute candles")
     if not all(math.isfinite(v) for v in inputs.values()) or not math.isfinite(spot) or spot <= 0:
         raise ValueError("Invalid Bleep inputs")
-    atr = max(inputs["atr"], spot * 0.00015, 10**-spec.round_digits)  # One unit of settlement precision.
-    sigma = atr * math.sqrt(max(seconds_left, 1) / 60)
-    center, boundary = spot, spec.strike
-    if distribution is not None:
-        center, boundary = distribution["settlement_mean"], distribution["effective_boundary"]
-        sigma = distribution["settlement_std"]
+    atr_finish = asset in SIGMA_MULTIPLIERS
+    atr = max(inputs["atr"], spot * 0.00015, 1e-8 if atr_finish else 10**-spec.round_digits)
+    center, boundary = distribution["settlement_mean"], distribution["effective_boundary"]
+    sigma = distribution["settlement_std"]
+    if atr_finish:
+        center, boundary = spot, spec.strike
+        sigma = atr * math.sqrt(max(seconds_left, 1) / 60) * SIGMA_MULTIPLIERS[asset]
     z = (center - boundary) / max(sigma, 1e-9)
     # Same Abramowitz–Stegun approximation as Bleep's normalCdf.
     t = 1 / (1 + 0.2316419 * abs(z))
@@ -177,9 +223,9 @@ def mode_b_probability(spec, spot, seconds_left, inputs, *, clamp=False, distrib
         * (0.319381539 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))))
     )
     base_up = 1 - tail if z >= 0 else tail
-    complete = distribution is not None and distribution["remaining_samples"] == 0
+    complete = distribution["remaining_samples"] == 0
     if complete:
-        final_yes = float(spec.yes(center))
+        final_yes = float(spec.yes(distribution["settlement_mean"]))
         base_up = final_yes if spec.comparison_operator in (">=", ">") else 1 - final_yes
     lean = indicator_lean(spot, inputs)
     weight = min(0.15, max(0, seconds_left) / 900)
@@ -192,7 +238,7 @@ def mode_b_probability(spec, spot, seconds_left, inputs, *, clamp=False, distrib
     pre_clamp_up = up
     safety = abs(center - boundary) / max(sigma, 1e-9)
     if clamp and not complete:
-        up = safety_clamp(up, safety)
+        up = safety_clamp(up, safety, 0.78 if atr_finish else 0.75)
     yes = up if spec.comparison_operator in (">=", ">") else 1 - up
     return dict(
         p_yes=yes,
@@ -208,47 +254,49 @@ def mode_b_probability(spec, spot, seconds_left, inputs, *, clamp=False, distrib
         safety_clamp_applied=up != pre_clamp_up,
         pre_clamp_p_up=pre_clamp_up,
         **{k: v for k, v in inputs.items() if k != "atr"},
-        **(distribution or {}),
+        **{k: v for k, v in distribution.items() if k != "model"},
+        model=model_name(asset),
+        sigma_multiplier=SIGMA_MULTIPLIERS.get(asset, 1.0),
     )
 
 
-def blend_probability(
-    settlement, spec, features, now, *, clamp=False, bleep_only=False, settlement_aware=False, ticks=()
-):
-    distribution = None
-    if settlement_aware:
-        inputs = features.get("bleep")
-        if inputs is None:
-            raise ValueError("BLEEP_WARMUP: missing indicators")
-        atr = max(inputs["atr"], features["reference"] * 0.00015, 10**-spec.round_digits)
-        distribution = settlement_distribution(spec, ticks, now, features, atr)
-    component = mode_b_probability(
+def probability(spec, ticks, now, features, config):
+    """Use official-reference ATR finish estimates; retain settlement evidence separately."""
+    inputs = features.get("bleep")
+    if inputs is None:
+        raise ValueError("BLEEP_WARMUP: need 33 contiguous causal one-minute candles")
+    atr = max(inputs["atr"], features["reference"] * 0.00015, 10**-spec.round_digits)
+    distribution = settlement_distribution(spec, ticks, now, features, atr)
+    reference_atr = features.get("reference_rolling_atr")
+    if config.asset in SIGMA_MULTIPLIERS:
+        if reference_atr is not None and (
+            type(reference_atr) not in (int, float) or not math.isfinite(reference_atr) or reference_atr < 0
+        ):
+            raise ValueError("BLEEP_ATR: invalid official-reference ATR")
+        # Match Bleepblorp: insufficient reference candles use the relative floor,
+        # never exchange-seeded ATR. Keep the other seeded indicators intact.
+        inputs = {**inputs, "atr": reference_atr if reference_atr is not None else 0.0}
+    result = mode_b_probability(
         spec,
         features["reference"],
         spec.settlement_end - now,
-        features.get("bleep"),
-        clamp=clamp,
+        inputs,
+        clamp=config.bleep_safety_clamp_enabled,
         distribution=distribution,
+        asset=config.asset,
     )
-    yes = component["p_yes"] if bleep_only else (settlement["p_yes"] + component["p_yes"]) / 2
-    # The historical blend keeps its experimental uncertainty haircut. Bleep-only
-    # does not borrow Project15 probability deductions; neither mode is calibrated.
-    penalty = 0 if bleep_only else settlement["uncertainty"]
+    remaining = distribution["remaining_samples"]
     return {
-        **settlement,
-        "p_yes": yes,
-        "p_no": 1 - yes,
-        "conservative_yes": max(0, yes - penalty),
-        "conservative_no": max(0, 1 - yes - penalty),
-        "model": ("bleep-settlement-reference-v2" if bleep_only else "settlement-bleep-equal-v2")
-        if settlement_aware
-        else ("bleep-mode-b-v1" if bleep_only else "settlement-bleep-equal-v1"),
-        **({"uncertainty": 0} if bleep_only else {}),
-        "blend": dict(
-            weight_bleep=1.0 if bleep_only else 0.5,
-            project15_p_yes=settlement["p_yes"],
-            project15_p_no=settlement["p_no"],
-            bleep=component,
-            uncertainty_policy="none" if bleep_only else "original-full-deduction",
-        ),
+        **result,
+        "atr_source": ("official_reference_rolling" if reference_atr is not None else "reference_price_floor")
+        if config.asset in SIGMA_MULTIPLIERS
+        else "indicator_wilder",
+        "reference_rolling_atr": reference_atr,
+        "conservative_yes": result["p_yes"],
+        "conservative_no": result["p_no"],
+        "required_remaining_average": (len(spec.sample_times) * spec.strike - distribution["observed_sum"])
+        / remaining
+        if remaining
+        else None,
+        "calibrated": False,
     }

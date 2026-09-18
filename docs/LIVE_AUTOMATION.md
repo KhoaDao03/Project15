@@ -8,11 +8,32 @@ Select **Allow new buys**, enter an integer quantity from **1 to 20**, click **A
 
 Turning the switch off and applying stops buys but continues exits. **Take manual control** pauses both for the selected market and disables future buys for that asset. Confirming a manual order also pauses automation before preflight. Edits take effect when applied or confirmed; they cannot recall orders already sent. Re-enabling resumes management of the same market.
 
+## Daily live loss guard
+
+Each asset independently disables new live buys when its accumulated realized bot
+P&L reaches **−$20 or below during a UTC calendar day**. The calculation uses
+confirmed live order costs, sale proceeds and fees, allocating entry costs and
+fees proportionally to partial sales. Official settlement values the remaining
+contracts. Paper fills, unrealized changes and unrelated manual purchases do not
+count. Manual sales of bot holdings count; mixed manual/bot purchases or incomplete
+fill accounting block new entries until the P&L can be verified.
+
+The guard runs in the live execution service, including immediately before a buy
+and when enabling live settings. It turns off the saved asset switch and its
+market controls, and exposes the reason in both dashboards. Existing exits keep
+running. The switch stays off across restarts and midnight; it cannot be re-enabled
+on the day it triggered. A later day requires explicit manual enablement.
+
+Missing settlement of a current-day expired live position blocks new entries.
+An order's cumulative sales spanning UTC midnight cannot be assigned accurately
+to a day from this journal; such accounting also blocks entries rather than using
+an assumed P&L. These data blocks leave automatic exits active.
+
 ## Execution
 
-All four assets start considering entries with 8 minutes remaining. Standard entries run until 2 minutes remaining, and late entries until 15 seconds remaining. Both require one fresh confirmation sample. Entry requires fresh, healthy collector decisions and books. Current strategy settings require a 50/50 blend at least 85%, Bleep at least 80%, asks between 85 and 95 cents, and the remaining strategy entry filters. Paper inventory and its post-close cooldown are excluded because they do not describe real holdings. Live entry requires a flat real position in the market, sufficient cash including a fee allowance, and at most one filled bot entry per ticker.
+All seven assets (BTC, ETH, SOL, XRP, GOLD, SILVER, WTI) start considering entries with 8 minutes remaining. Standard entries run until 2 minutes remaining, and late entries until 1 second remaining (exclusive). Both require one fresh confirmation sample. Entry requires fresh, healthy collector decisions and books. Current strategy settings require Bleep confidence of at least 83% for crypto and 85% for commodities after safety and market-respect caps, asks between 80 and 95 cents, and the remaining strategy entry filters. Paper inventory and its post-close cooldown are excluded because they do not describe real holdings. Live entry requires a flat real position in the market, sufficient cash including a fee allowance, and at most one filled bot entry per ticker.
 
-Buys are fill-or-kill for the selected quantity: all contracts or none. The limit uses the full configured maximum entry price (currently 95 cents), rounded down to a supported tick in the purchased outcome's price. The observed ask must still pass the strategy entry range and all other entry checks. Cheaper offers can fill first; fees are additional. Known empty attempts retry immediately after confirmation and fresh entry revalidation, with no added cooldown (at most two retries). Network and exchange processing time still applies. Uncertain acknowledgements never trigger blind replacements.
+Buys are fill-or-kill for the selected quantity: all contracts or none. The limit uses the configured maximum entry price plus one cent of execution headroom (currently 96 cents), capped at 99 cents and rounded down to a supported tick in the purchased outcome's price. The observed ask must still pass the strategy entry range and all other entry checks. Cheaper offers can fill first; fees are additional. Known empty attempts retry immediately after confirmation and fresh entry revalidation, with no added cooldown (at most two retries). Network and exchange processing time still applies. Uncertain acknowledgements never trigger blind replacements.
 
 Confirmed pre-submit rejections (for example, stale data, a changed signal or insufficient cash) do not consume the entry-attempt allowance. They return to the worker loop for fresh validation. Submitted orders still count, including exchange rejections; uncertain submissions block replacements until reconciled. Older journal records without enough timing evidence remain conservatively counted. This classification also applies after restart without deleting order history.
 

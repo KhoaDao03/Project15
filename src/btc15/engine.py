@@ -15,14 +15,17 @@ from .domain import Book, dumps, parse_market, timestamp
 from .execution import PaperExecutor
 from .models import require_single_run
 from .recovery import contract_hash, older_metadata, restore_contract_history, restore_market
-from .strategies.settlement_edge.bleep import blend_probability
+from .strategies.settlement_edge.bleep import model_name, probability
 from .strategies.settlement_edge.economics import entry_economics
-from .strategies.settlement_edge.model import Tick, features, lead_evidence, probability, quality
+from .strategies.settlement_edge.model import Tick, features, lead_evidence, quality
 from .strategies.settlement_edge.rules import evaluate
 
 log = logging.getLogger("btc15")
 VERSIONS = dict(
-    strategy="btc15-v1", probability="settlement-mc-logwalk-v1", volatility="rv-ewma-v1", software="0.1.0"
+    strategy="btc15-v1",
+    probability="bleep-reference-atr-finish-v5",
+    volatility="rv-ewma-v1",
+    software="0.1.0",
 )
 
 
@@ -150,14 +153,7 @@ class Engine:
         source_hash = hashlib.sha256(dumps(source_snapshot).encode()).hexdigest()
         self.versions = {
             **VERSIONS,
-            "probability": ("bleep-settlement-reference-v2" if config.bleep_probability_only_enabled
-                            else "settlement-bleep-equal-v2")
-            if config.bleep_settlement_model_enabled
-            else "bleep-mode-b-v1"
-            if config.bleep_probability_only_enabled
-            else "settlement-bleep-equal-v1"
-            if config.bleep_enabled
-            else VERSIONS["probability"],
+            "probability": model_name(config.asset),
             "config": config.version,
             "git_commit": commit,
             "working_tree_dirty": dirty,
@@ -463,16 +459,26 @@ class Engine:
             elif kind in ("disconnect", "stale", "error"):
                 self.invalidate(now, kind)
                 self.error(kind.upper(), now, detail=str(msg))
-            elif kind == "cfbenchmarks_value":
+            elif kind in ("cfbenchmarks_value", "pyth_value"):
                 self.executor.processed_reference_id = row["id"]
-                raw = json.loads(msg["data"])
-                if (
-                    msg["index_id"] != self.config.asset_spec.index
-                    or raw.get("id") != self.config.asset_spec.index
-                    or raw.get("type") != "value"
-                ):
-                    raise ValueError("Not the configured official reference tick")
-                tick = Tick(float(raw["time"]) / 1000, now, float(raw["value"]))
+                if kind == "pyth_value":
+                    if (
+                        not self.config.asset_spec.commodity
+                        or msg.get("underlying_ticker") != self.config.asset_spec.index
+                    ):
+                        raise ValueError("Not the configured official Pyth reference")
+                    tick = Tick(float(msg["source_ts_ms"]) / 1000, now, float(msg["value_usd"]))
+                else:
+                    if self.config.asset_spec.commodity:
+                        raise ValueError("Commodity reference must come from Pyth")
+                    raw = json.loads(msg["data"])
+                    if (
+                        msg["index_id"] != self.config.asset_spec.index
+                        or raw.get("id") != self.config.asset_spec.index
+                        or raw.get("type") != "value"
+                    ):
+                        raise ValueError("Not the configured official reference tick")
+                    tick = Tick(float(raw["time"]) / 1000, now, float(raw["value"]))
                 if tick.source > now + self.config.max_clock_skew:
                     raise ValueError("Future reference tick")
                 if self.ticks and tick.source == self.ticks[-1].source and tick.price == self.ticks[-1].price:
@@ -620,6 +626,7 @@ class Engine:
             # Resting orders are revalidated on every material reference/book/trade event.
             material = kind in (
                 "cfbenchmarks_value",
+                "pyth_value",
                 "orderbook_snapshot",
                 "orderbook_delta",
                 "trade",
@@ -637,7 +644,7 @@ class Engine:
             if not market.tradable(now) or not (
                 due
                 or quote_update
-                or kind == "cfbenchmarks_value"
+                or kind in ("cfbenchmarks_value", "pyth_value")
                 or ((resting and resting.active) or position)
                 and material
             ):
@@ -712,7 +719,7 @@ class Engine:
                                 m <= self.bleep_seed["last_minute"] for m in self.bleep_candles
                             ),
                         }
-                    p = probability(market.spec, self.ticks, now, f["sigma"], c)
+                    p = probability(market.spec, self.ticks, now, f, c)
                     if c.sustained_lead_enabled:
                         lead = lead_evidence(market.spec, self.ticks, now, f, p, c)
                         history = self._lead_history.setdefault(ticker, [])
@@ -741,17 +748,6 @@ class Engine:
                             )
                         lead["confirmation_samples"] = len(history)
                         p["lead"] = lead
-                    if c.bleep_enabled:
-                        p = blend_probability(
-                            p,
-                            market.spec,
-                            f,
-                            now,
-                            clamp=c.bleep_safety_clamp_enabled,
-                            bleep_only=c.bleep_probability_only_enabled,
-                            settlement_aware=c.bleep_settlement_model_enabled,
-                            ticks=self.ticks,
-                        )
                     cached = (now, market.spec, f, p, None, self.ticks[-1] if self.ticks else None)
                 except ValueError as exc:
                     self._lead_history.pop(ticker, None)
@@ -792,7 +788,7 @@ class Engine:
             record_decision = (
                 model_recomputed
                 or due
-                or kind == "cfbenchmarks_value"
+                or kind in ("cfbenchmarks_value", "pyth_value")
                 or self._decision_keys.get(ticker) != signature
             )
             self._decision_keys[ticker] = signature

@@ -10,7 +10,8 @@ from .engine import freshness_rechecks
 from .execution import PaperExecutor, Position, atomic
 from .recovery import contract_hash, restore_market
 from .storage import Store
-from .strategies.settlement_edge.model import features, probability, quality
+from .strategies.settlement_edge.bleep import probability
+from .strategies.settlement_edge.model import features, quality
 
 POLICY = dict(name="stop-confirmation-v1", confirmations=2, max_wait_seconds=2.0, emergency_multiplier=0.5)
 
@@ -341,7 +342,7 @@ class StopShadow:
                     else:
                         try:
                             f = features(e.ticks, row["received"], e.config)
-                            p = probability(market.spec, e.ticks, row["received"], f["sigma"], e.config)
+                            p = probability(market.spec, e.ticks, row["received"], f, e.config)
                         except ValueError:
                             f, p = None, {}
                     cached = (e.ticks[-1], now, f, p)

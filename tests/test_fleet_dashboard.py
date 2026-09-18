@@ -186,6 +186,41 @@ def test_shutdown_all_requires_confirmation_and_waits_for_every_ledger(portfolio
         assert client.get("/api/shutdown").json()["open_positions"] == 5
 
 
+def test_shutdown_one_asset_leaves_other_collectors_and_dashboard_running(portfolios, monkeypatch):
+    prepared_assets = []
+
+    async def prepared(self, asset=None):
+        prepared_assets.append(asset)
+
+    monkeypatch.setattr(fleet.ExecutionClient, "prepare_shutdown", prepared)
+    manifest, stores = portfolios
+    app = fleet.create_fleet_app(manifest)
+    for asset, store in stores.items():
+        store.acquire("collector", asset + "-owner")
+    with TestClient(app, base_url="http://127.0.0.1:8000") as client:
+        endpoint = "/api/bots/ETH/shutdown"
+        headers = {"Origin": "http://127.0.0.1:8000"}
+        assert client.post(endpoint, json={"confirm": True}).status_code == 403
+        assert client.post(endpoint, json={"confirm": 1}, headers=headers).status_code == 422
+        assert client.post(endpoint, json={"confirm": True}, headers=headers).status_code == 202
+        deadline = time.monotonic() + 5
+        while not stores["ETH"].list("shutdown_request", "ETH-owner"):
+            assert time.monotonic() < deadline
+            time.sleep(0.01)
+        assert prepared_assets == ["ETH"]
+        for asset in ("BTC", "SOL", "XRP"):
+            assert not stores[asset].list("shutdown_request")
+        with stores["ETH"].transaction():
+            stores["ETH"].add("shutdown_complete", dict(open_positions=1), "ETH-owner", "PAPER", time.time())
+            stores["ETH"].release("collector", "ETH-owner")
+        while client.get(endpoint).json()["status"] == "stopping":
+            assert time.monotonic() < deadline
+            time.sleep(0.01)
+        assert client.get(endpoint).json()["status"] == "stopped"
+        assert client.get("/api/shutdown").json()["status"] == "idle"
+        assert client.get("/api/fleet").status_code == 200
+
+
 def test_shutdown_failure_keeps_dashboard_open_and_reports_asset(portfolios, monkeypatch):
     async def prepared(self):
         return None
@@ -356,3 +391,22 @@ def test_fleet_rejects_stale_and_future_snapshots(portfolios, offset):
             assert row["price"] is None
             assert not row["markets"][0]["fresh"]
             assert row["markets"][0]["book"] == {}
+
+
+def test_seven_asset_manifest_and_commodity_dashboard(portfolios):
+    manifest, _ = portfolios
+    rows = json.loads(manifest.read_text())
+    for asset in ("GOLD", "SILVER", "WTI"):
+        directory = manifest.parent / asset
+        directory.mkdir()
+        config = directory / "config.json"
+        config.write_text(json.dumps(asdict(Strategy(asset=asset))))
+        rows.append(dict(asset=asset, data_dir=asset, config=str(config), run_id=asset.lower() + "-paper"))
+    manifest.write_text(json.dumps(rows))
+    assert len(fleet.load_members(manifest)) == 7
+    with TestClient(fleet.create_fleet_app(manifest), base_url="http://127.0.0.1:8000") as client:
+        response = client.get("/api/fleet").json()
+        assert len(response["assets"]) == 7
+        for asset in ("GOLD", "SILVER", "WTI"):
+            assert client.get("/assets/" + asset + "/api/health").json()["asset"] == asset
+            assert not next(r for r in response["assets"] if r["asset"] == asset)["paper_only"]

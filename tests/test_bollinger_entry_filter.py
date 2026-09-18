@@ -32,12 +32,13 @@ def entry(market, config, now):
             bollinger_fresh=fresh,
         )
         p = dict(
+            p_yes=0.99,
             conservative_yes=0.99,
+            p_no=0.99,
             conservative_no=0.99,
             lead=dict(
                 side=side,
                 lead_sigma=3,
-                stressed_probability=0.99,
                 confirmed_late=True,
                 confirmation_samples=5,
             ),
@@ -175,7 +176,7 @@ def test_entry_filter_does_not_disable_position_exits(
 ):
     s = scenario(chosen=replace(config, bollinger_entry_filter_enabled=True))
     s.f.update(bollinger_fresh=True, bollinger=dict(lower=0, upper=1))
-    s.p["conservative_yes"] = probability
+    s.p["p_yes"] = probability
     for i in (1, 2):
         s.refresh(now + i, bid)
         s.e.process(now + i, str(i), "orderbook_snapshot", dict(market_ticker=market.ticker))

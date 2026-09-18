@@ -47,7 +47,7 @@ def test_queued_reference_defers_ioc_then_revalidates(scenario, config, market, 
     e.aggressive(market, s.e.books[market.ticker], now + 0.31)
     assert len(e.store.list(kind="entry_revalidation_wait", run_id=e.run_id)) == 1
     # Less than a second since calculation: processing this tick must refresh the model.
-    s.p["conservative_yes"] = probability
+    s.p["p_yes"] = probability
     assert ingest_reference(s, now + 0.4, "new-reference", market.spec.strike + 50)
     assert bool(e.positions) == filled
     assert not e.orders[market.ticker].active
@@ -72,7 +72,7 @@ def test_processed_reference_refreshes_cache_without_receipt_marker(scenario, ma
     s = scenario(buy=False)
     s.e.execute = False
     s.e.process(now, "initial", "heartbeat", {})
-    s.p["conservative_yes"] = 0.75
+    s.p["p_yes"] = 0.75
     assert ingest_reference(s, now + 0.2, "replay-reference", market.spec.strike + 50)
     assert s.e.latest[market.ticker]["probability"]["conservative_yes"] == 0.75
     assert s.e.latest[market.ticker]["model_age_seconds"] == 0
@@ -123,7 +123,7 @@ def test_committed_order_fills_ten_after_probability_drops(scenario, config, mar
     order = s.e.executor.orders[market.ticker]
     assert order.quantity == 10
     s.e.executor.latest_reference_receipt = ("new-reference", now + 0.2)
-    s.p["conservative_yes"] = 0.60
+    s.p["p_yes"] = 0.60
     assert ingest_reference(s, now + 0.4, "new-reference", market.spec.strike - 50)
     assert s.e.executor.positions[market.ticker].quantity == 10
     assert s.e.executor.positions[market.ticker].side == "yes"

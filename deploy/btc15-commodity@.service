@@ -1,0 +1,20 @@
+[Unit]
+Description=Project15 %i commodity paper bot
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Project15
+Environment=TRADING_MODE=PAPER
+Environment=ENABLE_LIVE_TRADING=false
+Environment=LOG_LEVEL=WARNING
+ExecStart=%h/Project15/.venv/bin/btc15 --config %h/Project15/data/%i/paper-v1.json --data-dir %h/Project15/data/%i paper-service --run-id %i-paper-v1 --min-free-gb 10 --separate-paper
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=60
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

@@ -25,7 +25,6 @@ def test_small_lead_can_confirm_only_when_floor_disabled(
         late_min_lead_sigma=0 if disabled else 2,
         lead_confirmation_samples=3,
         late_lead_confirmation_samples=2,
-        entry_probability_deductions=False,
     )
     start = market.close_time - remaining
     e, price = setup_engine(store, market, c, start)
@@ -45,5 +44,5 @@ def test_all_active_presets_disable_only_sigma_floor():
         assert c.min_lead_sigma == c.late_min_lead_sigma == 0
         assert c.sustained_lead_enabled and c.late_entry_enabled
         assert c.confirmation_count() == 1 and c.confirmation_count(True) == 1
-        assert c.bleep_probability_blend_enabled and c.min_probability == c.late_min_probability == 0.85
-        assert (c.min_entry_price, c.max_entry_price, c.fixed_stop_price) == (0.85, 0.95, 0.55)
+        assert c.min_probability == c.late_min_probability == 0.83
+        assert (c.min_entry_price, c.max_entry_price, c.fixed_stop_price) == (0.80, 0.95, 0.55)

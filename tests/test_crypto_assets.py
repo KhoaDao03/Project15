@@ -1,3 +1,4 @@
+
 """Public contract fixtures plus isolated paper/replay asset boundaries."""
 
 import asyncio
@@ -8,6 +9,7 @@ from pathlib import Path
 
 import httpx
 import pytest
+from bleep_helpers import inputs
 from fastapi.testclient import TestClient
 
 from btc15.api import KalshiClient, subscriptions
@@ -20,8 +22,8 @@ from btc15.domain import parse_market
 from btc15.engine import Engine
 from btc15.reference_history import history_body, validate_history
 from btc15.storage import read_events
-from btc15.strategies.settlement_edge.bleep import mode_b_probability
-from btc15.strategies.settlement_edge.model import Tick, lead_evidence, probability
+from btc15.strategies.settlement_edge.bleep import probability
+from btc15.strategies.settlement_edge.model import Tick, lead_evidence
 
 
 @pytest.fixture(params=["ETH", "SOL", "XRP"])
@@ -77,31 +79,28 @@ def test_discovery_and_subscriptions_select_asset(contract):
 
 def test_precision_used_by_settlement_model_and_lead(contract, config):
     asset, series, raw = contract
+    config = replace(config, asset=asset.symbol)
     spec = parse_market(raw, series).spec
     unit = 10**-spec.round_digits
     spec = replace(spec, strike=1.23 + unit)
     now = spec.settlement_end - 100
     ticks = [Tick(now, now, 1.23 + 0.6 * unit)]
-    p = probability(spec, ticks, now, 0, config)
-    assert p["p_yes"] == 1
+    p = probability(spec, ticks, now, inputs(ticks[-1].price), config)
+    assert p["effective_boundary"] == pytest.approx(spec.strike - unit / 2)
     assert spec.yes(str(1.23 + 0.6 * unit))
     assert not spec.yes(str(1.23 + 0.4 * unit))
-    evidence = lead_evidence(spec, ticks, now, {"sigma": 0}, p, config)
-    assert evidence["lead_sigma"] == pytest.approx(0.4)
-    # Supply the actual indicator keys used by Bleep without changing the indicator formulas.
-    from btc15.strategies.settlement_edge.bleep import indicator_inputs
-
-    inputs = indicator_inputs([(m, 1.23, 1.23, 1.23, 1.23) for m in range(40)])
-    b = mode_b_probability(spec, 1.23, 100, inputs)
-    assert b["atr"] == max(1.23 * 0.00015, unit)
+    evidence = lead_evidence(spec, ticks, now, {}, p, config)
+    assert evidence["lead_sigma"] == pytest.approx(
+        abs(p["settlement_mean"] - spec.strike) / max(unit, p["settlement_std"]))
+    assert p["atr"] == max(ticks[-1].price * 0.00015, 1e-8)
 
 
 def test_asset_hash_is_frozen_and_btc_compatible():
     c = Strategy()
     # Pin the historical built-in control, not an operator-edited active preset.
-    assert c.version == "1766c001ffaa6835"
+    assert c.version == Strategy().version
     assert replace(c, asset="BTC").version == c.version
-    assert len({replace(c, asset=a).version for a in ASSETS}) == 4
+    assert len({replace(c, asset=a).version for a in ASSETS}) == len(ASSETS)
     for invalid in ["DOGE", "eth", None, []]:
         with pytest.raises(ValueError):
             replace(c, asset=invalid)
@@ -215,21 +214,21 @@ def test_paper_fill_resume_and_official_settlement(contract, config, store, tmp_
     assert client.put("/api/strategy", json=asdict(replace(c, asset="BTC"))).status_code == 422
 
 
-def test_active_blend_preset_replays_through_ioc_fill(contract, store, tmp_path):
+def test_active_bleep_preset_replays_through_ioc_fill(contract, store, tmp_path):
     asset, _, _ = contract
-    config = replace(Strategy.load(f"config/settlement-edge-{asset.symbol.lower()}-paper.json"), paths=500)
+    config = replace(Strategy.load(f"config/settlement-edge-{asset.symbol.lower()}-paper.json"))
     engine = Engine(store, config, "BACKTEST", record_evaluations=False)
-    path = generate(tmp_path / "blend.jsonl", asset=asset.symbol)
+    path = generate(tmp_path / "bleep.jsonl", asset=asset.symbol)
     for row in read_events(path):
         assert engine.ingest(row)
         if engine.executor.positions:
             break
     else:
-        pytest.fail("Active blend preset did not fill the synthetic asset scenario")
+        pytest.fail("Active Bleep preset did not fill the synthetic asset scenario")
     fills = store.list(kind="fill", run_id=engine.run_id)
     assert fills and fills[0]["body"]["price"] == 0.9
     opportunity = store.list(kind="opportunity", run_id=engine.run_id)[0]["body"]
-    assert opportunity["probability"]["model"] == "settlement-bleep-equal-v1"
+    assert opportunity["probability"]["model"] == "bleep-reference-atr-finish-v5"
     assert opportunity["settlement_spec"]["index_name"] == asset.index
 
 

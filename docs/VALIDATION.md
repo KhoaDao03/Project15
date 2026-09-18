@@ -46,7 +46,7 @@ Use `--compare PATH` only with a deliberately saved baseline generated on the sa
 
 [SINGLE_STRATEGY_VALIDATION.md](SINGLE_STRATEGY_VALIDATION.md) records the September 9, 2026 before/after comparison: original fixture 1,380 evaluations/3 fills/1 completed trade; moderate fixture 921 evaluations/zero fills, matching before and after. The then-remaining suite had 204 passes and two existing deprecation warnings. Later commits must be checked on their own SHA; future counts can change.
 
-Earlier captured-feed and multi-model reports remain historical via the [documentation index](README.md). Their host-local paths and reported reset/clock actions are not prerequisites for a new setup or proof of current deployment.
+Earlier model experiments remain available in Git history. Their host-local paths and reported reset/clock actions are not prerequisites for a new setup or proof of current deployment.
 
 ## Authentic data acceptance
 

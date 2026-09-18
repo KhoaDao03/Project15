@@ -28,11 +28,11 @@ async def read_snapshot(client):
     assets = []
     for row in fleet["assets"]:
         asset = row["asset"]
-        if asset not in ("BTC", "ETH", "SOL", "XRP"):
+        if asset not in ("BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"):
             continue
         public = pick(row, "asset healthy price open_positions realized_pnl wins losses completed_trades "
                       "win_rate current_streak longest_win_streak longest_loss_streak")
-        public["live_policy"] = pick(fleet.get("live", {}).get("assets", {}).get(asset, {}), "enabled contracts revision")
+        public["live_policy"] = pick(fleet.get("live", {}).get("assets", {}).get(asset, {}), "enabled contracts revision loss_guard")
         public["state"] = row.get("operational", {}).get("state", "UNAVAILABLE")
         public["markets"] = [
             pick(market, "ticker fresh") for market in row.get("markets", [])
@@ -78,7 +78,8 @@ def create_public_app(admin_port=8000):
     attempts = deque()
     action_lock = asyncio.Lock()
     sessions = {}
-    shutdown_task = None
+    shutdown_tasks = {}
+    asset_shutdown_states = {}
     shutdown_state = dict(status="idle", message="")
     upstream = None
 
@@ -88,24 +89,26 @@ def create_public_app(admin_port=8000):
         )
         return hmac.compare_digest(digest, bytes.fromhex(secret["digest"]))
 
-    async def watch_shutdown():
+    async def watch_shutdown(asset=None):
+        state = shutdown_state if asset is None else asset_shutdown_states[asset]
+        path = "/api/shutdown" if asset is None else f"/api/bots/{asset}/shutdown"
         deadline = time.monotonic() + 90
         while time.monotonic() < deadline:
             try:
-                response = await upstream.get("/api/shutdown")
+                response = await upstream.get(path)
                 response.raise_for_status()
                 status = response.json()["status"]
                 if status == "stopped":
-                    shutdown_state.update(status="stopped", message="All bot collectors stopped; live entries disabled.")
+                    state.update(status="stopped", message=("All bot collectors stopped; live entries disabled." if asset is None else f"{asset} stopped; other bots are unchanged."))
                     return
                 if status == "failed":
-                    shutdown_state.update(status="failed", message="Shutdown did not complete. Check the private dashboard.")
+                    state.update(status="failed", message="Shutdown did not complete. Check the private dashboard.")
                     return
             except (httpx.HTTPError, ValueError, KeyError, TypeError):
                 # A disconnected dashboard does not establish successful shutdown.
                 pass
             await asyncio.sleep(1)
-        shutdown_state.update(status="unknown", message="Shutdown could not be confirmed. Check the private dashboard or services before retrying.")
+        state.update(status="unknown", message="Shutdown could not be confirmed. Check the private dashboard or services before retrying.")
 
     async def refresh(client):
         nonlocal snapshot, failed
@@ -142,9 +145,9 @@ def create_public_app(admin_port=8000):
                 stop.set()
                 task.cancel()
                 await asyncio.gather(task, return_exceptions=True)
-                if shutdown_task:
-                    shutdown_task.cancel()
-                    await asyncio.gather(shutdown_task, return_exceptions=True)
+                for pending in shutdown_tasks.values():
+                    pending.cancel()
+                await asyncio.gather(*shutdown_tasks.values(), return_exceptions=True)
 
     app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     static = Path(__file__).with_name("public_static")
@@ -167,7 +170,7 @@ def create_public_app(admin_port=8000):
 
     @app.get("/api/stop")
     def stop_status():
-        return dict(enabled=secret is not None, **shutdown_state)
+        return dict(enabled=secret is not None, **shutdown_state, assets=asset_shutdown_states)
 
     def same_origin(request):
         if secret is None:
@@ -246,6 +249,10 @@ def create_public_app(admin_port=8000):
                 raise HTTPException(409, "Resolve shutdown before changing live settings")
             if failed or snapshot is None or time.time() - snapshot["updated_at"] > 20 or not snapshot.get("live_available"):
                 raise HTTPException(409, "Live controls unavailable; wait for fresh data")
+            if not isinstance(body["asset"], str):
+                raise HTTPException(422, "Select a supported bot")
+            if asset_shutdown_states.get(body["asset"], {}).get("status") in ("stopping", "stopped", "unknown"):
+                raise HTTPException(409, "Resolve this bot shutdown before changing live settings")
             asset = next((row for row in snapshot["assets"] if row["asset"] == body["asset"]), None)
             if asset is None or not any(m["ticker"] == body["ticker"] and m["fresh"] for m in asset["markets"]):
                 raise HTTPException(409, "Market changed; refresh before saving")
@@ -263,19 +270,25 @@ def create_public_app(admin_port=8000):
 
     @app.post("/api/stop", status_code=202)
     async def request_stop(request: Request):
-        nonlocal shutdown_task
         same_origin(request)
         authorize(request)
         body = await small_json(request)
-        if body != {"confirm": True} or body.get("confirm") is not True:
+        if set(body) - {"confirm", "asset"} or body.get("confirm") is not True:
             raise HTTPException(422, "Explicit shutdown confirmation required")
+        asset = body.get("asset")
+        if "asset" in body and (not isinstance(asset, str) or asset not in ("BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI")):
+            raise HTTPException(422, "Select a supported bot")
         async with action_lock:
             authorize(request)
             if shutdown_state["status"] in ("stopping", "stopped", "unknown"):
                 return dict(shutdown_state)
+            state = shutdown_state if asset is None else asset_shutdown_states.setdefault(asset, dict(status="idle", message=""))
+            if state["status"] in ("stopping", "stopped", "unknown"):
+                return dict(state)
+            path = "/api/shutdown" if asset is None else f"/api/bots/{asset}/shutdown"
             try:
                 response = await upstream.post(
-                    "/api/shutdown", json={"confirm": True},
+                    path, json={"confirm": True},
                     headers={"Origin": f"http://127.0.0.1:{admin_port}"}, timeout=10,
                 )
                 if response.status_code == 409:
@@ -284,12 +297,12 @@ def create_public_app(admin_port=8000):
                 if response.json().get("status") not in ("stopping", "stopped"):
                     raise ValueError("Unexpected shutdown acknowledgement")
             except (httpx.HTTPError, ValueError):
-                shutdown_state.update(status="unknown", message="Request outcome is uncertain. Check the private dashboard or services.")
-                shutdown_task = asyncio.create_task(watch_shutdown())
-                raise HTTPException(502, shutdown_state["message"]) from None
-            shutdown_state.update(status="stopping", message="Shutdown requested. Waiting for confirmation…")
-            shutdown_task = asyncio.create_task(watch_shutdown())
-            return dict(shutdown_state)
+                state.update(status="unknown", message="Request outcome is uncertain. Check the private dashboard or services.")
+                shutdown_tasks[asset or "all"] = asyncio.create_task(watch_shutdown(asset))
+                raise HTTPException(502, state["message"]) from None
+            state.update(status="stopping", message="Shutdown requested. Waiting for confirmation…")
+            shutdown_tasks[asset or "all"] = asyncio.create_task(watch_shutdown(asset))
+            return dict(state)
 
     @app.get("/")
     def index():

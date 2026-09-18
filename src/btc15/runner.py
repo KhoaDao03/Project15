@@ -86,8 +86,7 @@ async def collect(
         if live_signals:
             existing = store.run_summaries("PAPER")
             for run in existing:
-                if (run["run_id"] != managed_run
-                        or run["body"]["versions"]["config"] != config.version):
+                if run["run_id"] != managed_run or run["body"]["versions"]["config"] != config.version:
                     raise ValueError("Live signals require their own database and unchanged configuration")
             previous = store.list(kind="run", run_id=managed_run, limit=1, newest_first=True)
             if previous and previous[0]["body"].get("live_signals") is not True:
@@ -187,7 +186,7 @@ async def collect(
                 time.time(),
             )
         preload = dict(status="DISABLED", samples=0)
-        if (paper or live_signals) and config.bleep_enabled:
+        if paper or live_signals:
             recordings = [
                 r
                 for r in store.list(kind="raw_source", mode="PAPER", limit=20)
@@ -201,7 +200,7 @@ async def collect(
                 received=time.time(),
                 monotonic_ns=time.monotonic_ns(),
                 connection_id="reference-preload",
-                payload=dict(type="reference_history", msg=body),
+                payload=dumps(dict(type="reference_history", msg=body)),
             )
             if recorder:
                 await work(recorder.append_rows, [history_row])
@@ -283,8 +282,9 @@ async def collect(
                 payload=dumps(payload),
             )
             if (
-                payload.get("type") == "cfbenchmarks_value"
-                and payload.get("msg", {}).get("index_id") == config.asset_spec.index
+                payload.get("type") in ("cfbenchmarks_value", "pyth_value")
+                and payload.get("msg", {}).get("index_id", payload.get("msg", {}).get("underlying_ticker"))
+                == config.asset_spec.index
             ):
                 # Immutable marker only: the worker still validates/applies the
                 # durable event in order. Receipt cannot supply future model data.
@@ -303,9 +303,9 @@ async def collect(
                 raise RuntimeError("Recorder queue capacity exceeded; capture stopped") from e
             maximum_queue = max(maximum_queue, queue.qsize())
             check_pressure()
-            if payload.get("type") == "cfbenchmarks_value_5hz":
+            if payload.get("type") in ("cfbenchmarks_value_5hz", "pyth_value"):
                 msg = payload.get("msg", {})
-                if msg.get("index_id") == config.asset_spec.index:
+                if msg.get("index_id", msg.get("underlying_ticker")) == config.asset_spec.index:
                     receipt_reference = dict(
                         value=msg.get("value_usd"),
                         received=row["received"],
@@ -351,8 +351,11 @@ async def collect(
                     if store.state(engine.run_id, ticker) == "CLOSED":
                         loop.call_soon_threadsafe(settled_tickers.add, ticker)
                 if (
-                    payload.get("type") == "cfbenchmarks_value_5hz"
-                    and payload.get("msg", {}).get("index_id") == config.asset_spec.index
+                    payload.get("type") in ("cfbenchmarks_value_5hz", "pyth_value")
+                    and payload.get("msg", {}).get(
+                        "index_id", payload.get("msg", {}).get("underlying_ticker")
+                    )
+                    == config.asset_spec.index
                 ):
                     msg = payload.get("msg", {})
                     display_reference = dict(
@@ -364,7 +367,7 @@ async def collect(
                     msg = payload.get("msg", {})
                     display_tickers[msg.get("market_ticker")] = msg
             now = time.time()
-            if (paper or live_signals) and config.bleep_enabled and time.monotonic() - last_history_save >= 30:
+            if (paper or live_signals) and time.monotonic() - last_history_save >= 30:
                 save_history(settings.data_dir, engine.ticks, now, config)
                 last_history_save = time.monotonic()
             lag = (time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9
@@ -439,7 +442,11 @@ async def collect(
                         paper_execution=paper,
                         live_signals=live_signals,
                         paper_worker=simulation,
-                        recording="signals_only" if live_signals else "full" if record_all else "trades_with_compact_inputs",
+                        recording="signals_only"
+                        if live_signals
+                        else "full"
+                        if record_all
+                        else "trades_with_compact_inputs",
                         reference_preload=preload,
                         live_enabled=False,
                         models=[
@@ -763,14 +770,29 @@ async def collect(
                 await asyncio.sleep(0.5)
 
         async def seed_bleep():
-            if not ((paper or live_signals) and config.bleep_enabled and config.bleep_exchange_seed_enabled):
+            if not ((paper or live_signals) and config.bleep_exchange_seed_enabled):
                 return
-            from .bleep_seed import fetch_seed
+            from .bleep_seed import fetch_pyth_seed, fetch_seed
+
+            if config.asset_spec.commodity and not settings.pyth_pro_api_key:
+                store.add(
+                    "bleep_seed_status",
+                    dict(status="UNAVAILABLE", error="PYTH_PRO_API_KEY not configured"),
+                    engine.run_id,
+                    "PAPER",
+                    time.time(),
+                )
+                return
 
             async with httpx.AsyncClient() as seed_client:
                 while not stop.is_set():
                     try:
-                        body = await fetch_seed(seed_client, time.time(), config.asset)
+                        if config.asset_spec.commodity:
+                            body = await fetch_pyth_seed(
+                                seed_client, time.time(), config.asset, settings.pyth_pro_api_key
+                            )
+                        else:
+                            body = await fetch_seed(seed_client, time.time(), config.asset)
                     except ValueError as exc:
                         store.add(
                             "bleep_seed_status",
@@ -825,7 +847,7 @@ async def collect(
 
                     def finish_audit():
                         now = time.time()
-                        if (paper or live_signals) and config.bleep_enabled:
+                        if paper or live_signals:
                             save_history(settings.data_dir, engine.ticks, now, config)
                         engine.flush_rejections(now, force=True)
                         for ticker in engine.executor.positions:

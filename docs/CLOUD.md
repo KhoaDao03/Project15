@@ -9,7 +9,10 @@ records no raw feed tapes, and needs neither PostgreSQL nor PyArrow. SQLite file
 and the real-order journal live on persistent local disk. Tests and research tools
 remain in the repository for development; they are not running cloud services.
 
-The existing strategy and real-order rules are preserved. A new deployment starts
+The four crypto presets use only Bleep ATR finish probability. See
+[the model](PROBABILITY_MODEL.md) and [current settings](ACTIVE_PAPER_SETTINGS.md).
+Old probability-mode configuration files are not accepted; prepare fresh configs.
+Real-order exit rules are preserved. A new deployment starts
 with live automation disabled. The dashboard's per-asset confirmation enables it;
 the execution journal preserves those choices across restarts. Restarting the
 dashboard does not restart the order executor.
@@ -77,15 +80,24 @@ retained for compatibility; fills shown through the live journal are real fills.
 
 ## Optional public view-only dashboard
 
-The separate `public-dashboard` app shows all four markets, reference prices,
+The separate `public-dashboard` app shows BTC, ETH, SOL, XRP, GOLD, SILVER, and WTI markets, reference prices,
 recorded wins/losses and net P&L, open-position counts, and the latest five trades
 per asset. These trading results become public when you publish its domain.
 It has no manual-order, strategy-editing or generic proxy routes. Optional owner
 controls allow live buy enable/disable and 1–20 contracts per entry for each asset,
-plus safe shutdown. `POST /api/unlock` checks the passcode and issues a token valid
+plus safe shutdown of a selected bot or all bots. To stop one bot, unlock owner
+controls, select it under **Stop one bot**, confirm, and click **Stop selected bot**.
+The other collectors and dashboard stay running. **Shut down all bots** remains
+available. Both actions refuse shutdown while managed live positions or unresolved
+orders still need the affected feed; neither action liquidates contracts. Per-bot
+status is shown until shutdown is confirmed. Restart a stopped collector through
+its systemd service. `POST /api/unlock` checks the passcode and issues a token valid
 for exactly 60 seconds. Both `POST /api/control` and `POST /api/stop` require it.
 All other non-GET/HEAD requests are rejected on the server, including direct API calls.
 The original dashboard remains private and retains the controls you use over SSH.
+The shared live executor also switches off an asset after its daily realized live
+bot P&L reaches −$20 (UTC, including fees). Both dashboards show the saved switch
+and loss-guard reason; exits continue. See [live automation](LIVE_AUTOMATION.md).
 
 ```bash
 systemctl --user enable --now project15-public-dashboard

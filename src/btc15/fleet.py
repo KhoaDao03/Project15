@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException, Request
 from sqlalchemy.exc import SQLAlchemyError
 
 from .analytics import lifetime_performance
-from .assets import asset_spec
+from .assets import ASSETS, asset_spec
 from .config import Settings, Strategy
 from .dashboard import create_app
 from .execution_service import ExecutionClient, install_execution_proxy
@@ -25,8 +25,8 @@ from .storage import Store
 def load_members(path):
     path = Path(path).resolve()
     rows = json.loads(path.read_text())
-    if not isinstance(rows, list) or not 1 <= len(rows) <= 4:
-        raise ValueError("Dashboard manifest requires one to four asset runs")
+    if not isinstance(rows, list) or not 1 <= len(rows) <= len(ASSETS):
+        raise ValueError(f"Dashboard manifest requires one to {len(ASSETS)} asset runs")
     members, directories, databases = {}, set(), set()
     for row in rows:
         asset = asset_spec(row["asset"])
@@ -90,6 +90,9 @@ def create_fleet_app(manifest):
     execution = ExecutionClient(manifest)
     shutdown_state = dict(status="idle", message="")
     shutdown_task = None
+    asset_shutdown_states = {}
+    asset_shutdown_tasks = {}
+    shutdown_lock = asyncio.Lock()
 
     children = {}
     performance_cache = {}
@@ -146,6 +149,9 @@ def create_fleet_app(manifest):
             if shutdown_task and not shutdown_task.done():
                 shutdown_task.cancel()
                 await asyncio.gather(shutdown_task, return_exceptions=True)
+            for task in asset_shutdown_tasks.values():
+                task.cancel()
+            await asyncio.gather(*asset_shutdown_tasks.values(), return_exceptions=True)
             performance_stop.set()
             await performance_task
             await execution.close()
@@ -206,6 +212,7 @@ def create_fleet_app(manifest):
                 **base,
                 recent_trade_version=children[asset].state.recent_trade_version,
                 recent_trades_stale=children[asset].state.recent_trades_stale(),
+                paper_only=False,
                 healthy=report["healthy"],
                 operational=report["operational"],
                 paper_worker=status.get("paper_worker"),
@@ -264,32 +271,31 @@ def create_fleet_app(manifest):
     def shutdown_status():
         return dict(shutdown_state)
 
+    async def stop_one(asset, store, state):
+        try:
+
+            def request_stop():
+                with store.transaction():
+                    owner = store.writer_owner()
+                    if owner:
+                        store.add(
+                            "shutdown_request",
+                            dict(source="shared_dashboard"),
+                            owner,
+                            "PAPER",
+                            time.time(),
+                        )
+                    return owner
+
+            owner = await asyncio.to_thread(request_stop)
+            await finish_shutdown(store, owner, state, lambda: None, close_delay=0)
+        except Exception as exc:
+            state.update(status="failed", message=type(exc).__name__)
+
     async def stop_all():
-        states = {}
+        states = {a: dict(status="stopping") for a in stores}
 
-        async def stop_one(asset, store):
-            state = states[asset] = dict(status="stopping")
-            try:
-
-                def request_stop():
-                    with store.transaction():
-                        owner = store.writer_owner()
-                        if owner:
-                            store.add(
-                                "shutdown_request",
-                                dict(source="shared_dashboard"),
-                                owner,
-                                "PAPER",
-                                time.time(),
-                            )
-                        return owner
-
-                owner = await asyncio.to_thread(request_stop)
-                await finish_shutdown(store, owner, state, lambda: None, close_delay=0)
-            except Exception as exc:
-                state.update(status="failed", message=type(exc).__name__)
-
-        await asyncio.gather(*(stop_one(a, s) for a, s in stores.items()))
+        await asyncio.gather(*(stop_one(a, s, states[a]) for a, s in stores.items()))
         failed = [a for a, s in states.items() if s["status"] != "stopped"]
         shutdown_state.update(assets=states)
         if failed:
@@ -323,13 +329,48 @@ def create_fleet_app(manifest):
             raise HTTPException(422, "Explicit shutdown confirmation required")
         if app.state.shutdown_server is None:
             raise HTTPException(503, "This server does not support dashboard shutdown")
-        if shutdown_state["status"] not in ("stopping", "stopped"):
-            await execution.prepare_shutdown()
-            shutdown_state.update(
-                status="stopping", message="Stopping all paper collectors and saving positions…"
-            )
-            shutdown_task = asyncio.create_task(stop_all())
+        async with shutdown_lock:
+            if shutdown_state["status"] not in ("stopping", "stopped"):
+                await execution.prepare_shutdown()
+                shutdown_state.update(
+                    status="stopping", message="Stopping all paper collectors and saving positions…"
+                )
+                shutdown_task = asyncio.create_task(stop_all())
         return dict(shutdown_state)
+
+    @app.get("/api/bots/{asset}/shutdown")
+    def asset_shutdown_status(asset: str):
+        if asset not in stores:
+            raise HTTPException(404, "Unknown asset")
+        return dict(asset_shutdown_states.get(asset, dict(status="idle", message="")))
+
+    @app.post("/api/bots/{asset}/shutdown", status_code=202)
+    async def shutdown_asset(asset: str, request: Request):
+        if asset not in stores:
+            raise HTTPException(404, "Unknown asset")
+        if request.url.hostname not in ("localhost", "127.0.0.1", "::1") or request.headers.get(
+            "origin"
+        ) != str(request.base_url).rstrip("/"):
+            raise HTTPException(403, "Shutdown must come from this local dashboard")
+        if request.headers.get("content-type", "").split(";")[0] != "application/json":
+            raise HTTPException(415, "JSON required")
+        try:
+            body = await request.json()
+        except ValueError as exc:
+            raise HTTPException(422, "Invalid JSON") from exc
+        if not isinstance(body, dict) or body != {"confirm": True} or body.get("confirm") is not True:
+            raise HTTPException(422, "Explicit shutdown confirmation required")
+        async with shutdown_lock:
+            if shutdown_state["status"] == "stopping":
+                raise HTTPException(409, "All-bot shutdown is already in progress")
+            task = asset_shutdown_tasks.get(asset)
+            if task is None or task.done():
+                await execution.prepare_shutdown(asset)
+                state = asset_shutdown_states[asset] = dict(
+                    status="stopping", message=f"Stopping {asset} and saving positions…"
+                )
+                asset_shutdown_tasks[asset] = asyncio.create_task(stop_one(asset, stores[asset], state))
+        return dict(asset_shutdown_states[asset])
 
     for asset, member in members.items():
         child = create_app(

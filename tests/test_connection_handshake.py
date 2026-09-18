@@ -69,7 +69,7 @@ def test_heartbeat_and_metadata_during_handshake_allow_fresh_recovery(
             if not engines:
                 engines.append(engine)
             valid = original_ingest(engine, row)
-            kind = json.loads(row["payload"])["type"]
+            kind = (json.loads(row["payload"]) if isinstance(row["payload"], str) else row["payload"])["type"]
             waiting = handshake
             if waiting and row["received"] >= waiting["started"] and kind in ("heartbeat", "metadata"):
                 loop.call_soon_threadsafe(waiting[kind].set)
@@ -161,7 +161,7 @@ def test_heartbeat_and_metadata_during_handshake_allow_fresh_recovery(
     rows = list(read_events(next((tmp_path / "raw").glob("*.jsonl.gz"))))
     connections = [r["connection_id"] for r in rows if r["payload"]["type"] == "connected"]
     assert connections == ready
-    assert len({r["connection_id"] for r in rows}) == 3  # Bootstrap plus two established connections.
+    assert len({r["connection_id"] for r in rows if r["connection_id"] != "reference-preload"}) == 3  # Bootstrap plus two established connections.
     for connection in connections:
         generation = [r for r in rows if r["connection_id"] == connection]
         assert generation[0]["payload"]["type"] == "connected"

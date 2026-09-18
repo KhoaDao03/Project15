@@ -2,61 +2,6 @@ from dataclasses import replace
 
 import pytest
 from test_exit_execution_v2 import held, quote, sells
-from test_strategy_reverification import initialize, make_book
-
-from btc15.strategies.settlement_edge.model import Tick
-from btc15.strategies.settlement_edge.rules import evaluate
-
-
-@pytest.mark.parametrize("side", ["yes", "no"])
-@pytest.mark.parametrize("a,b,allowed", [(0.79, 0.9, True), (0.9, 0.849, False), (0.65, 0.9, False)])
-def test_only_project15_veto_removed(store, config, market, side, a, b, allowed):
-    now = market.close_time - 300
-    c = replace(
-        config,
-        both_models_80_enabled=True,
-        project15_probability_veto_enabled=False,
-        standard_component_min_probability=0.85,
-        bleep_probability_blend_enabled=True,
-        entry_value_filters_enabled=False,
-        entry_probability_deductions=False,
-        min_probability=0.8,
-        passive=False,
-        min_entry_price=0.75,
-        max_entry_price=0.95,
-        fixed_contracts=10,
-        max_contracts=10,
-        max_trade_dollars=10,
-    )
-    p = dict(
-        p_yes=(a + b) / 2 if side == "yes" else 1 - (a + b) / 2,
-        p_no=(a + b) / 2 if side == "no" else 1 - (a + b) / 2,
-        blend={"project15_p_" + side: a, "bleep": {"p_" + side: b}},
-    )
-    book = make_book(side, ".89", ".90", now)
-    d = evaluate(
-        market,
-        book,
-        Tick(now, now, market.spec.strike + (100 if side == "yes" else -100)),
-        dict(volatility_disagreement=0, regime="NORMAL"),
-        p,
-        dict(score=100, reasons=[]),
-        now,
-        c,
-    )
-    assert (d["decision"] == "TRADE_CANDIDATE") == allowed
-    assert "PROJECT15_MIN_PROBABILITY" not in {r["code"] for r in d["reasons"]}
-    if (a + b) / 2 < c.min_probability:
-        assert "MIN_PROBABILITY" in {r["code"] for r in d["reasons"]}
-        return
-    e = initialize(store, market, now, c, "PAPER")
-    order = e.submit(market, book, {**d, "decision": "TRADE_CANDIDATE"}, "test", now, True)
-    assert (order is not None) == allowed
-    if allowed:
-        e.aggressive(market, book, now + c.latency_seconds)
-        fills = [r["body"] for r in store.list(kind="fill")]
-        assert sum(f["quantity"] for f in fills) == 10
-        assert all(f["price"] == 0.9 for f in fills)
 
 
 @pytest.mark.parametrize("side", ["yes", "no"])

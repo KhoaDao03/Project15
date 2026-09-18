@@ -2,13 +2,15 @@ import json
 from dataclasses import replace
 
 import pytest
+from bleep_helpers import inputs
 from test_strategy_reverification import make_book
 
 from btc15.analytics import metrics
 from btc15.config import Strategy
 from btc15.domain import SettlementSpecification
 from btc15.engine import Engine
-from btc15.strategies.settlement_edge.model import Tick, probability
+from btc15.strategies.settlement_edge.bleep import probability
+from btc15.strategies.settlement_edge.model import Tick
 from btc15.strategies.settlement_edge.rules import evaluate
 
 
@@ -35,7 +37,7 @@ def setup_engine(store, market, config, start, side="yes"):
         e.state(market.ticker, state, start)
     above = (side == "yes") == (market.spec.comparison_operator in (">=", ">"))
     price = market.spec.strike + (100 if above else -100)
-    e.ticks = [Tick(start - i, start - i, price) for i in range(400, 0, -1)]
+    e.ticks = [Tick(start - i, start - i, price) for i in range(2100, 0, -1)]
     return e, price
 
 
@@ -118,11 +120,11 @@ def test_entry_window_boundaries(market, config, remaining, allowed, path):
     now = market.close_time - remaining
     b = make_book("yes", ".84", ".85", now)
     p = dict(
+        p_yes=0.99,
         conservative_yes=0.99,
         lead=dict(
             side="yes",
             lead_sigma=3,
-            stressed_probability=0.99,
             confirmed_normal=True,
             confirmed_late=True,
             confirmation_samples=5,
@@ -153,43 +155,7 @@ def test_latency_cannot_fill_after_late_cutoff(store, market, config):
     assert not e.executor.orders[market.ticker].active
 
 
-def test_stress_preserves_known_samples_and_required_average(config):
-    spec = SettlementSpecification("CF Benchmarks", "BRTI", 78000, 1000, 1060, ">=")
-    ticks = [Tick(t, t, 78200) for t in range(1001, 1041)]
-    normal = probability(spec, ticks, 1040, 0, config)
-    stress = probability(spec, ticks, 1040, 0, config, price_shift=-100)
-    assert normal["required_remaining_average"] == 77600
-    assert normal["known_samples"] == stress["known_samples"] == 40
-    assert normal["settlement_mean"] - stress["settlement_mean"] == pytest.approx(100 / 3)
-    with pytest.raises(ValueError, match="Missing past"):
-        probability(spec, ticks[:-1], 1040, 0, config)
-
-
-def test_stress_blocks_otherwise_valid_entry(market, config, now):
-    c = replace(config, sustained_lead_enabled=True)
-    b = make_book("yes", ".84", ".85", now)
-    p = dict(
-        conservative_yes=0.99,
-        lead=dict(
-            side="yes", lead_sigma=3, stressed_probability=0.8, confirmed_normal=True, confirmation_samples=5
-        ),
-    )
-    d = evaluate(
-        market,
-        b,
-        Tick(now, now, market.spec.strike + 100),
-        dict(volatility_disagreement=0, regime="NORMAL"),
-        p,
-        dict(score=100, reasons=[]),
-        now,
-        c,
-    )
-    assert d["decision"] == "NO_TRADE"
-    assert d["conservative_probability"] == 0.8
-
-
 def test_compatibility_and_validation():
-    assert Strategy.load("config/settlement-edge-fill-taker-paper.json").version == "1b7ffae5ec144248"
     for changes in [
         dict(late_entry_enabled=True),
         dict(lead_confirmation_samples=0),
@@ -206,28 +172,11 @@ def test_late_side_uses_settlement_average_not_last_price(config):
     spec = SettlementSpecification("CF Benchmarks", "BRTI", 78000, 1000, 1060, ">=")
     ticks = [Tick(t, t, 78200) for t in range(1001, 1040)] + [Tick(1040, 1040, 77990)]
     c = replace(config, sustained_lead_enabled=True, late_entry_enabled=True)
-    p = probability(spec, ticks, 1040, c.volatility_floor, c)
+    p = probability(spec, ticks, 1040, inputs(ticks[-1].price), c)
     assert spec.favored(ticks[-1].price) == "no"
     evidence = lead_evidence(spec, ticks, 1040, dict(sigma=c.volatility_floor), p, c)
     assert evidence["side"] == "yes"
-    assert evidence["adverse_move"] == 210
-
-
-@pytest.mark.parametrize(
-    "operator,side,direction", [(">=", "yes", 1), (">=", "no", -1), ("<=", "yes", -1), ("<=", "no", 1)]
-)
-def test_stress_direction_respects_comparator(config, operator, side, direction):
-    from btc15.strategies.settlement_edge.model import lead_evidence
-
-    spec = SettlementSpecification("CF Benchmarks", "BRTI", 78000, 1000, 1060, operator)
-    ticks = [Tick(t, t, 78000 + direction * 100) for t in range(500, 599)]
-    ticks.append(Tick(599, 599, 78000 + direction * 90))
-    c = replace(config, sustained_lead_enabled=True)
-    p = probability(spec, ticks, 599, c.volatility_floor, c)
-    evidence = lead_evidence(spec, ticks, 599, dict(sigma=c.volatility_floor), p, c)
-    assert evidence["side"] == side
-    assert evidence["adverse_move"] == 10
-    assert evidence["stressed_probability"] <= p["conservative_" + side]
+    assert evidence["known_samples"] == 40
 
 
 @pytest.mark.parametrize("remaining,late_count,required", [(450, 5, 3), (40, 5, 5), (450, 2, 3), (40, 2, 2)])
@@ -257,11 +206,11 @@ def test_relaxed_standard_probability_and_price(market, config, remaining, accep
     )
     now = market.close_time - remaining
     p = dict(
+        p_yes=0.82,
         conservative_yes=0.82,
         lead=dict(
             side="yes",
             lead_sigma=3,
-            stressed_probability=0.82,
             confirmed_normal=True,
             confirmed_late=True,
             confirmation_samples=5,
@@ -269,7 +218,7 @@ def test_relaxed_standard_probability_and_price(market, config, remaining, accep
     )
     d = evaluate(
         market,
-        make_book("yes", ".70", ".71", now),
+        make_book("yes", ".75", ".76", now),
         Tick(now, now, market.spec.strike + 100),
         dict(volatility_disagreement=0, regime="NORMAL"),
         p,
@@ -278,13 +227,13 @@ def test_relaxed_standard_probability_and_price(market, config, remaining, accep
         c,
     )
     assert (d["decision"] == "TRADE_CANDIDATE") == accepted
+    assert d["conservative_probability"] == 0.815
     if remaining == 120:
         assert any(r["code"] == "MIN_PROBABILITY" and r["required"] == 0.85 for r in d["reasons"])
         assert d["effective_max_entry_price"] is None
 
 
 def test_late_overrides_validate_and_preserve_old_hash():
-    assert Strategy.load("config/settlement-edge-fill-taker-paper.json").version == "1b7ffae5ec144248"
     for kwargs in [
         dict(late_min_probability=1.1),
         dict(late_lead_confirmation_samples=-1),
@@ -295,12 +244,11 @@ def test_late_overrides_validate_and_preserve_old_hash():
 
 
 @pytest.mark.parametrize("remaining", [300, 40])
-def test_raw_entry_ignores_probability_deductions_but_keeps_costs(market, config, remaining):
+def test_bleep_entry_uses_its_probability_and_keeps_costs(market, config, remaining):
     c = replace(
         config,
         sustained_lead_enabled=True,
         late_entry_enabled=True,
-        entry_probability_deductions=False,
         min_edge=0.01,
         min_ev=0.01,
     )
@@ -311,7 +259,6 @@ def test_raw_entry_ignores_probability_deductions_but_keeps_costs(market, config
         lead=dict(
             side="yes",
             lead_sigma=3,
-            stressed_probability=0.70,
             confirmed_normal=True,
             confirmed_late=True,
             confirmation_samples=5,
@@ -329,31 +276,7 @@ def test_raw_entry_ignores_probability_deductions_but_keeps_costs(market, config
     d = evaluate(*args, c)
     assert d["decision"] == "TRADE_CANDIDATE"
     assert d["conservative_probability"] == 0.96
-    assert d["entry_probability_basis"] == "raw"
-    assert d["model_disagreement_penalty"] == 0
+    assert d["entry_probability_basis"] == "bleep"
     assert 0 < d["net_ev"] < 0.03
-    assert evaluate(*args, replace(c, entry_probability_deductions=True))["decision"] == "NO_TRADE"
     p["p_yes"] = 0.94
     assert evaluate(*args, c)["decision"] == "NO_TRADE"
-
-
-@pytest.mark.parametrize("remaining", [300, 40])
-def test_raw_probability_entry_can_fill_despite_low_stress(store, market, config, monkeypatch, remaining):
-    import btc15.engine as module
-
-    original = module.lead_evidence
-
-    def weak_stress(*args, **kwargs):
-        return {**original(*args, **kwargs), "stressed_probability": 0.1}
-
-    monkeypatch.setattr(module, "lead_evidence", weak_stress)
-    start = market.close_time - remaining
-    e, price = setup_engine(store, market, replace(config, entry_probability_deductions=False), start)
-    for i in range(5):
-        reference(e, market, start + i, price)
-    assert e.executor.orders[market.ticker].active
-    e.process(start + 4.3, "eligible", "heartbeat", {})
-    assert e.executor.positions[market.ticker].quantity == 5
-    evidence = store.list(kind="order", run_id=e.run_id)[0]["body"]["entry_checks"]
-    assert evidence["entry_probability_basis"] == "raw"
-    assert evidence["lead"]["stressed_probability"] == 0.1

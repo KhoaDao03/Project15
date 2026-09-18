@@ -197,9 +197,15 @@ class KalshiClient:
 
 def subscriptions(tickers, asset="BTC"):
     index = asset_spec(asset).index
-    return [
+    reference = [
         dict(id=1, cmd="subscribe", params=dict(channels=["cfbenchmarks_value"], index_ids=[index])),
         dict(id=2, cmd="subscribe", params=dict(channels=["cfbenchmarks_value_5hz"], index_ids=[index])),
+    ]
+    if asset_spec(asset).commodity:
+        reference = [
+            dict(id=1, cmd="subscribe", params=dict(channels=["pyth_value"], underlying_tickers=[index]))
+        ]
+    return reference + [
         dict(
             id=3,
             cmd="subscribe",

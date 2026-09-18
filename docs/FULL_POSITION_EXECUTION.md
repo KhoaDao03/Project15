@@ -1,6 +1,6 @@
 # Full-position paper execution
 
-The active BTC, ETH, SOL and XRP presets enable `full_position_execution=true`.
+The active BTC, ETH, SOL, XRP, GOLD, SILVER and WTI presets enable `full_position_execution=true`.
 Each new order requests exactly 10 contracts. Risk limits must permit all 10;
 the bot skips the order if they would reduce its size.
 

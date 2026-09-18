@@ -69,7 +69,9 @@ def venue(tmp_path):
         async def get(self, path, params=None, authenticated=False):
             state["reads"].append(path)
             if path.startswith("series/"):
-                return dict(series=dict(ticker="KXETH15M", exchange_index=2))
+                return dict(
+                    series=dict(ticker=state.get("ticker", TICKER).split("-", 1)[0], exchange_index=2)
+                )
             if path.startswith("portfolio/orders/"):
                 if state["read_error"]:
                     raise httpx.ReadTimeout("status unavailable")
@@ -82,6 +84,10 @@ def venue(tmp_path):
                         fill_count_fp=state.get("fill_count", "2.00"),
                         remaining_count_fp="0.00",
                         taker_fees_dollars="0.0300",
+                        maker_fees_dollars="0",
+                        maker_fill_cost_dollars="0",
+                        taker_fill_cost_dollars=str(float(state.get("fill_count", "2.00")) * 0.9),
+                        outcome_side="yes" if state["last"]["side"] == "bid" else "no",
                     )
                 )
             if path == "portfolio/balance":

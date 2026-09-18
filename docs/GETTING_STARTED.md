@@ -1,3 +1,5 @@
+> For a fresh cloud deployment, use [Cloud deployment](CLOUD.md). This guide covers local paper testing of the same Bleep model.
+
 # Getting started from scratch
 
 This guide targets the Settlement Edge-only branch, not a generic three-strategy bot. Its default first experiment uses the **original built-in configuration**, frozen into a local file. The optional moderate configuration is described separately; neither is a profitability claim.
@@ -110,7 +112,7 @@ uv run --locked btc15 --config data/runtime/settlement-original.json dashboard -
 
 Open `http://127.0.0.1:8000`. Select **PAPER**, the normal Settlement Edge history scope, and `settlement-original`. Confirm paper execution is on, the collector and evaluations are current, and the selected configuration is the one you froze. The 5 Hz display moving alone is not proof the execution feed is healthy.
 
-Warmup defaults to 300 seconds of required reference history; missing samples or bad feed health can extend the wait. The original entry window is more than 2 and at most 8 minutes before close. The bot must also pass probability, net-EV, price, spread, liquidity, metadata, regime and risk checks. **No trade may be the correct result.** Use [Troubleshooting](TROUBLESHOOTING.md), not relaxed safeguards, to identify the stage that blocked it.
+Bleep needs 33 contiguous minute candles (or a validated exchange seed), plus the configured reference warmup; missing samples or bad feed health can extend the wait. The original entry window is more than 2 and at most 8 minutes before close. The bot must also pass probability, net-EV, price, spread, liquidity, metadata, regime and risk checks. **No trade may be the correct result.** Use [Troubleshooting](TROUBLESHOOTING.md), not relaxed safeguards, to identify the stage that blocked it.
 
 ## Stop and restart
 

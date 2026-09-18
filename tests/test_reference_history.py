@@ -120,7 +120,7 @@ def test_conflicting_tapes_fail_closed(tmp_path, config):
 
 def test_gaps_are_preserved_not_filled(config):
     now = 1000020
-    c = replace(config, bleep_probability_blend_enabled=True)
+    c = replace(config)
     ticks = ticks_at(now)
     ticks = [t for t in ticks if not now - 100 <= t.source < now - 70]
     body = history_body(ticks, now, c)
@@ -131,7 +131,7 @@ def test_gaps_are_preserved_not_filled(config):
 
 
 def test_preload_is_history_only_and_requires_fresh_confirmations(store, market, config, now):
-    c = replace(config, bleep_probability_blend_enabled=True, entry_probability_deductions=False)
+    c = config
     e, _ = setup_engine(store, market, c, now)
     old = ticks_at(now, market.spec.strike + 300)
     e.ticks = []
@@ -148,7 +148,7 @@ def test_preload_is_history_only_and_requires_fresh_confirmations(store, market,
         reference(e, market, now + i, old[-1].price)
         assert not e.executor.orders
     reference(e, market, now + 5, old[-1].price)
-    assert e.latest[market.ticker]["probability"]["blend"]
+    assert e.latest[market.ticker]["probability"]["model"] == "bleep-reference-atr-finish-v5"
     assert market.ticker in e.executor.orders
     with pytest.raises(ValueError, match="first event"):
         e.ingest(row)
@@ -156,7 +156,7 @@ def test_preload_is_history_only_and_requires_fresh_confirmations(store, market,
 
 def test_preload_event_replays_without_cache(store, tmp_path, config):
     now = 1000000
-    c = replace(config, bleep_probability_blend_enabled=True)
+    c = replace(config)
     ticks = ticks_at(now)
     row = dict(
         id="seed", received=now, payload=dict(type="reference_history", msg=history_body(ticks, now, c))
@@ -191,7 +191,7 @@ def test_collector_records_preload_and_saves_cache(store, config, tmp_path, raw,
     fake_client(monkeypatch, raw, series)
     fake_socket(monkeypatch, [])
     now = int(time.time())
-    c = replace(config, bleep_probability_blend_enabled=True)
+    c = replace(config)
     ticks = ticks_at(now, raw["floor_strike"])
     save_history(tmp_path, ticks, now, c)
     run = asyncio.run(runner.collect(Settings(data_dir=str(tmp_path)), c, store, paper=True, duration=0.15))

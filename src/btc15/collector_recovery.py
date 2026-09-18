@@ -82,7 +82,7 @@ class CollectorRecovery:
             self.metadata_at = row["received"]
         if row["connection_id"] != self.connection or not valid:
             return
-        if kind == "cfbenchmarks_value" and engine.ticks:
+        if kind in ("cfbenchmarks_value", "pyth_value") and engine.ticks:
             self.reference = (
                 self.connection_started is not None
                 and engine.ticks[-1].received == row["received"]

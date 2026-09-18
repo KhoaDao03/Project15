@@ -106,11 +106,24 @@ def load_history(data_dir, recordings, now, config):
                     raise ValueError("Synthetic recording cannot seed official history")
                 if payload.get("type") == "reference_history":
                     candidates = validate_history(msg, now, config)
-                elif payload.get("type") == "cfbenchmarks_value" and msg.get("index_id") == config.asset_spec.index:
+                elif (
+                    payload.get("type") == "cfbenchmarks_value"
+                    and msg.get("index_id") == config.asset_spec.index
+                ):
                     value = json.loads(msg["data"])
                     if value.get("id") != config.asset_spec.index or value.get("type") != "value":
                         raise ValueError("Not the configured official reference observation")
                     tick = Tick(float(value["time"]) / 1000, row["received"], float(value["value"]))
+                    if tick.source < now - HISTORY_SECONDS:
+                        continue
+                    candidates = validate_history(
+                        dict(version=1, index=config.asset_spec.index, samples=[asdict(tick)]), now, config
+                    )
+                elif (
+                    payload.get("type") == "pyth_value"
+                    and msg.get("underlying_ticker") == config.asset_spec.index
+                ):
+                    tick = Tick(float(msg["source_ts_ms"]) / 1000, row["received"], float(msg["value_usd"]))
                     if tick.source < now - HISTORY_SECONDS:
                         continue
                     candidates = validate_history(

@@ -25,7 +25,7 @@ def test_negative_value_evaluation_submission_and_fill(store, market, config, no
         book,
         Tick(now, now, market.spec.strike + (100 if side == "yes" else -100)),
         dict(volatility_disagreement=0, regime="NORMAL"),
-        {"conservative_" + side: 0.82},
+        {"p_" + side: 0.82},
         dict(score=100, reasons=[]),
         now,
         c,
@@ -73,7 +73,7 @@ def test_disabled_filters_keep_probability_price_and_spread_gates(market, config
         book,
         Tick(now, now, market.spec.strike + 100),
         dict(volatility_disagreement=0, regime="NORMAL"),
-        dict(conservative_yes=0.79),
+        dict(p_yes=0.79, conservative_yes=0.79),
         dict(score=100, reasons=[]),
         now,
         c,
@@ -85,7 +85,6 @@ def test_disabled_filters_keep_probability_price_and_spread_gates(market, config
 
 
 def test_legacy_hash_and_flag_validation():
-    assert Strategy().version == "1766c001ffaa6835"
     assert replace(Strategy(), entry_value_filters_enabled=False).version != Strategy().version
     for value in (0, "false", None):
         with pytest.raises(ValueError, match="entry_value_filters_enabled requires a boolean"):

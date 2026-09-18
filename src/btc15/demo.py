@@ -102,6 +102,7 @@ def generate(path, start=1788901200.0, asset="BTC"):
             now,
         )
         if i >= 0:
+            # A cheaper late quote also exercises Bleep with cost-filtered presets.
             # Unified YES-leg prices: NO-side .90 means NO bid .10, YES ask .90.
             add(
                 dict(
@@ -110,13 +111,13 @@ def generate(path, start=1788901200.0, asset="BTC"):
                     seq=i + 1,
                     msg=dict(
                         market_ticker=ticker,
-                        yes_dollars_fp=[["0.88", "2.00"]],
-                        no_dollars_fp=[["0.90", "100.00"]],
+                        yes_dollars_fp=[["0.88" if i < 600 else "0.86", "2.00"]],
+                        no_dollars_fp=[["0.90" if i < 600 else "0.88", "100.00"]],
                     ),
                 ),
                 now + 0.01,
             )
-            if 425 <= i <= 440:
+            if 425 <= i < 780:
                 add(
                     dict(
                         type="trade",
@@ -124,7 +125,7 @@ def generate(path, start=1788901200.0, asset="BTC"):
                             market_ticker=ticker,
                             trade_id=f"demo-{i}",
                             taker_outcome_side="no",
-                            yes_price_dollars=".88",
+                            yes_price_dollars=".88" if i < 600 else ".86",
                             count_fp="2.00",
                             ts_ms=(now + 0.02) * 1000,
                         ),

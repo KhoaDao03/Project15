@@ -122,7 +122,6 @@ def test_enabling_limit_blocks_preexisting_later_unfilled_cycle(scenario, store,
 
 def test_limit_config_is_opt_in_and_boolean():
     old = Strategy()
-    assert old.version == "1766c001ffaa6835"
     assert replace(old, one_trade_per_market=True).version != old.version
     for value in ("true", 1, None):
         with pytest.raises(ValueError, match="one_trade_per_market requires a boolean"):

@@ -35,7 +35,7 @@ def test_entry_boundaries(market, book, config, remaining, valid):
         book,
         Tick(now, now, market.spec.strike + 100),
         dict(volatility_disagreement=0, regime="NORMAL"),
-        dict(conservative_yes=0.99),
+        dict(p_yes=0.99, conservative_yes=0.99),
         dict(score=100, reasons=[]),
         now,
         config,
@@ -215,7 +215,7 @@ def test_zero_liquidity_minimum_allows_thin_entry(market, book, config, now):
         book,
         Tick(now, now, market.spec.strike + 100),
         dict(volatility_disagreement=0, regime="NORMAL"),
-        dict(conservative_yes=0.99),
+        dict(p_yes=0.99, conservative_yes=0.99),
         dict(score=100, reasons=[]),
         now,
     )

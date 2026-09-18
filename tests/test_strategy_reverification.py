@@ -6,6 +6,7 @@ from dataclasses import replace
 
 import pytest
 import test_position_management as management_tests
+from bleep_helpers import inputs
 from fastapi.testclient import TestClient
 
 from btc15.config import Settings, Strategy
@@ -14,7 +15,8 @@ from btc15.domain import Book, D, dumps
 from btc15.engine import Engine
 from btc15.execution import PaperExecutor
 from btc15.storage import CompactRecorder, read_events
-from btc15.strategies.settlement_edge.model import Tick, probability
+from btc15.strategies.settlement_edge.bleep import probability
+from btc15.strategies.settlement_edge.model import Tick
 from btc15.strategies.settlement_edge.rules import Risk, passive_price
 
 scenario = management_tests.scenario
@@ -51,6 +53,7 @@ def make_book(side, bid, ask, now, depth="100.00"):
 @pytest.mark.parametrize("ending", ["take_profit", "hard_stop", "settle_win", "settle_loss"])
 def test_real_model_to_trade_history(store, raw, series, now, tmp_path, mode, side, preset, ending):
     c = Strategy() if preset == "original" else Strategy.load("config/settlement-edge-paper-moderate.json")
+    c = replace(c, bleep_exchange_seed_enabled=True)
     clock = [now - 302]
     e = Engine(
         store, c, mode, clock=(lambda: clock[0]) if mode == "PAPER" else None, record_evaluations=False
@@ -66,7 +69,7 @@ def test_real_model_to_trade_history(store, raw, series, now, tmp_path, mode, si
         row = dict(
             id=f"verify-{len(rows):05d}",
             received=when,
-            monotonic_ns=int((when - now + 1000) * 1e9),
+            monotonic_ns=int((when - now + 3000) * 1e9),
             connection_id="SYNTHETIC_VERIFICATION",
             payload=dumps(dict(type=kind, msg=msg)),
         )
@@ -112,14 +115,25 @@ def test_real_model_to_trade_history(store, raw, series, now, tmp_path, mode, si
             ),
             now - 302,
         )
+        center = float(r["floor_strike"]) + (200 if side == "yes" else -200)
+        minute = int((now - 302) // 60)
+        send(
+            "bleep_seed",
+            dict(
+                version=1,
+                provider="coinbase",
+                candles=[[m, center, center + 1, center - 1, center] for m in range(minute - 100, minute)],
+            ),
+            now - 302,
+        )
         for i in range(-301, 1):
             reference(now + i)
         assert not e.executor.orders
-        quote(".88", ".90", now + 0.01)
+        quote(".85", ".87", now + 0.01)
         order = e.executor.orders[ticker]
         assert order.side == side and order.quantity > 0
         assert not store.list(kind="opportunity")
-        assert e.latest[ticker]["probability"]["paths"] == 4000
+        assert e.latest[ticker]["probability"]["model"] == "bleep-reference-atr-finish-v5"
         assert e.latest[ticker]["conservative_probability"] >= c.min_probability
         send(
             "trade",
@@ -207,13 +221,13 @@ def test_probability_comparator_and_causality(market, now, operator, reference):
     c = Strategy()
     past = [Tick(now, now, reference)]
     future = [Tick(now + 1, now + 1, reference * 2)]
-    a = probability(spec, past, now, 0, c)
-    b = probability(spec, past + future, now, 0, c)
+    a = probability(spec, past, now, inputs(reference), c)
+    b = probability(spec, past + future, now, inputs(reference), c)
     assert a == b
-    assert a["p_yes"] == float(spec.yes(reference))
+    assert (a["p_yes"] > 0.5) == spec.yes(reference)
     assert a["p_no"] == 1 - a["p_yes"]
     assert a["conservative_yes"] + a["conservative_no"] <= 1
-    assert a["simulation_uncertainty"] > 0
+    assert a["conservative_yes"] == a["p_yes"]
 
 
 @pytest.mark.parametrize("mode", ["PAPER", "BACKTEST"])

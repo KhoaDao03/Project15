@@ -33,7 +33,7 @@ def decision(
         book,
         Tick(now, now, market.spec.strike + 100),
         dict(volatility_disagreement=0, regime=regime),
-        dict(conservative_yes=probability),
+        dict(p_yes=probability, conservative_yes=probability),
         dict(score=100, reasons=list(quality_reasons)),
         now,
         config,

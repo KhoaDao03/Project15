@@ -30,7 +30,7 @@ def test_official_markets_without_collector_and_cached(store, raw, series, monke
     assert not store.list(limit=None)
 
 
-def test_official_failure_does_not_break_dashboard(store, monkeypatch):
+def test_official_failure_does_not_break_dashboard(store, monkeypatch, tmp_path):
     class Client:
         def __init__(self, settings):
             pass
@@ -50,7 +50,7 @@ def test_official_failure_does_not_break_dashboard(store, monkeypatch):
     assert data["markets"] == [] and data["fetched_at"] is None
 
 
-def test_evaluation_follows_current_collector_and_explicit_run(store, monkeypatch):
+def test_evaluation_follows_current_collector_and_explicit_run(store, monkeypatch, tmp_path):
     monkeypatch.setattr(dashboard.time, "time", lambda: 1000)
     store.add("opportunity", {"decision": "NO_TRADE"}, "old", "PAPER", 900)
     store.add("status", {"connected": True}, "current", "PAPER", 999)
@@ -115,7 +115,7 @@ def test_market_stream_marks_stopped_feed_stale(store):
     asyncio.run(run())
 
 
-def test_dashboard_owns_collection_lifecycle(store, monkeypatch):
+def test_dashboard_owns_collection_lifecycle(store, monkeypatch, tmp_path):
     from btc15 import runner
     from btc15.config import Settings
 
@@ -132,14 +132,14 @@ def test_dashboard_owns_collection_lifecycle(store, monkeypatch):
         calls.append("stopped")
 
     monkeypatch.setattr(runner, "collect", collect)
-    settings = Settings(api_key_id="test", private_key_path="unused")
+    settings = Settings(data_dir=str(tmp_path), api_key_id="test", private_key_path="unused")
     with TestClient(dashboard.create_app(store, collect_live=True, settings=settings)) as client:
         assert client.get("/api/health").status_code == 200
         assert calls == ["started"]
     assert calls == ["started", "stopped"]
 
 
-def test_dashboard_reports_collection_failure_without_losing_ui(store, monkeypatch):
+def test_dashboard_reports_collection_failure_without_losing_ui(store, monkeypatch, tmp_path):
     from btc15 import runner
     from btc15.config import Settings
 
@@ -147,7 +147,7 @@ def test_dashboard_reports_collection_failure_without_losing_ui(store, monkeypat
         raise RuntimeError("A writer owns this database")
 
     monkeypatch.setattr(runner, "collect", collect)
-    settings = Settings(api_key_id="test", private_key_path="unused")
+    settings = Settings(data_dir=str(tmp_path), api_key_id="test", private_key_path="unused")
     with TestClient(dashboard.create_app(store, collect_live=True, settings=settings)) as client:
         assert client.get("/api/health").json()["collector_startup_error"]
         assert client.get("/").status_code == 200

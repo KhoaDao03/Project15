@@ -7,8 +7,8 @@ import pytest
 from test_sustained_lead import reference, setup_engine
 
 from btc15.bleep_seed import fetch_seed, seeded_inputs, validate_seed
-from btc15.strategies.settlement_edge.bleep import blend_probability, safety_clamp
-from btc15.strategies.settlement_edge.model import Tick, features, probability
+from btc15.strategies.settlement_edge.bleep import probability, safety_clamp
+from btc15.strategies.settlement_edge.model import Tick, features
 
 
 def seed(now):
@@ -36,20 +36,18 @@ def test_clamp_both_sides_and_threshold(p, safety, expected):
 
 
 @pytest.mark.parametrize("operator", [">=", "<="])
-def test_clamp_before_complement_and_average(monkeypatch, market, config, now, operator):
+def test_clamp_before_complement(monkeypatch, market, config, now, operator):
     # Force a high favored probability near strike to exercise the normally redundant cap.
-    monkeypatch.setattr("btc15.strategies.settlement_edge.bleep.safety_clamp", lambda p, s: 0.75)
+    monkeypatch.setattr("btc15.strategies.settlement_edge.bleep.safety_clamp", lambda p, s, limit=0.75: 0.75)
     spec = replace(market.spec, strike=60000, comparison_operator=operator)
     ticks = [Tick(now - i, now - i, 60001) for i in range(400, -1, -1)]
     f = features(ticks, now, config)
     f["bleep"] = seeded_inputs(validate_seed(seed(now), now), int(now // 60) - 1, ticks, now)
-    original = probability(spec, ticks, now, f["sigma"], config)
-    mixed = blend_probability(original, spec, f, now, clamp=True)
-    b = mixed["blend"]["bleep"]
+    b = probability(spec, ticks, now, f, config)
     expected = 0.75 if operator == ">=" else 0.25
     assert b["p_yes"] == expected
     assert b["safety_clamp_enabled"] and b["safety_clamp_applied"]
-    assert mixed["p_yes"] == (original["p_yes"] + expected) / 2
+
 
 
 @pytest.mark.parametrize("damage", ["future", "gap", "nan", "ohlc", "stale", "duplicate"])
@@ -89,7 +87,6 @@ def test_seed_rolls_out_without_affecting_reference(now):
 def test_seed_event_is_replayable_and_does_not_create_reference_health_or_orders(store, market, config):
     c = replace(
         config,
-        bleep_probability_blend_enabled=True,
         bleep_exchange_seed_enabled=True,
         bleep_safety_clamp_enabled=True,
     )
@@ -105,15 +102,9 @@ def test_seed_event_is_replayable_and_does_not_create_reference_health_or_orders
     latest = e.latest[market.ticker]
     assert latest["features"]["bleep"]["candles"] >= 100
     assert latest["features"]["bleep_seed"]["provider"] == "coinbase"
-    assert latest["probability"]["blend"]["bleep"]["safety_clamp_enabled"]
-    assert (
-        latest["probability"]["p_yes"]
-        == (
-            latest["probability"]["blend"]["project15_p_yes"]
-            + latest["probability"]["blend"]["bleep"]["p_yes"]
-        )
-        / 2
-    )
+    assert latest["probability"]["safety_clamp_enabled"]
+    assert latest["probability"]["p_yes"] == latest["probability"]["conservative_yes"]
+
 
 
 @pytest.mark.parametrize("provider", ["coinbase", "kraken", "binance", "none"])
@@ -177,7 +168,6 @@ def test_collector_records_seed_for_offline_replay(store, config, tmp_path, raw,
     monkeypatch.setattr("btc15.bleep_seed.fetch_seed", download)
     c = replace(
         config,
-        bleep_probability_blend_enabled=True,
         bleep_exchange_seed_enabled=True,
         bleep_safety_clamp_enabled=True,
     )

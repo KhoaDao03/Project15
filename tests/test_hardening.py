@@ -126,7 +126,7 @@ def test_missing_scheduled_fees_are_visible_and_blocked(store, config, tmp_path)
         if row["payload"]["type"] == "metadata":
             row["payload"]["msg"].pop("series_fee_changes")
         engine.ingest(row)
-        if engine.latest:
+        if engine.latest and next(iter(engine.latest.values())).get("probability"):
             break
     assert not engine.executor.orders
     assert "UNVERIFIED_FEES" in [r["code"] for r in next(iter(engine.latest.values()))["reasons"]]

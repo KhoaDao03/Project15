@@ -1,8 +1,6 @@
 """Synthetic checks for resting-price validation and durable bounded retries."""
 
-import hashlib
-import json
-from dataclasses import asdict, replace
+from dataclasses import replace
 
 import pytest
 import test_position_management as management_tests
@@ -19,50 +17,6 @@ def candidate():
     return dict(decision="TRADE_CANDIDATE", side="yes", conservative_probability=0.99, reasons=[])
 
 
-def test_original_hash_and_opt_in(config):
-    values = asdict(config)
-    for key in (
-        "asset",
-        "full_position_execution",
-        "enabled",
-        "entry_value_filters_enabled",
-        "daily_entry_limits_enabled",
-        "resting_limit_recheck",
-        "revalidate_entry_signal",
-        "max_entry_retries",
-        "entry_retry_cooldown",
-        "post_close_cooldown",
-        "one_trade_per_market",
-        "hold_value_exit_enabled",
-        "profit_value_exit_enabled",
-        "standard_cashout_enabled",
-        "entry_probability_deductions",
-        "bleep_probability_blend_enabled",
-        "bleep_probability_only_enabled",
-        "both_models_80_enabled",
-        "standard_component_min_probability",
-        "fixed_stop_price",
-        "project15_probability_veto_enabled",
-        "bleep_exchange_seed_enabled",
-        "bleep_safety_clamp_enabled",
-        "sustained_lead_enabled",
-        "late_entry_enabled",
-        "late_no_new_entry",
-        "lead_confirmation_samples",
-        "late_min_probability",
-        "late_lead_confirmation_samples",
-        "min_lead_sigma",
-        "late_min_lead_sigma",
-        "bollinger_entry_filter_enabled",
-    ):
-        del values[key]
-    assert config.version == hashlib.sha256(json.dumps(values, sort_keys=True).encode()).hexdigest()[:16]
-    assert replace(config, resting_limit_recheck=True).version != config.version
-    assert replace(config, max_entry_retries=1).version != config.version
-    assert replace(config, profit_value_exit_enabled=True).version != config.version
-    for kwargs in ({"max_entry_retries": 3}, {"entry_retry_cooldown": 0}):
-        with pytest.raises(ValueError):
-            replace(config, **kwargs)
 
 
 def test_resting_limit_keeps_edge_but_not_bad_health(store, market, now, config):
@@ -76,7 +30,7 @@ def test_resting_limit_keeps_edge_but_not_bad_health(store, market, now, config)
         moved,
         Tick(now + 1, now + 1, market.spec.strike + 100),
         dict(volatility_disagreement=0, regime="NORMAL"),
-        dict(conservative_yes=0.96),
+        dict(p_yes=0.96, conservative_yes=0.96),
         dict(score=100, reasons=[]),
         now + 1,
         c,
@@ -179,10 +133,10 @@ def test_engine_resting_recheck_and_retry(scenario, market, now, config, mode, s
     first = s.e.executor.orders[market.ticker]
     process(now + 1, ".95")  # ask .97 has too little edge, resting .89 still qualifies
     assert first.active
-    s.p["conservative_" + side] = 0.89
+    s.p["p_" + side] = 0.89
     process(now + 2, ".88")
     assert not first.active
-    s.p["conservative_" + side] = 0.99
+    s.p["p_" + side] = 0.99
     process(now + 6, ".88")
     assert s.e.executor.orders[market.ticker].id == first.id
     process(now + 7, ".88")

@@ -9,11 +9,11 @@ from functools import wraps
 
 from .domain import D, order_direction, parse_market
 from .recovery import contract_hash, evidence_hash, older_metadata, restore_market, validate_final_evidence
+from .strategies.settlement_edge.bleep import capped_confidence
 from .strategies.settlement_edge.economics import entry_economics
 from .strategies.settlement_edge.rules import (
     FeeAccumulator,
     Risk,
-    component_probability_rejections,
     fee_bound,
     passive_price,
 )
@@ -491,10 +491,6 @@ class PaperExecutor:
                 or lead.get("side") != decision.get("side")
                 or (threshold > 0 and lead.get("lead_sigma", 0) < threshold)
                 or not lead.get("confirmed_late" if late else "confirmed_normal")
-                or (
-                    c.entry_probability_deductions
-                    and lead.get("stressed_probability", 0) < c.probability_floor(late)
-                )
             ):
                 return reject(
                     "LEAD_RECHECK",
@@ -536,23 +532,18 @@ class PaperExecutor:
         ):
             return reject(
                 "INVALID_PROBABILITY",
-                "Conservative probability must be a finite number in [0, 1]",
+                "Bleep probability must be a finite number in [0, 1]",
                 actual=str(conservative),
             )
-        if c.both_models_80_enabled:
-            component_reasons = component_probability_rejections(
-                decision.get("component_probabilities", {}),
-                c.late_component_min_probability
-                if c.late_entry_enabled and remaining <= c.no_new_entry
-                else c.standard_component_min_probability,
-                project15_enabled=c.project15_probability_veto_enabled,
+        conservative = capped_confidence(conservative, bid, ask, c.asset)
+        minimum = c.probability_floor(c.late_entry_enabled and remaining <= c.no_new_entry)
+        if conservative is None or conservative < minimum:
+            return reject(
+                "MIN_PROBABILITY_RECHECK",
+                "Bleep probability is below the entry floor",
+                actual=conservative,
+                required=minimum,
             )
-            if component_reasons:
-                return reject(
-                    "COMPONENT_PROBABILITY_RECHECK",
-                    "Both models must meet the component probability floor for this entry path",
-                    reasons=component_reasons,
-                )
         fee = fee_bound(ask, c)
         net_ev = D(conservative) - D(ask) - D(fee) - D(c.slippage)
         required = max(c.min_ev, c.min_edge)
@@ -679,14 +670,8 @@ class PaperExecutor:
                     revalidate_entry_signal=c.revalidate_entry_signal,
                     lead=decision.get("lead", {}),
                     conservative_probability=conservative,
-                    entry_probability_basis=decision.get("entry_probability_basis", "adjusted"),
+                    entry_probability_basis=decision.get("entry_probability_basis", "bleep"),
                     min_probability=c.probability_floor(c.late_entry_enabled and remaining <= c.no_new_entry),
-                    both_models_80_enabled=c.both_models_80_enabled,
-                    project15_probability_veto_enabled=c.project15_probability_veto_enabled,
-                    component_min_probability=c.late_component_min_probability
-                    if c.late_entry_enabled and remaining <= c.no_new_entry
-                    else c.standard_component_min_probability,
-                    component_probabilities=decision.get("component_probabilities", {}),
                     entry_value_filters_enabled=c.entry_value_filters_enabled,
                     min_edge=c.min_edge,
                     min_ev=c.min_ev,

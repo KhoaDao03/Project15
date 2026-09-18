@@ -22,14 +22,11 @@ class Strategy:
     min_ev: float = 0.03
     max_spread: float = 0.04
     min_liquidity: float = 5
-    paths: int = 4000
-    seed: int = 15
     warmup_seconds: int = 300
     ewma_decay: float = 0.97
     volatility_floor: float = 0.00001
     shock_threshold: float = 0.003
     extreme_sigma: float = 0.0005
-    calibration_penalty: float = 0.02
     slippage: float = 0.002
     reference_max_age: float = 3
     book_max_age: float = 5
@@ -67,16 +64,8 @@ class Strategy:
     profit_value_exit_enabled: bool = False
     standard_cashout_enabled: bool = False
     hold_value_exit_enabled: bool = True
-    entry_probability_deductions: bool = True
-    bleep_probability_blend_enabled: bool = False
-    bleep_probability_only_enabled: bool = False
-    project15_probability_veto_enabled: bool = True
-    both_models_80_enabled: bool = False
-    standard_component_min_probability: float = 0.80
-    late_component_min_probability: float = 0.80
     bleep_exchange_seed_enabled: bool = False
-    bleep_safety_clamp_enabled: bool = False
-    bleep_settlement_model_enabled: bool = False
+    bleep_safety_clamp_enabled: bool = True
     sustained_lead_enabled: bool = False
     late_entry_enabled: bool = False
     late_no_new_entry: int = 15
@@ -120,16 +109,6 @@ class Strategy:
             raise ValueError("Full-position execution requires aggressive fixed-contract sizing")
         if not 0 <= self.fixed_stop_price < 1:
             raise ValueError("Invalid fixed stop price")
-        if not 0.5 <= self.late_component_min_probability <= 1:
-            raise ValueError("Invalid late component probability floor")
-        if not 0.5 <= self.standard_component_min_probability <= 1:
-            raise ValueError("Invalid standard component probability floor")
-        if self.bleep_probability_only_enabled and self.bleep_probability_blend_enabled:
-            raise ValueError("Select either Bleep-only probability or the equal blend")
-        if self.both_models_80_enabled and not self.bleep_enabled:
-            raise ValueError("Component probability check requires Bleep")
-        if self.bleep_settlement_model_enabled and not self.bleep_enabled:
-            raise ValueError("Bleep settlement model requires Bleep")
         if not 0 < self.no_new_entry < self.entry_window_start <= 900:
             raise ValueError("Invalid entry window")
         if not 0 < self.late_no_new_entry < self.no_new_entry:
@@ -146,9 +125,9 @@ class Strategy:
             raise ValueError("Invalid lead thresholds")
         if not 0 < self.min_entry_price <= self.max_entry_price < 1:
             raise ValueError("Invalid entry prices")
-        if self.paths < 100 or self.warmup_seconds < 30 or not 0 < self.ewma_decay < 1:
+        if self.warmup_seconds < 30 or not 0 < self.ewma_decay < 1:
             raise ValueError("Insufficient model settings")
-        for name in ("min_probability", "calibration_penalty", "exit_probability", "bankroll_fraction"):
+        for name in ("min_probability", "exit_probability", "bankroll_fraction"):
             if not 0 <= getattr(self, name) <= 1:
                 raise ValueError(name)
         if self.min_quality > 100 or self.queue_multiplier < 1 or self.evaluation_interval <= 0:
@@ -166,56 +145,16 @@ class Strategy:
 
     @cached_property
     def version(self):
-        values = asdict(self)
-        # Enabled is the historical behavior; keep existing checkpoint versions compatible.
-        if values["enabled"]:
-            del values["enabled"]
-        for name, default in (
-            ("asset", "BTC"),
-            ("full_position_execution", False),
-            ("fixed_stop_price", 0.0),
-            ("project15_probability_veto_enabled", True),
-            ("entry_value_filters_enabled", True),
-            ("daily_entry_limits_enabled", True),
-            ("resting_limit_recheck", False),
-            ("revalidate_entry_signal", True),
-            ("max_entry_retries", 0),
-            ("entry_retry_cooldown", 5),
-            ("post_close_cooldown", 0),
-            ("one_trade_per_market", False),
-            ("hold_value_exit_enabled", True),
-            ("profit_value_exit_enabled", False),
-            ("standard_cashout_enabled", False),
-            ("entry_probability_deductions", True),
-            ("bleep_probability_blend_enabled", False),
-            ("bleep_probability_only_enabled", False),
-            ("both_models_80_enabled", False),
-            ("standard_component_min_probability", 0.80),
-            ("late_component_min_probability", 0.80),
-            ("bleep_exchange_seed_enabled", False),
-            ("bleep_safety_clamp_enabled", False),
-            ("bleep_settlement_model_enabled", False),
-            ("sustained_lead_enabled", False),
-            ("late_entry_enabled", False),
-            ("late_no_new_entry", 15),
-            ("lead_confirmation_samples", 5),
-            ("late_min_probability", 0),
-            ("late_lead_confirmation_samples", 0),
-            ("min_lead_sigma", 1.0),
-            ("late_min_lead_sigma", 2.0),
-            ("bollinger_entry_filter_enabled", False),
-        ):
-            if values[name] == default:
-                del values[name]
+        # Include the sole probability model in identity; old checkpoints must not
+        # silently resume under a different model or entry probability policy.
+        from .bleep import model_name
+
+        values = {"probability_model": model_name(self.asset), **asdict(self)}
         return hashlib.sha256(json.dumps(values, sort_keys=True).encode()).hexdigest()[:16]
 
     @classmethod
     def load(cls, path=None):
         return cls(**json.loads(Path(path).read_text())) if path else cls()
-
-    @property
-    def bleep_enabled(self):
-        return self.bleep_probability_blend_enabled or self.bleep_probability_only_enabled
 
     def stop_price(self, entry):
         return self.fixed_stop_price or float(entry) * self.stop_multiplier

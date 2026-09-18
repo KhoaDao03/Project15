@@ -1,194 +1,64 @@
-# Project15 — BTC15 Settlement Edge
+# Project15 — Bleep settlement trading
 
-For the live-only cloud runtime (no paper workers or raw feed tapes), see [Cloud deployment](docs/CLOUD.md).
+A single Bleep ATR-based finish-probability model for Kalshi 15-minute BTC, ETH,
+SOL and XRP markets. All four crypto presets share the same strategy parameters;
+asset identity selects the reference feed, market series, settlement precision,
+volatility multiplier and market-cap premium.
 
-For a complete server and domain setup walkthrough, use [IONOS VPS setup](docs/IONOS_VPS_SETUP.md).
+## Cloud deployment
 
-For a public domain, use the separate [visitor dashboard](docs/CLOUD.md#optional-public-view-only-dashboard), with optional one-minute passcode unlocks for live buy settings, contract quantity and safe shutdown. Keep the full dashboard with trading controls private over SSH.
-
-**This branch has one executable strategy: Settlement Edge, supporting BTC, ETH, SOL and XRP 15-minute paper markets.** The current milestone is to make its data collection, paper execution, recovery and evaluation dependable before adding any other strategy. Conservative Confirmed Momentum and Volatility-Regime Momentum are not executable here. Their retained history is read-only.
-
-This is a research/paper-trading application, not a claim of profitability. It uses real Kalshi market data when credentials are configured. Collector orders and fills remain simulated; blanket CLI live execution remains blocked. The shared dashboard offers [manual real-money buy/sell orders](docs/MANUAL_TRADING.md) and [explicitly enabled per-asset live automation](docs/LIVE_AUTOMATION.md). Live automation defaults off and requires confirmation per asset, then stays enabled across markets and restarts until switched off, with a maximum of 20 contracts per market.
-
-All four current paper bots use a 50/50 blend of Project15 and Bleep Mode B,
-with exchange-seeded Bleep indicators and its safety clamp. Both standard and
-late entries require Bleep ≥78%; the blended entry minimum is disabled.
-Bleep now models the final-minute settlement average using observed samples and
-the higher of ATR-based and recent reference-price volatility.
-Project15 has no individual probability veto. One fresh same-side confirmation sample is required for either entry window;
-quality checks remain; modeled-sigma lead minimums are disabled.
-The BTC paper experiment retains these settings:
-The purchase range is $0.80–$0.95, with standard entries at 7–2 minutes
-remaining and late entries at 2 minutes–15 seconds remaining.
-The only enabled exit trigger is the fixed hard stop at a held-side bid of 55¢;
-remaining positions settle at expiration. Net-edge and expected-value entry
-filters are disabled. See [the blend specification](docs/BLEEP_BLEND.md).
-
-All four active paper bots use [full-position execution](docs/FULL_POSITION_EXECUTION.md):
-buy 10 contracts or none within the entry price cap, and commit sells until the
-whole held position closes as liquidity permits.
-
-For this installation, [active paper settings](docs/ACTIVE_PAPER_SETTINGS.md) describe the current paper configuration, including [sustained-lead checks and late entries](docs/SUSTAINED_LEAD.md) and the [conditional Bollinger entry filter](docs/BOLLINGER_ENTRY_FILTER.md). See [paper exit execution](docs/EXIT_EXECUTION.md) for post-latency depth matching and separate stress diagnostics. The optional [stop-confirmation comparison](docs/STOP_CONFIRMATION_SHADOW.md) is currently disabled; its separate paper ledger and historical results are retained.
-
-See [multi-asset paper trading](docs/CRYPTO_PAPER.md) for the shared BTC/ETH/SOL/XRP dashboard, concurrent paper collectors, and asset-specific settlement precision. Existing BTC runs retain their configuration and history.
-
-## Start here
-
-Read [Getting started from scratch](docs/GETTING_STARTED.md) for the complete Linux/macOS and PowerShell setup, credentials, frozen configuration, first run and restart instructions. Existing multi-strategy installations must first read [legacy retirement and recovery](docs/SINGLE_STRATEGY.md); a fresh clone is not permission to abandon an existing portfolio.
-
-Install [Git](https://git-scm.com/downloads) and [uv](https://docs.astral.sh/uv/getting-started/installation/), then explicitly select this milestone's branch:
+Start with [Cloud deployment](docs/CLOUD.md), or the
+[IONOS VPS walkthrough](docs/IONOS_VPS_SETUP.md) for server/domain setup.
+The cloud profile runs four signal collectors, one order executor and a shared
+private dashboard. It starts no paper simulation workers and records no raw tapes.
+An optional [public dashboard](docs/CLOUD.md#optional-public-view-only-dashboard)
+provides viewing and passcode-protected owner controls.
 
 ```bash
-git clone --branch fix/fractional-passive-fills --single-branch https://github.com/KhoaDao03/Project15.git
-cd Project15
-uv python install 3.12
-uv sync --python 3.12 --extra dev --locked
-git branch --show-current
+uv sync --locked --no-default-groups
+.venv/bin/python scripts/prepare_cloud.py
 ```
 
-Python 3.12+ is required; the documented CI baseline is Python 3.12 on Ubuntu. There is no Node/frontend build step and SQLite needs no separate database server. The default branch may not yet contain this work.
+This creates a fresh frozen cloud configuration; it does not start trading.
+Follow the cloud guide for credentials and services. Live automation defaults off
+and requires explicit per-asset confirmation. Keep trading credentials and the
+private dashboard private.
 
-### 1. Verify the software without market credentials
+## Shared crypto rules
 
-On a fresh checkout, leave both Kalshi credential variables unset/empty. The demo below writes synthetic data into a separate database. Do not use it as evidence of actual-market performance.
-
-```bash
-uv run --locked btc15 demo --output data/synthetic.jsonl
-uv run --locked btc15 --database sqlite:///data/demo.db backtest data/synthetic.jsonl
-uv run --locked btc15 --database sqlite:///data/demo.db dashboard --no-collect
-```
-
-Open `http://127.0.0.1:8000`, choose **BACKTEST**, and select the generated run. The demo dashboard does not start collection. Stop it before using the same port for paper trading. Repeating a backtest creates another independent run; it does not extend the previous portfolio.
-
-### 2. Configure the real feed and freeze the first experiment
-
-Follow the [environment and credential steps](docs/GETTING_STARTED.md#environment-and-credentials). Keep `TRADING_MODE=PAPER` and `ENABLE_LIVE_TRADING=false`. Save the RSA private key locally, never in Git or chat. The example key path is a placeholder, not a bundled file. Both credential fields must be empty for a key-free discovery check; a nonexistent nonempty key path can fail client initialization.
-
-Create an original-control configuration once. This command is valid in Bash and PowerShell and refuses to overwrite an existing frozen file:
-
-```bash
-uv run --locked python -c "from pathlib import Path; from dataclasses import asdict; from btc15.config import Strategy; from btc15.domain import dumps; p=Path('data/runtime/settlement-original.json'); p.parent.mkdir(parents=True, exist_ok=True); p.open('x', encoding='utf-8').write(dumps(asdict(Strategy()))+'\n')"
-uv run --locked btc15 --config data/runtime/settlement-original.json config
-uv run --locked btc15 discover
-uv run --locked btc15 init-db
-```
-
-`discover` checks public REST discovery/contract parsing, not authenticated streaming or fill readiness. Upcoming markets can be blocked until their strike is published. The freeze command uses built-in defaults deliberately; `config/defaults.json` is an older explicit example with a different fee precision, not an automatically loaded default.
-
-### 3. Start one named paper run
-
-```bash
-uv run --locked btc15 --config data/runtime/settlement-original.json dashboard --run-id settlement-original --port 8000
-```
-
-The dashboard starts/resumes **one Settlement Edge paper engine**. It requires configured feed credentials, compatible checkpoints, available writer ownership, and a 10 GiB free-space reserve on the data filesystem. All strategy and freshness checks still apply; startup does not force a trade.
-
-Use **Shut down safely** and confirm. Open positions are saved, not liquidated. After a clean stop, repeat the exact command above to resume the same run/configuration. Do not start a second collector against that database. See [Paper operation](docs/PAPER_TRADING.md) and [Troubleshooting](docs/TROUBLESHOOTING.md).
-
-## One strategy, not one mutable experiment
-
-| Entry setting | Original built-in control | Optional moderate preset |
-| --- | --- | --- |
-| Seconds remaining | `120 < remaining <= 480` | `120 < remaining <= 600` |
-| Minimum ask | $0.85 | $0.80 |
-| Minimum conservative probability | 0.90 | 0.90 |
-| Minimum quality | 85 | 85 |
-| Minimum net edge and EV | $0.03 each | $0.02 each |
-
-Both presets are the same strategy. Only one selected configuration runs at a time. The optional [moderate preset](docs/STRATEGY.md#moderate-settlement-edge-paper-preset) does not become active merely by pulling this branch. New settings need a deliberately named experiment after prior exposure is resolved; checkpoints require their original configuration.
-
-The optional [paper fill experiment](docs/FILL_EXPERIMENT.md) adds limit-price revalidation
-and one bounded retry; a separate IOC preset tests more competitive execution. Neither
-changes an existing frozen run automatically.
-
-For this installation, [collector throughput recovery and service controls](docs/COLLECTOR_THROUGHPUT.md)
-describe the measured performance fix and supervised operation.
-See [overload detection and sequence-safe recovery](docs/OVERLOAD_RECOVERY.md)
-for entry blocking, ordered draining, fresh-data checks, and recovery status.
-The [operational state panel](docs/OPERATIONAL_STATE.md) separates collector health,
-recovery progress, and current entry-blocking reasons.
-See [replay and failure recovery validation](docs/REPLAY_RECOVERY_VALIDATION.md)
-for offline results and the remaining endurance-session acceptance.
-The [overnight recovery fix](docs/OVERNIGHT_FAILURE_FIX_20260911.md) addresses
-draining an established book and writer ownership after an interrupted process.
-The [connection setup fix](docs/CONNECTION_HANDSHAKE_FIX_20260911.md) prevents
-false integrity failures when heartbeats arrive during a WebSocket handshake.
-The [reliability audit](docs/RELIABILITY_AUDIT_20260911.md) adds repair for connected
-but stalled feeds and reduces restart cost after large diagnostic histories.
-
-## Operating modes
-
-| Command | Behavior |
+| Setting | Value |
 | --- | --- |
-| `dashboard` | Named PAPER execution plus UI; default run ID `dashboard-paper` |
-| `dashboard --observe-only` | Full research collection/evaluations without simulated orders |
-| `dashboard --no-collect` | Viewing UI for the selected database; no collector started |
-| `paper` | Standalone paper collector; prints its generated run ID on completion |
-| `paper --resume RUN_ID` | Explicit compatible checkpoint resume |
-| `paper-service --run-id NAME` | Named managed paper runner; see the Linux/WSL guide |
-| `backtest INPUT...` | New offline replay using the same engine/executor |
+| Probability model | Bleep ATR finish estimate |
+| Standard entry window | 8–2 minutes remaining |
+| Late entry window | 2 minutes down to, but excluding, 1 second remaining |
+| Bleep entry probability | At least 83% after safety and market-respect caps in both windows |
+| ATR source | Rolling 14 true ranges from official-reference candles |
+| ATR multiplier | BTC 1.35; ETH 1.25; SOL/XRP 1.00 |
+| Market-respect cap | Mid +6pp BTC/ETH; +10pp SOL/XRP; maximum 98% |
+| Strategy purchase range | 80–95¢ |
+| Confirmation | One fresh same-side reference sample |
+| Directional Bollinger filter | Enabled |
+| Net-edge / EV entry vetoes | Disabled; estimates remain reported |
+| Take-profit / hard stop | 99¢ / 55¢ |
 
-`--observe-only` and `--no-collect` are mutually exclusive. Global `--config` and `--database` arguments go **before** the subcommand. A UI mode/history filter does not change the executing process.
+Remaining contracts settle at expiration. Price triggers do not guarantee fills.
+Live execution uses separate resting-order mechanics; see
+[live automation](docs/LIVE_AUTOMATION.md). Probability is an uncalibrated estimate,
+not an established profitable edge.
 
-## What you see and what is saved
+See [Strategy](docs/STRATEGY.md), [Probability model](docs/PROBABILITY_MODEL.md),
+[active presets](docs/ACTIVE_PAPER_SETTINGS.md), and the [documentation index](docs/README.md).
 
-**Live overview** shows current prices, one strategy card, selected run/configuration, execution state and rejection reasons. **Trade history** separates orders/cancellations, fills, completed results and retained entry evidence. **Results & accuracy** reports retained-data metrics. **Settings** saves parameters for future sessions, not an emergency stop.
+## Configuration changes
 
-Paper mode writes compressed `.jsonl.gz` source tapes, orders, cancellations, first-fill entry evidence, fills, fees, results and checkpoints. Latest rejected evaluations/status are replaceable snapshots, not a complete growing evaluation history. **Zero retained opportunities does not mean zero evaluations or zero attempted orders.** Observation-only collection keeps full evaluation history plus JSONL/Parquet inputs. See [Recording](docs/TRADE_RECORDING.md) and [Trade memory](docs/TRADE_MEMORY.md).
+There is no probability-mode selector. The old blended and Project15 Monte Carlo
+modes and their simulation settings have been removed. The ATR probability supplies entry confidence and EV. Settlement-average evidence
+remains a separate confirmation check.
 
-Default views exclude retired strategies; the explicit archive selector reads their evidence without running them. Configuration/run filtering matters when comparing results. Synthetic tests, public discovery, authentic replay and a live-connected paper session answer different questions; see [Validation](docs/VALIDATION.md).
-
-## Documentation
-
-[Documentation index](docs/README.md) · [From scratch](docs/GETTING_STARTED.md) · [Paper lifecycle](docs/PAPER_TRADING.md) · [Strategy/settings](docs/STRATEGY.md) · [No-trade troubleshooting](docs/TROUBLESHOOTING.md) · [Managed service](docs/AUTONOMOUS_PAPER.md) · [Replay](docs/BACKTESTING.md) · [Safety/recovery](docs/SAFETY.md)
-
-The earlier measured single-strategy verification is retained in [SINGLE_STRATEGY_VALIDATION.md](docs/SINGLE_STRATEGY_VALIDATION.md). It is dated evidence, not a claim that a later checkout or the user's overnight session has been tested. No startup command deletes history; no live-trading activation procedure is part of this milestone.
-
-## Quarantined settlement recovery
-
-Invalid or changed metadata blocks trading but no longer discards a held contract. Final settlement recovery and the preview/confirmation command are documented in [Settlement recovery](docs/SETTLEMENT_RECOVERY.md). Recovery does not reopen trading or reset risk budgets.
-
-Decision and execution audit records: [logging reference](docs/DECISION_LOGGING.md).
-
-Active market routing and replay validation: [processing notes](docs/MARKET_PROCESSING.md).
-
-Current IOC paper strategy: [trading strategy documentation](docs/TRADING_STRATEGY.md).
-
-## Convergence paper experiment
-
-The opt-in [convergence experiment](docs/CONVERGENCE_EXPERIMENT.md) lowers net entry
-edge/EV to two cents and disables only the hold-value exit. It includes separate
-entry-only and exit-only presets for comparison. Existing frozen runs keep their
-settings; select the combined preset explicitly for a new run.
-
-Entry safety: [reference receipt and model revalidation](docs/ENTRY_REFERENCE_REVALIDATION.md).
-
-Entry reporting: [settlement, target-sale and stop-exit economics](docs/ENTRY_ECONOMICS.md).
-
-Sequential paper trades: [same-market re-entry](docs/REENTRY.md).
-
-Active Bleep update: historical exchange candles seed only Bleep indicators; its
-75% favored-side safety cap applies below 0.5 sigma before the 50/50 probability
-average. See [Bleep blend](docs/BLEEP_BLEND.md).
-
-Current setting: the directional Bollinger entry veto is enabled for BTC, ETH,
-SOL and XRP, including the strategy decisions used by live automation. Entries
-beyond the selected-direction band are rejected; unavailable/stale bands preserve
-the existing entry checks. Bollinger indicators also remain part of Bleep.
-Deployment and runtime verification: `data/runtime/bollinger-on-all-20260915/`.
-
-## Fixed 55¢ hard stop across all assets
-
-BTC, ETH, SOL and XRP now use `fixed_stop_price=0.62`: the hard stop
-triggers when the held-side bid is at or below 55¢, regardless of entry price.
-This replaces BTC’s 49¢ stop and the other assets’ entry-price multiplier.
-Other per-asset entries, exits and probability settings are preserved.
-The trigger is not a guaranteed execution price. Paper history and balances
-are retained. Deployment evidence: `data/runtime/stop62-all-v1/`.
-
-## September 15 purchase range: 80–95 cents
-
-All four active assets now use `min_entry_price=0.80` and
-`max_entry_price=0.95`, including entry decisions used by live automation.
-Bollinger filtering and all other current settings remain in place.
-Deployment evidence: `data/runtime/price80-95-all-20260915/`.
+Old configurations containing removed fields are rejected. Prepare fresh cloud
+configs from the current presets; do not copy old frozen configs or change a
+checkpoint hash to bypass compatibility checks. Existing trade records remain
+readable, but this version does not reproduce old models. Keep the previous
+checkout for any still-running installation until an orderly deployment/cutover.
+The cloud guide describes the boundary between a fresh deployment and an existing
+account migration.

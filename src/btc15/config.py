@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .strategies.settlement_edge.config import Strategy as Strategy
 
@@ -13,6 +13,7 @@ class Settings:
     data_dir: str = "data"
     api_key_id: str = ""
     private_key_path: str = ""
+    pyth_pro_api_key: str = field(default="", repr=False)
     rest_url: str = "https://external-api.kalshi.com/trade-api/v2"
     ws_url: str = "wss://external-api-ws.kalshi.com/trade-api/ws/v2"
 
@@ -28,6 +29,7 @@ class Settings:
             data_dir=os.getenv("DATA_DIR", "data"),
             api_key_id=os.getenv("KALSHI_API_KEY_ID", ""),
             private_key_path=os.getenv("KALSHI_PRIVATE_KEY_PATH", ""),
+            pyth_pro_api_key=os.getenv("PYTH_PRO_API_KEY", ""),
         )
 
     def guard(self):

@@ -17,7 +17,7 @@ from btc15.config import Settings
         (["--run-id", "existing-group"], True, True, "existing-group"),
     ],
 )
-def test_dashboard_cli_execution_defaults(store, monkeypatch, arguments, collect, paper, run_id):
+def test_dashboard_cli_execution_defaults(store, monkeypatch, tmp_path, arguments, collect, paper, run_id):
     import uvicorn
 
     seen = {}
@@ -28,7 +28,7 @@ def test_dashboard_cli_execution_defaults(store, monkeypatch, arguments, collect
         return original(*args, **kwargs)
 
     monkeypatch.setattr(cli, "Store", lambda *args: store)
-    monkeypatch.setattr(cli.Settings, "env", lambda: Settings())
+    monkeypatch.setattr(cli.Settings, "env", lambda: Settings(data_dir=str(tmp_path)))
     monkeypatch.setattr(dashboard, "create_app", create_app)
     monkeypatch.setattr(uvicorn.Server, "run", lambda self: None)
     monkeypatch.setattr(sys, "argv", ["btc15", "dashboard", *arguments])
@@ -38,7 +38,7 @@ def test_dashboard_cli_execution_defaults(store, monkeypatch, arguments, collect
     assert seen["run_id"] == run_id
 
 
-def test_observe_only_has_no_managed_paper_run(store, monkeypatch):
+def test_observe_only_has_no_managed_paper_run(store, monkeypatch, tmp_path):
     from btc15 import runner
 
     async def collect(*args, **kwargs):
@@ -48,7 +48,7 @@ def test_observe_only_has_no_managed_paper_run(store, monkeypatch):
         await kwargs["stop_event"].wait()
 
     monkeypatch.setattr(runner, "collect", collect)
-    settings = Settings(api_key_id="test", private_key_path="unused")
+    settings = Settings(data_dir=str(tmp_path), api_key_id="test", private_key_path="unused")
     with TestClient(
         dashboard.create_app(store, collect_live=True, settings=settings, paper_execution=False)
     ) as client:

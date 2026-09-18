@@ -1,6 +1,7 @@
 """Real-order ownership in one process, accessed through a private Unix socket."""
 
 import asyncio
+import json
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -79,10 +80,17 @@ def create_execution_app(manifest, *, settings=None, client_factory=None):
 
     @app.post("/api/execution/prepare-shutdown", dependencies=[Depends(local_request)])
     async def prepare_shutdown(request: Request):
-        if await request.json() != {"confirm": True}:
+        body = await request.json()
+        if not isinstance(body, dict) or body.get("confirm") is not True or set(body) - {"confirm", "asset"}:
             raise HTTPException(422, "Explicit shutdown confirmation required")
+        asset = body.get("asset")
+        if "asset" in body and (not isinstance(asset, str) or asset not in members):
+            raise HTTPException(404, "Unknown asset")
         async with manual.order_lock:
-            live.prepare_shutdown()
+            if asset is None:
+                live.prepare_shutdown()
+            else:
+                live.prepare_shutdown(asset)
         return dict(prepared=True)
 
     return app
@@ -133,8 +141,13 @@ class ExecutionClient:
                 purchases=None,
             )
 
-    async def prepare_shutdown(self):
-        response = await self.request("POST", "/api/execution/prepare-shutdown", content=b'{"confirm":true}')
+    async def prepare_shutdown(self, asset=None):
+        body = dict(confirm=True)
+        if asset is not None:
+            body["asset"] = asset
+        response = await self.request(
+            "POST", "/api/execution/prepare-shutdown", content=json.dumps(body).encode()
+        )
         if response.status_code != 200:
             try:
                 detail = response.json().get("detail", "Execution service could not confirm safe shutdown")

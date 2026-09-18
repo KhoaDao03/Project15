@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from decimal import ROUND_CEILING, ROUND_FLOOR
 
 from ...domain import D
+from .bleep import capped_confidence
 
 
 @dataclass
@@ -73,17 +74,6 @@ def effective_entry_ceiling(market, conservative, config, *, late=False):
     return float(max(candidates)) if candidates else None
 
 
-def component_probability_rejections(values, minimum=0.80, *, project15_enabled=True):
-    """Both models must meet the selected-side component probability floor."""
-    reasons = []
-    for model in ("project15", "bleep") if project15_enabled else ("bleep",):
-        value = values.get(model)
-        if type(value) not in (int, float) or not math.isfinite(value) or not minimum <= value <= 1:
-            actual = value if type(value) in (int, float) and math.isfinite(value) else None
-            reasons.append(dict(code=model.upper() + "_MIN_PROBABILITY", actual=actual, required=minimum))
-    return reasons
-
-
 def evaluate(
     market, book, tick, features, probability, quality, now, config, extra_reasons=(), *, entry_price=None
 ):
@@ -97,15 +87,13 @@ def evaluate(
         side = lead.get("side")
     ask, liquidity = book.ask_level(side) if side else (None, 0)
     bid = book.bid(side) if side else None
-    penalty = 0
-    if config.entry_probability_deductions:
-        conservative = probability["conservative_" + side] if side else 0
-        if config.sustained_lead_enabled:
-            conservative = min(conservative, lead.get("stressed_probability", 0))
-        penalty = min(0.05, features["volatility_disagreement"] * 0.01)
-        conservative = max(0, conservative - penalty)
-    else:
-        conservative = probability["p_" + side] if side else 0
+    raw_probability = probability.get("p_" + side) if side else None
+    conservative = capped_confidence(raw_probability, bid, ask, config.asset)
+    valid_probability = (
+        type(conservative) in (int, float) and math.isfinite(conservative) and 0 <= conservative <= 1
+    )
+    if not valid_probability:
+        conservative = 0
     spread = float(D(ask) - D(bid)) if ask is not None and bid is not None else None
     price = ask if entry_price is None else entry_price
     fee = fee_bound(price, config) if price is not None else None
@@ -113,20 +101,6 @@ def evaluate(
     slippage = 0 if entry_price is not None and not config.passive else config.slippage
     ev = D(conservative) - D(price) - D(fee) - D(slippage) if price is not None else None
     reasons = []
-    components = {}
-    component_reasons = []
-    if config.both_models_80_enabled:
-        blend = probability.get("blend", {})
-        components = dict(
-            project15=blend.get("project15_p_" + str(side)),
-            bleep=blend.get("bleep", {}).get("p_" + str(side)),
-        )
-        component_reasons = component_probability_rejections(
-            components,
-            config.late_component_min_probability if late else config.standard_component_min_probability,
-            project15_enabled=config.project15_probability_veto_enabled,
-        )
-        reasons.extend(component_reasons)
 
     def check(code, okay, actual=None, required=None):
         if not okay:
@@ -159,7 +133,12 @@ def evaluate(
     check("MODEL_QUALITY", quality["score"] >= config.min_quality, quality["score"], config.min_quality)
     check("MIN_PRICE", price is not None and price >= config.min_entry_price, price, config.min_entry_price)
     check("MAX_PRICE", price is not None and price <= config.max_entry_price, price, config.max_entry_price)
-    check("MIN_PROBABILITY", conservative >= minimum_probability, conservative, minimum_probability)
+    check(
+        "MIN_PROBABILITY",
+        valid_probability and conservative >= minimum_probability,
+        conservative,
+        minimum_probability,
+    )
     if config.entry_value_filters_enabled:
         check(
             "MIN_EDGE",
@@ -203,13 +182,13 @@ def evaluate(
         reasons=reasons,
         seconds_remaining=remaining,
         conservative_probability=conservative,
-        entry_probability_basis="adjusted" if config.entry_probability_deductions else "raw",
-        model_disagreement_penalty=penalty,
+        pre_market_cap_probability=raw_probability,
+        market_cap_applied=valid_probability and conservative != raw_probability,
+        entry_probability_basis="bleep",
         expected_fill_price=price,
-        effective_max_entry_price=None
-        if component_reasons
-        else effective_entry_ceiling(market, conservative, config, late=late),
-        **(dict(component_probabilities=components) if config.both_models_80_enabled else {}),
+        effective_max_entry_price=effective_entry_ceiling(market, conservative, config, late=late)
+        if valid_probability
+        else None,
         estimated_fees=fee,
         expected_slippage=slippage,
         raw_edge=conservative - price if price is not None else None,

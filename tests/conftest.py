@@ -27,7 +27,7 @@ def market(raw, series):
 
 @pytest.fixture
 def config():
-    return Strategy(paths=500)
+    return Strategy()
 
 
 @pytest.fixture
@@ -65,3 +65,10 @@ def book(now):
     b = Book()
     b.snapshot(dict(yes_dollars_fp=[[".88", "2.50"]], no_dollars_fp=[[".90", "20.75"]]), now)
     return b
+
+
+@pytest.fixture(autouse=True)
+def isolated_environment(monkeypatch, tmp_path):
+    monkeypatch.setenv("DATA_DIR", str(tmp_path / "settings"))
+    monkeypatch.setenv("KALSHI_API_KEY_ID", "")
+    monkeypatch.setenv("KALSHI_PRIVATE_KEY_PATH", "")

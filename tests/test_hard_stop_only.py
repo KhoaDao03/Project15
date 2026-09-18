@@ -1,11 +1,14 @@
+from dataclasses import replace
+
 import pytest
-from btc15.config import Strategy
 from test_exit_execution_v2 import held, quote, sells
+
+from btc15.config import Strategy
 
 
 @pytest.mark.parametrize("side", ["yes", "no"])
-def test_active_config_only_stops_at_configured_price(store, market, now, side):
-    c = Strategy.load("config/settlement-edge-active-paper.json")
+def test_historical_stop_only_config_only_stops_at_configured_price(store, market, now, side):
+    c = replace(Strategy.load("config/settlement-edge-active-paper.json"), take_profit=None)
     assert c.exit_probability == 0 and c.take_profit is None
     assert not any((c.hold_value_exit_enabled, c.profit_value_exit_enabled, c.standard_cashout_enabled))
     ex = held(store, market, now, c, side)

@@ -124,13 +124,13 @@ def test_partial_reduction_credits_only_observed_replenishment(scenario, store, 
 
 def test_observe_empty_depth_without_an_exit_signal(scenario, store, market, now):
     s = scenario()
-    s.p["conservative_yes"] = 0.70
+    s.p["p_yes"] = 0.70
     first_exit(s, store, market, now, bid=".80")
-    s.p["conservative_yes"] = 0.99  # No price stop, TP or invalidation now.
+    s.p["p_yes"] = 0.99  # No price stop, TP or invalidation now.
     assert frame(s, market, now + 4, "0", bid=".80")
     assert frame(s, market, now + 5, ".30", bid=".80")
     assert sold(store) == D(".10")
-    s.p["conservative_yes"] = 0.70
+    s.p["p_yes"] = 0.70
     assert frame(s, market, now + 6, ".30", bid=".80")
     assert sold(store) == D(".10")  # New trigger starts a new latency period.
     assert frame(s, market, now + 6.25, ".30", bid=".80")

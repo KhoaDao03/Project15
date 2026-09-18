@@ -37,8 +37,8 @@ class SettlementSpecification:
 
     def __post_init__(self):
         asset = next((a for a in ASSETS.values() if a.index == self.index_name), None)
-        if self.reference_source != "CF Benchmarks" or asset is None:
-            raise ValueError("Official supported crypto reference required")
+        if asset is None or self.reference_source != asset.reference_source:
+            raise ValueError("Official supported reference required")
         if self.comparison_operator not in (">=", ">", "<=", "<"):
             raise ValueError("Unsupported comparison")
         if not math.isfinite(self.strike) or self.strike <= 0:
@@ -47,7 +47,7 @@ class SettlementSpecification:
             raise ValueError("Invalid settlement window")
         if (
             self.sample_frequency != 1
-            or self.averaging_window_seconds != 60
+            or self.averaging_window_seconds != (0 if asset.commodity else 60)
             or self.round_digits != asset.round_digits
         ):
             raise ValueError("Unverified settlement methodology")
@@ -56,6 +56,8 @@ class SettlementSpecification:
 
     @property
     def sample_times(self):
+        if self.reference_source == "Pyth":
+            return [self.settlement_end]
         return [self.settlement_start + i for i in range(1, 61)]
 
     def yes(self, average, rounding=None):
@@ -125,7 +127,7 @@ class Market:
 def parse_market(raw, series):
     asset = next((a for a in ASSETS.values() if a.series == series.get("ticker")), None)
     if asset is None or series.get("frequency") != "fifteen_min":
-        raise ValueError("Not a supported crypto 15-minute series")
+        raise ValueError("Not a supported 15-minute series")
     if not re.fullmatch(re.escape(asset.series) + r"-[A-Z0-9]+-\d+", raw.get("ticker", "")):
         raise ValueError("Market does not match the selected series")
     if raw.get("market_type") != "binary" or not raw.get("event_ticker", "").startswith(asset.series + "-"):
@@ -140,9 +142,26 @@ def parse_market(raw, series):
         rf"of CF Benchmarks' {asset.rule_index} before (.+?), then the market resolves to Yes\."
     )
     match = re.fullmatch(pattern, primary)
+    if asset.commodity:
+        name = {"GOLD": "Gold", "SILVER": "Silver", "WTI": "WTI Oil"}[asset.symbol]
+        match = re.fullmatch(
+            rf"If the close price of the 1-minute candlestick for {name} on (.+?) at (.+?) "
+            rf"is (at least|greater than|less than|at most) the close price of the 1-minute Pyth {asset.rule_index} "
+            r"candlestick at (.+?) USD/\|\| Unit \|\|, then the market resolves to Yes\.",
+            primary,
+        )
+        if match:
+            match = (None, match[2] + " on " + match[1], match[3], match[4])
     if (
         not match
-        or "60 RTI prices are collected" not in secondary
+        or (not asset.commodity and "60 RTI prices are collected" not in secondary)
+        or (
+            asset.commodity
+            and (
+                "the price at the end of the immediately preceding one-minute interval" not in secondary
+                or "the most recently available published data will be used" not in secondary
+            )
+        )
         or f"rounded to the nearest {asset.round_digits} decimal places" not in secondary
     ):
         raise ValueError("Unrecognized settlement wording")
@@ -150,7 +169,12 @@ def parse_market(raw, series):
     expected = {">=": "greater_or_equal", ">": "greater", "<": "less", "<=": "less_or_equal"}[operator]
     if raw.get("strike_type") != expected:
         raise ValueError("Wording/strike_type conflict")
-    if not any(s.get("name") == "CF Benchmarks" for s in series.get("settlement_sources", [])):
+    source_name = (
+        f"Pyth - {asset.symbol.title() if asset.symbol != 'WTI' else 'WTI'}"
+        if asset.commodity
+        else "CF Benchmarks"
+    )
+    if not any(s.get("name") == source_name for s in series.get("settlement_sources", [])):
         raise ValueError("Settlement source missing")
     start, end = timestamp(raw["open_time"]), timestamp(raw["close_time"])
     if end - start != 900:
@@ -184,12 +208,13 @@ def parse_market(raw, series):
         raise ValueError("Unknown rounding precision")
     strike = float(raw["floor_strike"])
     spec = SettlementSpecification(
-        "CF Benchmarks",
+        asset.reference_source,
         asset.index,
         strike,
-        end - 60,
+        end if asset.commodity else end - 60,
         end,
         operator,
+        averaging_window_seconds=0 if asset.commodity else 60,
         round_digits=asset.round_digits,
         rules_hash=hashlib.sha256((primary + secondary).encode()).hexdigest(),
     )

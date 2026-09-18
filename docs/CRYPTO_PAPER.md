@@ -14,7 +14,7 @@ Python package name remain unchanged.
 | XRP | KXXRP15M | XRPUSD_RTI | 4 | `config/settlement-edge-xrp-paper.json` |
 
 The ETH/SOL/XRP presets copy the BTC paper experiment's entry, exit,
-sizing and Bleep blend settings at the time multi-asset support was added,
+sizing and Bleep settings at the time multi-asset support was added,
 changing only `asset`. Later BTC setting changes do not propagate into the
 other assets' frozen runs. These thresholds have
 not been calibrated separately for the additional assets.
@@ -168,7 +168,7 @@ and public series endpoints for [ETH](https://external-api.kalshi.com/trade-api/
 [SOL](https://external-api.kalshi.com/trade-api/v2/series/KXSOL15M), and
 [XRP](https://external-api.kalshi.com/trade-api/v2/series/KXXRP15M).
 
-Monte Carlo settlement rounding and tie handling use each contract's precision.
+Bleep settlement rounding and tie handling use each contract's precision.
 The sustained-lead denominator and Bleep's minimum absolute ATR use one unit of
 settlement precision: $0.01 for BTC/ETH and $0.0001 for SOL/XRP. Relative
 volatility calculations and contract-price ticks/fees retain their existing rules.
@@ -190,7 +190,7 @@ also supports [user-confirmed manual real orders](MANUAL_TRADING.md) in a separa
 
 `tests/test_crypto_assets.py` covers public metadata parsing and rejection,
 asset-specific discovery/subscriptions, four-decimal model behavior, seed and
-reference isolation, paper fills/restart/official settlement, the current blend
+reference isolation, paper fills/restart/official settlement, the current Bleep model
 presets, collector routing, and dashboard identity. These tests use temporary
 ledgers and simulated transports. Public REST metadata checks do not establish
 authenticated streaming readiness or paper profitability. A connected endurance

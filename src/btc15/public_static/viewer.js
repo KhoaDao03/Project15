@@ -48,6 +48,8 @@ refresh();
 
 
 let ownerToken='', ownerDeadline=0, ownerLatest=null, ownerBusy=false, ownerBlocked=true;
+let assetStopStates={};
+const stopBlocked=asset=>['stopping','stopped','unknown'].includes(assetStopStates[asset]?.status);
 let draftRevision=-1, draftTicker='', draftDirty=false;
 const stopMessage=document.getElementById('stop-message');
 const liveMessage=document.getElementById('live-message');
@@ -55,7 +57,10 @@ function unlocked(){return ownerToken&&performance.now()<ownerDeadline;}
 function updateLocks(){
   if(!unlocked()){ownerToken='';document.getElementById('unlock-status').textContent='Locked · enter the passcode to make changes.';}
   else document.getElementById('unlock-status').textContent='Unlocked · '+Math.ceil((ownerDeadline-performance.now())/1000)+' seconds remaining';
-  document.getElementById('live-fields').disabled=!unlocked()||ownerBusy||ownerBlocked||!ownerLatest||ownerLatest.stale||!ownerLatest.live_available||!draftTicker;
+  document.getElementById('live-fields').disabled=!unlocked()||ownerBusy||ownerBlocked||!ownerLatest||ownerLatest.stale||!ownerLatest.live_available||!draftTicker||stopBlocked(document.getElementById('live-asset').value);
+  const selected=document.getElementById('stop-asset').value;
+  document.getElementById('asset-stop-fields').disabled=!unlocked()||ownerBusy||ownerBlocked||stopBlocked(selected);
+  document.getElementById('asset-stop-message').textContent=assetStopStates[selected]?.message||'';
   document.getElementById('stop-fields').disabled=!unlocked()||ownerBusy||ownerBlocked;
 }
 function renderOwner(data){
@@ -64,6 +69,8 @@ function renderOwner(data){
   if(!asset){draftTicker='';updateLocks();return;}
   const policy=asset.live_policy||{},revision=policy.revision??0;
   document.getElementById('live-current').textContent='Saved: '+(policy.enabled?'new buys ON':'new buys OFF')+' · '+(policy.contracts??'not set')+' contracts per entry';
+  if(policy.loss_guard&&!policy.enabled&&revision>draftRevision){draftDirty=false;document.getElementById('live-enabled').checked=false;}
+  if(policy.loss_guard)document.getElementById('live-current').textContent+=' · '+policy.loss_guard.reason;
   if(!draftDirty&&revision>=draftRevision){
     draftRevision=revision;draftTicker=asset.markets.find(m=>m.fresh)?.ticker||'';
     document.getElementById('live-enabled').checked=policy.enabled===true;
@@ -109,6 +116,7 @@ async function refreshStop(){
     const response=await fetch('/api/stop',{cache:'no-store',signal:AbortSignal.timeout(8000)});
     if(!response.ok)throw new Error('Unavailable');const state=await response.json();
     document.getElementById('owner-section').hidden=!state.enabled;
+    assetStopStates=state.assets||{};
     ownerBlocked=['stopping','stopped','unknown'].includes(state.status);
     if(state.message)stopMessage.textContent=state.message;
   }catch{ownerBlocked=true;stopMessage.textContent='Shutdown status unavailable. Check the private dashboard.';}
@@ -122,3 +130,13 @@ document.getElementById('stop-form').addEventListener('submit',async event=>{
 });
 setInterval(updateLocks,250);
 refreshStop();
+
+document.getElementById('stop-asset').addEventListener('change',()=>{document.getElementById('asset-stop-confirm').checked=false;updateLocks();});
+document.getElementById('asset-stop-form').addEventListener('submit',async event=>{
+  event.preventDefault();if(ownerBusy)return;
+  const asset=document.getElementById('stop-asset').value;
+  ownerBusy=true;updateLocks();
+  try{assetStopStates[asset]=await ownerPost('/api/stop',{asset,confirm:document.getElementById('asset-stop-confirm').checked});}
+  catch(error){assetStopStates[asset]={status:'failed',message:error.message};}
+  finally{ownerBusy=false;document.getElementById('asset-stop-confirm').checked=false;updateLocks();}
+});

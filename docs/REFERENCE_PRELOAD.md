@@ -1,9 +1,9 @@
 # Official BRTI history preload
 
-Paper collection with the Bleep blend enabled now restores up to one hour of
+Collection now restores up to one hour of
 validated official one-second BRTI samples before opening live subscriptions.
 This official-reference preload is separate from the subsequent
-[Bleep exchange seed and clamp](BLEEP_BLEND.md).
+[Bleep exchange seed and clamp](PROBABILITY_MODEL.md).
 
 ## Startup and rolling replacement
 

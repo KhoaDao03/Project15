@@ -95,7 +95,7 @@ and observed-liquidity replenishment are separate work, not silently repaired he
 SQLite ledger/checkpoints and FastAPI history/analytics/replay handlers. Quotes,
 reference samples and model outputs are deterministic synthetic test inputs; model
 functions are controlled to isolate execution permission, not demonstrate edge.
-Existing Monte Carlo/synthetic replay tests remain part of the complete suite.
+Existing Bleep/synthetic replay tests remain part of the complete suite.
 
 Coverage includes PAPER/BACKTEST, YES/NO, entry latches and budgets, valid-model
 invalidation, price-only exits during model problems, unsafe data and clock cases,

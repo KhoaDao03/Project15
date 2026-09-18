@@ -46,7 +46,7 @@ def test_exact_net_edge_boundary(market, config, now):
         book,
         Tick(now, now, market.spec.strike + 100),
         dict(volatility_disagreement=0, regime="NORMAL"),
-        dict(conservative_yes=p),
+        dict(p_yes=p, conservative_yes=p),
         dict(score=100, reasons=[]),
         now,
         c,
@@ -153,7 +153,7 @@ def test_ioc_fractional_depth_is_floored_not_invented(store, market, config, now
 def test_ioc_limit_does_not_charge_slippage_twice(scenario, market, config, now):
     c = replace(config, passive=False, resting_limit_recheck=True)
     s = scenario(buy=False, chosen=c)
-    s.p["conservative_yes"] = 0.9384  # Exactly 3 cents after ask fees and slippage.
+    s.p["p_yes"] = 0.9384  # Exactly 3 cents after ask fees and slippage.
     s.e.process(now, "submit", "orderbook_snapshot", dict(market_ticker=market.ticker))
     order = s.e.executor.orders[market.ticker]
     assert order.active

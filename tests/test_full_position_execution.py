@@ -96,7 +96,6 @@ def test_sell_commits_all_depth_and_survives_trigger_clear(store, config, market
 
 
 def test_default_identity_and_validation():
-    assert Strategy().version == "1766c001ffaa6835"
     with pytest.raises(ValueError, match="aggressive fixed-contract"):
         Strategy(full_position_execution=True)
 

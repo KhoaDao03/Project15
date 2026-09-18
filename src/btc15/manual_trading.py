@@ -21,7 +21,7 @@ from .api import KalshiClient, read_timings
 from .config import Settings
 from .domain import timestamp
 
-TICKER = re.compile(r"KX(?:BTC|ETH|SOL|XRP)15M-[A-Z0-9-]{1,60}\Z")
+TICKER = re.compile(r"KX(?:BTC|ETH|SOL|XRP|GOLD|SILVER|WTI)15M-[A-Z0-9-]{1,60}\Z")
 UNRESOLVED = ("submitting", "accepted", "unknown")
 
 
@@ -350,7 +350,7 @@ class ManualTrading:
 
     async def market(self, client, ticker):
         if not TICKER.fullmatch(ticker):
-            raise HTTPException(422, "Select a BTC, ETH, SOL or XRP 15-minute contract")
+            raise HTTPException(422, "Select a supported crypto or commodity 15-minute contract")
         series_ticker = ticker.split("-", 1)[0]
         series = (await client.get("series/" + series_ticker))["series"]
         exchange_index = series.get("exchange_index")

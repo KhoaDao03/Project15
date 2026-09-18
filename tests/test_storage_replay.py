@@ -71,7 +71,7 @@ def test_complete_replay_packet_and_dashboard(store, config, tmp_path):
     assert op["body"]["versions"]["config"] == config.version
     target = export_packet(store, op["id"], tmp_path / "packets")
     assert (target / "summary.json").exists() and (target / "probability_path.parquet").exists()
-    assert json.loads((target / "config.json").read_text())["seed"] == config.seed
+    assert json.loads((target / "config.json").read_text())["min_probability"] == config.min_probability
     client = TestClient(create_app(store))
     assert client.get("/").status_code == 200
     assert client.get("/static/app.js").status_code == 200
@@ -132,7 +132,7 @@ def test_unverified_event_fees_block_signal_and_preserve_rejection(store, config
         if row["payload"]["type"] == "metadata":
             row["payload"]["msg"].pop("fee_changes")
         e.ingest(row)
-        if e.latest:
+        if e.latest and next(iter(e.latest.values())).get("probability"):
             break
     op = store.list(kind="opportunity")[-1]["body"]
     assert "UNVERIFIED_FEES" in [r["code"] for r in op["reasons"]]
@@ -147,7 +147,7 @@ def test_walk_forward_rejects_overlap_before_any_experiment(store, tmp_path):
     manifest.write_text(
         json.dumps(
             {
-                "candidates": [{"paths": 100}],
+                "candidates": [{}],
                 "minimum_training_markets": 1,
                 "folds": [{"train": ["data.jsonl"], "test": ["data.jsonl"]}],
             }
@@ -165,7 +165,7 @@ def test_walk_forward_frozen_holdout_and_insufficient_samples(store, tmp_path):
     generate(tmp_path / "test.jsonl", start=1788987600)
     manifest = tmp_path / "folds.json"
     settings = {
-        "candidates": [{"paths": 100, "evaluation_interval": 30}],
+        "candidates": [{"evaluation_interval": 30}],
         "minimum_training_markets": 1,
         "folds": [{"train": ["train.jsonl"], "test": ["test.jsonl"]}],
     }

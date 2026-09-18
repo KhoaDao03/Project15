@@ -14,6 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 
 from .decision_notifications import DecisionListener
 from .domain import timestamp
+from .live_loss_guard import LIMIT, daily_pnl
 from .manual_trading import (  # noqa: F401
     UNRESOLVED,
     ManualOrder,
@@ -22,6 +23,7 @@ from .manual_trading import (  # noqa: F401
     snap_buy_limit,
 )
 from .operation import health
+from .strategies.settlement_edge.bleep import capped_confidence
 
 log = logging.getLogger(__name__)
 
@@ -144,6 +146,69 @@ class LiveAutomation:
                 "INSERT OR REPLACE INTO live_assets VALUES (?,?)", (policy["asset"], json.dumps(policy))
             )
 
+    def check_daily_loss(self, asset, now):
+        policy = self.assets().get(asset)
+        day = int(now // 86400)
+        if policy and policy.get("loss_guard", {}).get("day") == day:
+            raise HTTPException(409, "Daily live loss limit reached; new buys disabled")
+        try:
+            rows = [r for r in self.manual.rows() if r["request"]["ticker"].startswith(f"KX{asset}15M-")]
+            settlements = {}
+            if any(Decimal((r.get("exchange_order") or {}).get("fill_count_fp", "0")) > 0 for r in rows):
+                member = self.members[asset]
+                settlements = {
+                    r["market"]: r
+                    for r in self.stores[asset].list("settlement", member["run_id"], "PAPER", limit=None)
+                }
+            for control in self.controls().values():
+                if control["asset"] != asset or not day * 86400 <= control["close_time"] <= now:
+                    continue
+                ticker = control["ticker"]
+                orders = [r for r in rows if r["request"]["ticker"] == ticker]
+                bought = sum(
+                    (
+                        Decimal((r.get("exchange_order") or {}).get("fill_count_fp", "0"))
+                        for r in orders
+                        if r.get("origin") == "bot" and r["request"]["action"] == "buy"
+                    ),
+                    Decimal(0),
+                )
+                sold = sum(
+                    (
+                        Decimal((r.get("exchange_order") or {}).get("fill_count_fp", "0"))
+                        for r in orders
+                        if r["request"]["action"] == "sell"
+                    ),
+                    Decimal(0),
+                )
+                if bought > sold and ticker not in settlements:
+                    raise ValueError("Waiting for official settlement of live remainder")
+            pnl = daily_pnl(rows, settlements, now)
+        except Exception as exc:
+            raise HTTPException(
+                409, "Daily live P&L unavailable; new buys blocked, exits remain active"
+            ) from exc
+        if pnl > LIMIT:
+            return
+        if policy:
+            policy.update(
+                enabled=False,
+                revision=policy["revision"] + 1,
+                loss_guard=dict(
+                    day=day,
+                    pnl=str(pnl),
+                    triggered_at=now,
+                    reason="Daily live loss reached $20 (UTC); new buys disabled",
+                ),
+            )
+            # Persist policy first: entry() checks it even if interrupted here.
+            self.write_asset(policy)
+            for control in self.controls().values():
+                if control["asset"] == asset:
+                    control.update(enabled=False, revision=control["revision"] + 1)
+                    self.write(control)
+        raise HTTPException(409, "Daily live loss limit reached; new buys disabled")
+
     def sync_markets(self):
         controls = self.controls()
         for asset, policy in self.assets().items():
@@ -185,6 +250,7 @@ class LiveAutomation:
         if request.revision != (policy or {}).get("revision", 0):
             raise HTTPException(409, "Controls changed; refresh before applying settings")
         if request.enabled:
+            self.check_daily_loss(asset, time.time())
             if request.confirm != "ENABLE_REAL_TRADING":
                 raise HTTPException(
                     422, "Confirm enabling real-money automation for this asset and future markets"
@@ -244,11 +310,19 @@ class LiveAutomation:
             self.write(control)
             self.messages[ticker] = "Manual control: automatic buys and exits paused"
 
-    def prepare_shutdown(self):
-        orders = self.manual.rows()
+    def prepare_shutdown(self, asset=None):
+        if asset is not None and asset not in self.members:
+            raise HTTPException(404, "Unknown asset")
+        orders = [
+            r
+            for r in self.manual.rows()
+            if asset is None or r["request"]["ticker"].startswith(f"KX{asset}15M-")
+        ]
         if any(r.get("resting_take_profit") and r["state"] in UNRESOLVED for r in orders):
             raise HTTPException(409, "Wait for the resting take-profit order cancellation to be confirmed")
         for control in self.controls().values():
+            if asset is not None and control["asset"] != asset:
+                continue
             if control.get("paused") or time.time() >= control["close_time"]:
                 continue
             rows = [
@@ -268,10 +342,14 @@ class LiveAutomation:
                     "Live position or order still managed; close it or take manual control before stopping feeds",
                 )
         for policy in self.assets().values():
+            if asset is not None and policy["asset"] != asset:
+                continue
             policy.update(enabled=False, revision=policy["revision"] + 1)
             self.write_asset(policy)
         # Invalidate a buy that is still in preflight before the collectors stop.
         for control in self.controls().values():
+            if asset is not None and control["asset"] != asset:
+                continue
             control.update(enabled=False, revision=control["revision"] + 1)
             self.write(control)
 
@@ -299,6 +377,7 @@ class LiveAutomation:
 
     def entry(self, control, now):
         asset = control["asset"]
+        self.check_daily_loss(asset, now)
         member = self.members[asset]
         config = member["config"]
         if not control["enabled"] or control.get("paused") or control["config_version"] != config.version:
@@ -338,6 +417,9 @@ class LiveAutomation:
             raise HTTPException(409, "Probability floor not met")
         book = self.book(control, now)
         ask, bid = book.get(side + "_ask"), book.get(side + "_bid")
+        confidence = capped_confidence(p, bid, ask, asset)
+        if confidence is None or confidence < config.probability_floor(remaining <= config.no_new_entry):
+            raise HTTPException(409, "Confidence floor not met after market-respect cap")
         if (
             ask is None
             or bid is None
@@ -601,12 +683,23 @@ class LiveAutomation:
         )
         listener.start()
         fill_task = asyncio.create_task(self.manual.watch_fills())
+        loss_checked_at = 0
         try:
             while True:
                 self.last_cycle = time.time()
                 try:
                     self.sync_markets()
                     await self.reconcile()
+                    if time.time() - loss_checked_at >= 1:
+                        for asset, policy in self.assets().items():
+                            if policy["enabled"]:
+                                try:
+                                    self.check_daily_loss(asset, time.time())
+                                except HTTPException as exc:
+                                    for control in self.controls().values():
+                                        if control["asset"] == asset:
+                                            self.messages[control["ticker"]] = str(exc.detail)
+                        loss_checked_at = time.time()
                     # Prioritize already committed exits.
                     controls = self.cycle_controls()
                     for control in controls:

@@ -54,7 +54,7 @@ def test_processing_lag_cancels_resting_order_before_trade_fill(
     def probability(*args):
         if delay == "during_model":
             clock[0] += 10
-        return dict(conservative_yes=0.99)
+        return dict(p_yes=0.99, conservative_yes=0.99)
 
     monkeypatch.setattr(module, "probability", probability)
     monkeypatch.setattr(module, "quality", lambda *args: dict(score=100, reasons=[]))
