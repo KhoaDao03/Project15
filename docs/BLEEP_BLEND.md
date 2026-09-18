@@ -1,5 +1,12 @@
 # Bleep probability and blend experiments
 
+Current tracked BTC/ETH/SOL/XRP presets use Bleep alone: blend disabled,
+Bleep-only enabled, Project15 veto disabled. The engine skips the Project15
+Monte Carlo calculation; settlement and stress evidence also use Bleep.
+Both entry windows require Bleep ≥78%; other trading settings are preserved. The blend
+formulas below describe the retained historical mode. Existing frozen runs
+are not migrated automatically.
+
 All four active paper runs use `bleep_probability_blend_enabled=true` and
 `bleep_probability_only_enabled=false`:
 

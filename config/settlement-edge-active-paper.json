@@ -50,8 +50,8 @@
   "min_hold_ev": 0,
   "hold_value_exit_enabled": false,
   "entry_probability_deductions": false,
-  "bleep_probability_blend_enabled": true,
-  "bleep_probability_only_enabled": false,
+  "bleep_probability_blend_enabled": false,
+  "bleep_probability_only_enabled": true,
   "sustained_lead_enabled": true,
   "late_entry_enabled": true,
   "late_no_new_entry": 15,
@@ -77,10 +77,10 @@
   "bleep_safety_clamp_enabled": true,
   "entry_value_filters_enabled": false,
   "both_models_80_enabled": true,
-  "standard_component_min_probability": 0.8,
+  "standard_component_min_probability": 0.78,
   "project15_probability_veto_enabled": false,
   "fixed_stop_price": 0.55,
   "full_position_execution": true,
-  "late_component_min_probability": 0.8,
+  "late_component_min_probability": 0.78,
   "bleep_settlement_model_enabled": true
 }

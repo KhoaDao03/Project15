@@ -72,18 +72,26 @@ def test_missing_bleep_never_silently_uses_mc(market, config, now):
         blend_probability({}, market.spec, f, now)
 
 
+@pytest.mark.parametrize("settlement_aware", [False, True])
 @pytest.mark.parametrize("bleep_only", [False, True])
 @pytest.mark.parametrize("side", ["yes", "no"])
 @pytest.mark.parametrize("remaining", [300, 40])
 def test_engine_uses_blend_for_entry_and_persists_components(
-    store, market, config, side, remaining, bleep_only
+    store, market, config, side, remaining, bleep_only, settlement_aware, monkeypatch
 ):
     c = replace(
         config,
         bleep_probability_blend_enabled=not bleep_only,
         bleep_probability_only_enabled=bleep_only,
+        bleep_settlement_model_enabled=settlement_aware,
         entry_probability_deductions=False,
     )
+    if bleep_only:
+
+        def forbidden_simulation(*args, **kwargs):
+            raise AssertionError("Bleep-only must not run Monte Carlo")
+
+        monkeypatch.setattr("numpy.random.default_rng", forbidden_simulation)
     start = market.close_time - remaining
     e, _ = setup_engine(store, market, c, start, side)
     price = market.spec.strike + (300 if side == "yes" else -300)
@@ -92,7 +100,9 @@ def test_engine_uses_blend_for_entry_and_persists_components(
         reference(e, market, start + i, price)
     latest = e.latest[market.ticker]
     assert latest["versions"]["probability"] == (
-        "bleep-mode-b-v1" if bleep_only else "settlement-bleep-equal-v1"
+        ("bleep-settlement-reference-v2" if bleep_only else "settlement-bleep-equal-v2")
+        if settlement_aware
+        else ("bleep-mode-b-v1" if bleep_only else "settlement-bleep-equal-v1")
     )
     p = latest["probability"]
     assert latest["conservative_probability"] == p["p_" + side]
@@ -162,8 +172,8 @@ def test_config_identity_and_validation():
         with pytest.raises(ValueError, match="bleep_probability_blend_enabled"):
             replace(default, bleep_probability_blend_enabled=bad)
     active = Strategy.load("config/settlement-edge-active-paper.json")
-    assert not active.bleep_probability_only_enabled
-    assert active.bleep_probability_blend_enabled
+    assert active.bleep_probability_only_enabled
+    assert not active.bleep_probability_blend_enabled
     assert not active.standard_cashout_enabled
     assert (active.min_entry_price, active.max_entry_price) == (0.80, 0.95)
 

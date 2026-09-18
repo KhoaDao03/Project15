@@ -212,6 +212,42 @@ def mode_b_probability(spec, spot, seconds_left, inputs, *, clamp=False, distrib
     )
 
 
+def bleep_only_probability(spec, ticks, now, features, config, *, price_shift=0):
+    """Bleep confidence and settlement evidence without a Project15 simulation."""
+    inputs = features.get("bleep")
+    if inputs is None:
+        raise ValueError("BLEEP_WARMUP: missing indicators")
+    spot = features["reference"] + price_shift
+    if not math.isfinite(spot) or spot <= 0:
+        raise ValueError("Invalid stress price")
+    atr = max(inputs["atr"], features["reference"] * 0.00015, 10**-spec.round_digits)
+    distribution = settlement_distribution(spec, ticks, now, features, atr)
+    distribution["settlement_mean"] += price_shift * distribution["remaining_samples"] / 60
+    component = mode_b_probability(
+        spec,
+        spot,
+        spec.settlement_end - now,
+        inputs,
+        clamp=config.bleep_safety_clamp_enabled,
+        distribution=distribution if config.bleep_settlement_model_enabled else None,
+    )
+    remaining = distribution["remaining_samples"]
+    return dict(
+        **{k: v for k, v in distribution.items() if k != "model"},
+        p_yes=component["p_yes"],
+        p_no=component["p_no"],
+        conservative_yes=component["p_yes"],
+        conservative_no=component["p_no"],
+        uncertainty=0,
+        calibrated=False,
+        required_remaining_average=(60 * spec.strike - distribution["observed_sum"]) / remaining
+        if remaining
+        else None,
+        model="bleep-settlement-reference-v2" if config.bleep_settlement_model_enabled else "bleep-mode-b-v1",
+        blend=dict(weight_bleep=1.0, bleep=component, uncertainty_policy="none"),
+    )
+
+
 def blend_probability(
     settlement, spec, features, now, *, clamp=False, bleep_only=False, settlement_aware=False, ticks=()
 ):

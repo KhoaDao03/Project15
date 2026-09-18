@@ -4,12 +4,12 @@
 
 This is a research/paper-trading application, not a claim of profitability. It uses real Kalshi market data when credentials are configured. Collector orders and fills remain simulated; blanket CLI live execution remains blocked. The shared dashboard offers [manual real-money buy/sell orders](docs/MANUAL_TRADING.md) and [explicitly enabled per-asset live automation](docs/LIVE_AUTOMATION.md). Live automation defaults off and requires confirmation per asset, then stays enabled across markets and restarts until switched off, with a maximum of 20 contracts per market.
 
-All four current paper bots use a 50/50 blend of Project15 and Bleep Mode B,
+All four current paper presets use Bleep-only probability,
 with exchange-seeded Bleep indicators and its safety clamp. Both standard and
-late entries require Bleep ≥80%; the blended entry minimum is disabled.
+late entries require Bleep ≥78%; the blended entry minimum is disabled.
 Bleep now models the final-minute settlement average using observed samples and
 the higher of ATR-based and recent reference-price volatility.
-Project15 has no individual probability veto. One fresh same-side confirmation sample is required for either entry window;
+Project15 simulation and probability blending are disabled in these presets. One fresh same-side confirmation sample is required for either entry window;
 quality checks remain; modeled-sigma lead minimums are disabled.
 The BTC paper experiment retains these settings:
 The purchase range is $0.80–$0.95, with standard entries at 7–2 minutes
@@ -162,8 +162,7 @@ Entry reporting: [settlement, target-sale and stop-exit economics](docs/ENTRY_EC
 Sequential paper trades: [same-market re-entry](docs/REENTRY.md).
 
 Active Bleep update: historical exchange candles seed only Bleep indicators; its
-75% favored-side safety cap applies below 0.5 sigma before the 50/50 probability
-average. See [Bleep blend](docs/BLEEP_BLEND.md).
+75% favored-side safety cap applies below 0.5 sigma before Bleep-only probability is used. See [Bleep blend](docs/BLEEP_BLEND.md).
 
 Current setting: the directional Bollinger entry veto is enabled for BTC, ETH,
 SOL and XRP, including the strategy decisions used by live automation. Entries

@@ -1,5 +1,9 @@
 # Active paper settings
 
+Bleep-only update: use the tracked asset presets for new runs. Existing frozen
+configs and checkpoints retain their original model; do not overwrite them or
+change checkpoint hashes. This checkout contains no deployed runtime configuration.
+
 Current exit policy: model probability exits are disabled for all four paper bots (`exit_probability=0.0`, hold-value exit disabled). The 55¢ stop remains active; ETH/SOL/XRP retain their 99¢ paper take-profit, and BTC retains its existing settlement/stop policy.
 
 September 15 update: all BTC/ETH/SOL/XRP entry windows start at 8 minutes remaining, both confirmation counts are 1, and buy retry cooldown is zero. Live retries wait for a known empty result and revalidate the signal before another submission. Historical deployment notes below retain their original settings.
@@ -8,8 +12,9 @@ The installed collector and dashboard now select `settlement-both-models-80-v1`,
 using `data/runtime/settlement-both-models-80-v1.json`. The matching tracked
 configuration is `config/settlement-edge-active-paper.json`.
 
-All four current paper bots use a 50/50 Project15–Bleep blend. Both entry windows
-require Bleep probability ≥80%; the blended entry minimum is disabled. Project15 has no
+All four tracked paper presets use Bleep-only probability. Project15 simulation
+and blending are disabled, including the stress probability calculation. Both entry windows
+require Bleep probability ≥78%; the blended entry minimum is disabled. Project15 has no
 individual veto. Sigma floors remain disabled; same-side sample confirmation
 and quality checks remain. Latest deployment hashes and evidence:
 `data/runtime/bleep-average-volatility-7m-20260916/`.
@@ -27,14 +32,14 @@ Current entry settings:
 | Minimum purchase price | 0.85 |
 | Maximum purchase price | 0.95 |
 | Minimum net edge and EV | Disabled |
-| Individual component probability | Bleep ≥80% standard and late; Project15 individual veto disabled |
+| Individual component probability | Bleep ≥78% standard and late; Project15 individual veto disabled |
 | Standard entry window | 120 < seconds remaining <= 480 |
 | Late entry window | 15 < seconds remaining <= 120 |
 | Confirming official one-second samples | 1 standard; 1 late |
 | Minimum normalized settlement lead | Disabled in both windows |
 
 Both paths retain [sustained-lead confirmation](SUSTAINED_LEAD.md).
-Entry probability deductions are disabled: the raw blended probability drives entry
+Entry probability deductions are disabled: the raw Bleep probability drives entry
 pricing, probability floors and net EV at submission. Calibration, simulation,
 rounding, reversal stress and disagreement deductions do not reduce entry
 probability. Stress is still recorded as a diagnostic.

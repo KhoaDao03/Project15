@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .bleep import indicator_inputs
+from .bleep import bleep_only_probability, indicator_inputs
 
 
 @dataclass(frozen=True)
@@ -234,7 +234,11 @@ def lead_evidence(spec, ticks, now, f, p, config):
         ),
         default=0,
     )
-    stressed = probability(spec, ticks, now, f["sigma"], config, price_shift=-direction * adverse)
+    stressed = (
+        bleep_only_probability(spec, ticks, now, f, config, price_shift=-direction * adverse)
+        if config.bleep_probability_only_enabled
+        else probability(spec, ticks, now, f["sigma"], config, price_shift=-direction * adverse)
+    )
     margin = direction * (p["settlement_mean"] - spec.strike)
     # One settlement unit avoids infinite ratios without imposing BTC precision on XRP.
     lead_sigma = margin / max(10**-spec.round_digits, p["settlement_std"])

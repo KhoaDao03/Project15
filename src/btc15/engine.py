@@ -15,7 +15,7 @@ from .domain import Book, dumps, parse_market, timestamp
 from .execution import PaperExecutor
 from .models import require_single_run
 from .recovery import contract_hash, older_metadata, restore_contract_history, restore_market
-from .strategies.settlement_edge.bleep import blend_probability
+from .strategies.settlement_edge.bleep import bleep_only_probability, blend_probability
 from .strategies.settlement_edge.economics import entry_economics
 from .strategies.settlement_edge.model import Tick, features, lead_evidence, probability, quality
 from .strategies.settlement_edge.rules import evaluate
@@ -709,7 +709,11 @@ class Engine:
                                 m <= self.bleep_seed["last_minute"] for m in self.bleep_candles
                             ),
                         }
-                    p = probability(market.spec, self.ticks, now, f["sigma"], c)
+                    p = (
+                        bleep_only_probability(market.spec, self.ticks, now, f, c)
+                        if c.bleep_probability_only_enabled
+                        else probability(market.spec, self.ticks, now, f["sigma"], c)
+                    )
                     if c.sustained_lead_enabled:
                         lead = lead_evidence(market.spec, self.ticks, now, f, p, c)
                         history = self._lead_history.setdefault(ticker, [])
@@ -738,7 +742,7 @@ class Engine:
                             )
                         lead["confirmation_samples"] = len(history)
                         p["lead"] = lead
-                    if c.bleep_enabled:
+                    if c.bleep_probability_blend_enabled:
                         p = blend_probability(
                             p,
                             market.spec,

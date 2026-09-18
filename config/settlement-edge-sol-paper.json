@@ -50,7 +50,7 @@
   "min_hold_ev": 0,
   "hold_value_exit_enabled": false,
   "entry_probability_deductions": false,
-  "bleep_probability_blend_enabled": true,
+  "bleep_probability_blend_enabled": false,
   "sustained_lead_enabled": true,
   "late_entry_enabled": true,
   "late_no_new_entry": 15,
@@ -78,10 +78,10 @@
   "asset": "SOL",
   "fixed_stop_price": 0.55,
   "full_position_execution": true,
-  "bleep_probability_only_enabled": false,
-  "standard_component_min_probability": 0.8,
+  "bleep_probability_only_enabled": true,
+  "standard_component_min_probability": 0.78,
   "both_models_80_enabled": true,
   "project15_probability_veto_enabled": false,
-  "late_component_min_probability": 0.8,
+  "late_component_min_probability": 0.78,
   "bleep_settlement_model_enabled": true
 }
