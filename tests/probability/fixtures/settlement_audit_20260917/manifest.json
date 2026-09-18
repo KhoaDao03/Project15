@@ -1,0 +1,140 @@
+[
+  {
+    "name": "series",
+    "url": "https://external-api.kalshi.com/trade-api/v2/series/KXBTC15M",
+    "final_url": "https://external-api.kalshi.com/trade-api/v2/series/KXBTC15M",
+    "retrieved_at": "2026-09-17T06:48:36.864204+00:00",
+    "status": 200,
+    "sha256": "2563b6dfe8256519e44bbc1dc03aaaf7eec5d7c843a643a9d35f480dd548261d",
+    "file": "series.json",
+    "content_type": "application/json"
+  },
+  {
+    "name": "market",
+    "url": "https://external-api.kalshi.com/trade-api/v2/markets/KXBTC15M-26SEP170300-00",
+    "final_url": "https://external-api.kalshi.com/trade-api/v2/markets/KXBTC15M-26SEP170300-00",
+    "retrieved_at": "2026-09-17T06:48:37.084358+00:00",
+    "status": 200,
+    "sha256": "a925f12a0c62c3bd41943acb6d71da7860d7ab5166cd269e36d6186916f44bf3",
+    "file": "market.json",
+    "content_type": "application/json"
+  },
+  {
+    "name": "contract_terms_url",
+    "url": "https://assets.kalshi.com/contract_terms/CRYPTO.pdf",
+    "final_url": "https://assets.kalshi.com/contract_terms/CRYPTO.pdf",
+    "retrieved_at": "2026-09-17T06:48:37.243762+00:00",
+    "status": 200,
+    "sha256": "fde90b9c0825df277b0b2b2be6239af221eafd01a624c1b2d3a9eaff2d6fe75c",
+    "file": "contract_terms_url.pdf",
+    "content_type": "application/pdf"
+  },
+  {
+    "name": "contract_url",
+    "url": "https://assets.kalshi.com/regulatory/product-certifications/CRYPTO.pdf",
+    "final_url": "https://assets.kalshi.com/regulatory/product-certifications/CRYPTO.pdf",
+    "retrieved_at": "2026-09-17T06:48:37.515432+00:00",
+    "status": 200,
+    "sha256": "4841dd60f533d857c58e0c338c39d5c1306282c6aa54751439b032d933b4f8a1",
+    "file": "contract_url.pdf",
+    "content_type": "application/pdf"
+  },
+  {
+    "name": "feed",
+    "url": "https://docs.kalshi.com/websockets/cfbenchmarks-value.md",
+    "final_url": "https://docs.kalshi.com/websockets/cfbenchmarks-value.md",
+    "retrieved_at": "2026-09-17T06:48:37.823983+00:00",
+    "status": 200,
+    "sha256": "f179ee931af39016064fa26af24f3030fecc060275d412efea3a99d9aeb574e6",
+    "file": "feed.txt",
+    "content_type": "text/markdown; charset=utf-8"
+  },
+  {
+    "name": "market_schema",
+    "url": "https://docs.kalshi.com/api-reference/market/get-market.md",
+    "final_url": "https://docs.kalshi.com/api-reference/market/get-market.md",
+    "retrieved_at": "2026-09-17T06:48:38.115601+00:00",
+    "status": 200,
+    "sha256": "b9f826803ffd652405ca1f1068c62e99b7179badd6eb2e4c0c576cdeedf6796d",
+    "file": "market_schema.txt",
+    "content_type": "text/markdown; charset=utf-8"
+  },
+  {
+    "name": "lifecycle",
+    "url": "https://docs.kalshi.com/getting_started/market_lifecycle.md",
+    "final_url": "https://docs.kalshi.com/getting_started/market_lifecycle.md",
+    "retrieved_at": "2026-09-17T06:48:38.319195+00:00",
+    "status": 200,
+    "sha256": "5f3f7c72eda96148fd543e516f506110998bc4a7d58877ec36bcb0454f2d2510",
+    "file": "lifecycle.txt",
+    "content_type": "text/markdown; charset=utf-8"
+  },
+  {
+    "name": "reference_history",
+    "url": "https://docs.kalshi.com/cfbenchmarks/rest-passthrough.md",
+    "final_url": "https://docs.kalshi.com/cfbenchmarks/rest-passthrough.md",
+    "retrieved_at": "2026-09-17T06:48:38.528628+00:00",
+    "status": 200,
+    "sha256": "c7b0f5819c43296680174c5a3ead13a9bbfe238f1cf420af9e7ab523e282325f",
+    "file": "reference_history.txt",
+    "content_type": "text/markdown; charset=utf-8"
+  },
+  {
+    "name": "final_market_0645",
+    "url": "https://external-api.kalshi.com/trade-api/v2/markets/KXBTC15M-26SEP170245-45",
+    "retrieved_at": "2026-09-17T06:51:26.926826+00:00",
+    "status": 200,
+    "sha256": "af95fb278c7ad0715b73301a7760061f8ee41f63fbccb7de314c97ddd213e99f",
+    "file": "final_market_0645.json"
+  },
+  {
+    "name": "processed_market.json",
+    "file": "processed_market.json",
+    "sha256": "abbfd571cf5f410f4ec1168404a019bde3d20468c0873202c23f3f6911c4c13f",
+    "origin": "recording export"
+  },
+  {
+    "name": "window_0645.json",
+    "file": "window_0645.json",
+    "sha256": "ab41bdaa8c7c29b9567d44d2dd6264b4664c4004955160bca27c0d4cd08a8db8",
+    "origin": "recording export"
+  },
+  {
+    "name": "contract_terms_url.txt",
+    "file": "contract_terms_url.txt",
+    "sha256": "5e2a39b79fb5983272ae1f7553f65000d52be38756d95b07f1f65172a1d679c2",
+    "origin": "pypdf extraction; original PDFs retained"
+  },
+  {
+    "name": "contract_url.txt",
+    "file": "contract_url.txt",
+    "sha256": "726927cd72c2310028a026b9c1f89790876abe839c548444db73f6fdb43de2df",
+    "origin": "pypdf extraction; original PDFs retained"
+  },
+  {
+    "name": "final_market_0700",
+    "url": "https://external-api.kalshi.com/trade-api/v2/markets/KXBTC15M-26SEP170300-00",
+    "retrieved_at": "2026-09-17T07:02:07.379929+00:00",
+    "status": 200,
+    "sha256": "1c9cfa24e58e0aed44155423459bd2594ed47456c85f18af2fa2367527d7d0d5",
+    "file": "final_market_0700.json"
+  },
+  {
+    "name": "window_0700.json",
+    "file": "window_0700.json",
+    "sha256": "1a6ae0ed54703a9c975337a26025061eed89002e517f4d035d40c6328f8b575b",
+    "origin": "recording export"
+  },
+  {
+    "name": "reconciliation_0645.json",
+    "file": "reconciliation_0645.json",
+    "sha256": "e979ea6d4130ea9b27d20b1d609e63053701c0391aba95d51352cc09727de547",
+    "origin": "btc_probability.reconciliation; derived audit, not source authority"
+  },
+  {
+    "name": "reconciliation_0700.json",
+    "file": "reconciliation_0700.json",
+    "sha256": "fa47135a7eeb311a13139935b552a221b19e5b0175bc00941b7f6b47e9897670",
+    "origin": "btc_probability.reconciliation; derived audit, not source authority"
+  }
+]

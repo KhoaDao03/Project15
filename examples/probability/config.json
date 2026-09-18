@@ -1,0 +1,20 @@
+{
+  "provider": "options",
+  "fixed_sigma": 0.2,
+  "paths": 20000,
+  "seed": 15,
+  "requested_half_width": 0.01,
+  "reference_max_age": 3,
+  "option_max_age": 60,
+  "book_max_age": 5,
+  "clock_skew": 2,
+  "preferred_expiry_hours": 30,
+  "max_option_spread_fraction": 0.5,
+  "min_option_size": 0.1,
+  "min_strikes": 3,
+  "realized_window": 180,
+  "realized_max_gap": 2,
+  "sensitivity_fraction": 0.2,
+  "discount": 1.0,
+  "series": "KXBTC15M"
+}

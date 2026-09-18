@@ -14,8 +14,9 @@ postgres = ["psycopg[binary]>=3.2,<4"]
 dev = ["pytest>=8,<10", "ruff>=0.11,<1", "pyarrow>=19,<24", "psycopg[binary]>=3.2,<4"]
 [project.scripts]
 btc15 = "btc15.cli:main"
+btc-probability = "btc_probability.cli:main"
 [tool.hatch.build.targets.wheel]
-packages = ["src/btc15"]
+packages = ["src/btc15", "src/btc_probability"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 [tool.ruff]

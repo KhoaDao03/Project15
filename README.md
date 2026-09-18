@@ -1,5 +1,9 @@
 # Project15 — BTC15 Settlement Edge
 
+The isolated [BTC probability laboratory](docs/probability/README.md) provides read-only options-informed settlement forecasts, a chart, synthetic demonstration, recording, replay, and probability evaluation. It does not start or enable the trading runtime.
+
+The [settlement verification audit](SETTLEMENT_VERIFICATION.md) records the corrected window boundary, official-response fixtures, numeric reconciliations, tests, and the remaining half-cent tie clarification.
+
 For the live-only cloud runtime (no paper workers or raw feed tapes), see [Cloud deployment](docs/CLOUD.md).
 
 For a complete server and domain setup walkthrough, use [IONOS VPS setup](docs/IONOS_VPS_SETUP.md).

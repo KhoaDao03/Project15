@@ -1,0 +1,2394 @@
+{
+  "recording": "data/probability/btc-live/recording.sqlite",
+  "observation_end": 1789628400,
+  "market_ticker": "KXBTC15M-26SEP170300-00",
+  "references": [
+    {
+      "seq": 5750,
+      "received_time": 1789628338.94108,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628338.94108,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628339.0,
+          "value": "76405.48"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.43266667",
+              "window_end_ts_exclusive": 1789628339000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628279000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628339000,\"id\":\"BRTI\",\"value\":\"76405.48\"}",
+            "index_id": "BRTI",
+            "received_at": 1789628339057
+          },
+          "seq": 1313,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628338.94108
+      }
+    },
+    {
+      "seq": 5757,
+      "received_time": 1789628339.9134314,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628339.9134314,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628340.0,
+          "value": "76405.98"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.40416667",
+              "window_end_ts_exclusive": 1789628340000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628280000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628340000,\"id\":\"BRTI\",\"value\":\"76405.98\"}",
+            "index_id": "BRTI",
+            "received_at": 1789628340035
+          },
+          "seq": 1314,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628339.9134314
+      }
+    },
+    {
+      "seq": 5763,
+      "received_time": 1789628340.9189885,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628340.9189885,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628341.0,
+          "value": "76405.65"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.37900000",
+              "window_end_ts_exclusive": 1789628341000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628281000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628341000,\"id\":\"BRTI\",\"value\":\"76405.65\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.65000000",
+              "window_end_ts_exclusive": 1789628341000,
+              "window_size": 1,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628341044
+          },
+          "seq": 1315,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628340.9189885
+      }
+    },
+    {
+      "seq": 5769,
+      "received_time": 1789628341.9320972,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628341.9320972,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628342.0,
+          "value": "76405.44"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.35666667",
+              "window_end_ts_exclusive": 1789628342000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628282000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628342000,\"id\":\"BRTI\",\"value\":\"76405.44\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.54500000",
+              "window_end_ts_exclusive": 1789628342000,
+              "window_size": 2,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628342062
+          },
+          "seq": 1316,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628341.9320972
+      }
+    },
+    {
+      "seq": 5774,
+      "received_time": 1789628342.9165246,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628342.9165246,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628343.0,
+          "value": "76407.52"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.32883333",
+              "window_end_ts_exclusive": 1789628343000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628283000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628343000,\"id\":\"BRTI\",\"value\":\"76407.52\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.20333333",
+              "window_end_ts_exclusive": 1789628343000,
+              "window_size": 3,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628343050
+          },
+          "seq": 1317,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628342.9165246
+      }
+    },
+    {
+      "seq": 5779,
+      "received_time": 1789628343.8907504,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628343.8907504,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628344.0,
+          "value": "76407.36"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.32600000",
+              "window_end_ts_exclusive": 1789628344000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628284000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628344000,\"id\":\"BRTI\",\"value\":\"76407.36\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.49250000",
+              "window_end_ts_exclusive": 1789628344000,
+              "window_size": 4,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628344031
+          },
+          "seq": 1318,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628343.8907504
+      }
+    },
+    {
+      "seq": 5785,
+      "received_time": 1789628344.9391668,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628344.9391668,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628345.0,
+          "value": "76405.93"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.34600000",
+              "window_end_ts_exclusive": 1789628345000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628285000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628345000,\"id\":\"BRTI\",\"value\":\"76405.93\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.38000000",
+              "window_end_ts_exclusive": 1789628345000,
+              "window_size": 5,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628345086
+          },
+          "seq": 1319,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628344.9391668
+      }
+    },
+    {
+      "seq": 5790,
+      "received_time": 1789628345.9589396,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628345.9589396,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628346.0,
+          "value": "76406.74"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.34950000",
+              "window_end_ts_exclusive": 1789628346000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628286000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628346000,\"id\":\"BRTI\",\"value\":\"76406.74\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.44000000",
+              "window_end_ts_exclusive": 1789628346000,
+              "window_size": 6,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628346110
+          },
+          "seq": 1320,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628345.9589396
+      }
+    },
+    {
+      "seq": 5796,
+      "received_time": 1789628346.9576845,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628346.9576845,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628347.0,
+          "value": "76406.15"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.37766667",
+              "window_end_ts_exclusive": 1789628347000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628287000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628347000,\"id\":\"BRTI\",\"value\":\"76406.15\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.39857143",
+              "window_end_ts_exclusive": 1789628347000,
+              "window_size": 7,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628347116
+          },
+          "seq": 1321,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628346.9576845
+      }
+    },
+    {
+      "seq": 5801,
+      "received_time": 1789628347.9466155,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628347.9466155,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628348.0,
+          "value": "76406.33"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.39400000",
+              "window_end_ts_exclusive": 1789628348000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628288000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628348000,\"id\":\"BRTI\",\"value\":\"76406.33\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.39000000",
+              "window_end_ts_exclusive": 1789628348000,
+              "window_size": 8,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628348111
+          },
+          "seq": 1322,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628347.9466155
+      }
+    },
+    {
+      "seq": 5807,
+      "received_time": 1789628348.9437392,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628348.9437392,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628349.0,
+          "value": "76405.32"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.43216667",
+              "window_end_ts_exclusive": 1789628349000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628289000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628349000,\"id\":\"BRTI\",\"value\":\"76405.32\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.27111111",
+              "window_end_ts_exclusive": 1789628349000,
+              "window_size": 9,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628349115
+          },
+          "seq": 1323,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628348.9437392
+      }
+    },
+    {
+      "seq": 5812,
+      "received_time": 1789628349.939335,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628349.939335,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628350.0,
+          "value": "76405.58"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.44933333",
+              "window_end_ts_exclusive": 1789628350000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628290000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628350000,\"id\":\"BRTI\",\"value\":\"76405.58\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.20200000",
+              "window_end_ts_exclusive": 1789628350000,
+              "window_size": 10,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628350117
+          },
+          "seq": 1324,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628349.939335
+      }
+    },
+    {
+      "seq": 5818,
+      "received_time": 1789628350.8900843,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628350.8900843,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628351.0,
+          "value": "76405.31"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.47300000",
+              "window_end_ts_exclusive": 1789628351000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628291000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628351000,\"id\":\"BRTI\",\"value\":\"76405.31\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.12090909",
+              "window_end_ts_exclusive": 1789628351000,
+              "window_size": 11,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628351074
+          },
+          "seq": 1325,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628350.8900843
+      }
+    },
+    {
+      "seq": 5823,
+      "received_time": 1789628351.8499217,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628351.8499217,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628352.0,
+          "value": "76404.55"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.49033333",
+              "window_end_ts_exclusive": 1789628352000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628292000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628352000,\"id\":\"BRTI\",\"value\":\"76404.55\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.99000000",
+              "window_end_ts_exclusive": 1789628352000,
+              "window_size": 12,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628352040
+          },
+          "seq": 1326,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628351.8499217
+      }
+    },
+    {
+      "seq": 5829,
+      "received_time": 1789628352.9256144,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628352.9256144,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628353.0,
+          "value": "76404.22"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.49400000",
+              "window_end_ts_exclusive": 1789628353000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628293000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628353000,\"id\":\"BRTI\",\"value\":\"76404.22\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.85384615",
+              "window_end_ts_exclusive": 1789628353000,
+              "window_size": 13,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628353124
+          },
+          "seq": 1327,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628352.9256144
+      }
+    },
+    {
+      "seq": 5834,
+      "received_time": 1789628353.9172897,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628353.9172897,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628354.0,
+          "value": "76403.66"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.61250000",
+              "window_end_ts_exclusive": 1789628354000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628294000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628354000,\"id\":\"BRTI\",\"value\":\"76403.66\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.69714286",
+              "window_end_ts_exclusive": 1789628354000,
+              "window_size": 14,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628354122
+          },
+          "seq": 1328,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628353.9172897
+      }
+    },
+    {
+      "seq": 5840,
+      "received_time": 1789628354.8229218,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628354.8229218,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628355.0,
+          "value": "76403.37"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.73500000",
+              "window_end_ts_exclusive": 1789628355000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628295000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628355000,\"id\":\"BRTI\",\"value\":\"76403.37\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.54200000",
+              "window_end_ts_exclusive": 1789628355000,
+              "window_size": 15,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628355035
+          },
+          "seq": 1329,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628354.8229218
+      }
+    },
+    {
+      "seq": 5848,
+      "received_time": 1789628355.8937712,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628355.8937712,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628356.0,
+          "value": "76400.78"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.84433333",
+              "window_end_ts_exclusive": 1789628356000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628296000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628356000,\"id\":\"BRTI\",\"value\":\"76400.78\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.24437500",
+              "window_end_ts_exclusive": 1789628356000,
+              "window_size": 16,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628356112
+          },
+          "seq": 1330,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628355.8937712
+      }
+    },
+    {
+      "seq": 5854,
+      "received_time": 1789628356.9193964,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628356.9193964,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628357.0,
+          "value": "76400.10"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.91400000",
+              "window_end_ts_exclusive": 1789628357000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628297000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628357000,\"id\":\"BRTI\",\"value\":\"76400.10\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.94176471",
+              "window_end_ts_exclusive": 1789628357000,
+              "window_size": 17,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628357118
+          },
+          "seq": 1331,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628356.9193964
+      }
+    },
+    {
+      "seq": 5859,
+      "received_time": 1789628357.9431,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628357.9431,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628358.0,
+          "value": "76401.36"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76402.96900000",
+              "window_end_ts_exclusive": 1789628358000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628298000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628358000,\"id\":\"BRTI\",\"value\":\"76401.36\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.74277778",
+              "window_end_ts_exclusive": 1789628358000,
+              "window_size": 18,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628358121
+          },
+          "seq": 1332,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628357.9431
+      }
+    },
+    {
+      "seq": 5865,
+      "received_time": 1789628358.8966215,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628358.8966215,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628359.0,
+          "value": "76400.87"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.04700000",
+              "window_end_ts_exclusive": 1789628359000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628299000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628359000,\"id\":\"BRTI\",\"value\":\"76400.87\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.53894737",
+              "window_end_ts_exclusive": 1789628359000,
+              "window_size": 19,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628359059
+          },
+          "seq": 1333,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628358.8966215
+      }
+    },
+    {
+      "seq": 5871,
+      "received_time": 1789628359.9621375,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628359.9621375,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628360.0,
+          "value": "76401.81"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.11116667",
+              "window_end_ts_exclusive": 1789628360000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628300000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628360000,\"id\":\"BRTI\",\"value\":\"76401.81\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.40250000",
+              "window_end_ts_exclusive": 1789628360000,
+              "window_size": 20,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628360110
+          },
+          "seq": 1334,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628359.9621375
+      }
+    },
+    {
+      "seq": 5878,
+      "received_time": 1789628360.9826546,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628360.9826546,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628361.0,
+          "value": "76401.60"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.18300000",
+              "window_end_ts_exclusive": 1789628361000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628301000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628361000,\"id\":\"BRTI\",\"value\":\"76401.60\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.26904762",
+              "window_end_ts_exclusive": 1789628361000,
+              "window_size": 21,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628361120
+          },
+          "seq": 1335,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628360.9826546
+      }
+    },
+    {
+      "seq": 5884,
+      "received_time": 1789628361.9994302,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628361.9994302,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628362.0,
+          "value": "76401.31"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.25866667",
+              "window_end_ts_exclusive": 1789628362000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628302000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628362000,\"id\":\"BRTI\",\"value\":\"76401.31\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.13454545",
+              "window_end_ts_exclusive": 1789628362000,
+              "window_size": 22,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628362127
+          },
+          "seq": 1336,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628361.9994302
+      }
+    },
+    {
+      "seq": 5891,
+      "received_time": 1789628362.9490395,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628362.9490395,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628363.0,
+          "value": "76401.48"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.33300000",
+              "window_end_ts_exclusive": 1789628363000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628303000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628363000,\"id\":\"BRTI\",\"value\":\"76401.48\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.01913043",
+              "window_end_ts_exclusive": 1789628363000,
+              "window_size": 23,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628363070
+          },
+          "seq": 1337,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628362.9490395
+      }
+    },
+    {
+      "seq": 5897,
+      "received_time": 1789628363.9926949,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628363.9926949,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628364.0,
+          "value": "76404.17"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.37133333",
+              "window_end_ts_exclusive": 1789628364000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628304000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628364000,\"id\":\"BRTI\",\"value\":\"76404.17\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.02541667",
+              "window_end_ts_exclusive": 1789628364000,
+              "window_size": 24,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628364111
+          },
+          "seq": 1338,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628363.9926949
+      }
+    },
+    {
+      "seq": 5904,
+      "received_time": 1789628364.9481223,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628364.9481223,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628365.0,
+          "value": "76403.34"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.45466667",
+              "window_end_ts_exclusive": 1789628365000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628305000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628365000,\"id\":\"BRTI\",\"value\":\"76403.34\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76403.99800000",
+              "window_end_ts_exclusive": 1789628365000,
+              "window_size": 25,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628365064
+          },
+          "seq": 1339,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628364.9481223
+      }
+    },
+    {
+      "seq": 5910,
+      "received_time": 1789628366.0383942,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628366.0383942,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628366.0,
+          "value": "76404.99"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.53350000",
+              "window_end_ts_exclusive": 1789628366000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628306000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628366000,\"id\":\"BRTI\",\"value\":\"76404.99\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.03615385",
+              "window_end_ts_exclusive": 1789628366000,
+              "window_size": 26,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628366150
+          },
+          "seq": 1340,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628366.0383942
+      }
+    },
+    {
+      "seq": 5917,
+      "received_time": 1789628367.0022182,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628367.0022182,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628367.0,
+          "value": "76411.27"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.64366667",
+              "window_end_ts_exclusive": 1789628367000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628307000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628367000,\"id\":\"BRTI\",\"value\":\"76411.27\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.30407407",
+              "window_end_ts_exclusive": 1789628367000,
+              "window_size": 27,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628367114
+          },
+          "seq": 1341,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628367.0022182
+      }
+    },
+    {
+      "seq": 5923,
+      "received_time": 1789628367.9295664,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628367.9295664,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628368.0,
+          "value": "76409.50"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76403.84566667",
+              "window_end_ts_exclusive": 1789628368000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628308000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628368000,\"id\":\"BRTI\",\"value\":\"76409.50\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.48964286",
+              "window_end_ts_exclusive": 1789628368000,
+              "window_size": 28,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628368039
+          },
+          "seq": 1342,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628367.9295664
+      }
+    },
+    {
+      "seq": 5930,
+      "received_time": 1789628368.9367087,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628368.9367087,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628369.0,
+          "value": "76409.88"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76404.02116667",
+              "window_end_ts_exclusive": 1789628369000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628309000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628369000,\"id\":\"BRTI\",\"value\":\"76409.88\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.67551724",
+              "window_end_ts_exclusive": 1789628369000,
+              "window_size": 29,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628369050
+          },
+          "seq": 1343,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628368.9367087
+      }
+    },
+    {
+      "seq": 5936,
+      "received_time": 1789628369.9430132,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628369.9430132,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628370.0,
+          "value": "76410.05"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76404.20000000",
+              "window_end_ts_exclusive": 1789628370000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628310000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628370000,\"id\":\"BRTI\",\"value\":\"76410.05\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76404.85466667",
+              "window_end_ts_exclusive": 1789628370000,
+              "window_size": 30,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628370060
+          },
+          "seq": 1344,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628369.9430132
+      }
+    },
+    {
+      "seq": 5945,
+      "received_time": 1789628370.9253259,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628370.9253259,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628371.0,
+          "value": "76410.60"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76404.38500000",
+              "window_end_ts_exclusive": 1789628371000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628311000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628371000,\"id\":\"BRTI\",\"value\":\"76410.60\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.04000000",
+              "window_end_ts_exclusive": 1789628371000,
+              "window_size": 31,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628371042
+          },
+          "seq": 1345,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628370.9253259
+      }
+    },
+    {
+      "seq": 5952,
+      "received_time": 1789628371.9209733,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628371.9209733,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628372.0,
+          "value": "76410.34"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76404.57483333",
+              "window_end_ts_exclusive": 1789628372000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628312000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628372000,\"id\":\"BRTI\",\"value\":\"76410.34\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.20562500",
+              "window_end_ts_exclusive": 1789628372000,
+              "window_size": 32,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628372043
+          },
+          "seq": 1346,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628371.9209733
+      }
+    },
+    {
+      "seq": 5958,
+      "received_time": 1789628372.9305658,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628372.9305658,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628373.0,
+          "value": "76410.24"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76404.73583333",
+              "window_end_ts_exclusive": 1789628373000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628313000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628373000,\"id\":\"BRTI\",\"value\":\"76410.24\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.35818182",
+              "window_end_ts_exclusive": 1789628373000,
+              "window_size": 33,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628373056
+          },
+          "seq": 1347,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628372.9305658
+      }
+    },
+    {
+      "seq": 5967,
+      "received_time": 1789628373.9383357,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628373.9383357,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628374.0,
+          "value": "76407.44"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76404.89366667",
+              "window_end_ts_exclusive": 1789628374000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628314000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628374000,\"id\":\"BRTI\",\"value\":\"76407.44\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.41941176",
+              "window_end_ts_exclusive": 1789628374000,
+              "window_size": 34,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628374069
+          },
+          "seq": 1348,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628373.9383357
+      }
+    },
+    {
+      "seq": 5972,
+      "received_time": 1789628374.9752629,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628374.9752629,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628375.0,
+          "value": "76407.15"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76404.96900000",
+              "window_end_ts_exclusive": 1789628375000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628315000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628375000,\"id\":\"BRTI\",\"value\":\"76407.15\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.46885714",
+              "window_end_ts_exclusive": 1789628375000,
+              "window_size": 35,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628375111
+          },
+          "seq": 1349,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628374.9752629
+      }
+    },
+    {
+      "seq": 5978,
+      "received_time": 1789628375.9272385,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628375.9272385,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628376.0,
+          "value": "76407.30"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.06500000",
+              "window_end_ts_exclusive": 1789628376000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628316000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628376000,\"id\":\"BRTI\",\"value\":\"76407.30\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.51972222",
+              "window_end_ts_exclusive": 1789628376000,
+              "window_size": 36,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628376067
+          },
+          "seq": 1350,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628375.9272385
+      }
+    },
+    {
+      "seq": 5983,
+      "received_time": 1789628376.960609,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628376.960609,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628377.0,
+          "value": "76407.38"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.16550000",
+              "window_end_ts_exclusive": 1789628377000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628317000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628377000,\"id\":\"BRTI\",\"value\":\"76407.38\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.57000000",
+              "window_end_ts_exclusive": 1789628377000,
+              "window_size": 37,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628377107
+          },
+          "seq": 1351,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628376.960609
+      }
+    },
+    {
+      "seq": 5989,
+      "received_time": 1789628377.9211864,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628377.9211864,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628378.0,
+          "value": "76406.94"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.27850000",
+              "window_end_ts_exclusive": 1789628378000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628318000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628378000,\"id\":\"BRTI\",\"value\":\"76406.94\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.60605263",
+              "window_end_ts_exclusive": 1789628378000,
+              "window_size": 38,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628378072
+          },
+          "seq": 1352,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628377.9211864
+      }
+    },
+    {
+      "seq": 5994,
+      "received_time": 1789628378.8744733,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628378.8744733,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628379.0,
+          "value": "76407.07"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.37983333",
+              "window_end_ts_exclusive": 1789628379000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628319000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628379000,\"id\":\"BRTI\",\"value\":\"76407.07\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.64358974",
+              "window_end_ts_exclusive": 1789628379000,
+              "window_size": 39,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628379031
+          },
+          "seq": 1353,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628378.8744733
+      }
+    },
+    {
+      "seq": 6000,
+      "received_time": 1789628379.9466813,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628379.9466813,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628380.0,
+          "value": "76405.68"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.45716667",
+              "window_end_ts_exclusive": 1789628380000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628320000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628380000,\"id\":\"BRTI\",\"value\":\"76405.68\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.64450000",
+              "window_end_ts_exclusive": 1789628380000,
+              "window_size": 40,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628380110
+          },
+          "seq": 1354,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628379.9466813
+      }
+    },
+    {
+      "seq": 6005,
+      "received_time": 1789628380.9832065,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628380.9832065,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628381.0,
+          "value": "76407.47"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.50300000",
+              "window_end_ts_exclusive": 1789628381000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628321000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628381000,\"id\":\"BRTI\",\"value\":\"76407.47\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.68902439",
+              "window_end_ts_exclusive": 1789628381000,
+              "window_size": 41,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628381152
+          },
+          "seq": 1355,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628380.9832065
+      }
+    },
+    {
+      "seq": 6011,
+      "received_time": 1789628381.879187,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628381.879187,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628382.0,
+          "value": "76406.17"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.60583333",
+              "window_end_ts_exclusive": 1789628382000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628322000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628382000,\"id\":\"BRTI\",\"value\":\"76406.17\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.70047619",
+              "window_end_ts_exclusive": 1789628382000,
+              "window_size": 42,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628382053
+          },
+          "seq": 1356,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628381.879187
+      }
+    },
+    {
+      "seq": 6016,
+      "received_time": 1789628382.88048,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628382.88048,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628383.0,
+          "value": "76407.49"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.68216667",
+              "window_end_ts_exclusive": 1789628383000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628323000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628383000,\"id\":\"BRTI\",\"value\":\"76407.49\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.74209302",
+              "window_end_ts_exclusive": 1789628383000,
+              "window_size": 43,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628383063
+          },
+          "seq": 1357,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628382.88048
+      }
+    },
+    {
+      "seq": 6022,
+      "received_time": 1789628383.9302638,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628383.9302638,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628384.0,
+          "value": "76407.93"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.76683333",
+              "window_end_ts_exclusive": 1789628384000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628324000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628384000,\"id\":\"BRTI\",\"value\":\"76407.93\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.79181818",
+              "window_end_ts_exclusive": 1789628384000,
+              "window_size": 44,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628384119
+          },
+          "seq": 1358,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628383.9302638
+      }
+    },
+    {
+      "seq": 6027,
+      "received_time": 1789628384.8678336,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628384.8678336,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628385.0,
+          "value": "76407.76"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.87350000",
+              "window_end_ts_exclusive": 1789628385000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628325000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628385000,\"id\":\"BRTI\",\"value\":\"76407.76\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.83555556",
+              "window_end_ts_exclusive": 1789628385000,
+              "window_size": 45,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628385063
+          },
+          "seq": 1359,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628384.8678336
+      }
+    },
+    {
+      "seq": 6033,
+      "received_time": 1789628385.8427174,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628385.8427174,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628386.0,
+          "value": "76408.07"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76405.97150000",
+              "window_end_ts_exclusive": 1789628386000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628326000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628386000,\"id\":\"BRTI\",\"value\":\"76408.07\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.88413043",
+              "window_end_ts_exclusive": 1789628386000,
+              "window_size": 46,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628386045
+          },
+          "seq": 1360,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628385.8427174
+      }
+    },
+    {
+      "seq": 6041,
+      "received_time": 1789628386.863543,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628386.863543,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628387.0,
+          "value": "76407.72"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.06950000",
+              "window_end_ts_exclusive": 1789628387000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628327000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628387000,\"id\":\"BRTI\",\"value\":\"76407.72\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.92319149",
+              "window_end_ts_exclusive": 1789628387000,
+              "window_size": 47,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628387073
+          },
+          "seq": 1361,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628386.863543
+      }
+    },
+    {
+      "seq": 6047,
+      "received_time": 1789628387.8627808,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628387.8627808,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628388.0,
+          "value": "76408.12"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.11200000",
+              "window_end_ts_exclusive": 1789628388000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628328000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628388000,\"id\":\"BRTI\",\"value\":\"76408.12\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76405.96895833",
+              "window_end_ts_exclusive": 1789628388000,
+              "window_size": 48,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628388078
+          },
+          "seq": 1362,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628387.8627808
+      }
+    },
+    {
+      "seq": 6052,
+      "received_time": 1789628388.8586988,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628388.8586988,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628389.0,
+          "value": "76407.55"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.10600000",
+              "window_end_ts_exclusive": 1789628389000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628329000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628389000,\"id\":\"BRTI\",\"value\":\"76407.55\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.00122449",
+              "window_end_ts_exclusive": 1789628389000,
+              "window_size": 49,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628389055
+          },
+          "seq": 1363,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628388.8586988
+      }
+    },
+    {
+      "seq": 6058,
+      "received_time": 1789628389.9365337,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628389.9365337,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628390.0,
+          "value": "76407.66"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.12433333",
+              "window_end_ts_exclusive": 1789628390000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628330000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628390000,\"id\":\"BRTI\",\"value\":\"76407.66\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.03440000",
+              "window_end_ts_exclusive": 1789628390000,
+              "window_size": 50,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628390113
+          },
+          "seq": 1364,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628389.9365337
+      }
+    },
+    {
+      "seq": 6063,
+      "received_time": 1789628390.8781097,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628390.8781097,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628391.0,
+          "value": "76409.97"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.14300000",
+              "window_end_ts_exclusive": 1789628391000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628331000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628391000,\"id\":\"BRTI\",\"value\":\"76409.97\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.11156863",
+              "window_end_ts_exclusive": 1789628391000,
+              "window_size": 51,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628391038
+          },
+          "seq": 1365,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628390.8781097
+      }
+    },
+    {
+      "seq": 6069,
+      "received_time": 1789628391.8933823,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628391.8933823,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628392.0,
+          "value": "76408.43"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.19916667",
+              "window_end_ts_exclusive": 1789628392000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628332000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628392000,\"id\":\"BRTI\",\"value\":\"76408.43\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.15615385",
+              "window_end_ts_exclusive": 1789628392000,
+              "window_size": 52,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628392040
+          },
+          "seq": 1366,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628391.8933823
+      }
+    },
+    {
+      "seq": 6074,
+      "received_time": 1789628392.97017,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628392.97017,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628393.0,
+          "value": "76408.52"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.22333333",
+              "window_end_ts_exclusive": 1789628393000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628333000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628393000,\"id\":\"BRTI\",\"value\":\"76408.52\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.20075472",
+              "window_end_ts_exclusive": 1789628393000,
+              "window_size": 53,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628393106
+          },
+          "seq": 1367,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628392.97017
+      }
+    },
+    {
+      "seq": 6081,
+      "received_time": 1789628393.9812992,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628393.9812992,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628394.0,
+          "value": "76407.87"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.25183333",
+              "window_end_ts_exclusive": 1789628394000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628334000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628394000,\"id\":\"BRTI\",\"value\":\"76407.87\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.23166667",
+              "window_end_ts_exclusive": 1789628394000,
+              "window_size": 54,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628394107
+          },
+          "seq": 1368,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628393.9812992
+      }
+    },
+    {
+      "seq": 6087,
+      "received_time": 1789628395.0001373,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628395.0001373,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628395.0,
+          "value": "76408.32"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.25233333",
+              "window_end_ts_exclusive": 1789628395000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628335000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628395000,\"id\":\"BRTI\",\"value\":\"76408.32\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.26963636",
+              "window_end_ts_exclusive": 1789628395000,
+              "window_size": 55,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628395119
+          },
+          "seq": 1369,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628395.0001373
+      }
+    },
+    {
+      "seq": 6094,
+      "received_time": 1789628395.9426844,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628395.9426844,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628396.0,
+          "value": "76408.66"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.25916667",
+              "window_end_ts_exclusive": 1789628396000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628336000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628396000,\"id\":\"BRTI\",\"value\":\"76408.66\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.31232143",
+              "window_end_ts_exclusive": 1789628396000,
+              "window_size": 56,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628396057
+          },
+          "seq": 1370,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628395.9426844
+      }
+    },
+    {
+      "seq": 6100,
+      "received_time": 1789628397.033361,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628397.033361,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628397.0,
+          "value": "76405.34"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.29466667",
+              "window_end_ts_exclusive": 1789628397000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628337000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628397000,\"id\":\"BRTI\",\"value\":\"76405.34\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.29526316",
+              "window_end_ts_exclusive": 1789628397000,
+              "window_size": 57,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628397138
+          },
+          "seq": 1371,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628397.033361
+      }
+    },
+    {
+      "seq": 6107,
+      "received_time": 1789628397.9300454,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628397.9300454,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628398.0,
+          "value": "76404.97"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.27500000",
+              "window_end_ts_exclusive": 1789628398000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628338000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628398000,\"id\":\"BRTI\",\"value\":\"76404.97\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.27241379",
+              "window_end_ts_exclusive": 1789628398000,
+              "window_size": 58,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628398039
+          },
+          "seq": 1372,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628397.9300454
+      }
+    },
+    {
+      "seq": 6113,
+      "received_time": 1789628398.9386966,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628398.9386966,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628399.0,
+          "value": "76405.17"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.25433333",
+              "window_end_ts_exclusive": 1789628399000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628339000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628399000,\"id\":\"BRTI\",\"value\":\"76405.17\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.25372881",
+              "window_end_ts_exclusive": 1789628399000,
+              "window_size": 59,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628399048
+          },
+          "seq": 1373,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628398.9386966
+      }
+    },
+    {
+      "seq": 6120,
+      "received_time": 1789628399.945347,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628399.945347,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628400.0,
+          "value": "76404.96"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.24916667",
+              "window_end_ts_exclusive": 1789628400000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628340000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628400000,\"id\":\"BRTI\",\"value\":\"76404.96\"}",
+            "index_id": "BRTI",
+            "last_60s_windowed_average_15min": {
+              "value": "76406.23216667",
+              "window_end_ts_exclusive": 1789628400000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628340000
+            },
+            "received_at": 1789628400055
+          },
+          "seq": 1374,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628399.945347
+      }
+    },
+    {
+      "seq": 6126,
+      "received_time": 1789628401.0544658,
+      "data": {
+        "normalized": {
+          "index": "BRTI",
+          "received_time": 1789628401.0544658,
+          "recovered": false,
+          "source": "kalshi-cfbenchmarks-1hz",
+          "source_time": 1789628401.0,
+          "value": "76404.21"
+        },
+        "raw": {
+          "msg": {
+            "avg_60s_data": {
+              "value": "76406.23216667",
+              "window_end_ts_exclusive": 1789628401000,
+              "window_size": 60,
+              "window_start_ts_ms": 1789628341000
+            },
+            "data": "{\"type\":\"value\",\"time\":1789628401000,\"id\":\"BRTI\",\"value\":\"76404.21\"}",
+            "index_id": "BRTI",
+            "received_at": 1789628401165
+          },
+          "seq": 1375,
+          "sid": 1,
+          "type": "cfbenchmarks_value"
+        },
+        "transport_received_time": 1789628401.0544658
+      }
+    }
+  ],
+  "official_result_event": {
+    "seq": 6186,
+    "received_time": 1789628416.7114625,
+    "data": {
+      "market_ticker": "KXBTC15M-26SEP170300-00",
+      "raw": {
+        "can_close_early": true,
+        "close_time": "2026-09-17T07:00:00Z",
+        "created_time": "2026-09-16T20:00:58.20114Z",
+        "custom_strike": {
+          "round_digits": "2"
+        },
+        "event_ticker": "KXBTC15M-26SEP170300",
+        "exchange_index": 2,
+        "expected_expiration_time": "2026-09-17T07:05:00Z",
+        "expiration_time": "2026-09-24T07:00:00Z",
+        "expiration_value": "76406.25",
+        "floor_strike": 76492.62,
+        "last_price_dollars": "0.0010",
+        "latest_expiration_time": "2026-09-24T07:00:00Z",
+        "liquidity_dollars": "0.0000",
+        "market_type": "binary",
+        "no_ask_dollars": "1.0000",
+        "no_bid_dollars": "0.9990",
+        "no_sub_title": "Target price: TBD",
+        "notional_value_dollars": "1.0000",
+        "occurrence_datetime": "2026-09-17T07:05:00Z",
+        "open_interest_fp": "611330.57",
+        "open_time": "2026-09-17T06:45:00Z",
+        "previous_price_dollars": "0.0000",
+        "previous_yes_ask_dollars": "0.0000",
+        "previous_yes_bid_dollars": "0.0000",
+        "price_level_structure": "tapered_deci_cent",
+        "price_ranges": [
+          {
+            "end": "0.1000",
+            "start": "0.0000",
+            "step": "0.0010"
+          },
+          {
+            "end": "0.9000",
+            "start": "0.1000",
+            "step": "0.0100"
+          },
+          {
+            "end": "1.0000",
+            "start": "0.9000",
+            "step": "0.0010"
+          }
+        ],
+        "result": "no",
+        "rules_primary": "If the simple average of the sixty seconds of CF Benchmarks' BRTI before 3:00 AM EDT on Sep 17, 2026 is at least the simple average of the sixty seconds of CF Benchmarks' BRTI before 2:45 AM EDT on September 17, 2026, then the market resolves to Yes.",
+        "rules_secondary": "Not all cryptocurrency price data is the same. While checking a source like Google or Coinbase may help guide your decision, the price used to determine this market is based on CF Benchmarks' corresponding Real Time Index (RTI). At the last minute before expiration, 60 RTI prices are collected. The official and final value is the average of these prices, rounded to the nearest 2 decimal places.",
+        "settlement_timer_seconds": 1,
+        "settlement_value_dollars": "0.0000",
+        "status": "determined",
+        "strike_type": "greater_or_equal",
+        "ticker": "KXBTC15M-26SEP170300-00",
+        "title": "BTC price up in next 15 mins?",
+        "updated_time": "2026-09-17T07:00:00.82317Z",
+        "volume_24h_fp": "628407.57",
+        "volume_fp": "1897280.35",
+        "yes_ask_dollars": "0.0010",
+        "yes_ask_size_fp": "225230.85",
+        "yes_bid_dollars": "0.0000",
+        "yes_bid_size_fp": "0.00",
+        "yes_sub_title": "Target Price: $76,492.62"
+      },
+      "source": "kalshi-official-result",
+      "transport_received_time": 1789628416.7114625,
+      "yes": false
+    }
+  },
+  "exported_at": "2026-09-17T07:02:07.101486+00:00"
+}

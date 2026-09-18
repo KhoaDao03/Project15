@@ -1,5 +1,7 @@
 # Settlement model and source verification
 
+> **2026-09-17 audit update:** See [settlement verification](../SETTLEMENT_VERIFICATION.md). The close-inclusive final-minute feed helper does not match the two captured published settlement values. The probability engine now uses the reviewed preceding-60-second profile, retains the half-cent tie blocker, and records live BRTI data. Historical statements below describe earlier behavior; legacy trading code was not changed by this focused audit.
+
 Verified against public production series/market metadata on 2026-09-08. Fixtures
 preserve the actual responses under `tests/fixtures/`. No authenticated feed was
 available during implementation. Documentation access is not a stream test.

@@ -1,0 +1,51 @@
+{
+  "market_ticker": "KXBTC15M-26SEP170245-45",
+  "as_of": 1789627530.7173362,
+  "settlement_window": {
+    "start": 1789627440,
+    "end_exclusive": 1789627500,
+    "count": 60,
+    "missing": [],
+    "conflicts": [],
+    "partial_mean": "76492.62016666666666666666667",
+    "mean": "76492.62016666666666666666667",
+    "rounded": "76492.62",
+    "status": "COMPLETE"
+  },
+  "close_inclusive_helper": {
+    "start": 1789627441,
+    "end_exclusive": 1789627501,
+    "count": 60,
+    "missing": [],
+    "conflicts": [],
+    "partial_mean": "76492.46216666666666666666667",
+    "mean": "76492.46216666666666666666667",
+    "rounded": "76492.46",
+    "status": "COMPLETE"
+  },
+  "provider": {
+    "avg_60s_data": {
+      "value": "76492.62016667",
+      "boundaries_valid": true,
+      "matches_reconstruction": true,
+      "event_seq": 2251
+    },
+    "last_60s_windowed_average_15min": {
+      "value": "76492.46216667",
+      "boundaries_valid": true,
+      "matches_reconstruction": true,
+      "event_seq": 2251
+    }
+  },
+  "published": {
+    "value": "76492.62",
+    "result": "yes",
+    "lifecycle": "finalized",
+    "finalized": true,
+    "event_seq": 2371,
+    "received_time": 1789627530.7173362,
+    "status": "AVAILABLE",
+    "matches_settlement_value": true,
+    "matches_close_inclusive_value": false
+  }
+}
