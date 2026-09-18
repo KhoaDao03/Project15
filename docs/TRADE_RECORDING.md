@@ -36,7 +36,9 @@ A damaged/torn final gzip batch fails explicitly. Preserve the source; repair on
 
 CLI console logging uses `LOG_LEVEL` (default INFO), with message-only formatting. The systemd template sets WARNING and journald handles process output. A quiet console does not imply no captured events. This code does not automatically create a universal `data/runtime/bot.log`; redirect/manage console logs deliberately and keep credentials out of them.
 
-Back up the database consistently, tapes, frozen settings and source revision. WAL files need a coordinated backup, not an arbitrary live file copy. No local data/credential files are tracked by this documentation change. Follow [Safety](SAFETY.md).
+Git allows trade databases (`.db`, `.sqlite`, `.sqlite3`), JSONL tapes (including `.jsonl.gz`), Parquet recordings, and `.log` files (including rotated logs) under `data/`. Add and commit these files to include them in the repository; recording a trade does not automatically commit it. Other runtime state, credentials, SQLite working files (`-wal`, `-shm`, `-journal`), and process locks remain ignored.
+
+Back up the database consistently, tapes, frozen settings and source revision. Before committing a database, stop its writers and checkpoint it, or create a consistent SQLite backup. WAL files need a coordinated backup, not an arbitrary live file copy. Follow [Safety](SAFETY.md).
 
 ## Historical operations and measurements
 

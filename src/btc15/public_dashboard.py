@@ -30,7 +30,8 @@ async def read_snapshot(client):
         asset = row["asset"]
         if asset not in ("BTC", "ETH", "SOL", "XRP"):
             continue
-        public = pick(row, "asset healthy price open_positions realized_pnl wins losses completed_trades")
+        public = pick(row, "asset healthy price open_positions realized_pnl wins losses completed_trades "
+                      "win_rate current_streak longest_win_streak longest_loss_streak")
         public["live_policy"] = pick(fleet.get("live", {}).get("assets", {}).get(asset, {}), "enabled contracts revision")
         public["state"] = row.get("operational", {}).get("state", "UNAVAILABLE")
         public["markets"] = [
@@ -46,7 +47,7 @@ async def read_snapshot(client):
         public["trades"] = [
             {
                 **pick(trade, "market timestamp"),
-                **pick(trade["body"], "status side bought quantity entry exit fees net_pnl opened"),
+                **pick(trade["body"], "status side bought quantity entry exit fees net_pnl opened market_result"),
             }
             for trade in data["rows"][:5]
         ]

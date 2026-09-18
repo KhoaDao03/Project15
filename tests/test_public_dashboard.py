@@ -14,13 +14,15 @@ def fleet_data():
         assets=[dict(
             asset=asset, run_id=asset + '-signals', healthy=True,
             price=100, realized_pnl=1.25, wins=2, losses=1,
+            win_rate=2/3, current_streak=-1, longest_win_streak=2, longest_loss_streak=1,
             operational=dict(state='COLLECTING', failure='private-file-path'),
             markets=[dict(ticker=asset + '-market', fresh=True, manual_purchases={'secret': 1})],
         ) for asset in ('BTC', 'ETH', 'SOL', 'XRP')],
     )
 
 
-def test_snapshot_reads_fixed_paths_and_removes_private_fields():
+@pytest.mark.parametrize('market_result', ['yes', 'no', None])
+def test_snapshot_reads_fixed_paths_and_removes_private_fields(market_result):
     calls = []
 
     def handle(request):
@@ -30,7 +32,8 @@ def test_snapshot_reads_fixed_paths_and_removes_private_fields():
         return httpx.Response(200, json=dict(stale=True, rows=[dict(
             market='<script>alert(1)</script>', timestamp=100, run_id='private-run',
             body=dict(status='CLOSED', side='yes', bought=10, entry=.95, exit=.99,
-                      fees=.1, net_pnl=.3, probability={'secret': 1}, order_id='secret'),
+                      fees=.1, net_pnl=.3, market_result=market_result,
+                      probability={'secret': 1}, order_id='secret'),
         )]))
 
     async def run():
@@ -41,7 +44,12 @@ def test_snapshot_reads_fixed_paths_and_removes_private_fields():
     assert len(snapshot['assets']) == 4
     assert snapshot['live_only'] is True
     assert snapshot['assets'][0]['trades'][0]['net_pnl'] == .3
+    assert snapshot['assets'][0]['trades'][0]['market_result'] == market_result
     assert snapshot['assets'][0]['trades_stale'] is True
+    assert snapshot['assets'][0]['win_rate'] == pytest.approx(2/3)
+    assert snapshot['assets'][0]['current_streak'] == -1
+    assert snapshot['assets'][0]['longest_win_streak'] == 2
+    assert snapshot['assets'][0]['longest_loss_streak'] == 1
     assert 'secret' not in str(snapshot)
     assert 'private-' not in str(snapshot)
     assert len(calls) == 5

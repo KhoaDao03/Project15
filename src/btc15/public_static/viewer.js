@@ -1,6 +1,7 @@
 const el=(tag,value,cls)=>{const node=document.createElement(tag);node.textContent=value??'—';if(cls)node.className=cls;return node;};
 const money=value=>typeof value==='number'?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:4}).format(value):'—';
 const pnlClass=value=>value>0?'positive':value<0?'negative':'';
+const percent=value=>typeof value==='number'&&Number.isFinite(value)?(value*100).toFixed(1)+'%':'—';
 function render(data){
   renderOwner(data);
   const connection=document.getElementById('connection');
@@ -16,16 +17,22 @@ function render(data){
     for(const [label,value] of [['Reference',money(asset.price)],['Realized P&L',money(asset.realized_pnl)],['Wins',asset.wins],['Losses',asset.losses],['Open trades',asset.open_positions]]){
       const stat=el('div','');stat.append(el('span',label),el('strong',value));stats.append(stat);
     }card.append(stats);
+    const streak=asset.current_streak,hasStreak=typeof streak==='number'&&Number.isFinite(streak);
+    const performance=el('div','','stats');
+    for(const [label,value] of [['Win rate',percent(asset.win_rate)],['Current win streak',hasStreak?Math.max(0,streak):'—'],['Current loss streak',hasStreak?Math.max(0,-streak):'—'],['Longest win streak',asset.longest_win_streak],['Longest loss streak',asset.longest_loss_streak]]){
+      const stat=el('div','');stat.append(el('span',label),el('strong',value));performance.append(stat);
+    }card.append(performance);
     for(const market of asset.markets)card.append(el('p',market.ticker+(market.fresh?'':' · stale market data')));
     card.append(el('h4','Latest 5 trades'+(asset.trades_stale?' · updates delayed':'')));
     const wrap=el('div','','table-wrap'),table=el('table',''),head=el('thead',''),headers=el('tr','');
-    for(const label of ['Market / time','Status','Side / quantity','Entry','Exit','Fees','Net P&L'])headers.append(el('th',label));head.append(headers);table.append(head);
+    for(const label of ['Market / time','Status','Market settled','Side / quantity','Entry','Exit','Fees','Net P&L'])headers.append(el('th',label));head.append(headers);table.append(head);
     const body=el('tbody','');
     for(const trade of asset.trades){
       const row=el('tr',''),market=el('td',trade.market,'market');
       market.append(el('small',new Date((trade.opened??trade.timestamp)*1000).toLocaleString()));row.append(market);
       const open=trade.status==='OPEN';
-      for(const value of [open?'OPEN':'CLOSED',(trade.side??'—').toUpperCase()+' / '+(trade.bought??'—'),money(trade.entry),open?'Pending':money(trade.exit),money(trade.fees)])row.append(el('td',value));
+      const settled=trade.market_result==='yes'?'YES':trade.market_result==='no'?'NO':'Pending / unknown';
+      for(const value of [open?'OPEN':'CLOSED',settled,(trade.side??'—').toUpperCase()+' / '+(trade.bought??'—'),money(trade.entry),open?'Pending':money(trade.exit),money(trade.fees)])row.append(el('td',value));
       row.append(el('td',open?'Pending':money(trade.net_pnl),open?'':pnlClass(trade.net_pnl)));body.append(row);
     }table.append(body);wrap.append(table);card.append(wrap);
     if(!asset.trades.length)card.append(el('p','No trades recorded yet.'));
