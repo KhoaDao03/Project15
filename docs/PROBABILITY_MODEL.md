@@ -18,7 +18,7 @@ indicator_up = clip(0.5 + 0.12 * indicator_lean, 0.05, 0.95)
 p_up = clip((1 - weight) * base_up + weight * indicator_up, 0.02, 0.98)
 ```
 
-Multipliers are **BTC 1.35, ETH 1.25, SOL 1.00, XRP 1.00**. GOLD, SILVER and WTI use **1.35**, matching BTC. The existing
+Multipliers are **BTC 1.35, ETH 1.10, SOL 1.00, XRP 1.00**. GOLD, SILVER and WTI use **1.35**, matching BTC. The existing
 indicator lean uses Wilder RSI/Stochastic RSI and Bollinger Bands. Project15's
 causal candle construction is retained. ATR averages the 14 true ranges from the
 last 15 contiguous official-reference candles, including the causal current minute,
@@ -63,10 +63,12 @@ probability and whether the cap applied. Caps are recalculated from each current
 book even when model inputs are cached, and rechecked at paper/live submission.
 
 All four cloud presets require **confidence ≥83%** and
-**1 < seconds_remaining ≤480**. The standard/late confirmation boundary remains
-120 seconds, with the same 83% floor on both sides. Exactly 480 seconds is eligible;
-exactly 1 second is blocked. Price, quality, freshness, confirmation, Bollinger,
-risk and execution checks remain additional requirements. The 80–95¢ purchase
+**1 < seconds_remaining ≤420**. The standard/late confirmation boundary remains
+120 seconds, with the same 83% floor on both sides. Exactly 420 seconds is eligible;
+exactly 1 second is blocked. Price, quality, freshness, confirmation,
+risk and execution checks remain additional requirements. The separate directional
+Bollinger entry veto is disabled across all seven presets; the indicator adjustment
+inside the probability model is unchanged. The 80–95¢ purchase
 range and 99¢ take-profit / 55¢ hard-stop settings are unchanged.
 
 ## Settlement evidence and limitations

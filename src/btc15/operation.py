@@ -65,11 +65,13 @@ async def serve(
 
 
 def health(store, run_id, now=None):
-    now = time.time() if now is None else now
+    live_clock = now is None
     failure = store.read_market_display("collector_failure")
     if failure and failure.get("run_id") != run_id:
         failure = None
     rows = store.list(kind="status", mode="PAPER", run_id=run_id, limit=1, newest_first=True)
+    # Read time after the status: a concurrent publication is not future data.
+    now = time.time() if live_clock else now
     if not rows:
         return dict(
             healthy=False,

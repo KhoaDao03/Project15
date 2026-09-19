@@ -9,7 +9,9 @@ Settlement-average evidence remains a separate confirmation check. See [Probabil
 The standard window selects the side favored by the official reference relative
 to the strike. The late window uses the expected settlement average. The bot
 requires fresh same-side confirmation, valid contract metadata, reference and book
-health, warmup/quality, timing, price/spread, Bollinger and risk checks.
+health, warmup/quality, timing, price/spread and risk checks.
+The separate directional Bollinger entry veto is disabled for all seven assets;
+Bollinger inputs remain part of the probability model’s indicator adjustment.
 
 The selected-side Bleep probability must meet the configured floor in evaluation
 and at order submission. Missing/nonfinite probability cannot pass. For the crypto

@@ -587,6 +587,13 @@ def create_app(
         page = rows[offset : offset + limit]
         outcomes = {}
         for row in page:
+            body = row["body"]
+            body["exit_timestamp"] = (
+                None if body.get("status") == "OPEN" else body.get("settlement_timestamp", row["timestamp"])
+            )
+            body["exit_type"] = (
+                None if body.get("status") == "OPEN" else "settlement" if body.get("reason") == "SETTLEMENT" else "sale"
+            )
             key = (row["run_id"], row["market"])
             if key not in outcomes:
                 settlements = store.list(

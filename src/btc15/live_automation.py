@@ -146,10 +146,11 @@ class LiveAutomation:
                 "INSERT OR REPLACE INTO live_assets VALUES (?,?)", (policy["asset"], json.dumps(policy))
             )
 
-    def check_daily_loss(self, asset, now):
+    def check_daily_loss(self, asset, now, *, rearm=False):
         policy = self.assets().get(asset)
         day = int(now // 86400)
-        if policy and policy.get("loss_guard", {}).get("day") == day:
+        latched = policy and policy.get("loss_guard", {}).get("day") == day
+        if latched and not rearm:
             raise HTTPException(409, "Daily live loss limit reached; new buys disabled")
         try:
             rows = [r for r in self.manual.rows() if r["request"]["ticker"].startswith(f"KX{asset}15M-")]
@@ -188,7 +189,11 @@ class LiveAutomation:
             raise HTTPException(
                 409, "Daily live P&L unavailable; new buys blocked, exits remain active"
             ) from exc
-        if pnl > LIMIT:
+        if latched and rearm:
+            return dict(day=day, pnl=str(pnl))
+        baseline = (policy or {}).get("loss_guard_baseline", {})
+        reference = Decimal(baseline["pnl"]) if baseline.get("day") == day else Decimal(0)
+        if pnl - reference > LIMIT:
             return
         if policy:
             policy.update(
@@ -198,7 +203,7 @@ class LiveAutomation:
                     day=day,
                     pnl=str(pnl),
                     triggered_at=now,
-                    reason="Daily live loss reached $20 (UTC); new buys disabled",
+                    reason="Live loss reached $20 since daily start or manual reset; new buys disabled",
                 ),
             )
             # Persist policy first: entry() checks it even if interrupted here.
@@ -249,8 +254,8 @@ class LiveAutomation:
         policy = self.assets().get(asset)
         if request.revision != (policy or {}).get("revision", 0):
             raise HTTPException(409, "Controls changed; refresh before applying settings")
+        baseline = None
         if request.enabled:
-            self.check_daily_loss(asset, time.time())
             if request.confirm != "ENABLE_REAL_TRADING":
                 raise HTTPException(
                     422, "Confirm enabling real-money automation for this asset and future markets"
@@ -261,6 +266,8 @@ class LiveAutomation:
                 raise HTTPException(409, "Real trading credentials are not configured")
         if timestamp(market["close_time"]) <= time.time():
             raise HTTPException(409, "Market has closed")
+        if request.enabled:
+            baseline = self.check_daily_loss(asset, time.time(), rearm=True)
         control = dict(
             current or {},
             ticker=request.ticker,
@@ -273,16 +280,20 @@ class LiveAutomation:
             stop_price=member["config"].fixed_stop_price,
             close_time=timestamp(market["close_time"]),
         )
-        self.write_asset(
-            dict(
-                asset=asset,
-                enabled=request.enabled,
-                contracts=request.contracts,
-                revision=request.revision + 1,
-                config_version=member["config"].version,
-                stop_price=member["config"].fixed_stop_price,
-            )
+        updated_policy = dict(
+            policy or {},
+            asset=asset,
+            enabled=request.enabled,
+            contracts=request.contracts,
+            revision=request.revision + 1,
+            config_version=member["config"].version,
+            stop_price=member["config"].fixed_stop_price,
         )
+        if request.enabled:
+            updated_policy.pop("loss_guard", None)
+        if baseline is not None:
+            updated_policy["loss_guard_baseline"] = baseline
+        self.write_asset(updated_policy)
         for previous in self.controls().values():
             if previous["asset"] == asset and previous["ticker"] != request.ticker:
                 previous.update(
@@ -366,6 +377,8 @@ class LiveAutomation:
 
     def book(self, control, now):
         asset, member, snapshot, market = self.market_info(control["ticker"])
+        # The collector can publish while preceding database reads are in progress.
+        now = max(now, time.time())
         if (
             snapshot.get("run_id") != member["run_id"]
             or not snapshot.get("connected")
@@ -385,11 +398,12 @@ class LiveAutomation:
         policy = self.assets().get(asset)
         if policy and not policy["enabled"]:
             raise HTTPException(409, "Asset live buys disabled")
-        report = health(self.stores[asset], member["run_id"], now)
+        report = health(self.stores[asset], member["run_id"])
         if not report["healthy"]:
             raise HTTPException(409, "Collector health blocks automatic entry")
         record = self.stores[asset].read_market_display("evaluation:" + member["run_id"]) or {}
         d = record.get("body", {})
+        now = max(now, time.time())
         if (
             record.get("market") != control["ticker"]
             or d.get("versions", {}).get("config") != config.version
@@ -403,7 +417,7 @@ class LiveAutomation:
         ]
         if reasons or d.get("decision") not in ("NO_TRADE", "TRADE_CANDIDATE"):
             raise HTTPException(409, "Strategy entry filters: " + ", ".join(r["code"] for r in reasons))
-        remaining = control["close_time"] - now
+        remaining = control["close_time"] - max(now, time.time())
         if not config.entry_cutoff < remaining <= config.entry_window_start:
             raise HTTPException(409, "Outside entry window")
         side = d.get("side")
@@ -416,6 +430,9 @@ class LiveAutomation:
         ):
             raise HTTPException(409, "Probability floor not met")
         book = self.book(control, now)
+        remaining = control["close_time"] - max(now, time.time())
+        if not config.entry_cutoff < remaining <= config.entry_window_start:
+            raise HTTPException(409, "Outside entry window")
         ask, bid = book.get(side + "_ask"), book.get(side + "_bid")
         confidence = capped_confidence(p, bid, ask, asset)
         if confidence is None or confidence < config.probability_floor(remaining <= config.no_new_entry):
@@ -683,6 +700,7 @@ class LiveAutomation:
         )
         listener.start()
         fill_task = asyncio.create_task(self.manual.watch_fills())
+        settlement_task = asyncio.create_task(self.recover_settlements())
         loss_checked_at = 0
         try:
             while True:
@@ -723,9 +741,22 @@ class LiveAutomation:
             self.running = False
             listener.close()
             fill_task.cancel()
-            await asyncio.gather(fill_task, return_exceptions=True)
+            settlement_task.cancel()
+            await asyncio.gather(fill_task, settlement_task, return_exceptions=True)
             self.lock_file.close()
             self.lock_file = None
+
+    async def recover_settlements(self):
+        from .live_settlement_recovery import recover_live_settlements
+
+        while True:
+            try:
+                await recover_live_settlements(
+                    self.manual, self.members, self.stores, self.controls(), time.time()
+                )
+            except Exception:
+                log.exception("Live settlement recovery cycle failed")
+            await asyncio.sleep(15)
 
 
 def install_live_automation(app, manual, members, stores):

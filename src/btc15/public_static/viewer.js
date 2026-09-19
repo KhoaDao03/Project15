@@ -33,6 +33,7 @@ function render(data){
       const open=trade.status==='OPEN';
       const settled=trade.market_result==='yes'?'YES':trade.market_result==='no'?'NO':'Pending / unknown';
       for(const value of [open?'OPEN':'CLOSED',settled,(trade.side??'—').toUpperCase()+' / '+(trade.bought??'—'),money(trade.entry),open?'Pending':money(trade.exit),money(trade.fees)])row.append(el('td',value));
+      if(!open&&trade.exit_timestamp)row.children[5].append(el('small',(trade.exit_type==='settlement'?'Settled: ':'Sold / exit: ')+new Date(trade.exit_timestamp*1000).toLocaleString()));
       row.append(el('td',open?'Pending':money(trade.net_pnl),open?'':pnlClass(trade.net_pnl)));body.append(row);
     }table.append(body);wrap.append(table);card.append(wrap);
     if(!asset.trades.length)card.append(el('p','No trades recorded yet.'));

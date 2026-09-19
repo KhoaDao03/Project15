@@ -29,15 +29,15 @@ private dashboard private.
 | Setting | Value |
 | --- | --- |
 | Probability model | Bleep ATR finish estimate |
-| Standard entry window | 8–2 minutes remaining |
+| Standard entry window | 7–2 minutes remaining |
 | Late entry window | 2 minutes down to, but excluding, 1 second remaining |
 | Bleep entry probability | At least 83% after safety and market-respect caps in both windows |
 | ATR source | Rolling 14 true ranges from official-reference candles |
-| ATR multiplier | BTC 1.35; ETH 1.25; SOL/XRP 1.00 |
+| ATR multiplier | BTC 1.35; ETH 1.10; SOL/XRP 1.00 |
 | Market-respect cap | Mid +6pp BTC/ETH; +10pp SOL/XRP; maximum 98% |
 | Strategy purchase range | 80–95¢ |
 | Confirmation | One fresh same-side reference sample |
-| Directional Bollinger filter | Enabled |
+| Directional Bollinger filter | Disabled |
 | Net-edge / EV entry vetoes | Disabled; estimates remain reported |
 | Take-profit / hard stop | 99¢ / 55¢ |
 

@@ -21,17 +21,34 @@ fill accounting block new entries until the P&L can be verified.
 The guard runs in the live execution service, including immediately before a buy
 and when enabling live settings. It turns off the saved asset switch and its
 market controls, and exposes the reason in both dashboards. Existing exits keep
-running. The switch stays off across restarts and midnight; it cannot be re-enabled
-on the day it triggered. A later day requires explicit manual enablement.
+running. The switch stays off across restarts and midnight until explicitly
+re-enabled through the confirmed live settings controls. Same-day re-enabling
+resets the loss reference to the asset's current verified realized P&L: another
+$20 of net realized losses disables new buys again. For example, re-enabling at
+−$21 sets the next trigger at −$41. The reference persists across restarts and
+settings edits; on the next UTC day the normal −$20 daily threshold applies.
+Re-enabling does not bypass missing or incomplete P&L accounting.
 
 Missing settlement of a current-day expired live position blocks new entries.
 An order's cumulative sales spanning UTC midnight cannot be assigned accurately
 to a day from this journal; such accounting also blocks entries rather than using
 an assumed P&L. These data blocks leave automatic exits active.
 
+## Official results and exit times
+
+The live executor checks expired markets with confirmed bot buys for missing
+official results every 15 seconds, independently of paper simulation. It validates
+final REST market metadata and records the official settlement timestamp and
+evidence in the current run, including after a collector cutover. Pending or
+invalid exchange results remain pending. Existing exit management runs separately.
+
+Both trade displays show the final sale or settlement timestamp. The public
+view labels the line **Sold / exit** or **Settled**; a sold trade’s market outcome
+can be recorded later without changing its realized sale P&L.
+
 ## Execution
 
-All seven assets (BTC, ETH, SOL, XRP, GOLD, SILVER, WTI) start considering entries with 8 minutes remaining. Standard entries run until 2 minutes remaining, and late entries until 1 second remaining (exclusive). Both require one fresh confirmation sample. Entry requires fresh, healthy collector decisions and books. Current strategy settings require Bleep confidence of at least 83% for crypto and 85% for commodities after safety and market-respect caps, asks between 80 and 95 cents, and the remaining strategy entry filters. Paper inventory and its post-close cooldown are excluded because they do not describe real holdings. Live entry requires a flat real position in the market, sufficient cash including a fee allowance, and at most one filled bot entry per ticker.
+All seven assets (BTC, ETH, SOL, XRP, GOLD, SILVER, WTI) start considering entries with 7 minutes remaining. Standard entries run until 2 minutes remaining, and late entries until 1 second remaining (exclusive). Both require one fresh confirmation sample. Entry requires fresh, healthy collector decisions and books. Current strategy settings require Bleep confidence of at least 83% for crypto and 85% for commodities after safety and market-respect caps, asks between 80 and 95 cents, and the remaining strategy entry filters. Paper inventory and its post-close cooldown are excluded because they do not describe real holdings. Live entry requires a flat real position in the market, sufficient cash including a fee allowance, and at most one filled bot entry per ticker.
 
 Buys are fill-or-kill for the selected quantity: all contracts or none. The limit uses the configured maximum entry price plus one cent of execution headroom (currently 96 cents), capped at 99 cents and rounded down to a supported tick in the purchased outcome's price. The observed ask must still pass the strategy entry range and all other entry checks. Cheaper offers can fill first; fees are additional. Known empty attempts retry immediately after confirmation and fresh entry revalidation, with no added cooldown (at most two retries). Network and exchange processing time still applies. Uncertain acknowledgements never trigger blind replacements.
 
@@ -201,3 +218,8 @@ When a market has no filled paper purchase, confirmed bot fills from the durable
 Fallback exits and fees use confirmed exchange records; partial sales retain the remaining position. A recorded official settlement closes any remainder. Markets with mixed manual and bot purchases, missing fill economics or unallocatable sales are excluded rather than guessed. These totals combine simulated and live-derived outcomes and must not be described as a pure paper backtest.
 
 This is a dashboard-only view reconstructed from the persistent journal, not a new paper execution. It survives dashboard restarts without copying or modifying immutable paper records, collector checkpoints, risk state or live controls.
+
+Freshness checks sample wall-clock time after reading collector publications. A
+quote or decision published during preceding database reads must not be rejected
+as future-dated relative to the start of the check. Actual future timestamps,
+stale publications, collector recovery, and entry-window expiry still block buys.

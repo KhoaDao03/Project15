@@ -595,3 +595,53 @@ def test_live_submission_rechecks_market_cap_against_new_book(live, side):
     with pytest.raises(HTTPException, match="market-respect cap"):
         worker.entry(control, clock[0])
     assert not state["posts"]
+
+
+def test_entry_accepts_concurrent_collector_publication(live, monkeypatch):
+    worker, state, manual, control, data, clock = live
+    started = clock[0]
+    store = next(iter(worker.stores.values()))
+    read = store.read_market_display
+
+    def publish_during_read(key=None):
+        clock[0] += 0.05
+        return read(key)
+
+    monkeypatch.setattr(store, "read_market_display", publish_during_read)
+    side, _, _ = worker.entry(control, started)
+    assert side == "yes"
+
+
+@pytest.mark.parametrize("offset", [-3, 1])
+@pytest.mark.parametrize("target", ["book", "decision"])
+def test_entry_still_rejects_stale_or_future_publications(live, monkeypatch, offset, target):
+    worker, state, manual, control, data, clock = live
+    store = next(iter(worker.stores.values()))
+    read = store.read_market_display
+
+    def bad_timestamp(key=None):
+        record = read(key)
+        if key and target == "decision":
+            record["body"]["timestamp"] += offset
+        elif not key and target == "book":
+            record["published_at"] += offset
+        return record
+
+    monkeypatch.setattr(store, "read_market_display", bad_timestamp)
+    with pytest.raises(HTTPException, match="fresh"):
+        worker.entry(control, clock[0])
+
+
+def test_entry_rechecks_cutoff_after_book_read(live, monkeypatch):
+    worker, state, manual, control, data, clock = live
+    config = next(iter(worker.members.values()))["config"]
+    control["close_time"] = clock[0] + config.entry_cutoff + 0.1
+    read = worker.market_info
+
+    def delayed_read(ticker):
+        clock[0] += 0.2
+        return read(ticker)
+
+    monkeypatch.setattr(worker, "market_info", delayed_read)
+    with pytest.raises(HTTPException, match="Outside entry window"):
+        worker.entry(control, clock[0])

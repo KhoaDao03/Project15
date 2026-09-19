@@ -98,7 +98,7 @@ async def test_loss_latch_preserves_hard_stop_exits(live):
     assert worker.control(control["ticker"])["exit_reason"] == "HARD_STOP"
 
 
-def test_reenable_cannot_bypass_today_loss_guard(live, monkeypatch):
+def test_initial_enable_still_checks_loss_limit(live, monkeypatch):
     worker, _, _, control, _, _ = live
     monkeypatch.setattr("btc15.live_automation.daily_pnl", lambda *args: Decimal("-20"))
     with pytest.raises(HTTPException, match="Daily live loss limit"):
@@ -112,6 +112,79 @@ def test_reenable_cannot_bypass_today_loss_guard(live, monkeypatch):
             )
         )
     assert not worker.assets()["ETH"]["enabled"]
+
+
+@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
+def test_same_day_reenable_resets_baseline_and_retrips_after_restart(live, monkeypatch):
+    worker, _, manual, control, _, clock = live
+    asset = control["asset"]
+    pnl = [Decimal("-21")]
+    monkeypatch.setattr("btc15.live_automation.daily_pnl", lambda *args: pnl[0])
+    with pytest.raises(HTTPException, match="Daily live loss limit"):
+        worker.check_daily_loss(asset, clock[0])
+
+    def configure(enabled=True, confirm="ENABLE_REAL_TRADING"):
+        return worker.configure(
+            LiveControl(
+                ticker=control["ticker"],
+                enabled=enabled,
+                contracts=10,
+                revision=worker.assets()[asset]["revision"],
+                confirm=confirm,
+            )
+        )
+
+    # Applying disabled settings must retain the latch; confirmation is required.
+    configure(enabled=False)
+    with pytest.raises(HTTPException, match="Confirm enabling"):
+        configure(confirm="")
+    assert not worker.assets()[asset]["enabled"]
+    assert "loss_guard" in worker.assets()[asset]
+    configure()
+    assert worker.assets()[asset]["enabled"]
+    assert worker.control(control["ticker"])["enabled"]
+    assert "loss_guard" not in worker.assets()[asset]
+    assert worker.assets()[asset]["loss_guard_baseline"]["pnl"] == "-21"
+    # Editing settings does not reset an already active budget.
+    pnl[0] = Decimal("-30")
+    configure()
+    assert worker.assets()[asset]["loss_guard_baseline"]["pnl"] == "-21"
+    restarted = LiveAutomation(manual, worker.members, worker.stores)
+    pnl[0] = Decimal("-40.99")
+    restarted.check_daily_loss(asset, clock[0])
+    pnl[0] = Decimal("-41")
+    with pytest.raises(HTTPException, match="Daily live loss limit"):
+        restarted.check_daily_loss(asset, clock[0])
+    configure()
+    assert worker.assets()[asset]["loss_guard_baseline"]["pnl"] == "-41"
+    # The previous day's baseline must not enlarge the next day's budget.
+    pnl[0] = Decimal("-20")
+    with pytest.raises(HTTPException, match="Daily live loss limit"):
+        restarted.check_daily_loss(asset, clock[0] + DAY)
+
+
+def test_reenable_still_requires_verified_pnl(live, monkeypatch):
+    worker, _, _, control, _, clock = live
+    monkeypatch.setattr("btc15.live_automation.daily_pnl", lambda *args: Decimal("-20"))
+    with pytest.raises(HTTPException, match="Daily live loss limit"):
+        worker.check_daily_loss("ETH", clock[0])
+    before = worker.assets()["ETH"]
+
+    def unavailable(*args):
+        raise ValueError("Incomplete accounting")
+
+    monkeypatch.setattr("btc15.live_automation.daily_pnl", unavailable)
+    with pytest.raises(HTTPException, match="P&L unavailable"):
+        worker.configure(
+            LiveControl(
+                ticker=control["ticker"],
+                enabled=True,
+                contracts=10,
+                revision=before["revision"],
+                confirm="ENABLE_REAL_TRADING",
+            )
+        )
+    assert worker.assets()["ETH"] == before
 
 
 def test_multiple_markets_accumulate_exactly():

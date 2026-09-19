@@ -189,3 +189,28 @@ def test_managed_shadow_is_opt_in_and_failure_does_not_stop_primary(
     assert statuses[0]["body"]["status"] == ("FAILED" if initialization_failure else "STARTED")
     assert not store.list(kind="fill")
     assert store.load_checkpoint(run) is not None
+
+
+def test_health_clock_is_sampled_after_status_read(store, monkeypatch):
+    import btc15.operation as module
+
+    clock = [100.0]
+    body = dict(
+        connected=True,
+        clock_ok=True,
+        paper_execution=True,
+        exchange_open=True,
+        reference_age=0.1,
+        processing_lag=0.01,
+    )
+    store.add("status", body, "service", "PAPER", 100.05)
+    read = store.list
+
+    def delayed_read(*args, **kwargs):
+        clock[0] = 100.1
+        return read(*args, **kwargs)
+
+    monkeypatch.setattr(store, "list", delayed_read)
+    monkeypatch.setattr(module.time, "time", lambda: clock[0])
+    assert health(store, "service")["healthy"]
+    assert health(store, "service", now=100)["reasons"] == ["STALE_STATUS"]

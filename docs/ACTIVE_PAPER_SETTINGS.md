@@ -8,15 +8,15 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Setting | Shared value |
 | --- | --- |
 | Model | Bleep ATR finish estimate |
-| Standard window | `120 < seconds_remaining <= 480` |
+| Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 1.35; ETH 1.25; SOL/XRP 1.00 |
+| ATR sigma multiplier | BTC 1.35; ETH 1.10; SOL/XRP 1.00 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH; +10pp SOL/XRP; maximum 98% |
 | Purchase range | 80–95¢ |
 | Same-side confirmations | 1 standard; 1 late |
 | Normalized lead minimum | Disabled; fresh side confirmation remains |
-| Directional Bollinger entry filter | Enabled |
+| Directional Bollinger entry filter | Disabled |
 | Net-edge / expected-value vetoes | Disabled |
 | Paper sizing | 10 contracts, all or none within the price cap |
 | Paper take-profit | Held-side bid ≥99¢ |

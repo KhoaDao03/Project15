@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "entry_window_start": 480,
+  "entry_window_start": 420,
   "no_new_entry": 120,
   "min_entry_price": 0.8,
   "max_entry_price": 0.95,
@@ -63,7 +63,7 @@
   "maker_fee_rate": 0.0175,
   "fee_balance_precision": "0.0001",
   "profit_value_exit_enabled": false,
-  "bollinger_entry_filter_enabled": true,
+  "bollinger_entry_filter_enabled": false,
   "standard_cashout_enabled": false,
   "post_close_cooldown": 60,
   "one_trade_per_market": true,

@@ -214,6 +214,10 @@ class LiveFallbackStore:
                 remaining = Decimal(0)
                 last = max(last, settlement["timestamp"])
                 reason = "SETTLEMENT"
+            # A display reset must preserve orders needed by the daily loss guard.
+            # Never hide inventory that still needs management.
+            if not remaining and all(r.get("dashboard_history_cleared") is True for r in buys):
+                continue
             result.extend(records)
             if not remaining:
                 net = proceeds - cost - fees

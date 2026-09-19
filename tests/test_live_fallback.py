@@ -70,6 +70,28 @@ def test_cached_history_detects_updates_to_existing_orders(fallback, monkeypatch
     assert len(rebuilds) == 3
 
 
+def test_cleared_history_preserves_open_positions_and_daily_loss_accounting(fallback):
+    from btc15.live_loss_guard import daily_pnl
+
+    view, store, save = fallback
+    save("buy", "buy", 10, 9)
+    with sqlite3.connect(view.journal) as db:
+        row = json.loads(db.execute("SELECT body FROM manual_orders WHERE id='buy'").fetchone()[0])
+        row["dashboard_history_cleared"] = True
+        db.execute("UPDATE manual_orders SET body=? WHERE id='buy'", (json.dumps(row),))
+    # A reset marker must never conceal a remaining position.
+    assert len(view.list("fill")) == 1
+    save("sell", "sell", 10, 6)
+    assert view.list("fill") == []
+    assert view.list("trade_result") == []
+    with sqlite3.connect(view.journal) as db:
+        orders = [json.loads(body) for body, in db.execute("SELECT body FROM manual_orders")]
+    assert float(daily_pnl(orders, {}, 200)) == pytest.approx(-5.2)
+    # Subsequent unmarked trades are still displayed.
+    save("buy", "buy", 10, 9)
+    assert len(view.list("trade_result")) == 1
+
+
 def test_live_open_partial_and_closed_accounting(fallback):
     view, store, save = fallback
     save("buy", "buy", 10, 9)

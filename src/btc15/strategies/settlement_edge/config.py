@@ -11,7 +11,7 @@ class Strategy:
     # All strategy defaults are research ASSUMPTIONS, not fitted/optimal values.
     asset: str = "BTC"
     enabled: bool = True
-    entry_window_start: int = 480
+    entry_window_start: int = 420
     no_new_entry: int = 120
     min_entry_price: float = 0.85
     max_entry_price: float = 0.99

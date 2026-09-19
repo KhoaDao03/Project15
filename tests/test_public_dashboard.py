@@ -32,7 +32,7 @@ def test_snapshot_reads_fixed_paths_and_removes_private_fields(market_result):
         return httpx.Response(200, json=dict(stale=True, rows=[dict(
             market='<script>alert(1)</script>', timestamp=100, run_id='private-run',
             body=dict(status='CLOSED', side='yes', bought=10, entry=.95, exit=.99,
-                      fees=.1, net_pnl=.3, market_result=market_result,
+                      fees=.1, net_pnl=.3, market_result=market_result, exit_timestamp=105, exit_type='sale',
                       probability={'secret': 1}, order_id='secret'),
         )]))
 
@@ -45,6 +45,8 @@ def test_snapshot_reads_fixed_paths_and_removes_private_fields(market_result):
     assert snapshot['live_only'] is True
     assert snapshot['assets'][0]['trades'][0]['net_pnl'] == .3
     assert snapshot['assets'][0]['trades'][0]['market_result'] == market_result
+    assert snapshot['assets'][0]['trades'][0]['exit_timestamp'] == 105
+    assert snapshot['assets'][0]['trades'][0]['exit_type'] == 'sale'
     assert snapshot['assets'][0]['trades_stale'] is True
     assert snapshot['assets'][0]['win_rate'] == pytest.approx(2/3)
     assert snapshot['assets'][0]['current_streak'] == -1

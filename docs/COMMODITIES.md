@@ -23,15 +23,16 @@ uses BTC's **1.35 multiplier**; selected-side confidence is capped at book mid
 
 | Setting | GOLD / SILVER / WTI |
 | --- | --- |
-| Entry window | `1 < seconds_remaining <= 480` |
+| Entry window | `1 < seconds_remaining <= 420` |
 | Confidence after safety and market-respect caps | At least 85% |
 | Price range / maximum spread | 80–95¢ / 4¢ |
 | Same-side confirmation | One fresh sample |
 | Paper hard stop | 55¢ |
 | Take-profit | Held-side bid ≥99¢; remaining contracts settle |
 
-The safety clamp, quality/freshness checks, Bollinger filter, sizing and risk
-checks remain. Settlement uses the parsed Pyth terminal-price rule and official
+The safety clamp, quality/freshness checks, sizing and risk checks remain.
+The directional Bollinger entry veto is disabled; Bollinger inputs still contribute
+to the probability model’s indicator adjustment. Settlement uses the parsed Pyth terminal-price rule and official
 outcome, not the crypto final-minute average. These are uncalibrated estimates.
 
 Rolling ATR averages 14 true ranges from the last 15 contiguous reference candles,

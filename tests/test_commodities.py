@@ -115,7 +115,7 @@ def test_commodity_strategy_reaches_paper_fill(commodity, store, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "remaining,allowed", [(480.01, False), (480, True), (120, True), (1.01, True), (1, False)]
+    "remaining,allowed", [(480, False), (420.01, False), (420, True), (120, True), (1.01, True), (1, False)]
 )
 def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
     from test_strategy_reverification import make_book
@@ -126,7 +126,7 @@ def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed
     market = parse_market(raw, series)
     c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
     assert c.min_probability == c.late_min_probability == 0.85
-    assert c.entry_window_start == 480 and c.entry_cutoff == 1
+    assert c.entry_window_start == 420 and c.entry_cutoff == 1
     assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
     assert not c.bleep_exchange_seed_enabled
     now = market.close_time - remaining

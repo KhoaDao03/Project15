@@ -159,7 +159,7 @@ def test_engine_records_new_model(store, market, config, remaining):
 @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
 @pytest.mark.parametrize(
     "remaining,allowed",
-    [(480.01, False), (480, True), (420, True), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    [(480, False), (420.01, False), (420, True), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
 )
 def test_deployed_entry_window(market, asset, remaining, allowed):
     from test_strategy_reverification import make_book
@@ -167,7 +167,7 @@ def test_deployed_entry_window(market, asset, remaining, allowed):
     from btc15.strategies.settlement_edge.rules import evaluate
 
     c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
-    assert c.entry_window_start == 480
+    assert c.entry_window_start == 420
     assert c.min_probability == c.late_min_probability == 0.83
     now = market.close_time - remaining
     p = dict(

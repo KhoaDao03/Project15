@@ -317,7 +317,7 @@ function renderTradeTable(data,target='trade-rows',pageOffset=offset){
     const settled=b.reason==='SETTLEMENT';
     const exit=text('td',isOpen?'Open · '+fmt(b.quantity)+' remaining':settled?(b.proceeds===0?'Settled worthless':'Settlement / sales returned '+tradeDollars(b.proceeds)+' total'):'Sold at '+tradeDollars(b.exit));
     exit.append(text('small',isOpen?(b.proceeds>0?'Partial sales returned '+tradeDollars(b.proceeds)+' so far':'Awaiting sale or settlement'):settled?'Final market result: '+(b.settlement_result||'unknown').toUpperCase():'Average sale price per contract','muted'));
-    if(!isOpen)exit.append(tradeTime(settled?'Settled':'Final sale',settled?(b.settlement_timestamp??record.timestamp):record.timestamp));
+    if(!isOpen)exit.append(tradeTime(settled?'Settled':'Sold / exit',b.exit_timestamp??(settled?(b.settlement_timestamp??record.timestamp):record.timestamp)));
     const fees=text('td',tradeDollars(b.fees,true)),net=text('td','');
     if(isOpen){fees.append(text('small','Fees so far','muted'));net.append(text('strong','Pending','muted'));}
     else net.append(text('strong',(b.net_pnl>0?'+':b.net_pnl<0?'−':'')+tradeDollars(Math.abs(b.net_pnl),true),b.net_pnl>0?'pnl-positive':b.net_pnl<0?'pnl-negative':'pnl-neutral'));

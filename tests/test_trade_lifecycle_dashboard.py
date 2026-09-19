@@ -64,6 +64,7 @@ def test_trade_lifecycle_partial_fills_close_and_scope(store):
         assert data["total"] == 1
         b = data["rows"][0]["body"]
         assert b["status"] == "CLOSED" and b["net_pnl"] == 0.43
+        assert b["exit_timestamp"] == 5 and b["exit_type"] == "sale"
         assert b["market_result"] is None
         # A profitable sale is independent of the eventual market outcome.
         store.add("settlement", dict(result="yes"), "other", "PAPER", 6, "market")

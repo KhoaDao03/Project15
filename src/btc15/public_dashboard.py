@@ -47,7 +47,7 @@ async def read_snapshot(client):
         public["trades"] = [
             {
                 **pick(trade, "market timestamp"),
-                **pick(trade["body"], "status side bought quantity entry exit fees net_pnl opened market_result"),
+                **pick(trade["body"], "status side bought quantity entry exit fees net_pnl opened market_result exit_timestamp exit_type"),
             }
             for trade in data["rows"][:5]
         ]
