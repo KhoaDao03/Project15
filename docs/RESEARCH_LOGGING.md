@@ -2,8 +2,8 @@
 
 This opt-in recorder supports future probability analysis and approximate strategy replay.
 It does not place orders, change strategy settings, or run simulations. It is disabled by
-default. Implementation lives on the `research-logging` branch in a separate worktree;
-activation requires the operator's explicit deployment approval.
+default. The implementation has been merged into `cloud-deploy`; activation still requires
+the operator's explicit deployment approval.
 
 ## Location and transfer
 

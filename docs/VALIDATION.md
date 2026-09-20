@@ -1,19 +1,10 @@
-# Validation — prove one strategy works before expanding
+# Testing and validation
 
-Current milestone: dependable Settlement Edge data collection, matching/accounting, recovery and evidence. These layers are separate:
+Run commands from the repository root. Tests use isolated fixtures and temporary
+ledgers; do not point them at live databases. A passing test suite establishes
+code behavior, not profitability or readiness of the live feeds.
 
-| Layer | What success establishes | What it does not establish |
-| --- | --- | --- |
-| Unit/regression tests | Specified code paths and safety cases behave as asserted | Live feed readiness or statistical validation |
-| Synthetic end-to-end run | Installed engine can progress through decisions/orders/fills/settlement on a test fixture | Real-market eligibility/profitability |
-| Public `discover` | REST connectivity and current metadata parsing | Authenticated streaming or fills |
-| Authentic tape audit/replay | Behavior on supplied recorded inputs and declared starting assumptions | Actual host timing/downtime or live fills |
-| Live-connected PAPER run | Real feed operation with simulated execution on that host/session | Exchange fills or reliable long-run edge |
-| Consecutive multi-day acceptance | Measured operational behavior under the tested conditions | Guaranteed safety/profitability outside them |
-
-Never label synthetic inputs as authentic or infer a trade from a green process status.
-
-## Install and run the current suite
+## Routine checks
 
 ```bash
 uv sync --python 3.12 --extra dev --locked
@@ -22,11 +13,18 @@ uv run --locked ruff check src tests scripts
 uv build
 ```
 
-Frontend assets are plain JavaScript. With Node installed as an optional developer check, use `node --check src/btc15/static/app.js`; Node is not required to start the bot. Formatting can be checked with Ruff on changed Python files. A repository-wide formatting finding should be reported separately rather than silently bundled into a docs change.
+For a focused change, run the relevant test modules first, for example:
 
-The existing [paper-validation workflow](../.github/workflows/paper-validation.yml) installs locked dependencies, exercises synthetic compact-input execution, runs the suite/lint/build, and probes public discovery with empty credentials. It does not access the user's local overnight database or private key. The [documentation workflow](../.github/workflows/documentation-validation.yml) checks current guide links and CLI syntax and exercises a fresh isolated setup plus the viewing dashboard. It does not start an authenticated paper collector.
+```bash
+uv run --locked pytest -q tests/test_strategy_settings.py tests/test_live_automation.py
+uv run --locked pytest -q tests/test_research_log.py tests/test_cloud_signals.py
+```
 
-## Reproduce the smoke flow
+With Node installed, `node --check src/btc15/static/app.js` checks JavaScript syntax.
+Node is not required to run the bot. Check formatting on changed Python files;
+keep unrelated repository-wide formatting changes separate.
+
+## Offline smoke test
 
 ```bash
 uv run --locked btc15 demo --output data/synthetic.jsonl
@@ -34,26 +32,45 @@ uv run --locked btc15 --database sqlite:///data/demo.db backtest data/synthetic.
 uv run --locked btc15 --database sqlite:///data/demo.db dashboard --no-collect
 ```
 
-Choose BACKTEST and the generated run. Inspect actual submitted-order/fill/result records. Do not change the fixture or thresholds merely to manufacture a successful result. The [behavior comparison script](../scripts/verify_settlement_behavior.py) records normalized outcomes for both presets:
+Select BACKTEST and inspect order/fill/result records. These are synthetic inputs,
+not historical trading evidence. Repeating the replay creates another run.
 
-```bash
-uv run --locked python scripts/verify_settlement_behavior.py --output data/settlement-behavior.json
-```
+## Development scripts
 
-Use `--compare PATH` only with a deliberately saved baseline generated on the same inputs/environment and a known revision. A normal `--output` path can be overwritten by that script; choose a new evidence filename. A comparison excludes random identifiers/software metadata, not trading decisions or accounting.
+The performance checks below use temporary ledgers and do not connect to an
+exchange. Run `uv run --locked python scripts/SCRIPT.py --help` for arguments.
 
-## Dated evidence, not a universal current test count
+| Script | Purpose |
+| --- | --- |
+| [check_processing_throughput.py](../scripts/check_processing_throughput.py) | Replay a captured burst and measure processing headroom |
+| [check_collector_throughput.py](../scripts/check_collector_throughput.py) | Replay a prepared incident/checkpoint, optionally profile and compare results |
+| [check_dashboard_load.py](../scripts/check_dashboard_load.py) | Pace a capture while polling a temporary local HTTP/SSE server |
+| [check_overload_drain.py](../scripts/check_overload_drain.py) | Check recorded drain transitions against independent book-depth accounting |
+| [verify_settlement_behavior.py](../scripts/verify_settlement_behavior.py) | Save normalized synthetic outcomes for comparison with a known baseline |
 
-[SINGLE_STRATEGY_VALIDATION.md](SINGLE_STRATEGY_VALIDATION.md) records the September 9, 2026 before/after comparison: original fixture 1,380 evaluations/3 fills/1 completed trade; moderate fixture 921 evaluations/zero fills, matching before and after. The then-remaining suite had 204 passes and two existing deprecation warnings. Later commits must be checked on their own SHA; future counts can change.
+Warm-history modes inject synthetic prices to exercise a warmed model. Drain
+checks disable strategy evaluation. Neither measures trading profitability.
+A comparison baseline must use the same inputs/environment and a known revision.
+Choose new output filenames to avoid overwriting earlier evidence.
 
-Earlier model experiments remain available in Git history. Their host-local paths and reported reset/clock actions are not prerequisites for a new setup or proof of current deployment.
+## What each check establishes
 
-## Authentic data acceptance
+| Check | Establishes | Does not establish |
+| --- | --- | --- |
+| Unit/regression tests | Expected calculations, accounting, failure handling | Host/feed readiness or statistical edge |
+| Synthetic end-to-end replay | Engine progresses through supported decisions and execution | Authentic market opportunities or real fills |
+| Public discovery | REST connectivity and metadata parsing | Authenticated streaming |
+| Authentic tape audit/replay | Behavior on captured inputs and declared starting state | Exact live timing, queue position or guaranteed fills |
+| Live-connected paper session | Feed operation and simulated execution on that host | Real-money performance |
 
-Preserve a complete consecutive capture with matching frozen config/revision, initial state and relevant predecessor/warmup sessions. Audit timestamps, missing data, books, fees, lifecycle and settlement coverage. Replay into another database and report attempted orders, cancellations, first buy fills, completed results, open positions and rejection evidence. Compact paper opportunity counts are fill-selected; they do not count all evaluations. See [Backtesting](BACKTESTING.md).
+Before trusting replay, check timestamp continuity, warm-up/predecessor history,
+book depth, fees, lifecycle and settlement coverage. Report missing data and open
+positions as well as completed trades. Sampled research books have additional
+[execution limits](RESEARCH_LOGGING.md#analysis-limits); see [backtesting](BACKTESTING.md).
+Zero trades and negative performance are valid findings, not reasons to alter fixtures.
 
-Use the same honest acceptance rule for no-trade sessions: identify whether startup, a signal gate, submission, matching or settlement blocked progress. Fix reproducible software defects before changing strategy assumptions. Negative performance and zero qualifying trades are valid findings.
-
-For a live-connected run, verify credentials/entitlements, startup/resume, fresh execution data, real clock behavior, official results, disk reserve and healthy shutdown. Then test interruption/restart with outstanding simulated exposure, rollovers and UTC daily budgets across consecutive days. Keep the machine awake and monitor it; this chat and a browser tab are not an always-on host.
-
-Performance scripts ([throughput](../scripts/check_processing_throughput.py), [dashboard load](../scripts/check_dashboard_load.py)) are development fixtures; the load script's injected warmup is synthetic. Do not use their inputs/results as trading-performance evidence. PostgreSQL, browser rendering, sustained host load and actual-data replay require their own reported verification. Live trading is [out of scope](LIVE_TRADING.md).
+CI definitions: [paper validation](../.github/workflows/paper-validation.yml) and
+[documentation validation](../.github/workflows/documentation-validation.yml).
+Their trigger branches and commands are defined in those files. Dated validation
+counts belong to the [historical reports](README.md#historical-evidence), not a
+current acceptance claim. Real-money execution has separate [live controls](LIVE_AUTOMATION.md).

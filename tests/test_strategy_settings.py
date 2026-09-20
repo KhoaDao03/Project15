@@ -1,6 +1,7 @@
 import json
 from dataclasses import asdict, replace
 
+import pytest
 from fastapi.testclient import TestClient
 from test_execution import decision, ready
 
@@ -57,10 +58,6 @@ def test_disabled_strategy_blocks_candidates_and_submission(store, market, book,
     assert not store.list(kind="order")
 
 
-
-
-
-
 def test_cli_uses_saved_settings_unless_explicit_config(tmp_path, monkeypatch, capsys):
     import sys
 
@@ -79,11 +76,11 @@ def test_cli_uses_saved_settings_unless_explicit_config(tmp_path, monkeypatch, c
     assert json.loads(capsys.readouterr().out)["enabled"] is True
 
 
-def test_all_crypto_presets_allow_one_sample_and_immediate_retries():
-    for asset in ["active", "eth", "sol", "xrp"]:
-        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
-        assert c.entry_window_start == 420
-        assert c.confirmation_count() == c.confirmation_count(True) == 1
-        assert c.entry_retry_cooldown == 0
-        assert c.max_entry_retries == 2
-        assert c.sustained_lead_enabled and c.entry_cutoff == 1
+@pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+def test_crypto_preset_allows_one_sample_and_immediate_retries(asset):
+    c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+    assert c.entry_window_start == 420
+    assert c.confirmation_count() == c.confirmation_count(True) == 1
+    assert c.entry_retry_cooldown == 0
+    assert c.max_entry_retries == 2
+    assert c.sustained_lead_enabled and c.entry_cutoff == 1

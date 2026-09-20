@@ -1,6 +1,6 @@
 # Bleep settlement strategy
 
-An ATR-based Normal-CDF predictor supplies probability for BTC, ETH, SOL and XRP.
+An ATR-based Normal-CDF predictor supplies probability for crypto and commodity markets.
 Settlement-average evidence remains a separate confirmation check. See [Probability model](PROBABILITY_MODEL.md) and
 [active presets](ACTIVE_PAPER_SETTINGS.md) for the exact calculation and thresholds.
 
@@ -14,12 +14,11 @@ The separate directional Bollinger entry veto is disabled for all seven assets;
 Bollinger inputs remain part of the probability model’s indicator adjustment.
 
 The selected-side Bleep probability must meet the configured floor in evaluation
-and at order submission. Missing/nonfinite probability cannot pass. For the crypto
-presets the floor is 83% after safety and market-respect caps in both windows and the purchase range is 80–95¢.
-
-Entry confidence is capped at the selected-side book midpoint +6 percentage points
-for BTC/ETH or +10 for SOL/XRP, with a maximum of 98%. The cap is reapplied to
-the current book at submission. Both windows require capped confidence ≥83%.
+and at order submission. Missing/nonfinite probability cannot pass. Crypto and
+commodity thresholds and price ranges are maintained in
+[active crypto presets](ACTIVE_PAPER_SETTINGS.md) and [commodity settings](COMMODITIES.md).
+The selected-side market-respect cap is reapplied to the current book at submission;
+see [probability calculations](PROBABILITY_MODEL.md).
 
 Per-contract estimated EV is `capped_confidence - ask - fee_bound - slippage`. The ask already
 includes crossing the spread. EV and costs are recorded, but the current presets
