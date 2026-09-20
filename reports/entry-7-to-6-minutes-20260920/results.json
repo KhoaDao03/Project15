@@ -1,0 +1,1094 @@
+{
+  "cutoff": "2026-09-20T00:15:29.947757+00:00",
+  "all_trades": 319,
+  "missing_close": [],
+  "summary": {
+    "trades": 108,
+    "completed": 108,
+    "wins": 89,
+    "losses": 19,
+    "pnl": -11.6317
+  },
+  "trades": [
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP172015-15",
+      "time": "2026-09-18T00:08:00.768763+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 419.23123693466187,
+      "pnl": 0.8205,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP172015-15",
+      "time": "2026-09-18T00:08:04.839951+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 415.1600489616394,
+      "pnl": -3.3632,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP172030-30",
+      "time": "2026-09-18T00:23:00.777268+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 419.22273206710815,
+      "pnl": 0.5057,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP172030-30",
+      "time": "2026-09-18T00:23:03.796336+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 416.20366406440735,
+      "pnl": 0.6092,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP172030-30",
+      "time": "2026-09-18T00:23:14.838427+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 405.161572933197,
+      "pnl": 1.3229,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP172045-45",
+      "time": "2026-09-18T00:38:00.788086+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 419.2119140625,
+      "pnl": 0.8514,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP172045-45",
+      "time": "2026-09-18T00:38:02.526847+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 417.47315311431885,
+      "pnl": -3.8213,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP172045-45",
+      "time": "2026-09-18T00:38:35.013584+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 384.9864161014557,
+      "pnl": 0.5701,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP172115-15",
+      "time": "2026-09-18T01:08:25.788268+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 394.21173191070557,
+      "pnl": -0.5183,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP172130-30",
+      "time": "2026-09-18T01:23:10.802291+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 409.19770908355713,
+      "pnl": 0.9244,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP172145-45",
+      "time": "2026-09-18T01:38:10.811196+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 409.1888039112091,
+      "pnl": 0.8495,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP172145-45",
+      "time": "2026-09-18T01:38:21.813642+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 398.1863579750061,
+      "pnl": 0.9458,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP172200-00",
+      "time": "2026-09-18T01:53:24.800865+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 395.19913506507874,
+      "pnl": 1.3144,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP172215-15",
+      "time": "2026-09-18T02:08:00.795620+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 419.2043800354004,
+      "pnl": -3.3348,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP172215-15",
+      "time": "2026-09-18T02:08:07.827290+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 412.172709941864,
+      "pnl": 0.9458,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP172215-15",
+      "time": "2026-09-18T02:08:26.812012+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 393.1879880428314,
+      "pnl": -3.9727,
+      "side": "no"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP172245-45",
+      "time": "2026-09-18T02:38:00.720457+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 419.27954292297363,
+      "pnl": -4.5206,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP172245-45",
+      "time": "2026-09-18T02:38:04.156738+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 415.8432619571686,
+      "pnl": 0.7866,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP172245-45",
+      "time": "2026-09-18T02:38:07.367074+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 412.63292598724365,
+      "pnl": 0.4669,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP172315-15",
+      "time": "2026-09-18T03:08:23.099220+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 396.9007799625397,
+      "pnl": 1.1138,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP180230-30",
+      "time": "2026-09-18T06:23:04.759474+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 415.24052596092224,
+      "pnl": 0.8514,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP180230-30",
+      "time": "2026-09-18T06:23:17.804085+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 402.1959149837494,
+      "pnl": 0.9244,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP180230-30",
+      "time": "2026-09-18T06:23:25.786812+00:00",
+      "window": null,
+      "run": null,
+      "remaining": 394.21318793296814,
+      "pnl": 0.5769,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP180300-00",
+      "time": "2026-09-18T06:53:26.765277+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/XRP-atr-v5/paper.db",
+      "remaining": 393.2347230911255,
+      "pnl": 0.6603,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP180600-00",
+      "time": "2026-09-18T09:53:18.785229+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/XRP-atr-v5/paper.db",
+      "remaining": 401.2147710323334,
+      "pnl": 0.6924,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP180630-30",
+      "time": "2026-09-18T10:23:03.064467+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/XRP-atr-v5/paper.db",
+      "remaining": 416.9355330467224,
+      "pnl": 0.833,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP180800-00",
+      "time": "2026-09-18T11:53:00.906959+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/SOL-atr-v5/paper.db",
+      "remaining": 419.09304094314575,
+      "pnl": 0.5258,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP180930-30",
+      "time": "2026-09-18T13:23:06.893658+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/BTC-atr-v5/paper.db",
+      "remaining": 413.10634207725525,
+      "pnl": 0.5594,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP180930-30",
+      "time": "2026-09-18T13:23:23.840338+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/SOL-atr-v5/paper.db",
+      "remaining": 396.1596620082855,
+      "pnl": 0.4762,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP180930-30",
+      "time": "2026-09-18T13:23:25.270700+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/XRP-atr-v5/paper.db",
+      "remaining": 394.72930002212524,
+      "pnl": 0.5312,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP180930-30",
+      "time": "2026-09-18T13:23:28.908641+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/ETH-atr-v5/paper.db",
+      "remaining": 391.0913589000702,
+      "pnl": 0.4548,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP181200-00",
+      "time": "2026-09-18T15:53:33.447606+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/XRP-atr-v5/paper.db",
+      "remaining": 386.55239391326904,
+      "pnl": 0.3597,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP181315-15",
+      "time": "2026-09-18T17:08:31.702001+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/XRP-atr-v5/paper.db",
+      "remaining": 388.2979989051819,
+      "pnl": -4.8369,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP181430-30",
+      "time": "2026-09-18T18:23:02.610862+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-entry420-20260918/paper.db",
+      "remaining": 417.38913798332214,
+      "pnl": -3.1826,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP181445-45",
+      "time": "2026-09-18T18:38:52.704239+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-entry420-20260918/paper.db",
+      "remaining": 367.29576110839844,
+      "pnl": -3.1498,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP181515-15",
+      "time": "2026-09-18T19:08:01.404993+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-no-bollinger-20260918/paper.db",
+      "remaining": 418.595006942749,
+      "pnl": 1.3144,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP181515-15",
+      "time": "2026-09-18T19:08:10.797987+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-atr125-20260918/paper.db",
+      "remaining": 409.20201301574707,
+      "pnl": 0.8514,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP181545-45",
+      "time": "2026-09-18T19:38:44.195428+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-no-bollinger-20260918/paper.db",
+      "remaining": 375.8045721054077,
+      "pnl": -2.9109,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP181615-15",
+      "time": "2026-09-18T20:08:43.213668+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-no-bollinger-20260918/paper.db",
+      "remaining": 376.78633189201355,
+      "pnl": 0.8407,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP181645-45",
+      "time": "2026-09-18T20:38:04.079556+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-bollinger-20260918/paper.db",
+      "remaining": 415.92044401168823,
+      "pnl": -2.2184,
+      "side": "no"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP181645-45",
+      "time": "2026-09-18T20:38:08.776679+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-no-bollinger-20260918/paper.db",
+      "remaining": 411.22332096099854,
+      "pnl": -4.2488,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP181700-00",
+      "time": "2026-09-18T20:53:49.562885+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-bollinger-20260918/paper.db",
+      "remaining": 370.43711495399475,
+      "pnl": 0.83,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP181715-15",
+      "time": "2026-09-18T21:08:20.506164+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-bollinger-20260918/paper.db",
+      "remaining": 399.4938359260559,
+      "pnl": 0.4621,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP181730-30",
+      "time": "2026-09-18T21:23:01.014465+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-no-bollinger-20260918/paper.db",
+      "remaining": 418.98553490638733,
+      "pnl": 1.019,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP181730-30",
+      "time": "2026-09-18T21:23:34.548243+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-bollinger-20260918/paper.db",
+      "remaining": 385.4517569541931,
+      "pnl": 0.9244,
+      "side": "no"
+    },
+    {
+      "asset": "GOLD",
+      "market": "KXGOLD15M-26SEP181800-00",
+      "time": "2026-09-18T21:53:03.916621+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/GOLD-no-bollinger-20260918/paper.db",
+      "remaining": 416.08337903022766,
+      "pnl": 0.5714,
+      "side": "yes"
+    },
+    {
+      "asset": "WTI",
+      "market": "KXWTI15M-26SEP181845-45",
+      "time": "2026-09-18T22:38:02.481333+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/WTI-no-bollinger-20260918/paper.db",
+      "remaining": 417.51866698265076,
+      "pnl": 0.3888,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP182100-00",
+      "time": "2026-09-19T00:53:56.935141+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-bollinger-20260918/paper.db",
+      "remaining": 363.06485891342163,
+      "pnl": 0.6406,
+      "side": "no"
+    },
+    {
+      "asset": "SILVER",
+      "market": "KXSILVER15M-26SEP182115-15",
+      "time": "2026-09-19T01:08:57.676987+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SILVER-no-bollinger-20260918/paper.db",
+      "remaining": 362.3230130672455,
+      "pnl": -4.688,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP182130-30",
+      "time": "2026-09-19T01:23:05.736148+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-bollinger-20260918/paper.db",
+      "remaining": 414.2638518810272,
+      "pnl": -3.4106,
+      "side": "no"
+    },
+    {
+      "asset": "SILVER",
+      "market": "KXSILVER15M-26SEP182200-00",
+      "time": "2026-09-19T01:53:01.803273+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SILVER-no-bollinger-20260918/paper.db",
+      "remaining": 418.1967270374298,
+      "pnl": 0.6051,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP182200-00",
+      "time": "2026-09-19T01:53:05.450529+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-no-bollinger-20260918/paper.db",
+      "remaining": 414.54947090148926,
+      "pnl": 0.4642,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP182200-00",
+      "time": "2026-09-19T01:53:31.934345+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-no-bollinger-20260918/paper.db",
+      "remaining": 388.06565499305725,
+      "pnl": -3.9378,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP182230-30",
+      "time": "2026-09-19T02:23:51.122013+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-atr110-20260919/paper.db",
+      "remaining": 368.877986907959,
+      "pnl": 0.8419,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP182230-30",
+      "time": "2026-09-19T02:23:55.916200+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-bollinger-20260918/paper.db",
+      "remaining": 364.08380007743835,
+      "pnl": -4.0167,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP182245-45",
+      "time": "2026-09-19T02:38:00.944699+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-atr125-20260919/paper.db",
+      "remaining": 419.055300951004,
+      "pnl": -2.8811,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP182245-45",
+      "time": "2026-09-19T02:38:02.790445+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-bollinger-20260918/paper.db",
+      "remaining": 417.2095549106598,
+      "pnl": 0.4417,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP182245-45",
+      "time": "2026-09-19T02:38:22.347597+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-atr110-20260919/paper.db",
+      "remaining": 397.6524031162262,
+      "pnl": 0.3691,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP182300-00",
+      "time": "2026-09-19T02:53:58.081008+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-bollinger-20260918/paper.db",
+      "remaining": 361.9189920425415,
+      "pnl": 0.3761,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP190015-15",
+      "time": "2026-09-19T04:08:01.419711+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-no-spread-20260919/paper.db",
+      "remaining": 418.5802888870239,
+      "pnl": 0.6108,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP190030-30",
+      "time": "2026-09-19T04:23:02.589923+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-atr130-20260919/paper.db",
+      "remaining": 417.41007709503174,
+      "pnl": 0.9314,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP190030-30",
+      "time": "2026-09-19T04:23:35.293682+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-spread-20260919/paper.db",
+      "remaining": 384.7063179016113,
+      "pnl": 0.3761,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP190045-45",
+      "time": "2026-09-19T04:38:28.230721+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-no-spread-20260919/paper.db",
+      "remaining": 391.7692790031433,
+      "pnl": 0.5478,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP190115-15",
+      "time": "2026-09-19T05:08:04.870241+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-entry420-revert-20260919/paper.db",
+      "remaining": 415.12975907325745,
+      "pnl": 0.4229,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP190115-15",
+      "time": "2026-09-19T05:08:08.107000+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-revert-20260919/paper.db",
+      "remaining": 411.89299988746643,
+      "pnl": 1.2157,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP190130-30",
+      "time": "2026-09-19T05:23:01.361013+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-revert-20260919/paper.db",
+      "remaining": 418.6389870643616,
+      "pnl": 0.7898,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP190145-45",
+      "time": "2026-09-19T05:38:01.130353+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-btc125-eth110-20260919/paper.db",
+      "remaining": 418.869647026062,
+      "pnl": -4.154,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP190200-00",
+      "time": "2026-09-19T05:53:46.914353+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-btc125-eth110-20260919/paper.db",
+      "remaining": 373.08564710617065,
+      "pnl": 0.5149,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP190300-00",
+      "time": "2026-09-19T06:53:27.965854+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/SOL-entry480-price97-20260919/paper.db",
+      "remaining": 392.03414607048035,
+      "pnl": -1.968,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP190315-15",
+      "time": "2026-09-19T07:08:49.042475+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/BTC-entry480-price97-20260919/paper.db",
+      "remaining": 370.9575250148773,
+      "pnl": 0.7992,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP190345-45",
+      "time": "2026-09-19T07:38:03.874379+00:00",
+      "window": 480,
+      "run": "/root/Project15/data/cloud/ETH-entry480-price97-20260919/paper.db",
+      "remaining": 416.12562108039856,
+      "pnl": 0.4361,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP191030-30",
+      "time": "2026-09-19T14:23:00.775857+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-entry420-price97-20260919/paper.db",
+      "remaining": 419.2241430282593,
+      "pnl": 0.3199,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191030-30",
+      "time": "2026-09-19T14:23:02.421819+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 417.5781810283661,
+      "pnl": 0.2954,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP191045-45",
+      "time": "2026-09-19T14:38:01.353108+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-price97-20260919/paper.db",
+      "remaining": 418.64689207077026,
+      "pnl": 0.4042,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP191045-45",
+      "time": "2026-09-19T14:38:05.086128+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-entry420-price97-20260919/paper.db",
+      "remaining": 414.9138720035553,
+      "pnl": 0.2731,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191045-45",
+      "time": "2026-09-19T14:38:53.118936+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 366.88106393814087,
+      "pnl": 0.4183,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP191115-15",
+      "time": "2026-09-19T15:08:00.929509+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-entry420-price97-20260919/paper.db",
+      "remaining": 419.07049107551575,
+      "pnl": 0.217,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP191115-15",
+      "time": "2026-09-19T15:08:05.394735+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-entry420-price97-20260919/paper.db",
+      "remaining": 414.60526490211487,
+      "pnl": 0.4792,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP191115-15",
+      "time": "2026-09-19T15:08:10.385919+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-price97-20260919/paper.db",
+      "remaining": 409.6140809059143,
+      "pnl": 0.1983,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP191315-15",
+      "time": "2026-09-19T17:08:04.258892+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-entry420-price97-20260919/paper.db",
+      "remaining": 415.7411079406738,
+      "pnl": 1.026,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191315-15",
+      "time": "2026-09-19T17:08:10.005495+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 409.99450492858887,
+      "pnl": 0.5074,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191330-30",
+      "time": "2026-09-19T17:23:23.808582+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 396.1914179325104,
+      "pnl": 0.1889,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP191330-30",
+      "time": "2026-09-19T17:23:43.523432+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-entry420-price97-20260919/paper.db",
+      "remaining": 376.4765679836273,
+      "pnl": 0.4511,
+      "side": "no"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP191330-30",
+      "time": "2026-09-19T17:23:45.544293+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-price97-20260919/paper.db",
+      "remaining": 374.45570707321167,
+      "pnl": 0.188,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191345-45",
+      "time": "2026-09-19T17:38:04.131388+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 415.86861205101013,
+      "pnl": 0.3517,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191445-45",
+      "time": "2026-09-19T18:38:12.454693+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 407.54530692100525,
+      "pnl": 0.2553,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP191500-00",
+      "time": "2026-09-19T18:53:01.693871+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-btc120-eth105-20260919/paper.db",
+      "remaining": 418.30612897872925,
+      "pnl": 0.4417,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP191500-00",
+      "time": "2026-09-19T18:53:05.800675+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-btc120-eth105-20260919/paper.db",
+      "remaining": 414.1993250846863,
+      "pnl": 1.1208,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP191545-45",
+      "time": "2026-09-19T19:38:11.016085+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-btc120-eth105-20260919/paper.db",
+      "remaining": 408.9839150905609,
+      "pnl": 1.3107,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP191630-30",
+      "time": "2026-09-19T20:23:26.854255+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-btc120-eth105-20260919/paper.db",
+      "remaining": 393.1457450389862,
+      "pnl": 0.5939,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP191700-00",
+      "time": "2026-09-19T20:53:01.180387+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-btc120-eth105-20260919/paper.db",
+      "remaining": 418.8196129798889,
+      "pnl": 0.3105,
+      "side": "no"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP191700-00",
+      "time": "2026-09-19T20:53:13.006685+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-price97-20260919/paper.db",
+      "remaining": 406.99331498146057,
+      "pnl": 0.6485,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191700-00",
+      "time": "2026-09-19T20:53:34.074707+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 385.92529296875,
+      "pnl": 0.4056,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191745-45",
+      "time": "2026-09-19T21:38:01.073865+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 418.9261350631714,
+      "pnl": 0.3339,
+      "side": "no"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP191745-45",
+      "time": "2026-09-19T21:38:05.337731+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-price97-20260919/paper.db",
+      "remaining": 414.662269115448,
+      "pnl": 0.1983,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP191800-00",
+      "time": "2026-09-19T21:53:00.796229+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-btc120-eth105-20260919/paper.db",
+      "remaining": 419.20377111434937,
+      "pnl": 0.3199,
+      "side": "yes"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP191800-00",
+      "time": "2026-09-19T21:53:05.144059+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-btc120-eth105-20260919/paper.db",
+      "remaining": 414.8559410572052,
+      "pnl": 0.5732,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP191800-00",
+      "time": "2026-09-19T21:53:07.010864+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-price97-20260919/paper.db",
+      "remaining": 412.9891359806061,
+      "pnl": 0.217,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP191815-15",
+      "time": "2026-09-19T22:08:01.013209+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-price97-20260919/paper.db",
+      "remaining": 418.98679089546204,
+      "pnl": 0.545,
+      "side": "no"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP191845-45",
+      "time": "2026-09-19T22:38:00.771920+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/BTC-btc120-eth105-20260919/paper.db",
+      "remaining": 419.228080034256,
+      "pnl": 0.3854,
+      "side": "yes"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP191845-45",
+      "time": "2026-09-19T22:38:02.466347+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-price97-20260919/paper.db",
+      "remaining": 417.53365302085876,
+      "pnl": 0.7763,
+      "side": "yes"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP191845-45",
+      "time": "2026-09-19T22:38:07.769658+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-btc120-eth105-20260919/paper.db",
+      "remaining": 412.2303419113159,
+      "pnl": 0.4417,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191900-00",
+      "time": "2026-09-19T22:53:01.423901+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 418.5760989189148,
+      "pnl": 0.498,
+      "side": "yes"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP191930-30",
+      "time": "2026-09-19T23:23:01.153503+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 418.8464970588684,
+      "pnl": 0.2979,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP191930-30",
+      "time": "2026-09-19T23:23:07.080121+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-btc120-eth105-20260919/paper.db",
+      "remaining": 412.91987895965576,
+      "pnl": 0.2431,
+      "side": "no"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP192015-15",
+      "time": "2026-09-20T00:08:01.107188+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/XRP-entry420-price97-20260919/paper.db",
+      "remaining": 418.8928120136261,
+      "pnl": 0.2918,
+      "side": "no"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP192015-15",
+      "time": "2026-09-20T00:08:04.959181+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/SOL-entry420-price97-20260919/paper.db",
+      "remaining": 415.04081892967224,
+      "pnl": 0.6484,
+      "side": "no"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP192015-15",
+      "time": "2026-09-20T00:08:09.573728+00:00",
+      "window": 420,
+      "run": "/root/Project15/data/cloud/ETH-btc120-eth105-20260919/paper.db",
+      "remaining": 410.4262719154358,
+      "pnl": 0.2693,
+      "side": "no"
+    }
+  ]
+}

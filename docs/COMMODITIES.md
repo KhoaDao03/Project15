@@ -18,14 +18,14 @@ the published strike. They do not settle on the crypto 60-sample average.
 The probability model is `bleep-reference-atr-finish-v5`, shared with crypto.
 It uses rolling ATR from official Pyth reference candles, a Normal-CDF estimate
 of spot-to-strike distance, and the fading indicator adjustment. Commodity sigma
-uses BTC's **1.35 multiplier**; selected-side confidence is capped at book mid
+uses a **1.35 multiplier**; selected-side confidence is capped at book mid
 **+6 percentage points**, up to 98%, and checked again before paper submission.
 
 | Setting | GOLD / SILVER / WTI |
 | --- | --- |
 | Entry window | `1 < seconds_remaining <= 420` |
 | Confidence after safety and market-respect caps | At least 85% |
-| Price range / maximum spread | 80–95¢ / 4¢ |
+| Price range / maximum spread | 80–97¢ / disabled |
 | Same-side confirmation | One fresh sample |
 | Paper hard stop | 55¢ |
 | Take-profit | Held-side bid ≥99¢; remaining contracts settle |
@@ -119,3 +119,11 @@ Live execution uses the same fill-or-kill buys, reduce-only sells, resting 99¢
 take-profit, and committed 55¢ stop as crypto. Enable it per asset using the
 dashboard confirmation controls; deploying support does not turn these switches on.
 See [live automation](LIVE_AUTOMATION.md) for live order handling and safeguards.
+
+As of September 19, 2026, the deployed commodity fleet uses `signal-service`
+with `live_only: true` for GOLD, SILVER, and WTI. The former
+`btc15-commodity@` paper services are disabled; `project15-signal@GOLD`,
+`project15-signal@SILVER`, and `project15-signal@WTI` provide live-entry signals.
+The active dashboard uses real order history only. Original simulation ledgers
+remain archived in their previous directories and are not used for live totals.
+Commodity ATR multipliers are 1.35. Existing reference warm-up checks still apply.

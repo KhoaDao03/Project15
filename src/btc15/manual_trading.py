@@ -81,7 +81,7 @@ def exchange_order(order, exchange_index, *, resting=False):
         time_in_force="good_till_canceled"
         if resting
         else ("fill_or_kill" if order.action == "buy" else "immediate_or_cancel"),
-        reduce_only=order.action == "sell",
+        reduce_only=order.action == "sell" and not resting,
         self_trade_prevention_type="taker_at_cross",
         cancel_order_on_pause=True,
         subaccount=0,
@@ -573,6 +573,10 @@ class ManualTrading:
                         if not cash.is_finite() or cash < maximum_cost:
                             raise HTTPException(409, "Insufficient real cash for automatic entry and fees")
                 payload = exchange_order(order, market["exchange_index"], resting=resting)
+                if resting:
+                    # Kalshi only supports reduce_only for IOC, not resting orders.
+                    # Bound the working offer to this contract's trading lifetime.
+                    payload["expiration_time"] = int(timestamp(market["close_time"]))
                 row["exchange_index"] = market["exchange_index"]
                 self.save(row)
                 price = Decimal(payload["price"])
@@ -600,9 +604,22 @@ class ManualTrading:
                     acknowledged_at=time.time(), submission_ms=(time.monotonic() - post_start) * 1000
                 )
                 if response.status_code in (400, 401, 403, 404, 422, 429):
+                    try:
+                        error = response.json()
+                    except ValueError:
+                        error = {}
+                    if isinstance(error, dict) and isinstance(error.get("error"), dict):
+                        error = error["error"]
+                    details = {
+                        k: error[k][:1000]
+                        for k in ("code", "message", "details")
+                        if isinstance(error, dict) and isinstance(error.get(k), str)
+                    }
                     row.update(
                         state="rejected",
-                        message=f"Kalshi rejected the order (HTTP {response.status_code}); check balance, permissions and price",
+                        exchange_error=dict(http_status=response.status_code, **details),
+                        message=f"Kalshi rejected the order (HTTP {response.status_code})"
+                        + (": " + " · ".join(details.values()) if details else ""),
                     )
                     return self.save(row)
                 response.raise_for_status()

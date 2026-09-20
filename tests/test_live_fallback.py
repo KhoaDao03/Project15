@@ -85,7 +85,7 @@ def test_cleared_history_preserves_open_positions_and_daily_loss_accounting(fall
     assert view.list("fill") == []
     assert view.list("trade_result") == []
     with sqlite3.connect(view.journal) as db:
-        orders = [json.loads(body) for body, in db.execute("SELECT body FROM manual_orders")]
+        orders = [json.loads(body) for (body,) in db.execute("SELECT body FROM manual_orders")]
     assert float(daily_pnl(orders, {}, 200)) == pytest.approx(-5.2)
     # Subsequent unmarked trades are still displayed.
     save("buy", "buy", 10, 9)
@@ -114,7 +114,7 @@ def test_live_open_partial_and_closed_accounting(fallback):
     assert len(LiveFallbackStore(store, view.journal, "sol-paper", "SOL").list("trade_result")) == 1
 
 
-def test_paper_purchase_wins_and_no_duplicates(fallback):
+def test_live_purchase_wins_and_no_duplicates(fallback):
     view, store, save = fallback
     save("buy", "buy", 10, 9)
     assert len(view.list("fill")) == 1
@@ -128,7 +128,11 @@ def test_paper_purchase_wins_and_no_duplicates(fallback):
         "paper-op",
     )
     assert len(view.list("fill")) == 1
-    assert view.list("fill")[0]["body"].get("source") is None
+    assert view.list("fill")[0]["body"]["source"] == "LIVE_FALLBACK"
+    save("sell", "sell", 10, 1)
+    assert len(view.list("trade_result")) == 1
+    assert view.list("trade_result")[0]["body"]["net_pnl"] == pytest.approx(-0.2)
+    assert len(store.list("fill")) == 1
 
 
 def test_zero_fills_manual_purchases_and_uncertain_are_not_invented(fallback):

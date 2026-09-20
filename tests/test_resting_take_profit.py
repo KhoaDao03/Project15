@@ -69,6 +69,11 @@ def resting(live):  # noqa: F811
                     order["remaining_count_fp"] = "0"
                 return httpx.Response(200, json={"order_id": order["order_id"]})
             payload = json.loads(request.content)
+            if payload["time_in_force"] == "good_till_canceled" and payload["reduce_only"]:
+                return httpx.Response(
+                    400,
+                    json={"code": "invalid_order", "details": "reduce_only can only be used with IoC orders"},
+                )
             if payload["time_in_force"] == "good_till_canceled" and exchange["reject_rest"]:
                 return httpx.Response(422, json={})
             ident = str(uuid4())
@@ -143,7 +148,8 @@ async def test_places_once_after_confirmed_buy_and_recovers_partial_fills(restin
     await worker.step_market(control)
     order = resting_order(exchange)
     assert order["payload"]["price"] == ("0.9900" if side == "yes" else "0.0100")
-    assert order["payload"]["reduce_only"]
+    assert order["payload"]["reduce_only"] is False
+    assert order["payload"]["expiration_time"] > clock[0]
     assert len(exchange["orders"]) == 2
     fill(order, 6)
     restarted = LiveAutomation(manual, worker.members, worker.stores)

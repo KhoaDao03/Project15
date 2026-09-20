@@ -101,7 +101,7 @@ async def test_buy_full_quantity_once_and_restart(live):
     assert len(state["posts"]) == 1
     assert state["posts"][0]["time_in_force"] == "fill_or_kill"
     assert state["posts"][0]["count"] == "10.00"
-    assert state["posts"][0]["price"] == "0.9600"
+    assert state["posts"][0]["price"] == "0.9700"
     assert manual.rows()[0]["origin"] == "bot"
     state["position"] = "10"
     restarted = LiveAutomation(manual, worker.members, worker.stores)
@@ -180,7 +180,7 @@ async def test_entry_gates_block_real_post(live, block):
     elif block == "health":
         data["healthy"] = False
     elif block == "price":
-        data["ask"] = 0.96
+        data["ask"] = 0.98
     else:
         data["reasons"] = [{"code": "BLEEP_MIN_PROBABILITY"}]
     with pytest.raises(HTTPException):
@@ -207,7 +207,7 @@ async def test_count_20_and_no_side_stop_payload(live):
         LiveControl(ticker=TICKER, enabled=True, contracts=20, revision=1, confirm="ENABLE_REAL_TRADING")
     )
     await worker.step_market(control)
-    assert state["posts"][0]["count"] == "20.00" and state["posts"][0]["price"] == "0.0400"
+    assert state["posts"][0]["count"] == "20.00" and state["posts"][0]["price"] == "0.0300"
     state["position"] = "-20"
     data["bid"] = 0.50
     await worker.step_market(control)
@@ -558,16 +558,16 @@ async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
 @pytest.mark.anyio
 @pytest.mark.parametrize("side", ["yes", "no"])
 @pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
-async def test_live_buy_headroom_preserves_95_cent_entry_filter(live, side):
+async def test_live_buy_limit_matches_97_cent_entry_filter(live, side):
     worker, state, manual, control, data, clock = live
-    data.update(side=side, bid=0.94, ask=0.951)
+    data.update(side=side, bid=0.96, ask=0.971)
     with pytest.raises(HTTPException, match="entry price/spread"):
         await worker.step_market(control)
     assert not state["posts"]
-    data["ask"] = 0.95
+    data["ask"] = 0.97
     await worker.step_market(control)
     order = state["posts"][-1]
-    assert order["price"] == ("0.9600" if side == "yes" else "0.0400")
+    assert order["price"] == ("0.9700" if side == "yes" else "0.0300")
     assert order["time_in_force"] == "fill_or_kill"
 
 

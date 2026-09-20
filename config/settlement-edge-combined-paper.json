@@ -8,7 +8,7 @@
   "min_quality": 85,
   "min_edge": 0.02,
   "min_ev": 0.02,
-  "max_spread": 0.04,
+  "max_spread": 1.0,
   "min_liquidity": 5,
   "warmup_seconds": 300,
   "ewma_decay": 0.97,

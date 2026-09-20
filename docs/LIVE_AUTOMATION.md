@@ -48,9 +48,9 @@ can be recorded later without changing its realized sale P&L.
 
 ## Execution
 
-All seven assets (BTC, ETH, SOL, XRP, GOLD, SILVER, WTI) start considering entries with 7 minutes remaining. Standard entries run until 2 minutes remaining, and late entries until 1 second remaining (exclusive). Both require one fresh confirmation sample. Entry requires fresh, healthy collector decisions and books. Current strategy settings require Bleep confidence of at least 83% for crypto and 85% for commodities after safety and market-respect caps, asks between 80 and 95 cents, and the remaining strategy entry filters. Paper inventory and its post-close cooldown are excluded because they do not describe real holdings. Live entry requires a flat real position in the market, sufficient cash including a fee allowance, and at most one filled bot entry per ticker.
+All seven assets (BTC, ETH, SOL, XRP, GOLD, SILVER, WTI) start considering entries with 7 minutes remaining. Standard entries run until 2 minutes remaining, and late entries until 1 second remaining (exclusive). Both require one fresh confirmation sample. Entry requires fresh, healthy collector decisions and books. Current strategy settings require Bleep confidence of at least 83% for crypto and 85% for commodities after safety and market-respect caps, asks between 80 and 97 cents, and the remaining strategy entry filters. Paper inventory and its post-close cooldown are excluded because they do not describe real holdings. Live entry requires a flat real position in the market, sufficient cash including a fee allowance, and at most one filled bot entry per ticker.
 
-Buys are fill-or-kill for the selected quantity: all contracts or none. The limit uses the configured maximum entry price plus one cent of execution headroom (currently 96 cents), capped at 99 cents and rounded down to a supported tick in the purchased outcome's price. The observed ask must still pass the strategy entry range and all other entry checks. Cheaper offers can fill first; fees are additional. Known empty attempts retry immediately after confirmation and fresh entry revalidation, with no added cooldown (at most two retries). Network and exchange processing time still applies. Uncertain acknowledgements never trigger blind replacements.
+Buys are fill-or-kill for the selected quantity: all contracts or none. The limit uses the configured maximum entry price (currently 97 cents), rounded down to a supported tick in the purchased outcome's price. The observed ask must still pass the strategy entry range and all other entry checks. Cheaper offers can fill first; fees are additional. Known empty attempts retry immediately after confirmation and fresh entry revalidation, with no added cooldown (at most two retries). Network and exchange processing time still applies. Uncertain acknowledgements never trigger blind replacements.
 
 Confirmed pre-submit rejections (for example, stale data, a changed signal or insufficient cash) do not consume the entry-attempt allowance. They return to the worker loop for fresh validation. Submitted orders still count, including exchange rejections; uncertain submissions block replacements until reconciled. Older journal records without enough timing evidence remain conservatively counted. This classification also applies after restart without deleting order history.
 
@@ -59,11 +59,11 @@ Live exits retain two trigger rules:
 - **Hard stop:** a held-side bid at or below **55 cents** commits the bot to selling its entire remaining bot position with a **1-cent minimum**. Reduce-only immediate-or-cancel orders may partially fill. After reconciliation, the bot retries only the confirmed remainder at least two seconds apart while the market remains open, with no sell-attempt limit. Once triggered, the exit persists through price-feed outages and restarts; market status and real holdings are still checked through the exchange API. A temporary zero-holdings response delays submission and is rechecked instead of permanently pausing the exit.
 - **Take profit:** a bid at or above **99 cents** starts selling with a **99-cent minimum**. This floor is never rounded down; an unsupported venue tick is rejected. A subsequent hard-stop trigger overrides take profit and uses the 1-cent stop floor.
 
-These two live rules are independent of other paper-only exits. Sells are capped by the bot's confirmed remainder and actual exchange holdings, with `reduce_only`. Manual positions are not adopted. If external trading leaves zero holdings, the bot sends no sell and keeps rechecking until the market closes or the user takes manual control.
+These two live rules are independent of other paper-only exits. Sells are capped by the bot's confirmed remainder and actual exchange holdings, with `reduce_only` on IOC exits. Resting take-profit orders use holdings checks instead because Kalshi rejects reduce-only GTC orders. Manual positions are not adopted. If external trading leaves zero holdings, the bot sends no sell and keeps rechecking until the market closes or the user takes manual control.
 
 ## Resting 99-cent take-profit (September 15)
 
-After confirming a buy, the worker submits one reduce-only, good-till-canceled sell at 99¢ for the confirmed quantity still held. The journal persists the order identity and cumulative fills. It checks fills through the authenticated fill stream and REST reconciliation, including after a restart; partial fills leave the remaining offer working. A rejected resting placement leaves the original IOC exits available.
+After confirming a buy, the worker submits one good-till-canceled sell at 99¢, expiring at the market close, for the confirmed quantity still held. The journal persists the order identity and cumulative fills. It checks fills through the authenticated fill stream and REST reconciliation, including after a restart; partial fills leave the remaining offer working. A rejected resting placement leaves the original IOC exits available.
 
 A fresh held-side **bid below 70¢** cancels the remaining resting offer. Exactly 70¢ does not trigger cancellation. This cancellation is permanent for the position: rebounds do not recreate the resting order. The original 99¢ profit and 55¢ hard-stop triggers remain active for unsold contracts.
 
@@ -151,7 +151,7 @@ and the execution service; unlike the earlier HTTP-only improvements, both sides
 
 ## Live buy execution headroom
 
-Live entry signals still require the selected-side ask within the configured entry range (currently 80–95¢). Live buy orders allow one cent above the configured maximum (currently a 96¢ limit), capped at 99¢. The quoted-price filter is checked again before submission. Orders can fill at available prices up to 96¢; this is a maximum, not a forced purchase price or a fill guarantee. Full-quantity fill-or-kill behavior is retained. Paper execution is unchanged.
+Live entry signals still require the selected-side ask within the configured entry range (currently 80–97¢). Live buy orders use the configured maximum (currently a 97¢ limit). The quoted-price filter is checked again before submission. Orders can fill at available prices up to 97¢; this is a maximum, not a forced purchase price or a fill guarantee. Full-quantity fill-or-kill behavior is retained. Paper execution is unchanged.
 
 ### Routine market window
 
@@ -223,3 +223,13 @@ Freshness checks sample wall-clock time after reading collector publications. A
 quote or decision published during preceding database reads must not be rejected
 as future-dated relative to the start of the check. Actual future timestamps,
 stale publications, collector recovery, and entry-window expiry still block buys.
+
+Dashboard reconciliation prefers verified real bot fills when the same market
+also has simulated fills. The original paper records remain in their ledger, but
+cannot override the real trade's entry, exit, fees, P&L, or closed status. Markets
+with only simulated trades still show simulation history. Dashboard-cleared real
+trades remain in the durable order journal for full-history audits.
+
+Kalshi restricts `reduce_only` to IOC orders. Resting offers therefore have no exchange-side reduce-only guarantee: quantity is checked against actual holdings before placement, and the bot cancels/reconciles the offer before any replacement exit. External position changes made outside the bot can invalidate that size; use the bot's manual takeover to cancel its offer before managing the position elsewhere. Exchange rejection code, message and details are retained in the order journal.
+
+The deployed fleet disables the maximum-spread entry ceiling on all seven assets by setting `max_spread` to 1.0 (the full $1 contract-price range). Both signal evaluation and pre-submission validation consume this setting. Quote validity, probability caps, entry-price limits, freshness and risk checks still apply.

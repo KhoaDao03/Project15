@@ -226,6 +226,7 @@ def test_rejected_exchange_order_is_not_retried(venue):
     state["post_error"] = 403
     row = client.post("/api/manual/orders", json=request_body()).json()
     assert row["state"] == "rejected" and len(state["posts"]) == 1
+    assert row["exchange_error"] == {"http_status": 403, "code": "test"}
 
 
 @pytest.mark.parametrize(

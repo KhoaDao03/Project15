@@ -445,8 +445,8 @@ class LiveAutomation:
         ):
             raise HTTPException(409, "Current entry price/spread outside strategy limits")
         # The tick grid is validated again against venue metadata before submission.
-        # Allow one cent of execution headroom while retaining the quoted entry-price filter.
-        limit = min(Decimal(".99"), Decimal(str(config.max_entry_price)) + Decimal(".01"))
+        # Use the same maximum for signal eligibility and real buy orders.
+        limit = Decimal(str(config.max_entry_price))
         return side, limit, d
 
     async def reconcile(self):

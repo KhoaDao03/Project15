@@ -1,4 +1,4 @@
-"""Dashboard-only fallback from durable live fills when paper has no purchase."""
+"""Dashboard trade history preferring durable live fills over overlapping simulations."""
 
 import json
 import sqlite3
@@ -73,11 +73,6 @@ class LiveFallbackStore:
     def _fallback(self):
         if not self.journal.exists():
             return []
-        paper = self.store.list("fill", self.run_id, "PAPER", limit=None)
-        occupied = {r["market"] for r in paper if r["body"].get("action") == "buy"}
-        occupied.update(
-            r["market"] for r in self.store.list("trade_result", self.run_id, "PAPER", limit=None)
-        )
         with sqlite3.connect(self.journal.resolve().as_uri() + "?mode=ro", uri=True) as db:
             rows = [
                 json.loads(b)
@@ -89,8 +84,7 @@ class LiveFallbackStore:
         groups = defaultdict(list)
         for row in rows:
             ticker = row["request"]["ticker"]
-            if ticker not in occupied:
-                groups[ticker].append(row)
+            groups[ticker].append(row)
         result = []
         settlements = {
             r["market"]: r for r in self.store.list("settlement", self.run_id, "PAPER", limit=None)
@@ -263,7 +257,18 @@ class LiveFallbackStore:
         ):
             return self.store.list(**filters, limit=limit, newest_first=newest_first)
         rows = self.store.list(kind, run_id, mode, market, opportunity_id, limit=None)
-        rows += [r for r in self.fallback() if all(v is None or r[k] == v for k, v in filters.items())]
+        live = self.fallback()
+        live_markets = {r["market"] for r in live}
+        # Real fills own the displayed lifecycle even if a simulation is still open.
+        # Leave the original paper ledger intact for simulation analysis.
+        rows = [
+            r
+            for r in rows
+            if not (
+                r["kind"] in ("fill", "trade_result") and r["mode"] == "PAPER" and r["market"] in live_markets
+            )
+        ]
+        rows += [r for r in live if all(v is None or r[k] == v for k, v in filters.items())]
         rows.sort(key=lambda r: (r["timestamp"], r["id"]), reverse=newest_first)
         return rows if limit is None else rows[:limit]
 

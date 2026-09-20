@@ -115,7 +115,7 @@ def test_commodity_strategy_reaches_paper_fill(commodity, store, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "remaining,allowed", [(480, False), (420.01, False), (420, True), (120, True), (1.01, True), (1, False)]
+    "remaining,allowed", [(540, False), (480, False), (420.01, False), (420, True), (120, True), (1.01, True), (1, False)]
 )
 def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
     from test_strategy_reverification import make_book
@@ -145,7 +145,7 @@ def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed
         assert (d["decision"] == "TRADE_CANDIDATE") == (allowed and confidence == 0.85)
 
 
-def test_commodity_uses_btc_sigma_and_cap(commodity):
+def test_commodity_uses_configured_sigma_and_cap(commodity):
     import math
 
     from btc15.strategies.settlement_edge.bleep import capped_confidence

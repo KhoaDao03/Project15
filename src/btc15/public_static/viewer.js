@@ -2,6 +2,10 @@ const el=(tag,value,cls)=>{const node=document.createElement(tag);node.textConte
 const money=value=>typeof value==='number'?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:4}).format(value):'—';
 const pnlClass=value=>value>0?'positive':value<0?'negative':'';
 const percent=value=>typeof value==='number'&&Number.isFinite(value)?(value*100).toFixed(1)+'%':'—';
+function liveBuyingStatus(data,asset){
+  if(data.stale||!data.live_available||typeof asset.live_policy?.enabled!=='boolean')return ['Live buying: unavailable','buying-unknown'];
+  return asset.live_policy.enabled?['Live buying: ON','buying-on']:['Live buying: OFF','buying-off'];
+}
 function render(data){
   renderOwner(data);
   const connection=document.getElementById('connection');
@@ -13,6 +17,10 @@ function render(data){
   const cards=data.assets.map(asset=>{
     const card=el('article',''),heading=el('div','','heading');
     heading.append(el('h3',asset.asset),el('span',asset.healthy?asset.state:'Data / trading checks pending',asset.healthy?'positive':'stale'));card.append(heading);
+    const [buyingLabel,buyingClass]=liveBuyingStatus(data,asset);
+    const buying=el('span',buyingLabel,'live-buying '+buyingClass);
+    buying.title='Saved setting for new buys in this asset’s markets. Entries still require strategy and health checks; automatic exits are separate.';
+    card.append(buying);
     const stats=el('div','','stats');
     for(const [label,value] of [['Reference',money(asset.price)],['Realized P&L',money(asset.realized_pnl)],['Wins',asset.wins],['Losses',asset.losses],['Open trades',asset.open_positions]]){
       const stat=el('div','');stat.append(el('span',label),el('strong',value));stats.append(stat);
@@ -42,7 +50,7 @@ function render(data){
 }
 async function refresh(){
   try{const response=await fetch('/api/view',{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!response.ok)throw new Error('Unavailable');render(await response.json());}
-  catch{if(ownerLatest)ownerLatest.stale=true;updateLocks();const status=document.getElementById('connection');status.textContent='Updates unavailable · displayed values may be out of date';status.className='stale';}
+  catch{if(ownerLatest)ownerLatest.stale=true;updateLocks();for(const badge of document.querySelectorAll('.live-buying')){badge.textContent='Live buying: unavailable';badge.className='live-buying buying-unknown';}const status=document.getElementById('connection');status.textContent='Updates unavailable · displayed values may be out of date';status.className='stale';}
   finally{setTimeout(refresh,5000);}
 }
 refresh();

@@ -91,7 +91,7 @@ uv run --locked python -c "from pathlib import Path; from dataclasses import asd
 uv run --locked btc15 --config data/runtime/settlement-original.json config
 ```
 
-`FileExistsError` means the frozen file already exists. Inspect/reuse it; do not overwrite it to make the command succeed. The output should show `entry_window_start=480`, `no_new_entry=120`, `min_entry_price=0.85`, `min_edge=min_ev=0.03`, and `fee_balance_precision="0.0001"` for the current original control. This uses UTF-8 on both shells and avoids old PowerShell redirection encodings.
+`FileExistsError` means the frozen file already exists. Inspect/reuse it; do not overwrite it to make the command succeed. The output should show `entry_window_start=420`, `no_new_entry=120`, `min_entry_price=0.85`, `min_edge=min_ev=0.03`, and `fee_balance_precision="0.0001"` for the current original control. This uses UTF-8 on both shells and avoids old PowerShell redirection encodings.
 
 Do not substitute `config/defaults.json` assuming it is identical: that explicit historical example still contains `fee_balance_precision="0.01"`. It is not automatically loaded. [Configuration precedence](STRATEGY.md#configuration-precedence-and-reproducibility) explains saved settings and hashes.
 
@@ -112,7 +112,7 @@ uv run --locked btc15 --config data/runtime/settlement-original.json dashboard -
 
 Open `http://127.0.0.1:8000`. Select **PAPER**, the normal Settlement Edge history scope, and `settlement-original`. Confirm paper execution is on, the collector and evaluations are current, and the selected configuration is the one you froze. The 5 Hz display moving alone is not proof the execution feed is healthy.
 
-Bleep needs 33 contiguous minute candles (or a validated exchange seed), plus the configured reference warmup; missing samples or bad feed health can extend the wait. The original entry window is more than 2 and at most 8 minutes before close. The bot must also pass probability, net-EV, price, spread, liquidity, metadata, regime and risk checks. **No trade may be the correct result.** Use [Troubleshooting](TROUBLESHOOTING.md), not relaxed safeguards, to identify the stage that blocked it.
+Bleep needs 33 contiguous minute candles (or a validated exchange seed), plus the configured reference warmup; missing samples or bad feed health can extend the wait. The original entry window is more than 2 and at most 7 minutes before close. The bot must also pass probability, net-EV, price, spread, liquidity, metadata, regime and risk checks. **No trade may be the correct result.** Use [Troubleshooting](TROUBLESHOOTING.md), not relaxed safeguards, to identify the stage that blocked it.
 
 ## Stop and restart
 

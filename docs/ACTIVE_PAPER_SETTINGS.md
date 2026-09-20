@@ -11,9 +11,9 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 1.35; ETH 1.10; SOL/XRP 1.00 |
+| ATR sigma multiplier | BTC 1.20; ETH 1.05; SOL/XRP 1.00 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH; +10pp SOL/XRP; maximum 98% |
-| Purchase range | 80–95¢ |
+| Purchase range | 80–97¢ |
 | Same-side confirmations | 1 standard; 1 late |
 | Normalized lead minimum | Disabled; fresh side confirmation remains |
 | Directional Bollinger entry filter | Disabled |
