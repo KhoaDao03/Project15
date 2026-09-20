@@ -410,3 +410,64 @@ def test_seven_asset_manifest_and_commodity_dashboard(portfolios):
         for asset in ("GOLD", "SILVER", "WTI"):
             assert client.get("/assets/" + asset + "/api/health").json()["asset"] == asset
             assert not next(r for r in response["assets"] if r["asset"] == asset)["paper_only"]
+
+
+@pytest.mark.parametrize("asset", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"])
+def test_overview_probability_all_assets_outside_entry_window(asset):
+    config = Strategy(asset=asset)
+    member = dict(run_id="current", config=config)
+    evaluation = dict(
+        run_id="current",
+        timestamp=100,
+        body=dict(
+            ticker="market",
+            versions=dict(config=config.version),
+            side="yes",
+            probability=dict(p_yes=0.86, p_no=0.14),
+            conservative_probability=0.83,
+            reasons=[dict(code="ENTRY_WINDOW")],
+            quality=dict(reasons=[]),
+        ),
+    )
+    result = fleet.market_probability(evaluation, member, dict(ticker="market", fresh=True), 101, True)
+    assert result["available"] and result["p_yes"] == 0.86 and result["confidence"] == 0.83
+    assert result["side"] == "yes"
+
+
+@pytest.mark.parametrize(
+    "invalid", ["stale", "future", "run", "market", "config", "quote", "collector", "reference", "nan"]
+)
+def test_overview_hides_unavailable_probability(invalid):
+    config = Strategy()
+    member = dict(run_id="current", config=config)
+    market = dict(ticker="market", fresh=True)
+    evaluation = dict(
+        run_id="current",
+        timestamp=100,
+        body=dict(
+            ticker="market",
+            versions=dict(config=config.version),
+            probability=dict(p_yes=0.86, p_no=0.14),
+            reasons=[],
+        ),
+    )
+    connected = True
+    if invalid == "stale":
+        evaluation["timestamp"] = 90
+    if invalid == "future":
+        evaluation["timestamp"] = 110
+    if invalid == "run":
+        evaluation["run_id"] = "previous"
+    if invalid == "market":
+        evaluation["body"]["ticker"] = "other"
+    if invalid == "config":
+        evaluation["body"]["versions"]["config"] = "old"
+    if invalid == "quote":
+        market["fresh"] = False
+    if invalid == "collector":
+        connected = False
+    if invalid == "reference":
+        evaluation["body"]["reasons"] = [dict(code="STALE_REFERENCE")]
+    if invalid == "nan":
+        evaluation["body"]["probability"]["p_yes"] = float("nan")
+    assert not fleet.market_probability(evaluation, member, market, 101, connected)["available"]

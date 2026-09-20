@@ -691,7 +691,16 @@ async function refreshFleet(){
         const quotes=text('div','','fleet-quotes');
         for(const side of ['yes','no'])quotes.append(text('p',side.toUpperCase()+' · '+cents(market.fresh?market.book?.[side+'_bid']:null)+' / '+cents(market.fresh?market.book?.[side+'_ask']:null)));
         card.contract.append(text('small',market.fresh?'Bid / ask':'Quotes unavailable or stale','muted'),quotes);
-      }else card.contract.append(text('p','Awaiting current contract','muted'));
+        const probability=market.probability;
+        const odds=text('div','','fleet-probability');
+        if(probability?.available){
+          odds.append(text('small','Model probability'),text('p','YES '+pct(probability.p_yes)+' · NO '+pct(probability.p_no)));
+          if(probability.side&&probability.confidence!==null)odds.append(text('p','Entry confidence · '+probability.side.toUpperCase()+' '+pct(probability.confidence)));
+          if(probability.quality_warning)odds.append(text('small','Data quality warning · see asset details','muted'));
+          odds.title='Model estimate and capped entry confidence from '+new Date(probability.timestamp*1000).toLocaleTimeString()+'. Probability alone does not mean an entry is allowed.';
+        }else odds.append(text('small','Model probability'),text('p','— · waiting for a fresh evaluation','muted'));
+        card.contract.append(odds);
+      }else card.contract.append(text('p','Awaiting current contract','muted'),text('p','Probability —','muted'));
     }
     await Promise.all(data.assets.map(async row=>{
       const card=fleetCards.get(row.asset);

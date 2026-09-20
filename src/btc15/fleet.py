@@ -22,6 +22,44 @@ from .shutdown import finish_shutdown
 from .storage import Store
 
 
+def market_probability(evaluation, member, market, now, collector_fresh):
+    """Expose only the current market/run's fresh model estimate; never reuse old odds."""
+    unavailable = dict(available=False)
+    body = (evaluation or {}).get("body", {})
+    timestamp = (evaluation or {}).get("timestamp")
+    if (
+        not collector_fresh
+        or not market.get("fresh")
+        or (evaluation or {}).get("run_id") != member["run_id"]
+        or body.get("ticker") != market.get("ticker")
+        or body.get("versions", {}).get("config") != member["config"].version
+        or type(timestamp) not in (int, float)
+        or not 0 <= now - timestamp < 5
+        or any(
+            r.get("code") in ("STALE_REFERENCE", "STALE_BOOK", "MODEL_UNAVAILABLE")
+            for r in body.get("reasons", [])
+        )
+    ):
+        return unavailable
+    probability = body.get("probability", {})
+    yes, no = probability.get("p_yes"), probability.get("p_no")
+    if any(type(v) not in (int, float) or not math.isfinite(v) or not 0 <= v <= 1 for v in (yes, no)):
+        return unavailable
+    confidence = body.get("conservative_probability")
+    side = body.get("side")
+    if side not in ("yes", "no") or type(confidence) not in (int, float) or not 0 <= confidence <= 1:
+        confidence, side = None, None
+    return dict(
+        available=True,
+        p_yes=yes,
+        p_no=no,
+        side=side,
+        confidence=confidence,
+        timestamp=timestamp,
+        quality_warning=bool(body.get("quality", {}).get("reasons")),
+    )
+
+
 def load_members(path):
     path = Path(path).resolve()
     rows = json.loads(path.read_text())
@@ -177,6 +215,7 @@ def create_fleet_app(manifest):
             status = report.get("status", {})
             reference = stores[asset].read_market_display("reference") or {}
             snapshot = stores[asset].read_market_display() or {}
+            evaluation = stores[asset].read_market_display(f"evaluation:{member['run_id']}")
             # A snapshot may be published while this request is being processed.
             # Compare with a clock sampled after both reads, never request-start time.
             now = time.time()
@@ -208,6 +247,14 @@ def create_fleet_app(manifest):
                     }
                     for market in snapshot.get("markets", [])
                 ]
+            for market in markets:
+                market["probability"] = market_probability(
+                    evaluation,
+                    member,
+                    market,
+                    now,
+                    bool(status.get("connected") and fresh),
+                )
             return dict(
                 **base,
                 recent_trade_version=children[asset].state.recent_trade_version,
