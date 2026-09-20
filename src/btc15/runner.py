@@ -18,6 +18,7 @@ from .domain import Book, dumps, parse_market
 from .engine import Engine
 from .models import guard_archived_exposure, require_single_run
 from .reference_history import load_history, save_history
+from .research_log import start_research_log
 from .storage import CompactRecorder, RawRecorder
 
 QUEUE_CAPACITY = 20000
@@ -65,6 +66,7 @@ async def collect(
     owner = str(uuid.uuid4())
     acquired = False
     recorder = None
+    research_log = None
     clean_shutdown = False
     entries_stopped = False
     shadow = None
@@ -185,6 +187,11 @@ async def collect(
                 "PAPER",
                 time.time(),
             )
+        research_log = (
+            start_research_log(config, engine.run_id, settlement_db=store.engine.url.database)
+            if live_signals
+            else None
+        )
         preload = dict(status="DISABLED", samples=0)
         if paper or live_signals:
             recordings = [
@@ -205,6 +212,8 @@ async def collect(
             if recorder:
                 await work(recorder.append_rows, [history_row])
             await work(engine.ingest, history_row)
+            if research_log:
+                research_log.emit("input", history_row, history_row["received"])
             if paper_worker:
                 paper_worker.submit([history_row])
             store.add("reference_preload", preload, engine.run_id, "PAPER", history_row["received"])
@@ -338,6 +347,8 @@ async def collect(
                 row_valid = engine.ingest(row)
                 valid = row_valid and valid
                 payload = json.loads(row["payload"])
+                if research_log:
+                    research_log.capture(engine, row, payload)
                 if not stop.is_set():
                     if not row_valid:
                         recovery.request("DATA_INTEGRITY_FAILURE", time.time())
@@ -448,6 +459,7 @@ async def collect(
                         if record_all
                         else "trades_with_compact_inputs",
                         reference_preload=preload,
+                        research_logging=research_log.status() if research_log else {"enabled": False},
                         live_enabled=False,
                         models=[
                             dict(
@@ -859,6 +871,8 @@ async def collect(
                         if not clean_shutdown:
                             await work(stop_entries, engine, time.time())
             finally:
+                if research_log:
+                    await work(research_log.close)
                 if recorder:
                     # Preserve frames already received even when analysis or a producer fails.
                     pending = []

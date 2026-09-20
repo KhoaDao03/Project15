@@ -157,3 +157,26 @@ def test_signal_restart_recovers_result_for_market_absent_from_discovery(
     )
     assert store.list(kind="settlement", run_id=run)[0]["body"]["result"] == "yes"
     assert store.state(run, ticker) == "CLOSED"
+
+
+def test_opt_in_research_capture_does_not_enable_paper(store, config, tmp_path, raw, series, monkeypatch):
+    import gzip
+
+    fake_client(monkeypatch, raw, series)
+    fake_socket(monkeypatch, [dict(type="ticker", msg={})])
+    directory = tmp_path / "research-logs"
+    monkeypatch.setenv("BTC15_RESEARCH_LOG_ENABLED", "1")
+    monkeypatch.setenv("BTC15_RESEARCH_LOG_DIR", str(directory))
+    monkeypatch.setattr(
+        "btc15.research_log.shutil.disk_usage", lambda _: type("Usage", (), {"free": 100 * 1024**3})()
+    )
+    settings = Settings(data_dir=str(tmp_path))
+    asyncio.run(
+        collect(settings, config, store, live_signals=True, managed_run="research-test", duration=0.2)
+    )
+    manifests = list(directory.rglob("manifest.json"))
+    assert len(manifests) == 1
+    events = [json.loads(line) for p in directory.rglob("events-*.jsonl.gz") for line in gzip.open(p, "rt")]
+    assert any(e["kind"] == "input" for e in events)
+    assert not store.list(kind="fill", run_id="research-test")
+    assert not (tmp_path / "raw").exists()

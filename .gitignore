@@ -15,3 +15,6 @@ __pycache__/
 # Runtime logs, including rotated and compressed logs.
 *.log
 *.log.*
+
+# Portable research capture archives (never commit market data).
+/research-logs/
