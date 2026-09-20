@@ -18,7 +18,7 @@ indicator_up = clip(0.5 + 0.12 * indicator_lean, 0.05, 0.95)
 p_up = clip((1 - weight) * base_up + weight * indicator_up, 0.02, 0.98)
 ```
 
-Multipliers are **BTC 1.20, ETH 1.05, SOL 1.00, XRP 1.00**. GOLD, SILVER and WTI use **1.35**. The existing
+Multipliers are **BTC 1.15, ETH 1.00, SOL 1.00, XRP 1.00**. GOLD, SILVER and WTI use **1.35**. The existing
 indicator lean uses Wilder RSI/Stochastic RSI and Bollinger Bands. Project15's
 causal candle construction is retained. ATR averages the 14 true ranges from the
 last 15 contiguous official-reference candles, including the causal current minute,
