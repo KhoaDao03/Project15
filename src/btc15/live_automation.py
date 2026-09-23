@@ -12,6 +12,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 
+from . import execution_journal
 from .decision_notifications import DecisionListener
 from .domain import timestamp
 from .live_loss_guard import LIMIT, daily_pnl
@@ -23,9 +24,13 @@ from .manual_trading import (  # noqa: F401
     snap_buy_limit,
 )
 from .operation import health
+from .research_log import start_research_log
 from .strategies.settlement_edge.bleep import capped_confidence
 
 log = logging.getLogger(__name__)
+
+# Temporarily disabled by operator request; retain the implementation for re-enabling.
+LIVE_DAILY_LOSS_GUARD_ENABLED = False
 
 
 def consumes_entry_attempt(row):
@@ -56,6 +61,8 @@ class LiveAutomation:
         self.last_cycle = None
         self.messages = {}
         self.lock_file = None
+        self.research_logs = {}
+        self.global_loss_guard = None
         with manual.db() as db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS live_controls (ticker TEXT PRIMARY KEY, body TEXT NOT NULL)"
@@ -81,13 +88,19 @@ class LiveAutomation:
                     )
                 )
         manual.before_manual_order = self.takeover
+        manual.research_check = self.research_check
+        manual.research_execution = self.research_execution
 
-    def controls(self):
+    def controls(self, tickers=None):
+        if tickers is not None and not tickers:
+            return {}
+        query = "SELECT ticker,body FROM live_controls"
+        parameters = []
+        if tickers is not None:
+            query += " WHERE ticker IN (" + ",".join("?" for _ in tickers) + ")"
+            parameters = list(tickers)
         with self.manual.db() as db:
-            return {
-                ticker: json.loads(body)
-                for ticker, body in db.execute("SELECT ticker,body FROM live_controls")
-            }
+            return {ticker: json.loads(body) for ticker, body in db.execute(query, parameters)}
 
     def control(self, ticker):
         """Read one control, including its latest authorization revision."""
@@ -133,6 +146,8 @@ class LiveAutomation:
             db.execute(
                 "INSERT OR REPLACE INTO live_controls VALUES (?,?)", (control["ticker"], json.dumps(control))
             )
+            event = execution_journal.append(db, "control_changed", market=control["ticker"], body=control)
+        self.manual.publish_execution(event)
 
     def assets(self):
         with self.manual.db() as db:
@@ -145,8 +160,150 @@ class LiveAutomation:
             db.execute(
                 "INSERT OR REPLACE INTO live_assets VALUES (?,?)", (policy["asset"], json.dumps(policy))
             )
+            event = execution_journal.append(
+                db,
+                "asset_policy_changed",
+                market="KX" + policy["asset"] + "15M-",
+                body=policy,
+            )
+        self.manual.publish_execution(event)
+
+    def research_execution(self, event):
+        for asset, recorder in self.research_logs.items():
+            prefix = self.members[asset]["config"].asset_spec.series + "-"
+            if not event["market"] or event["market"].startswith(prefix):
+                recorder.capture_execution(event, delivery="immediate")
+
+    def capture_execution_checkpoint(self):
+        """Snapshot local knowledge before starting fill/reconciliation tasks; never restores it."""
+        events = []
+        now = time.time()
+        with self.manual.db() as db:
+            db.execute("BEGIN IMMEDIATE")
+            high_water = db.execute("SELECT coalesce(max(seq),0) FROM execution_events").fetchone()[0]
+            rows = [json.loads(r[0]) for r in db.execute("SELECT body FROM manual_orders ORDER BY rowid")]
+            controls = [json.loads(r[0]) for r in db.execute("SELECT body FROM live_controls")]
+            policies = {a: json.loads(b) for a, b in db.execute("SELECT asset,body FROM live_assets")}
+            for asset, member in self.members.items():
+                if asset not in self.research_logs:
+                    continue
+                prefix = member["config"].asset_spec.series + "-"
+                orders = [r for r in rows if r["request"]["ticker"].startswith(prefix)]
+                checkpoint_id = str(uuid4())
+                settlements = {
+                    r["market"]: r
+                    for r in self.stores[asset].list("settlement", member["run_id"], "PAPER", limit=None)
+                }
+                try:
+                    risk = dict(daily_pnl=str(daily_pnl(orders, settlements, now)), error=None)
+                except Exception as exc:
+                    risk = dict(daily_pnl=None, error=type(exc).__name__)
+                events.append(
+                    execution_journal.append(
+                        db,
+                        "execution_checkpoint",
+                        market=prefix,
+                        body=dict(
+                            checkpoint_id=checkpoint_id,
+                            asset=asset,
+                            observed_at=now,
+                            journal_high_water=high_water,
+                            orders_count=len(orders),
+                            state_source="local_journal; account reconciliation still required",
+                            policy=policies.get(asset),
+                            risk=dict(risk, day=int(now // 86400), limit=str(LIMIT)),
+                            settlements_count=len(settlements),
+                            fill_stream=dict(self.manual.fill_stream),
+                        ),
+                    )
+                )
+                for ticker, settlement in settlements.items():
+                    events.append(
+                        execution_journal.append(
+                            db,
+                            "execution_checkpoint_settlement",
+                            market=ticker,
+                            body=dict(checkpoint_id=checkpoint_id, settlement=settlement),
+                        )
+                    )
+                for row in orders:
+                    events.append(
+                        execution_journal.append(
+                            db, "execution_checkpoint_order", row=row, body=dict(checkpoint_id=checkpoint_id)
+                        )
+                    )
+                by_ticker = {c["ticker"]: c for c in controls if c["asset"] == asset}
+                for row in orders:
+                    by_ticker.setdefault(
+                        row["request"]["ticker"],
+                        dict(ticker=row["request"]["ticker"], asset=asset, unavailable=True),
+                    )
+                selected = list(by_ticker.values())
+                for control in selected:
+                    market_orders = [r for r in orders if r["request"]["ticker"] == control["ticker"]]
+                    buys = [
+                        r
+                        for r in market_orders
+                        if r["request"]["action"] == "buy" and r.get("origin") == "bot"
+                    ]
+                    positions = {
+                        side: str(
+                            sum(
+                                (
+                                    Decimal((r.get("exchange_order") or {}).get("fill_count_fp", "0"))
+                                    * (1 if r["request"]["action"] == "buy" else -1)
+                                    for r in market_orders
+                                    if r["request"]["side"] == side
+                                ),
+                                Decimal(0),
+                            )
+                        )
+                        for side in ("yes", "no")
+                    }
+                    events.append(
+                        execution_journal.append(
+                            db,
+                            "execution_checkpoint_market",
+                            market=control["ticker"],
+                            body=dict(
+                                checkpoint_id=checkpoint_id,
+                                control=control,
+                                journal_positions=positions,
+                                pending_order_ids=[
+                                    r["id"] for r in market_orders if r["state"] in UNRESOLVED
+                                ],
+                                entry_attempts=sum(consumes_entry_attempt(r) for r in buys),
+                                retry_not_before=max((r["created_at"] for r in buys), default=0)
+                                + member["config"].entry_retry_cooldown,
+                                exit_retry_not_before=max(
+                                    (
+                                        r["created_at"]
+                                        for r in market_orders
+                                        if r["request"]["action"] == "sell"
+                                        and not r.get("resting_take_profit")
+                                    ),
+                                    default=0,
+                                )
+                                + 2,
+                            ),
+                        )
+                    )
+                events.append(
+                    execution_journal.append(
+                        db,
+                        "execution_checkpoint_complete",
+                        market=prefix,
+                        body=dict(
+                            checkpoint_id=checkpoint_id, orders_count=len(orders), markets_count=len(selected)
+                        ),
+                    )
+                )
+        for event in events:
+            self.manual.publish_execution(event)
 
     def check_daily_loss(self, asset, now, *, rearm=False):
+        if not LIVE_DAILY_LOSS_GUARD_ENABLED:
+            return None
         policy = self.assets().get(asset)
         day = int(now // 86400)
         latched = policy and policy.get("loss_guard", {}).get("day") == day
@@ -255,6 +412,8 @@ class LiveAutomation:
         if request.revision != (policy or {}).get("revision", 0):
             raise HTTPException(409, "Controls changed; refresh before applying settings")
         baseline = None
+        if request.enabled and self.global_loss_guard is not None:
+            self.global_loss_guard.check(time.time())
         if request.enabled:
             if request.confirm != "ENABLE_REAL_TRADING":
                 raise HTTPException(
@@ -364,21 +523,36 @@ class LiveAutomation:
             control.update(enabled=False, revision=control["revision"] + 1)
             self.write(control)
 
-    def state(self):
+    def state(self, tickers=None):
         return dict(
             running=self.running,
             last_cycle=self.last_cycle,
             max_contracts=20,
-            controls=self.controls(),
+            daily_loss_guard_enabled=LIVE_DAILY_LOSS_GUARD_ENABLED,
+            global_loss_guard=self.global_loss_guard.state() if self.global_loss_guard else None,
+            controls=self.controls(tickers),
             assets=self.assets(),
-            messages=self.messages,
+            messages=self.messages
+            if tickers is None
+            else {t: self.messages[t] for t in tickers if t in self.messages},
+            research_logging={asset: recorder.status() for asset, recorder in self.research_logs.items()},
             exit_policy=dict(resting_take_profit=0.99, cancel_resting_below=0.70, rearm_resting=False),
         )
 
-    def book(self, control, now):
+    def book(self, control, now, trace=None):
         asset, member, snapshot, market = self.market_info(control["ticker"])
         # The collector can publish while preceding database reads are in progress.
         now = max(now, time.time())
+        if trace is not None:
+            trace.update(
+                book_snapshot=dict(
+                    run_id=snapshot.get("run_id"),
+                    published_at=snapshot.get("published_at"),
+                    connected=snapshot.get("connected"),
+                    market=market,
+                ),
+                book_checked_at=now,
+            )
         if (
             snapshot.get("run_id") != member["run_id"]
             or not snapshot.get("connected")
@@ -388,22 +562,66 @@ class LiveAutomation:
             raise HTTPException(409, "Waiting for a fresh connected market book")
         return market["book"]
 
-    def entry(self, control, now):
+    def research_check(self, asset, body):
+        recorder = self.research_logs.get(asset)
+        if recorder is not None:
+            try:
+                recorder.emit(
+                    "decision_check",
+                    body,
+                    processed_at=time.time(),
+                    caused_by=body.get("collector_decision_id"),
+                )
+            except Exception as exc:
+                recorder.fail(exc)
+
+    def entry(self, control, now, *, stage="live_entry"):
+        if control["asset"] not in self.research_logs:
+            return self._entry(control, now)
+        trace = dict(
+            decision_id=str(uuid4()),
+            market=control["ticker"],
+            stage=stage,
+            started_at=time.time(),
+            requested_at=now,
+            control=dict(control),
+        )
+        try:
+            side, limit, decision = self._entry(control, now, trace)
+            trace.update(accepted=True, side=side, limit=str(limit))
+            return side, limit, dict(decision, execution_check_id=trace["decision_id"])
+        except Exception as exc:
+            trace.update(accepted=False, error=type(exc).__name__, reason=getattr(exc, "detail", None))
+            raise
+        finally:
+            self.research_check(control["asset"], trace)
+
+    def _entry(self, control, now, trace=None):
         asset = control["asset"]
+        if self.global_loss_guard is not None:
+            self.global_loss_guard.check(now)
         self.check_daily_loss(asset, now)
         member = self.members[asset]
         config = member["config"]
         if not control["enabled"] or control.get("paused") or control["config_version"] != config.version:
             raise HTTPException(409, "New buys disabled or strategy changed; review live controls")
         policy = self.assets().get(asset)
+        if trace is not None:
+            trace["asset_policy"] = policy
         if policy and not policy["enabled"]:
             raise HTTPException(409, "Asset live buys disabled")
         report = health(self.stores[asset], member["run_id"])
+        if trace is not None:
+            trace["health"] = report
         if not report["healthy"]:
             raise HTTPException(409, "Collector health blocks automatic entry")
         record = self.stores[asset].read_market_display("evaluation:" + member["run_id"]) or {}
         d = record.get("body", {})
         now = max(now, time.time())
+        if trace is not None:
+            trace.update(
+                collector_record=record, collector_decision_id=d.get("decision_id"), decision_checked_at=now
+            )
         if (
             record.get("market") != control["ticker"]
             or d.get("versions", {}).get("config") != config.version
@@ -418,6 +636,8 @@ class LiveAutomation:
         if reasons or d.get("decision") not in ("NO_TRADE", "TRADE_CANDIDATE"):
             raise HTTPException(409, "Strategy entry filters: " + ", ".join(r["code"] for r in reasons))
         remaining = control["close_time"] - max(now, time.time())
+        if trace is not None:
+            trace["window_checked_at"] = control["close_time"] - remaining
         if not config.entry_cutoff < remaining <= config.entry_window_start:
             raise HTTPException(409, "Outside entry window")
         side = d.get("side")
@@ -429,8 +649,10 @@ class LiveAutomation:
             or p < config.probability_floor(remaining <= config.no_new_entry)
         ):
             raise HTTPException(409, "Probability floor not met")
-        book = self.book(control, now)
+        book = self.book(control, now, trace)
         remaining = control["close_time"] - max(now, time.time())
+        if trace is not None:
+            trace["final_window_checked_at"] = control["close_time"] - remaining
         if not config.entry_cutoff < remaining <= config.entry_window_start:
             raise HTTPException(409, "Outside entry window")
         ask, bid = book.get(side + "_ask"), book.get(side + "_bid")
@@ -625,27 +847,68 @@ class LiveAutomation:
                 return
             side, limit, decision = self.entry(control, now)
             timing = dict(decision_at=decision.get("timestamp"), decision_detected_at=time.time())
+            if decision.get("execution_check_id"):
+                timing.update(
+                    decision_id=decision.get("decision_id"), execution_check_id=decision["execution_check_id"]
+                )
             count = Decimal(control["contracts"])
             action = "buy"
             reason = "STRATEGY_ENTRY"
         revision = control["revision"]
+        if control["asset"] in self.research_logs:
+            timing["research_asset"] = control["asset"]
 
-        def authorize():
+        def check_authorization(trace):
             current = self.control(ticker)
+            if trace is not None:
+                trace.update(control=current, running=self.running, expected_revision=revision)
             if not self.running or not current or current["revision"] != revision or current.get("paused"):
                 raise HTTPException(409, "Automatic submission interrupted by live controls")
-            if time.time() >= current["close_time"]:
+            authorization_checked_at = time.time()
+            if trace is not None:
+                trace["authorization_checked_at"] = authorization_checked_at
+            if authorization_checked_at >= current["close_time"]:
                 raise HTTPException(409, "Market closed")
             if action == "buy":
-                latest_side, latest_limit, _ = self.entry(current, time.time())
+                latest_side, latest_limit, latest = self.entry(
+                    current, time.time(), stage="live_entry_recheck"
+                )
+                if trace is not None:
+                    trace.update(
+                        entry_check_id=latest.get("execution_check_id"),
+                        collector_decision_id=latest.get("decision_id"),
+                    )
                 if latest_side != side or latest_limit < limit or not 1 <= count <= 20:
                     raise HTTPException(409, "Entry changed before submission")
             elif current.get("exit_reason") != reason:
                 if not resting or current.get("exit_reason") or current.get("resting_disabled"):
                     raise HTTPException(409, "Exit instructions changed before submission")
-                bid = self.book(current, time.time()).get(side + "_bid")
+                bid = self.book(current, time.time(), trace).get(side + "_bid")
                 if bid is None or not 0.70 <= bid < 0.99:
                     raise HTTPException(409, "Resting sale price conditions changed before submission")
+
+        def authorize():
+            if control["asset"] not in self.research_logs:
+                return check_authorization(None)
+            trace = dict(
+                decision_id=str(uuid4()),
+                stage="live_authorization",
+                market=ticker,
+                order_id=str(order.client_order_id),
+                started_at=time.time(),
+                action=action,
+                side=side,
+                count=str(count),
+                limit=str(limit),
+            )
+            try:
+                check_authorization(trace)
+                trace["accepted"] = True
+            except Exception as exc:
+                trace.update(accepted=False, error=type(exc).__name__, reason=getattr(exc, "detail", None))
+                raise
+            finally:
+                self.research_check(control["asset"], trace)
 
         order = ManualOrder(
             client_order_id=uuid4(),
@@ -687,7 +950,23 @@ class LiveAutomation:
             self.lock_file = None
             log.error("Another live worker owns this journal")
             return
+        from .global_loss_guard import GlobalLossGuard
+
+        self.global_loss_guard = GlobalLossGuard(self.manual, self.members, self.stores)
+        guard_task = asyncio.create_task(self.global_loss_guard.run())
         self.running = True
+        for asset, member in self.members.items():
+            recorder = start_research_log(
+                member["config"], member["run_id"], producer="live_executor", order_db=self.manual.path
+            )
+            if recorder is not None:
+                self.research_logs[asset] = recorder
+        if self.research_logs:
+            try:
+                self.capture_execution_checkpoint()
+            except Exception as exc:
+                for recorder in self.research_logs.values():
+                    recorder.fail(exc)
         listener = DecisionListener(
             [
                 store.engine.url.database
@@ -708,7 +987,7 @@ class LiveAutomation:
                 try:
                     self.sync_markets()
                     await self.reconcile()
-                    if time.time() - loss_checked_at >= 1:
+                    if LIVE_DAILY_LOSS_GUARD_ENABLED and time.time() - loss_checked_at >= 1:
                         for asset, policy in self.assets().items():
                             if policy["enabled"]:
                                 try:
@@ -739,10 +1018,14 @@ class LiveAutomation:
                 self.manual.fill_wakeup.clear()
         finally:
             self.running = False
+            self.global_loss_guard.stop.set()
+            await guard_task
             listener.close()
             fill_task.cancel()
             settlement_task.cancel()
             await asyncio.gather(fill_task, settlement_task, return_exceptions=True)
+            await asyncio.gather(*(asyncio.to_thread(r.close) for r in self.research_logs.values()))
+            self.research_logs.clear()
             self.lock_file.close()
             self.lock_file = None
 

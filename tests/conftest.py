@@ -72,3 +72,36 @@ def isolated_environment(monkeypatch, tmp_path):
     monkeypatch.setenv("DATA_DIR", str(tmp_path / "settings"))
     monkeypatch.setenv("KALSHI_API_KEY_ID", "")
     monkeypatch.setenv("KALSHI_PRIVATE_KEY_PATH", "")
+
+
+@pytest.fixture
+def anyio_backend():
+    # The application uses asyncio tasks/events; do not run the same cases under Trio.
+    return "asyncio"
+
+
+@pytest.fixture
+def research_recorder():
+    """Create isolated recorders and close their writers even when an assertion fails."""
+    from btc15.research_log import ResearchLog
+
+    recorders = []
+
+    def create(root, *, asset="BTC", run_id="test-run", config=None, **kwargs):
+        recorder = ResearchLog(root, asset, run_id, config or Strategy(), min_free_bytes=0, **kwargs)
+        recorders.append(recorder)
+        return recorder
+
+    yield create
+    for recorder in reversed(recorders):
+        recorder.close()
+
+
+@pytest.fixture
+def node_binary():
+    import shutil
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node.js is required for the JavaScript tests")
+    return node

@@ -1,6 +1,8 @@
 # Recording behavior
 
-Current runtime: one Settlement Edge engine. Recording mode is determined by operation, not by the history filter or whether a trade happened.
+Recording depends on the process/mode, not the dashboard history filter or whether
+a trade occurred. Portable [research logging](RESEARCH_LOGGING.md) is a separate
+opt-in stream; console output is separate again.
 
 | Operation | Inputs | Derived evaluation/status history |
 | --- | --- | --- |
@@ -8,6 +10,9 @@ Current runtime: one Settlement Edge engine. Recording mode is determined by ope
 | `collect`, `dashboard --observe-only` | JSONL journal plus Zstd Parquet chunks | Full research evaluations/status |
 | `backtest` | Reads supplied tapes; no live capture | Full evaluations in a new BACKTEST run |
 | `dashboard --no-collect` | No new collector/tape | Displays the selected database |
+| `signal-service` | No ordinary raw tape | Current signals/status and retained lifecycle evidence |
+| `live-execution` | Real-order journal and immutable execution events | Actual order/control/fill evidence; no simulated portfolio |
+| Research v2 enabled on collector/executor | Portable gzip segments with explicit gaps | Inputs, checks, execution evidence and per-market coverage |
 
 ## Retained data
 

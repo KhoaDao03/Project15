@@ -1,0 +1,305 @@
+[
+  {
+    "series": {
+      "additional_prohibitions": [
+        "Persons who are employed by any of the Source Agencies are not permitted to trade on the Contract.",
+        "Persons who hold any material, non-public information on the Underlying are not permitted to trade on the Contract."
+      ],
+      "categories": [
+        "Crypto"
+      ],
+      "category": "Crypto",
+      "contract_terms_url": "https://assets.kalshi.com/contract_terms/CRYPTO.pdf",
+      "contract_url": "https://assets.kalshi.com/regulatory/product-certifications/CRYPTO.pdf",
+      "exchange_index": 2,
+      "fee_multiplier": 1,
+      "fee_type": "quadratic",
+      "frequency": "fifteen_min",
+      "last_updated_ts": "2026-09-18T15:20:18.311301Z",
+      "product_metadata": {
+        "important_info": {
+          "id": "CRYPTO15M-bulk-2026-04-20",
+          "markdown": "**Important information:** The price used to determine this market is based on CF Benchmarks' corresponding Real Time Index (RTI). At the last minute before expiration, 60 RTI prices are collected. The official and final value is the average of these prices.",
+          "message": "",
+          "title": ""
+        }
+      },
+      "settlement_sources": [
+        {
+          "name": "CF Benchmarks",
+          "url": "https://www.cfbenchmarks.com/"
+        }
+      ],
+      "tags": [
+        "ETH",
+        "15 min"
+      ],
+      "ticker": "KXETH15M",
+      "title": "ETH 15M price up down"
+    },
+    "market": {
+      "can_close_early": true,
+      "close_time": "2026-09-21T04:00:00Z",
+      "created_time": "2026-09-19T20:02:25.367911Z",
+      "custom_strike": {
+        "round_digits": "2"
+      },
+      "event_ticker": "KXETH15M-26SEP210000",
+      "exchange_index": 2,
+      "expected_expiration_time": "2026-09-21T04:05:00Z",
+      "expiration_time": "2026-09-28T04:00:00Z",
+      "expiration_value": "",
+      "floor_strike": 2663.93,
+      "last_price_dollars": "0.3900",
+      "latest_expiration_time": "2026-09-28T04:00:00Z",
+      "liquidity_dollars": "0.0000",
+      "market_type": "binary",
+      "no_ask_dollars": "0.6200",
+      "no_bid_dollars": "0.6100",
+      "no_sub_title": "Target Price: $2,663.93",
+      "notional_value_dollars": "1.0000",
+      "occurrence_datetime": "2026-09-21T04:05:00Z",
+      "open_interest_fp": "15505.48",
+      "open_time": "2026-09-21T03:45:00Z",
+      "previous_price_dollars": "0.0000",
+      "previous_yes_ask_dollars": "0.0000",
+      "previous_yes_bid_dollars": "0.0000",
+      "price_level_structure": "tapered_deci_cent",
+      "price_ranges": [
+        {
+          "end": "0.1000",
+          "start": "0.0000",
+          "step": "0.0010"
+        },
+        {
+          "end": "0.9000",
+          "start": "0.1000",
+          "step": "0.0100"
+        },
+        {
+          "end": "1.0000",
+          "start": "0.9000",
+          "step": "0.0010"
+        }
+      ],
+      "result": "",
+      "rules_primary": "If the simple average of the sixty seconds of CF Benchmarks' ETHUSD_RTI before 12:00 AM EDT on Sep 21, 2026 is at least 2663.93, then the market resolves to Yes.",
+      "rules_secondary": "Not all cryptocurrency price data is the same. While checking a source like Google or Coinbase may help guide your decision, the price used to determine this market is based on CF Benchmarks' corresponding Real Time Index (RTI). At the last minute before expiration, 60 RTI prices are collected. The official and final value is the average of these prices, rounded to the nearest 2 decimal places.",
+      "settlement_timer_seconds": 1,
+      "status": "active",
+      "strike_type": "greater_or_equal",
+      "ticker": "KXETH15M-26SEP210000-00",
+      "title": "ETH price up in next 15 mins?",
+      "updated_time": "2026-09-21T03:45:58.110203Z",
+      "volume_24h_fp": "31005.28",
+      "volume_fp": "34891.05",
+      "yes_ask_dollars": "0.3900",
+      "yes_ask_size_fp": "87.00",
+      "yes_bid_dollars": "0.3800",
+      "yes_bid_size_fp": "33.00",
+      "yes_sub_title": "Target Price: $2,663.93"
+    }
+  },
+  {
+    "series": {
+      "additional_prohibitions": [
+        "Persons who are employed by any of the Source Agencies are not permitted to trade on the Contract.",
+        "Persons who hold any material, non-public information on the Underlying are not permitted to trade on the Contract."
+      ],
+      "categories": [
+        "Crypto"
+      ],
+      "category": "Crypto",
+      "contract_terms_url": "https://assets.kalshi.com/contract_terms/CRYPTO.pdf",
+      "contract_url": "https://assets.kalshi.com/regulatory/product-certifications/CRYPTO.pdf",
+      "exchange_index": 2,
+      "fee_multiplier": 1,
+      "fee_type": "quadratic",
+      "frequency": "fifteen_min",
+      "last_updated_ts": "2026-09-18T15:20:18.24803Z",
+      "product_metadata": {
+        "important_info": {
+          "id": "CRYPTO15M-bulk-2026-04-20",
+          "markdown": "**Important information:** The price used to determine this market is based on CF Benchmarks' corresponding Real Time Index (RTI). At the last minute before expiration, 60 RTI prices are collected. The official and final value is the average of these prices.",
+          "message": "",
+          "title": ""
+        }
+      },
+      "settlement_sources": [
+        {
+          "name": "CF Benchmarks",
+          "url": "https://www.cfbenchmarks.com/"
+        }
+      ],
+      "tags": [
+        "15 min",
+        "SOL"
+      ],
+      "ticker": "KXSOL15M",
+      "title": "Solana 15 minutes"
+    },
+    "market": {
+      "can_close_early": true,
+      "close_time": "2026-09-21T04:00:00Z",
+      "created_time": "2026-09-19T20:02:54.781316Z",
+      "custom_strike": {
+        "round_digits": "4"
+      },
+      "event_ticker": "KXSOL15M-26SEP210000",
+      "exchange_index": 2,
+      "expected_expiration_time": "2026-09-21T04:05:00Z",
+      "expiration_time": "2026-09-28T04:00:00Z",
+      "expiration_value": "",
+      "floor_strike": 111.5675,
+      "last_price_dollars": "0.6500",
+      "latest_expiration_time": "2026-09-28T04:00:00Z",
+      "liquidity_dollars": "0.0000",
+      "market_type": "binary",
+      "no_ask_dollars": "0.3500",
+      "no_bid_dollars": "0.3400",
+      "no_sub_title": "Target Price: $111.5675",
+      "notional_value_dollars": "1.0000",
+      "occurrence_datetime": "2026-09-21T04:05:00Z",
+      "open_interest_fp": "5351.91",
+      "open_time": "2026-09-21T03:45:00Z",
+      "previous_price_dollars": "0.0000",
+      "previous_yes_ask_dollars": "0.0000",
+      "previous_yes_bid_dollars": "0.0000",
+      "price_level_structure": "tapered_deci_cent",
+      "price_ranges": [
+        {
+          "end": "0.1000",
+          "start": "0.0000",
+          "step": "0.0010"
+        },
+        {
+          "end": "0.9000",
+          "start": "0.1000",
+          "step": "0.0100"
+        },
+        {
+          "end": "1.0000",
+          "start": "0.9000",
+          "step": "0.0010"
+        }
+      ],
+      "result": "",
+      "rules_primary": "If the simple average of the sixty seconds of CF Benchmarks' SOLUSD_RTI before 12:00 AM EDT on Sep 21, 2026 is at least 111.5675, then the market resolves to Yes.",
+      "rules_secondary": "Not all cryptocurrency price data is the same. While checking a source like Google or Coinbase may help guide your decision, the price used to determine this market is based on CF Benchmarks' corresponding Real Time Index (RTI). At the last minute before expiration, 60 RTI prices are collected. The official and final value is the average of these prices, rounded to the nearest 4 decimal places.",
+      "settlement_timer_seconds": 1,
+      "status": "active",
+      "strike_type": "greater_or_equal",
+      "ticker": "KXSOL15M-26SEP210000-00",
+      "title": "SOL price up in next 15 mins?",
+      "updated_time": "2026-09-21T03:46:02.065697Z",
+      "volume_24h_fp": "10618.15",
+      "volume_fp": "11963.84",
+      "yes_ask_dollars": "0.6600",
+      "yes_ask_size_fp": "0.40",
+      "yes_bid_dollars": "0.6500",
+      "yes_bid_size_fp": "353.50",
+      "yes_sub_title": "Target Price: $111.5675"
+    }
+  },
+  {
+    "series": {
+      "additional_prohibitions": [
+        "Persons who are employed by any of the Source Agencies are not permitted to trade on the Contract.",
+        "Persons who hold any material, non-public information on the Underlying are not permitted to trade on the Contract."
+      ],
+      "categories": [
+        "Crypto"
+      ],
+      "category": "Crypto",
+      "contract_terms_url": "https://assets.kalshi.com/contract_terms/CRYPTO.pdf",
+      "contract_url": "https://assets.kalshi.com/regulatory/product-certifications/CRYPTO.pdf",
+      "exchange_index": 2,
+      "fee_multiplier": 1,
+      "fee_type": "quadratic",
+      "frequency": "fifteen_min",
+      "last_updated_ts": "2026-09-18T15:20:18.288572Z",
+      "product_metadata": {
+        "important_info": {
+          "id": "CRYPTO15M-bulk-2026-04-20",
+          "markdown": "**Important information:** The price used to determine this market is based on CF Benchmarks' corresponding Real Time Index (RTI). At the last minute before expiration, 60 RTI prices are collected. The official and final value is the average of these prices.",
+          "message": "",
+          "title": ""
+        }
+      },
+      "settlement_sources": [
+        {
+          "name": "CF Benchmarks",
+          "url": "https://www.cfbenchmarks.com/"
+        }
+      ],
+      "tags": [
+        "15 min",
+        "XRP"
+      ],
+      "ticker": "KXXRP15M",
+      "title": "XRP 15 Minute"
+    },
+    "market": {
+      "can_close_early": true,
+      "close_time": "2026-09-21T04:00:00Z",
+      "created_time": "2026-09-19T20:03:24.767961Z",
+      "custom_strike": {
+        "round_digits": "4"
+      },
+      "event_ticker": "KXXRP15M-26SEP210000",
+      "exchange_index": 2,
+      "expected_expiration_time": "2026-09-21T04:05:00Z",
+      "expiration_time": "2026-09-28T04:00:00Z",
+      "expiration_value": "",
+      "floor_strike": 1.4218,
+      "last_price_dollars": "0.4900",
+      "latest_expiration_time": "2026-09-28T04:00:00Z",
+      "liquidity_dollars": "0.0000",
+      "market_type": "binary",
+      "no_ask_dollars": "0.5200",
+      "no_bid_dollars": "0.5000",
+      "no_sub_title": "Target Price: $1.4218",
+      "notional_value_dollars": "1.0000",
+      "occurrence_datetime": "2026-09-21T04:05:00Z",
+      "open_interest_fp": "4745.61",
+      "open_time": "2026-09-21T03:45:00Z",
+      "previous_price_dollars": "0.0000",
+      "previous_yes_ask_dollars": "0.0000",
+      "previous_yes_bid_dollars": "0.0000",
+      "price_level_structure": "tapered_deci_cent",
+      "price_ranges": [
+        {
+          "end": "0.1000",
+          "start": "0.0000",
+          "step": "0.0010"
+        },
+        {
+          "end": "0.9000",
+          "start": "0.1000",
+          "step": "0.0100"
+        },
+        {
+          "end": "1.0000",
+          "start": "0.9000",
+          "step": "0.0010"
+        }
+      ],
+      "result": "",
+      "rules_primary": "If the simple average of the sixty seconds of CF Benchmarks' XRPUSD_RTI before 12:00 AM EDT on Sep 21, 2026 is at least 1.4218, then the market resolves to Yes.",
+      "rules_secondary": "Not all cryptocurrency price data is the same. While checking a source like Google or Coinbase may help guide your decision, the price used to determine this market is based on CF Benchmarks' corresponding Real Time Index (RTI). At the last minute before expiration, 60 RTI prices are collected. The official and final value is the average of these prices, rounded to the nearest 4 decimal places.",
+      "settlement_timer_seconds": 1,
+      "status": "active",
+      "strike_type": "greater_or_equal",
+      "ticker": "KXXRP15M-26SEP210000-00",
+      "title": "XRP price up in next 15 mins?",
+      "updated_time": "2026-09-21T03:46:07.841815Z",
+      "volume_24h_fp": "8495.01",
+      "volume_fp": "8940.05",
+      "yes_ask_dollars": "0.5000",
+      "yes_ask_size_fp": "150.00",
+      "yes_bid_dollars": "0.4800",
+      "yes_bid_size_fp": "68.16",
+      "yes_sub_title": "Target Price: $1.4218"
+    }
+  }
+]

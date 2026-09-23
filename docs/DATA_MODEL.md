@@ -29,6 +29,18 @@ Paper records one `.jsonl.gz` tape of ordered source envelopes. Observation reco
 
 Readers fail explicitly on damaged records/torn compressed batches. Preserve originals; any repair must be an audited copy. Replaying incomplete files does not invent absent reference history, a starting portfolio or downtime fills. [Backtesting](BACKTESTING.md) and [Safety](SAFETY.md) cover those limits.
 
+## Live execution and portable research
+
+The separate `manual-orders.sqlite` stores real orders and controls. Its immutable
+`execution_events` journal records state changes/fills atomically and supplies the
+portable archive through immediate delivery and backfill. It is not the paper ledger.
+
+Optional v2 research segments record complete received inputs and decisions outside
+SQL. The shared `coverage.sqlite` tracks accepted-reference history and outstanding
+settlement observations; `coverage.json` summarizes each session. Capture gaps and
+retention are explicit. See [research logging](RESEARCH_LOGGING.md) for the schema,
+clock meanings, deduplication and limits.
+
 ## Retained legacy data
 
 Archived identities, groups, model definitions, claims and old results may remain in the same database. They are data, not executable models. Default read APIs filter them out of Settlement Edge views; explicit archive scope exposes retained evidence. Startup guards reject incompatible group resumes and unresolved archived exposure. No automatic purge, checkpoint conversion or trading-history rewrite is performed. [SINGLE_STRATEGY.md](SINGLE_STRATEGY.md) identifies the recovery revision.

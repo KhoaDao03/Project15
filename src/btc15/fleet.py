@@ -294,7 +294,9 @@ def create_fleet_app(manifest):
     @app.get("/api/fleet")
     async def overview():
         rows = await asyncio.gather(*(asyncio.to_thread(summary, a, m) for a, m in members.items()))
-        execution_status = await execution.overview()
+        execution_status = await execution.overview(
+            [market["ticker"] for row in rows for market in row.get("markets", [])]
+        )
         purchases = execution_status["purchases"]
         for row in rows:
             for market in row.get("markets", []):

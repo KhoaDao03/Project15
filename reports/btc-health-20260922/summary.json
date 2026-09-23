@@ -1,0 +1,37 @@
+{
+  "BTC": {
+    "samples": 120,
+    "blocked": 36,
+    "reasons": {
+      "COLLECTOR_RECOVERING": 36,
+      "BACKLOG_WARNING": 36,
+      "PROCESSING_LAG": 13,
+      "STALE_REFERENCE": 4
+    },
+    "lag_median": 0.201862602,
+    "lag_p95": 1.889086697,
+    "lag_max": 2.170203211,
+    "max_queue": 4431,
+    "drops_before": 5018,
+    "drops_after": 5018,
+    "final_reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  "ETH": {
+    "samples": 120,
+    "blocked": 1,
+    "reasons": {
+      "COLLECTOR_RECOVERING": 1,
+      "BACKLOG_WARNING": 1
+    },
+    "lag_median": 0.003539448,
+    "lag_p95": 0.234533522,
+    "lag_max": 0.558744547,
+    "max_queue": 461,
+    "drops_before": 73,
+    "drops_after": 73,
+    "final_reasons": []
+  }
+}

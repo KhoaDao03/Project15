@@ -1,0 +1,61 @@
+--- engine.py.before
++++ engine.py.after
+@@ -126,6 +126,7 @@
+         self._processing_tickers = {}
+         self._known_tickers = set()
+         self._decision_keys = {}
++        self._signal_quote_inputs = {}
+         self._management_gaps = {}
+         self._rejection_summary = {}
+         self._rejection_flush = None
+@@ -702,6 +703,41 @@
+             quote_update = (
+                 kind in ("orderbook_snapshot", "orderbook_delta") and msg.get("market_ticker") == ticker
+             )
++            signal_inputs = None
++            if self.signal_only:
++                # Signal collectors have no simulated orders to fill. Deep-book
++                # changes still apply and are archived, but an unchanged executable
++                # quote need not rerun/serialize the same entry check thousands of
++                # times a second. Time boundaries and freshness changes remain inputs.
++                yes, no = max(book.yes, default=None), max(book.no, default=None)
++                required_depth = max(c.min_liquidity, c.max_contracts)
++                remaining = market.close_time - now
++                checked_at = self.clock() if self.clock else now
++                signal_inputs = (
++                    yes,
++                    min(book.yes.get(yes, 0), required_depth),
++                    no,
++                    min(book.no.get(no, 0), required_depth),
++                    tuple(r["code"] for r in freshness_rechecks(book, self.ticks, now, now, c)),
++                    tuple(r["code"] for r in freshness_rechecks(book, self.ticks, now, checked_at, c)),
++                    self.entries_active,
++                    self.healthy,
++                    self.clock_ok,
++                    self.exchange_open,
++                    self.collector_blocked,
++                    bool(self.collector_pause and self.collector_pause.is_set()),
++                    ticker in self.executor.venue_pauses,
++                    ticker in self.executor.quarantines,
++                    self.executor.risk.halted,
++                    market.spec,
++                    self.series_fees,
++                    self.series_fee_changes,
++                    self.fee_changes.get(market.event_ticker),
++                    c.entry_cutoff < remaining <= c.entry_window_start,
++                    c.late_entry_enabled and remaining <= c.no_new_entry,
++                )
++                if kind == "orderbook_delta" and self._signal_quote_inputs.get(ticker) == signal_inputs:
++                    quote_update = False
+             if not market.tradable(now) or not (
+                 due
+                 or quote_update
+@@ -710,6 +746,8 @@
+                 and material
+             ):
+                 continue
++            if self.signal_only:
++                self._signal_quote_inputs[ticker] = signal_inputs
+ 
+             extras = []
+             if ticker in self.executor.venue_pauses:

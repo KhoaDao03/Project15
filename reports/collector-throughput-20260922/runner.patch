@@ -1,0 +1,23 @@
+--- runner.py.before
++++ runner.py.after
+@@ -414,7 +414,8 @@
+             recovery.check(engine, now, lag, queue.qsize(), queue.maxsize, connected, stop.is_set())
+             recovery_status = recovery.status()
+             signature = (recovery_status["state"], tuple(recovery_status["reasons"]), recovery.warning)
+-            if signature != last_recovery_status:
++            recovery_changed = signature != last_recovery_status
++            if recovery_changed:
+                 store.add("collector_recovery", recovery_status, engine.run_id, "PAPER", now)
+                 last_recovery_status = signature
+             latest_live = max(engine.latest.values(), key=lambda b: b["timestamp"]) if engine.latest else None
+@@ -470,7 +471,9 @@
+                     )
+                 )
+                 last_display = time.monotonic()
+-            if now - last_status >= 1 or not connected:
++            # The executor gates entries on this status, not the recovery journal.
++            # Publish both a new block and its clearance in this same batch.
++            if now - last_status >= 1 or not connected or recovery_changed:
+                 engine.flush_rejections(now)
+                 simulation = paper_worker.poll() if paper_worker else None
+                 save_status = store.add if record_all else store.publish_record

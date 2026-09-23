@@ -1,0 +1,74 @@
+{
+  "project15-signal@BTC": {
+    "MainPID": "361937",
+    "NRestarts": "0",
+    "MemoryCurrent": "278446080",
+    "CPUUsageNSec": "509627517000",
+    "fd_count": 22,
+    "same_pid": true
+  },
+  "project15-signal@ETH": {
+    "MainPID": "356092",
+    "NRestarts": "0",
+    "MemoryCurrent": "462061568",
+    "CPUUsageNSec": "1379953074000",
+    "fd_count": 25,
+    "same_pid": true
+  },
+  "project15-signal@SOL": {
+    "MainPID": "356093",
+    "NRestarts": "0",
+    "MemoryCurrent": "298393600",
+    "CPUUsageNSec": "906776211000",
+    "fd_count": 26,
+    "same_pid": true
+  },
+  "project15-signal@XRP": {
+    "MainPID": "356094",
+    "NRestarts": "0",
+    "MemoryCurrent": "356954112",
+    "CPUUsageNSec": "1046196553000",
+    "fd_count": 23,
+    "same_pid": true
+  },
+  "project15-signal@GOLD": {
+    "MainPID": "356095",
+    "NRestarts": "0",
+    "MemoryCurrent": "356896768",
+    "CPUUsageNSec": "964619655000",
+    "fd_count": 25,
+    "same_pid": true
+  },
+  "project15-signal@SILVER": {
+    "MainPID": "356096",
+    "NRestarts": "0",
+    "MemoryCurrent": "208982016",
+    "CPUUsageNSec": "549942702000",
+    "fd_count": 23,
+    "same_pid": true
+  },
+  "project15-signal@WTI": {
+    "MainPID": "356097",
+    "NRestarts": "0",
+    "MemoryCurrent": "229261312",
+    "CPUUsageNSec": "612313179000",
+    "fd_count": 23,
+    "same_pid": true
+  },
+  "project15-execution": {
+    "MainPID": "356216",
+    "NRestarts": "0",
+    "MemoryCurrent": "204013568",
+    "CPUUsageNSec": "4351721122000",
+    "fd_count": 64,
+    "same_pid": true
+  },
+  "project15-dashboard": {
+    "MainPID": "356255",
+    "NRestarts": "0",
+    "MemoryCurrent": "224026624",
+    "CPUUsageNSec": "567736644000",
+    "fd_count": 72,
+    "same_pid": true
+  }
+}

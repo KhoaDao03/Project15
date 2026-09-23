@@ -12,6 +12,11 @@ from btc15.live_loss_guard import daily_pnl
 DAY = 86400
 
 
+@pytest.fixture(autouse=True)
+def enable_retained_guard_tests(monkeypatch):
+    monkeypatch.setattr("btc15.live_automation.LIVE_DAILY_LOSS_GUARD_ENABLED", True)
+
+
 def row(action, qty, paid, *, fee="0", at=DAY + 100, ticker="KXETH15M-test", side="yes"):
     return dict(
         request=dict(ticker=ticker, action=action, side=side),
@@ -207,3 +212,17 @@ def test_missing_current_day_settlement_blocks_new_buys(live, monkeypatch):
     settlement = dict(market=control["ticker"], timestamp=clock[0], body=dict(result="no"))
     monkeypatch.setattr(worker.stores["ETH"], "list", lambda *args, **kwargs: [settlement])
     worker.check_daily_loss("ETH", clock[0])  # Confirmed $9 loss is below the $20 limit.
+
+
+@pytest.mark.parametrize("asset", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"])
+def test_disabled_guard_does_not_read_history_or_block_entries(live, monkeypatch, asset):
+    worker, _, manual, control, _, clock = live
+    monkeypatch.setattr("btc15.live_automation.LIVE_DAILY_LOSS_GUARD_ENABLED", False)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Disabled daily-loss check must not read history or policy")
+
+    monkeypatch.setattr(manual, "rows", forbidden)
+    monkeypatch.setattr(worker, "assets", forbidden)
+    assert worker.check_daily_loss(asset, clock[0]) is None
+    assert worker.check_daily_loss(asset, clock[0], rearm=True) is None

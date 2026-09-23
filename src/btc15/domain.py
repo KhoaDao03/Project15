@@ -142,6 +142,18 @@ def parse_market(raw, series):
         rf"of CF Benchmarks' {asset.rule_index} before (.+?), then the market resolves to Yes\."
     )
     match = re.fullmatch(pattern, primary)
+    numeric_strike = False
+    if not match and not asset.commodity:
+        match = re.fullmatch(
+            rf"If the simple average of the sixty seconds of CF Benchmarks' (?:{re.escape(asset.rule_index)}|{re.escape(asset.index)}) before (.+?) "
+            r"is (at least|greater than|less than|at most) ([0-9]+(?:\.[0-9]+)?), "
+            r"then the market resolves to Yes\.",
+            primary,
+        )
+        if match:
+            numeric_strike = True
+            if D(match[3]) <= 0 or D(match[3]) != D(raw["floor_strike"]):
+                raise ValueError("Rule/metadata strike conflict")
     if asset.commodity:
         name = {"GOLD": "Gold", "SILVER": "Silver", "WTI": "WTI Oil"}[asset.symbol]
         match = re.fullmatch(
@@ -194,7 +206,7 @@ def parse_market(raw, series):
                     pass
         raise ValueError("Unrecognized rule timestamp")
 
-    if prose_time(match[1]) != end or prose_time(match[3]) != start:
+    if prose_time(match[1]) != end or (not numeric_strike and prose_time(match[3]) != start):
         raise ValueError("Rule/metadata time conflict")
     bands = raw.get("price_ranges", [])
     if not bands:

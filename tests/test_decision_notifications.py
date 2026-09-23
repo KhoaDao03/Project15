@@ -11,11 +11,6 @@ from btc15.config import Settings
 from btc15.decision_notifications import DecisionListener, notification_path, notify_decision
 
 
-@pytest.fixture
-def anyio_backend():
-    return "asyncio"
-
-
 @pytest.mark.anyio
 async def test_notification_wakes_listener_and_missing_listener_is_safe(tmp_path):
     database = str(tmp_path / "paper.db")

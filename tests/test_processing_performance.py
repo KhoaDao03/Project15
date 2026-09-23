@@ -61,3 +61,13 @@ def test_state_reads_see_uncommitted_changes_and_rollback(store):
             assert store.state("run", "market") == "DISCOVER_MARKET"
             raise RuntimeError("rollback")
     assert store.state("run", "market") is None
+
+
+def test_state_read_sees_another_connection_update(store):
+    from btc15.storage import states
+
+    store.transition("run", "PAPER", "market", "DISCOVER_MARKET", 1)
+    assert store.state("run", "market") == "DISCOVER_MARKET"
+    with store.engine.begin() as connection:
+        connection.execute(states.update().where(states.c.run_id == "run").values(state="HALTED"))
+    assert store.state("run", "market") == "HALTED"

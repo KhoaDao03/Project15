@@ -1,65 +1,46 @@
-# Official BRTI history preload
+# Official-reference history preload
 
-Collection now restores up to one hour of
-validated official one-second BRTI samples before opening live subscriptions.
-This official-reference preload is separate from the subsequent
-[Bleep exchange seed and clamp](PROBABILITY_MODEL.md).
+Startup restores up to one hour of the selected asset's accepted official
+reference samples. This is separate from [exchange indicator seeds](PROBABILITY_MODEL.md).
 
 ## Startup and rolling replacement
 
-1. Read `data/reference-history.json`, a small atomically replaced reference cache.
-2. If no usable cache exists, stream recent recordings indexed by the paper ledger
-   (up to the latest 20 recording entries in this data directory).
-3. Validate index identity, finite positive prices, original source/receipt times,
-   timestamp ordering and duplicates. Ignore 5 Hz display frames; reject synthetic,
-   corrupt or conflicting recordings. Never invent missing prices.
-4. Record a first `reference_history` event with the exact restored samples in the
-   new source tape, then initialize reference history without evaluating trades.
-5. Reconnect and require fresh live reference data, verified market metadata,
-   sequenced books, normal collector recovery and new sustained-lead confirmations.
+1. Read the atomically saved `reference-history.json` cache. If unusable, inspect
+   up to 20 recent ledger-indexed recordings in that data directory.
+2. With research recording enabled, merge its accepted-reference journal. Keep
+   original source/receipt times; exclude future receipts and reject conflicts.
+3. Validate index, positive finite prices, receipt freshness, ordering and duplicates.
+   Ignore 5 Hz display frames and reject synthetic/corrupt inputs.
+4. Record the exact restored samples as the first `reference_history` input, then
+   initialize history without evaluating or trading.
+5. Require fresh live references, verified metadata, sequenced books, healthy
+   collector recovery and new same-side confirmations.
 
-The cache is refreshed every 30 seconds and at shutdown. Original timestamps are
-preserved; startup never relabels old prices as newly received. A crash can leave
-the cache behind the tape, in which case the existing gap checks may require more
-live history. Invalid or expired caches fall back to recordings or normal cold warmup.
+The cache refreshes every 30 seconds and at shutdown. The research writer journals
+accepted samples individually, narrowing the crash gap without guaranteeing that
+queued samples survive. Missing history remains missing. New observations replace
+old ones in the rolling hour; preload does not create permanent indicator state.
 
-Every new official reference sample enters the existing rolling one-hour window.
-Samples older than one hour are removed. Project15 indicators are recalculated from that
-window, so preloaded samples gradually age out and are entirely replaced within
-an hour of continued collection. Indicator smoothing does not keep a separate,
-permanent state from preloaded candles.
+## Warm-up and diagnostics
 
-## What this accelerates—and its limits
+Complete recent history can avoid collecting 33 new indicator candles. It does not
+guarantee readiness or a trade. Completed candles need at least 58 samples, no
+internal gap over two seconds and a contiguous sequence. A recent quality-window
+gap over two seconds still blocks entry. The rolling ATR needs 15 contiguous
+candles; exchange seeds cannot substitute for that official-reference ATR.
 
-With sufficiently recent, complete history, the model can be ready soon after
-fresh feeds reconnect, rather than waiting to collect 33 new candles. This does
-not guarantee a trade or a fixed startup duration. The first fallback scan can
-take longer than a small cache load.
-
-The original quality checks remain in force. A reference gap exceeding two
-seconds in the recent quality window blocks entry. Completed minute candles still
-require at least 58 samples, no internal gap over two seconds, and a contiguous
-sequence ending at the latest completed minute. A shutdown gap can therefore
-make the official-history-only Bleep fallback unavailable until 33 usable candles
-exist again. The active exchange-seeded Bleep component uses its separate rolling
-candle buffer and avoids this specific 33-minute delay; Project15 quality gates
-still apply.
-Loading history does not recover observations that were never recorded.
-
-The startup audit record and collector health expose `reference_preload`, including
-loaded sample count, source, newest age, maximum gap and rejected-file reasons.
-`LOADED` means history was restored; it does not mean all entry checks passed.
+`reference_preload` reports source, sample count, newest age, maximum gap and
+rejections. `LOADED` means restored, not entry-ready. Model capture adds missing
+sample ranges, candle readiness and explicit fallback reasons; see
+[research logging](RESEARCH_LOGGING.md#reference-continuity-and-warm-up).
 
 ## Replay and validation
 
-The embedded preload event is accepted only as the engine's first event. It
-cannot trigger entries, exits or settlement, restore order-book health, or count
-as a new reference confirmation. Offline replay uses the recorded samples and
-does not depend on the current cache. All subsequent live and replay events use
-the same engine.
+Only the first engine event can preload history. It cannot restore book health,
+count as a new confirmation, trigger execution or manufacture settlement data.
+Replay uses the embedded samples, not today's cache. Never fill an earlier gap
+with a price received later.
 
-Regression tests cover cache expiry and rolling replacement, future/stale times,
-duplicates, corrupt/synthetic/conflicting inputs, replay without a cache, fresh
-confirmation requirements, collector startup and shutdown, and unchanged entry
-and processing behavior. Deployment evidence is under
-`data/runtime/reference-preload-v1/`.
+Tests cover expiry, replacement, timestamps, corrupt/conflicting history, cold
+warm-up and replay without a cache. Earlier deployment evidence is recorded under
+`data/runtime/reference-preload-v1/`; it does not establish current deployment status.

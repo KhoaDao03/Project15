@@ -3,6 +3,7 @@
 import json
 import math
 import os
+import sqlite3
 from dataclasses import asdict
 from pathlib import Path
 
@@ -69,7 +70,48 @@ def save_history(data_dir, ticks, now, config):
     temporary.replace(path)
 
 
-def load_history(data_dir, recordings, now, config):
+def load_history(data_dir, recordings, now, config, *, reference_journal=None):
+    body, report = _load_history(data_dir, recordings, now, config)
+    if reference_journal is None or not Path(reference_journal).is_file():
+        return body, report
+    try:
+        with sqlite3.connect(f"file:{reference_journal}?mode=ro", uri=True, timeout=0.1) as db:
+            rows = db.execute(
+                "SELECT source,received,price FROM reference_samples WHERE asset=? "
+                "AND source>=? AND source<=? AND received<=? ORDER BY source",
+                (config.asset, now - HISTORY_SECONDS, now, now),
+            ).fetchall()
+        journal = validate_history(
+            dict(version=1, index=config.asset_spec.index, samples=[asdict(Tick(*r)) for r in rows]),
+            now,
+            config,
+        )
+        merged = {t.source: t for t in validate_history(body, now, config)}
+        for tick in journal:
+            old = merged.get(tick.source)
+            if old is not None and old.price != tick.price:
+                return history_body([], now, config), dict(
+                    status="COLD_START",
+                    samples=0,
+                    errors=report["errors"]
+                    + [dict(path=str(reference_journal), reason="Conflicting accepted history")],
+                )
+            if old is None or tick.received < old.received:
+                merged[tick.source] = tick
+        ticks = [merged[s] for s in sorted(merged)]
+        return history_body(ticks, now, config), _report(
+            ticks,
+            now,
+            "cache_and_accepted_journal",
+            report.get("paths", []) + [str(reference_journal)],
+            report["errors"],
+        )
+    except (OSError, sqlite3.Error, ValueError, TypeError, KeyError) as exc:
+        report["errors"].append(dict(path=str(reference_journal), reason=str(exc)))
+        return body, report
+
+
+def _load_history(data_dir, recordings, now, config):
     """Cache first; indexed recent tapes only when no usable cache is available.
 
     Gaps remain gaps and are checked by the existing model. Corrupt files are

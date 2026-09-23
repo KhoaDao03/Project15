@@ -115,11 +115,18 @@ class Engine:
         self.series_fee_changes = None
         self.last_received = -float("inf")
         self._model_cache = {}
+        self.research_log = None
+        self._research_models = {}
+        self._research_books = {}
+        self._research_reference = None
+        self._research_history = None
+        self._research_seed = None
         self._lead_history = {}
         self._pending_settlement = set()
         self._processing_tickers = {}
         self._known_tickers = set()
         self._decision_keys = {}
+        self._signal_quote_inputs = {}
         self._management_gaps = {}
         self._rejection_summary = {}
         self._rejection_flush = None
@@ -279,7 +286,43 @@ class Engine:
             if order.active:
                 self.executor.cancel(ticker, now, reason)
 
+    def research_event(self, kind, body, now, event_id):
+        if self.research_log is not None:
+            try:
+                self.research_log.emit(kind, body, now, processed_at=time.time(), caused_by=event_id)
+            except Exception as exc:
+                self.research_log.fail(exc)
+
     def ingest(self, row):
+        if self.research_log is None:
+            return self._ingest(row)
+        started_at = time.time()
+        started_mono = time.monotonic_ns()
+        outcome = {}
+        try:
+            valid = self._ingest(row)
+            outcome["valid"] = valid
+            return valid
+        except Exception as exc:
+            outcome["error"] = type(exc).__name__
+            raise
+        finally:
+            self.research_event(
+                "input_processed",
+                dict(
+                    input_id=row["id"],
+                    started_at=started_at,
+                    started_monotonic_ns=started_mono,
+                    finished_monotonic_ns=time.monotonic_ns(),
+                    analysis_suspended=row.get("analysis_suspended", False),
+                    collector_entries_blocked=row.get("collector_entries_blocked", False),
+                    **outcome,
+                ),
+                row["received"],
+                row["id"],
+            )
+
+    def _ingest(self, row):
         now = row["received"]
         payload = row["payload"]
         if isinstance(payload, str):
@@ -294,6 +337,8 @@ class Engine:
                     provider=body["provider"], received=now, last_minute=max(self.bleep_candles)
                 )
                 self._model_cache.clear()
+                if self.research_log is not None:
+                    self._research_seed = row["id"]
             return True
         if payload.get("type") == "reference_history":
             # First-event-only history: no live receipt, confirmations, orders or
@@ -305,6 +350,8 @@ class Engine:
             self.ticks = validate_history(payload.get("msg", {}), now, self.config)
             self._preload_last_source = self.ticks[-1].source if self.ticks else None
             self.last_received = now
+            if self.research_log is not None:
+                self._research_history = row["id"]
             return True
         self._collector_managed = type(row.get("collector_entries_blocked")) is bool
         self.collector_blocked = (
@@ -486,6 +533,11 @@ class Engine:
                 if self.ticks and tick.source <= self.ticks[-1].source:
                     raise ValueError("Reference duplicate or reversal")
                 self.ticks.append(tick)
+                if self.research_log is not None:
+                    self._research_reference = row["id"]
+                    self.research_event(
+                        "reference_sample", dict(input_id=row["id"], **asdict(tick)), now, row["id"]
+                    )
                 self.ticks = [t for t in self.ticks if t.source >= now - 3600]
                 self.healthy = True
             elif kind in ("orderbook_snapshot", "orderbook_delta"):
@@ -503,6 +555,16 @@ class Engine:
                         if self._collector_managed and self._collector_book_sids.get(ticker) != sid:
                             raise ValueError("Delta subscription does not match its snapshot")
                         self.books[ticker].delta(msg, now)
+                    if self.research_log is not None:
+                        self._research_books[ticker] = dict(
+                            snapshot_id=row["id"]
+                            if kind == "orderbook_snapshot"
+                            else self._research_books.get(ticker, {}).get("snapshot_id"),
+                            input_id=row["id"],
+                            connection_id=connection,
+                            sid=sid,
+                            seq=seq,
+                        )
                     if (
                         ticker in self.executor.positions
                         and self.executor.exit_consumed
@@ -641,6 +703,41 @@ class Engine:
             quote_update = (
                 kind in ("orderbook_snapshot", "orderbook_delta") and msg.get("market_ticker") == ticker
             )
+            signal_inputs = None
+            if self.signal_only:
+                # Signal collectors have no simulated orders to fill. Deep-book
+                # changes still apply and are archived, but an unchanged executable
+                # quote need not rerun/serialize the same entry check thousands of
+                # times a second. Time boundaries and freshness changes remain inputs.
+                yes, no = max(book.yes, default=None), max(book.no, default=None)
+                required_depth = max(c.min_liquidity, c.max_contracts)
+                remaining = market.close_time - now
+                checked_at = self.clock() if self.clock else now
+                signal_inputs = (
+                    yes,
+                    min(book.yes.get(yes, 0), required_depth),
+                    no,
+                    min(book.no.get(no, 0), required_depth),
+                    tuple(r["code"] for r in freshness_rechecks(book, self.ticks, now, now, c)),
+                    tuple(r["code"] for r in freshness_rechecks(book, self.ticks, now, checked_at, c)),
+                    self.entries_active,
+                    self.healthy,
+                    self.clock_ok,
+                    self.exchange_open,
+                    self.collector_blocked,
+                    bool(self.collector_pause and self.collector_pause.is_set()),
+                    ticker in self.executor.venue_pauses,
+                    ticker in self.executor.quarantines,
+                    self.executor.risk.halted,
+                    market.spec,
+                    self.series_fees,
+                    self.series_fee_changes,
+                    self.fee_changes.get(market.event_ticker),
+                    c.entry_cutoff < remaining <= c.entry_window_start,
+                    c.late_entry_enabled and remaining <= c.no_new_entry,
+                )
+                if kind == "orderbook_delta" and self._signal_quote_inputs.get(ticker) == signal_inputs:
+                    quote_update = False
             if not market.tradable(now) or not (
                 due
                 or quote_update
@@ -649,11 +746,14 @@ class Engine:
                 and material
             ):
                 continue
+            if self.signal_only:
+                self._signal_quote_inputs[ticker] = signal_inputs
 
             extras = []
             if ticker in self.executor.venue_pauses:
                 extras.append("VENUE_PAUSED")
-            if self.clock and not 0 <= self.clock() - now <= min(c.reference_max_age, c.book_max_age):
+            freshness_checked_at = self.clock() if self.clock else None
+            if self.clock and not 0 <= freshness_checked_at - now <= min(c.reference_max_age, c.book_max_age):
                 extras.append("PROCESSING_LAG")
             if not self.entries_active:
                 extras.append("MODEL_INACTIVE")
@@ -705,8 +805,12 @@ class Engine:
                 or cached[5] != (self.ticks[-1] if self.ticks else None)
             )
             if model_recomputed:
+                model_started_at = time.time() if self.research_log is not None else None
+                model_started_mono = time.monotonic_ns() if self.research_log is not None else None
+                calculation_features = {}
                 try:
                     f = features(self.ticks, now, c)
+                    calculation_features = f
                     if c.bleep_exchange_seed_enabled and self.bleep_seed:
                         from .bleep_seed import seeded_inputs
 
@@ -753,6 +857,31 @@ class Engine:
                     self._lead_history.pop(ticker, None)
                     cached = (now, market.spec, {}, {}, str(exc), self.ticks[-1] if self.ticks else None)
                 self._model_cache[ticker] = cached
+                if self.research_log is not None:
+                    model_id = f"{self.run_id}:{event_id}:{ticker}:model"
+                    self._research_models[ticker] = model_id
+                    self.research_event(
+                        "model_calculation",
+                        dict(
+                            model_id=model_id,
+                            market=ticker,
+                            input_id=event_id,
+                            evaluated_at=now,
+                            started_at=model_started_at,
+                            started_monotonic_ns=model_started_mono,
+                            finished_monotonic_ns=time.monotonic_ns(),
+                            reference_input_id=self._research_reference,
+                            history_input_id=self._research_history,
+                            seed_input_id=self._research_seed,
+                            reference=asdict(self.ticks[-1]) if self.ticks else None,
+                            features=calculation_features,
+                            probability=cached[3],
+                            error=cached[4],
+                            config_version=c.version,
+                        ),
+                        now,
+                        event_id,
+                    )
             model_time, _, f, p, model_error, _ = cached
             try:
                 if model_error is not None:
@@ -779,6 +908,38 @@ class Engine:
                             details=sizing,
                         )
                     )
+            research_links = {}
+            if self.research_log is not None:
+                research_links = dict(
+                    decision_id=f"{self.run_id}:{event_id}:{ticker}:decision",
+                    model_id=self._research_models.get(ticker),
+                    input_id=event_id,
+                    book_version=self._research_books.get(ticker),
+                    reference_input_id=self._research_reference,
+                    history_input_id=self._research_history,
+                    seed_input_id=self._research_seed,
+                )
+                self.research_event(
+                    "decision_check",
+                    dict(
+                        **research_links,
+                        market=ticker,
+                        stage="evaluation",
+                        evaluated_at=now,
+                        freshness_checked_at=freshness_checked_at,
+                        model_recomputed=model_recomputed,
+                        model_evaluated_at=model_time,
+                        decision=decision,
+                        quality=q,
+                        extras=extras,
+                        book_valid=book.valid,
+                        book_received=book.received,
+                        book_source_time=book.source_time,
+                        config_version=c.version,
+                    ),
+                    now,
+                    event_id,
+                )
             signature = (
                 decision["decision"],
                 decision.get("side"),
@@ -851,6 +1012,7 @@ class Engine:
                 self.last_evaluation[ticker] = now
                 op = str(uuid.uuid4())
                 body = {
+                    **research_links,
                     **decision,
                     "features": f,
                     "model": self.executor.model_identity,
@@ -898,6 +1060,20 @@ class Engine:
             execution_now = self.clock() if self.clock else now
             freshness_failures = freshness_rechecks(book, self.ticks, now, execution_now, c)
             inputs_fresh = not freshness_failures
+            if self.research_log is not None:
+                self.research_event(
+                    "decision_check",
+                    dict(
+                        research_links,
+                        decision_id=research_links["decision_id"] + ":freshness",
+                        market=ticker,
+                        stage="execution_freshness",
+                        checked_at=execution_now,
+                        reasons=freshness_failures,
+                    ),
+                    now,
+                    event_id,
+                )
             # Entry policy and model quality must not disable safe risk reduction.
             # Unknown health reasons still fail closed; only these known policy/model
             # conditions are allowed through the position-management gate.
@@ -956,6 +1132,22 @@ class Engine:
                 revalidated["decision"] = "NO_TRADE" if revalidated["reasons"] else "TRADE_CANDIDATE"
                 if resting.side != decision["side"]:
                     revalidated["decision"] = "NO_TRADE"
+                if self.research_log is not None:
+                    self.research_event(
+                        "decision_check",
+                        dict(
+                            research_links,
+                            decision_id=research_links["decision_id"] + ":resting",
+                            market=ticker,
+                            stage="resting_recheck",
+                            checked_at=execution_now,
+                            decision=revalidated,
+                            entry_healthy=entry_healthy,
+                            reasons=freshness_failures,
+                        ),
+                        now,
+                        event_id,
+                    )
                 self.executor.revalidate(market, revalidated, now, entry_healthy, freshness_failures)
                 if kind == "trade" and msg.get("market_ticker") == ticker and entry_healthy:
                     self.executor.trade(market, msg, now)
@@ -990,6 +1182,22 @@ class Engine:
                 for code in extras + q["reasons"]:
                     if code != "EXISTING_ENTRY" and not any(r["code"] == code for r in rechecks):
                         rechecks.append(dict(code=code, message=code.replace("_", " ").capitalize()))
+                if self.research_log is not None:
+                    self.research_event(
+                        "decision_check",
+                        dict(
+                            research_links,
+                            decision_id=research_links["decision_id"] + ":submission",
+                            market=ticker,
+                            stage="submission_recheck",
+                            checked_at=submit_now,
+                            reasons=rechecks,
+                            entry_healthy=entry_healthy,
+                            execution_enabled=self.execute,
+                        ),
+                        now,
+                        event_id,
+                    )
                 if not self.execute:
                     order = self.executor.reject_submission(
                         market,

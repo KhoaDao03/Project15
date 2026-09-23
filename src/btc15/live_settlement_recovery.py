@@ -1,6 +1,7 @@
 """Recover official live outcomes independently of paper-worker health and run cutovers."""
 
 import logging
+import time
 from decimal import Decimal
 
 from .domain import parse_market, timestamp
@@ -27,6 +28,7 @@ async def recover_live_settlements(manual, members, stores, controls, now):
             try:
                 async with manual.client() as client:
                     raw = (await client.get("markets/" + ticker))["market"]
+                    received_at = time.time()
                     if raw.get("status") != "finalized" or raw.get("result") not in ("yes", "no"):
                         continue
                     series = (await client.get("series/" + member["config"].asset_spec.series))["series"]
@@ -47,6 +49,7 @@ async def recover_live_settlements(manual, members, stores, controls, now):
                         dict(
                             evidence=dict(source="kalshi_rest", market=raw, series=series),
                             source="live_executor_recovery",
+                            received_at=received_at,
                         ),
                         run,
                         "PAPER",
@@ -60,6 +63,14 @@ async def recover_live_settlements(manual, members, stores, controls, now):
                         "PAPER",
                         at,
                         ticker,
+                    )
+                if hasattr(manual, "execution_event"):
+                    manual.execution_event(
+                        "settlement_observed",
+                        market=ticker,
+                        received_at=received_at,
+                        source_time=at,
+                        body=dict(result=raw["result"], evidence_id=evidence_id),
                     )
                 repaired.append(ticker)
             except Exception:

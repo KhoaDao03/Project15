@@ -1,0 +1,101 @@
+{
+  "project15-signal@BTC": {
+    "Restart": "on-failure",
+    "WatchdogUSec": "0",
+    "MainPID": "361937",
+    "NRestarts": "0",
+    "MemoryCurrent": "262123520",
+    "CPUUsageNSec": "454242828000",
+    "ActiveState": "active",
+    "fd_count": 22,
+    "threads": 11
+  },
+  "project15-signal@ETH": {
+    "Restart": "on-failure",
+    "WatchdogUSec": "0",
+    "MainPID": "356092",
+    "NRestarts": "0",
+    "MemoryCurrent": "448819200",
+    "CPUUsageNSec": "1335339355000",
+    "ActiveState": "active",
+    "fd_count": 22,
+    "threads": 11
+  },
+  "project15-signal@SOL": {
+    "Restart": "on-failure",
+    "WatchdogUSec": "0",
+    "MainPID": "356093",
+    "NRestarts": "0",
+    "MemoryCurrent": "295505920",
+    "CPUUsageNSec": "878019595000",
+    "ActiveState": "active",
+    "fd_count": 23,
+    "threads": 11
+  },
+  "project15-signal@XRP": {
+    "Restart": "on-failure",
+    "WatchdogUSec": "0",
+    "MainPID": "356094",
+    "NRestarts": "0",
+    "MemoryCurrent": "345632768",
+    "CPUUsageNSec": "1000735242000",
+    "ActiveState": "active",
+    "fd_count": 22,
+    "threads": 12
+  },
+  "project15-signal@GOLD": {
+    "Restart": "on-failure",
+    "WatchdogUSec": "0",
+    "MainPID": "356095",
+    "NRestarts": "0",
+    "MemoryCurrent": "353452032",
+    "CPUUsageNSec": "937116958000",
+    "ActiveState": "active",
+    "fd_count": 22,
+    "threads": 10
+  },
+  "project15-signal@SILVER": {
+    "Restart": "on-failure",
+    "WatchdogUSec": "0",
+    "MainPID": "356096",
+    "NRestarts": "0",
+    "MemoryCurrent": "201879552",
+    "CPUUsageNSec": "522336659000",
+    "ActiveState": "active",
+    "fd_count": 22,
+    "threads": 11
+  },
+  "project15-signal@WTI": {
+    "Restart": "on-failure",
+    "WatchdogUSec": "0",
+    "MainPID": "356097",
+    "NRestarts": "0",
+    "MemoryCurrent": "226037760",
+    "CPUUsageNSec": "596856068000",
+    "ActiveState": "active",
+    "fd_count": 22,
+    "threads": 11
+  },
+  "project15-execution": {
+    "Restart": "on-failure",
+    "WatchdogUSec": "0",
+    "MainPID": "356216",
+    "NRestarts": "0",
+    "MemoryCurrent": "203952128",
+    "CPUUsageNSec": "4186885402000",
+    "ActiveState": "active",
+    "fd_count": 61,
+    "threads": 16
+  },
+  "project15-dashboard": {
+    "Restart": "on-failure",
+    "WatchdogUSec": "0",
+    "MainPID": "356255",
+    "NRestarts": "0",
+    "MemoryCurrent": "228651008",
+    "CPUUsageNSec": "549318932000",
+    "ActiveState": "active",
+    "fd_count": 77,
+    "threads": 17
+  }
+}

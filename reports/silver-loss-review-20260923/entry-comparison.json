@@ -1,0 +1,373 @@
+{
+  "method": "Nearest accepted recorded live entry check to actual buy request. Fixed actual trades, no replacement entries or portfolio feedback; model EV is uncalibrated.",
+  "rows": [
+    {
+      "ticker": "KXSILVER15M-26SEP221500-00",
+      "pnl": 0.1983,
+      "opened_utc": "2026-09-22T18:56:07.933281+00:00",
+      "entry": 0.968,
+      "confidence": 0.8431773862379969,
+      "ask": 0.968,
+      "spread": 0.0010000000000000009,
+      "remaining": 232.38857078552246,
+      "net_ev": -0.1290916137620031,
+      "bid_qty": 150.0,
+      "model_age": 0.3988635540008545,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:67c3dd0d-f46e-44bc-9091-a0adac2c021f:KXSILVER15M-26SEP221500-00:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP221630-30",
+      "pnl": 0.2544,
+      "opened_utc": "2026-09-22T20:29:20.522483+00:00",
+      "entry": 0.962,
+      "confidence": 0.9077231219317552,
+      "ask": 0.962,
+      "spread": 0.03699999999999992,
+      "remaining": 39.55551481246948,
+      "net_ev": -0.0589358780682448,
+      "bid_qty": 23.0,
+      "model_age": 1.0037753582000732,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:0f46577b-fd6e-4d4d-af12-ab299430a4d7:KXSILVER15M-26SEP221630-30:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP221645-45",
+      "pnl": 0.1796,
+      "opened_utc": "2026-09-22T20:41:47.558671+00:00",
+      "entry": 0.97,
+      "confidence": 0.8415205249276588,
+      "ask": 0.97,
+      "spread": 0.0010000000000000009,
+      "remaining": 192.4825382232666,
+      "net_ev": -0.1326164750723412,
+      "bid_qty": 61.0,
+      "model_age": 0.04026937484741211,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:9e6e2d05-96dc-4527-b482-76b692542eb6:KXSILVER15M-26SEP221645-45:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP221715-15",
+      "pnl": 0.5544,
+      "opened_utc": "2026-09-22T21:11:00.616359+00:00",
+      "entry": 0.93,
+      "confidence": 0.8617662992010292,
+      "ask": 0.93,
+      "spread": 0.013000000000000012,
+      "remaining": 239.4660267829895,
+      "net_ev": -0.0748907007989708,
+      "bid_qty": 14.78,
+      "model_age": 0.08109521865844727,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:9dc227f0-f46a-43c3-91ec-f32a5ada9e4e:KXSILVER15M-26SEP221715-15:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP221730-30",
+      "pnl": 0.2731,
+      "opened_utc": "2026-09-22T21:23:05.485007+00:00",
+      "entry": 0.96,
+      "confidence": 0.8543273535531458,
+      "ask": 0.957,
+      "spread": 0.01100000000000001,
+      "remaining": 415.18863797187805,
+      "net_ev": -0.1076536464468542,
+      "bid_qty": 16.0,
+      "model_age": 0.9561276435852051,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:adb69cf3-e441-4bea-bbb0-1e20ce61ddc8:KXSILVER15M-26SEP221730-30:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP221745-45",
+      "pnl": 0.245,
+      "opened_utc": "2026-09-22T21:42:37.233677+00:00",
+      "entry": 0.963,
+      "confidence": 0.8437743920215119,
+      "ask": 0.965,
+      "spread": 0.0040000000000000036,
+      "remaining": 142.8463294506073,
+      "net_ev": -0.1256906079784881,
+      "bid_qty": 125.0,
+      "model_age": 0.6989014148712158,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:d7ac7a2d-021b-4ed0-9b25-2f0987f8e1f8:KXSILVER15M-26SEP221745-45:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP221800-00",
+      "pnl": 0.4025,
+      "opened_utc": "2026-09-22T21:59:54.959921+00:00",
+      "entry": 0.89,
+      "confidence": 0.9,
+      "ask": 0.87,
+      "spread": 0.05999999999999994,
+      "remaining": 5.1142401695251465,
+      "net_ev": 0.019983,
+      "bid_qty": 10.0,
+      "model_age": 0.4337160587310791,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:ed405a16-119e-4eff-8812-ff26e14cadb9:KXSILVER15M-26SEP221800-00:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP221815-15",
+      "pnl": 0.5074,
+      "opened_utc": "2026-09-22T22:09:42.812633+00:00",
+      "entry": 0.935,
+      "confidence": 0.8412973072521692,
+      "ask": 0.935,
+      "spread": 0.0010000000000000009,
+      "remaining": 317.4705948829651,
+      "net_ev": -0.1000576927478308,
+      "bid_qty": 100.33,
+      "model_age": 0.28202199935913086,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:2a78769b-109b-4c36-a338-44c0dea29738:KXSILVER15M-26SEP221815-15:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP221830-30",
+      "pnl": 0.217,
+      "opened_utc": "2026-09-22T22:26:42.179141+00:00",
+      "entry": 0.966,
+      "confidence": 0.8530840513638306,
+      "ask": 0.966,
+      "spread": 0.0010000000000000009,
+      "remaining": 197.92856669425964,
+      "net_ev": -0.1173159486361694,
+      "bid_qty": 150.0,
+      "model_age": 0.6538760662078857,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:6f9f2ede-92e2-4a8c-9b2d-fc7fd885ec2c:KXSILVER15M-26SEP221830-30:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP221945-45",
+      "pnl": 0.3263,
+      "opened_utc": "2026-09-22T23:44:56.589036+00:00",
+      "entry": 0.965,
+      "confidence": 0.8465925187397114,
+      "ask": 0.949,
+      "spread": 0.017999999999999905,
+      "remaining": 3.475771427154541,
+      "net_ev": -0.1078954812602886,
+      "bid_qty": 400.0,
+      "model_age": 0.06393742561340332,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:afbd0bb0-6771-4812-9ea1-15c4456f00d1:KXSILVER15M-26SEP221945-45:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP222000-00",
+      "pnl": 0.2357,
+      "opened_utc": "2026-09-22T23:59:42.595280+00:00",
+      "entry": 0.964,
+      "confidence": 0.8433585365291155,
+      "ask": 0.964,
+      "spread": 0.030999999999999917,
+      "remaining": 17.477734327316284,
+      "net_ev": -0.1251714634708845,
+      "bid_qty": 1200.0,
+      "model_age": 0.07193636894226074,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:49d7c949-225c-4bf6-8a3f-6f16f98c3af2:KXSILVER15M-26SEP222000-00:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP222045-45",
+      "pnl": -4.2488,
+      "opened_utc": "2026-09-23T00:44:12.915704+00:00",
+      "entry": 0.88,
+      "confidence": 0.8440093214589879,
+      "ask": 0.97,
+      "spread": 0.008000000000000007,
+      "remaining": 47.4680016040802,
+      "net_ev": -0.1301276785410121,
+      "bid_qty": 400.0,
+      "model_age": 0.3773772716522217,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:b184e62c-b360-4af9-b122-bf0d869ac067:KXSILVER15M-26SEP222045-45:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP222100-00",
+      "pnl": 0.5168,
+      "opened_utc": "2026-09-23T00:57:17.649177+00:00",
+      "entry": 0.934,
+      "confidence": 0.8413296509886327,
+      "ask": 0.934,
+      "spread": 0.0010000000000000009,
+      "remaining": 162.47091579437256,
+      "net_ev": -0.0990863490113673,
+      "bid_qty": 2250.0,
+      "model_age": 0.11886239051818848,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:98e1fe39-da08-4ee4-9181-1f1504a6f822:KXSILVER15M-26SEP222100-00:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP222145-45",
+      "pnl": 0.592,
+      "opened_utc": "2026-09-23T01:44:27.649385+00:00",
+      "entry": 0.926,
+      "confidence": 0.847175141362523,
+      "ask": 0.918,
+      "spread": 0.0020000000000000018,
+      "remaining": 32.484182357788086,
+      "net_ev": -0.078194858637477,
+      "bid_qty": 250.0,
+      "model_age": 0.13242220878601074,
+      "sigma_multiplier": 1.35,
+      "decision_id": "SILVER-commodity84-20260921T041738Z-signals:1011e32c-d0f7-4eea-918f-17abc00e52f2:KXSILVER15M-26SEP222145-45:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP222300-00",
+      "pnl": 0.2637,
+      "opened_utc": "2026-09-23T02:56:48.722012+00:00",
+      "entry": 0.961,
+      "confidence": 0.8428469396206744,
+      "ask": 0.956,
+      "spread": 0.0010000000000000009,
+      "remaining": 191.4679617881775,
+      "net_ev": -0.1181980603793256,
+      "bid_qty": 2350.0,
+      "model_age": 0.18797826766967773,
+      "sigma_multiplier": 1.2,
+      "decision_id": "SILVER-silver-wti120-20260923T015351Z-signals:bf758279-47f0-4161-80c1-64c6bbc3c849:KXSILVER15M-26SEP222300-00:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP230000-00",
+      "pnl": -6.6428,
+      "opened_utc": "2026-09-23T03:55:05.636373+00:00",
+      "entry": 0.946,
+      "confidence": 0.8414838669958354,
+      "ask": 0.944,
+      "spread": 0.0010000000000000009,
+      "remaining": 294.47363114356995,
+      "net_ev": -0.1083171330041646,
+      "bid_qty": 108.86,
+      "model_age": 0.10894346237182617,
+      "sigma_multiplier": 1.2,
+      "decision_id": "SILVER-silver-wti120-20260923T015351Z-signals:33b4ca0e-3cd8-4247-8ed6-43b0f1535d6b:KXSILVER15M-26SEP230000-00:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP230045-45",
+      "pnl": 0.3667,
+      "opened_utc": "2026-09-23T04:44:26.630650+00:00",
+      "entry": 0.95,
+      "confidence": 0.8402906651681085,
+      "ask": 0.947,
+      "spread": 0.017999999999999905,
+      "remaining": 33.47466731071472,
+      "net_ev": -0.1123233348318915,
+      "bid_qty": 23.0,
+      "model_age": 0.10455751419067383,
+      "sigma_multiplier": 1.2,
+      "decision_id": "SILVER-silver-wti120-20260923T015351Z-signals:1ad1b921-8a2c-4114-ad32-3ecba5ae14e4:KXSILVER15M-26SEP230045-45:decision"
+    },
+    {
+      "ticker": "KXSILVER15M-26SEP230115-15",
+      "pnl": -5.4049,
+      "opened_utc": "2026-09-23T05:14:44.600044+00:00",
+      "entry": 0.95,
+      "confidence": 0.8594176357995751,
+      "ask": 0.951,
+      "spread": 0.041999999999999926,
+      "remaining": 15.475165128707886,
+      "net_ev": -0.0969443642004249,
+      "bid_qty": 30.0,
+      "model_age": 0.07439398765563965,
+      "sigma_multiplier": 1.2,
+      "decision_id": "SILVER-silver-wti120-20260923T015351Z-signals:f2661baa-9526-465a-8683-0c797ad822b7:KXSILVER15M-26SEP230115-15:decision"
+    }
+  ],
+  "filters": {
+    "baseline": {
+      "n": 18,
+      "wins": 15,
+      "losses": 3,
+      "pnl": -11.1636
+    },
+    "EV >= 0": {
+      "n": 1,
+      "wins": 1,
+      "losses": 0,
+      "pnl": 0.4025
+    },
+    "EV >= .01": {
+      "n": 1,
+      "wins": 1,
+      "losses": 0,
+      "pnl": 0.4025
+    },
+    "confidence >= 0.85": {
+      "n": 6,
+      "wins": 5,
+      "losses": 1,
+      "pnl": -3.7035
+    },
+    "confidence >= 0.86": {
+      "n": 3,
+      "wins": 3,
+      "losses": 0,
+      "pnl": 1.2113
+    },
+    "confidence >= 0.88": {
+      "n": 2,
+      "wins": 2,
+      "losses": 0,
+      "pnl": 0.6569
+    },
+    "confidence >= 0.9": {
+      "n": 2,
+      "wins": 2,
+      "losses": 0,
+      "pnl": 0.6569
+    },
+    "spread <= 0.01": {
+      "n": 10,
+      "wins": 8,
+      "losses": 2,
+      "pnl": -8.1718
+    },
+    "spread <= 0.02": {
+      "n": 14,
+      "wins": 12,
+      "losses": 2,
+      "pnl": -6.6513
+    },
+    "spread <= 0.03": {
+      "n": 14,
+      "wins": 12,
+      "losses": 2,
+      "pnl": -6.6513
+    },
+    "remaining > 15s": {
+      "n": 16,
+      "wins": 13,
+      "losses": 3,
+      "pnl": -11.8924
+    },
+    "remaining > 30s": {
+      "n": 14,
+      "wins": 12,
+      "losses": 2,
+      "pnl": -6.7232
+    },
+    "remaining > 60s": {
+      "n": 10,
+      "wins": 9,
+      "losses": 1,
+      "pnl": -3.6875
+    },
+    "remaining > 120s": {
+      "n": 10,
+      "wins": 9,
+      "losses": 1,
+      "pnl": -3.6875
+    },
+    "confidence >= .85 AND spread <= .02": {
+      "n": 3,
+      "wins": 3,
+      "losses": 0,
+      "pnl": 1.0445
+    },
+    "confidence >= .85 AND remaining >30s": {
+      "n": 4,
+      "wins": 4,
+      "losses": 0,
+      "pnl": 1.2989
+    }
+  }
+}

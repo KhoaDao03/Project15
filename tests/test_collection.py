@@ -93,6 +93,30 @@ def test_subscription_denial_preserved_and_lease_released(store, config, tmp_pat
     store.release("collector", "test-cleanup")
 
 
+def test_completed_batch_is_not_reported_as_pending(store, config, tmp_path, raw, series, monkeypatch):
+    from btc15.collector_recovery import CollectorRecovery
+
+    fake_client(monkeypatch, raw, series)
+    fake_socket(monkeypatch, [dict(type="ticker", msg={"test_index": i}) for i in range(100)])
+    original_ingest = runner.Engine.ingest
+    original_check = CollectorRecovery.check
+    drained_depths = []
+
+    def slow(engine, row):
+        time.sleep(0.002)
+        return original_ingest(engine, row)
+
+    def check(recovery, engine, now, lag, depth, capacity, connected, stopping=False):
+        if stopping and depth == 0:
+            drained_depths.append(recovery.depth)
+        return original_check(recovery, engine, now, lag, depth, capacity, connected, stopping)
+
+    monkeypatch.setattr(runner.Engine, "ingest", slow)
+    monkeypatch.setattr(CollectorRecovery, "check", check)
+    asyncio.run(runner.collect(Settings(data_dir=str(tmp_path)), config, store, duration=0.1))
+    assert drained_depths and all(depth == 0 for depth in drained_depths)
+
+
 def test_disk_failure_stops_processing_and_releases_resources(
     store, config, tmp_path, raw, series, monkeypatch
 ):

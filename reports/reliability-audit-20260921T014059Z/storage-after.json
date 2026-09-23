@@ -1,0 +1,12 @@
+{
+  "at": 1789955187.4485173,
+  "sizes": {
+    "research-logs": 6106434832,
+    "data/cloud": 5660216570
+  },
+  "elapsed_seconds": 105.14176154136658,
+  "bytes_per_hour": {
+    "research-logs": 1488070917.8383281,
+    "data/cloud": 19214549.67449028
+  }
+}

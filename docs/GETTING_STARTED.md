@@ -1,38 +1,24 @@
-> For a fresh cloud deployment, use [Cloud deployment](CLOUD.md). This guide covers local paper testing of the same Bleep model.
+# Local paper setup
 
-# Getting started from scratch
+For a fresh server use [cloud deployment](CLOUD.md). This guide creates an isolated
+local paper experiment. Existing installations should use [recovery](SAFETY.md)
+instead of creating a new portfolio to bypass exposure or ownership checks.
 
-This guide targets the Settlement Edge-only branch, not a generic three-strategy bot. Its default first experiment uses the **original built-in configuration**, frozen into a local file. The optional moderate configuration is described separately; neither is a profitability claim.
+## Install
 
-**Existing installation?** Do not follow fresh-data steps to bypass open positions, a halted checkpoint or a writer lease. Back up first and read [single-strategy retirement/recovery](SINGLE_STRATEGY.md). A fresh checkout and a fresh trading portfolio are different things.
-
-## Prerequisites
-
-Install [Git](https://git-scm.com/downloads) and [uv](https://docs.astral.sh/uv/getting-started/installation/). Open a new terminal and check `git --version` and `uv --version`. The commands below ask uv for Python 3.12; the package allows Python 3.12+. See uv's [Python installation guide](https://docs.astral.sh/uv/guides/install-python/) for platform-specific installation help.
-
-Use Linux, macOS or PowerShell for the basic CLI examples. CI has exercised Ubuntu/Python 3.12; providing PowerShell commands is not a native-Windows validation claim. The managed `paper-service`/systemd procedure uses POSIX signal handling and belongs on Linux/WSL, not native PowerShell.
-
-Have more than 10 GiB free on the data filesystem, a synchronized host clock, a stable network, and a machine that stays awake for a live paper session. SQLite is the default. Docker, PostgreSQL, Node and an npm build are **not prerequisites** for the local setup.
-
-## Get the correct branch
-
-From the parent directory where the new checkout should live:
+Use the reviewed checkout, Python 3.12+ and [uv](https://docs.astral.sh/uv/getting-started/installation/).
+Run commands from the project root:
 
 ```bash
-git clone --branch fix/fractional-passive-fills --single-branch https://github.com/KhoaDao03/Project15.git
-cd Project15
-git branch --show-current
-git rev-parse HEAD
-uv python install 3.12
 uv sync --python 3.12 --extra dev --locked
 uv run --locked btc15 --help
 ```
 
-Run the remaining commands from this repository root. Relative database, key and data paths depend on that working directory. `uv run --locked` uses the project environment and refuses to rewrite an out-of-date lockfile; investigate a mismatch rather than updating dependencies casually. It does not require manual virtual-environment activation.
+Use a synchronized clock, stable network and more than 10 GiB free data space.
+SQLite is the default. Node.js is only needed for JavaScript tests. Linux/WSL is
+required for the managed systemd service; native Windows is not an endurance claim.
 
 ## Offline smoke test first
-
-Before configuring keys, verify the application using synthetic inputs and an isolated database:
 
 ```bash
 uv run --locked btc15 demo --output data/synthetic.jsonl
@@ -40,29 +26,20 @@ uv run --locked btc15 --database sqlite:///data/demo.db backtest data/synthetic.
 uv run --locked btc15 --database sqlite:///data/demo.db dashboard --no-collect --port 8000
 ```
 
-Open `http://127.0.0.1:8000`. Select **BACKTEST** and the generated run in the picker. Inspect orders, fills and completed results. These are fabricated test-market inputs designed for software testing, not historical Bitcoin returns. A successful demo does not validate the authenticated feed.
-
-Stop the viewing dashboard with **Shut down safely** and confirmation. Its database is separate from `data/btc15.db`. Never combine demo/replay totals with paper performance. Repeating the backtest adds a distinct run.
+Open `http://127.0.0.1:8000`, select BACKTEST and inspect the generated run. These
+inputs are synthetic. Replaying creates a new run; keep it separate from actual
+paper/live performance. Stop the viewer before starting another on port 8000.
 
 ## Environment and credentials
 
-Create `.env` from [.env.example](../.env.example) only when `.env` does not already exist; do not overwrite an existing installation's secrets/settings.
-
-Bash (Linux/macOS/WSL):
+Copy [.env.example](../.env.example) only if `.env` does not already exist:
 
 ```bash
 if [ ! -e .env ]; then cp .env.example .env; fi
 mkdir -p secrets
 ```
 
-PowerShell:
-
-```powershell
-if (-not (Test-Path .env)) { Copy-Item .env.example .env }
-New-Item -ItemType Directory -Force secrets | Out-Null
-```
-
-Edit `.env` locally. For the default local database:
+In PowerShell, use `Copy-Item` only after checking `Test-Path .env`. Edit locally:
 
 ```dotenv
 TRADING_MODE=PAPER
@@ -74,63 +51,58 @@ KALSHI_PRIVATE_KEY_PATH=
 LOG_LEVEL=INFO
 ```
 
-For real-feed paper trading, create appropriate Kalshi API credentials in your account, save the downloaded RSA private key at a protected local path, then fill in the API-key ID and that file path. The application's [client](../src/btc15/api.py) signs data-feed requests; it does not submit real orders. Feed access/entitlements must actually succeed before the bot can trade on current inputs. Do not paste the key into GitHub, logs, screenshots or chat.
+Actual-feed paper collection needs a valid API-key ID and protected RSA key file.
+The example key path is not a supplied key. For offline work leave both values
+empty; a nonempty key path is loaded even by public discovery. On Unix, use
+`chmod 700 secrets` and `chmod 600` for `.env` and the created key. Never share keys.
+These paper commands do not start the [separate real-order service](LIVE_TRADING.md).
 
-The copied example initially names `secrets/kalshi-private-key.pem`, **which does not exist in the repository**. Either save your key there or correct the path. When testing without keys, leave **both** variables empty: even public discovery constructs the client and attempts to load a nonempty private-key path.
+`DATA_DIR` selects tapes, saved settings and HALT; `DATABASE_URL` selects the ledger.
+CLI `--data-dir` additionally defaults the ledger to `<data-dir>/paper.db`, unless
+`--database` is explicit. Existing shell/service variables can override `.env`.
 
-On Unix, restrict permissions after creating the files, for example `chmod 700 secrets` and `chmod 600 .env secrets/kalshi-private-key.pem`. On Windows, restrict access using the file's local permissions. Never change the live flags to get past a startup failure.
+## Freeze a configuration
 
-`DATA_DIR` controls tapes, saved settings and the HALT file; `DATABASE_URL` independently selects the database. Changing one does not relocate the other. Ensure all terminals and viewing dashboards target the same intended pair. Existing shell/service environment variables can take precedence over `.env`.
-
-## Freeze the original configuration
-
-Run once; exclusive creation protects an existing run's settings:
+Create the built-in control once, refusing overwrite:
 
 ```bash
 uv run --locked python -c "from pathlib import Path; from dataclasses import asdict; from btc15.config import Strategy; from btc15.domain import dumps; p=Path('data/runtime/settlement-original.json'); p.parent.mkdir(parents=True, exist_ok=True); p.open('x', encoding='utf-8').write(dumps(asdict(Strategy()))+'\n')"
 uv run --locked btc15 --config data/runtime/settlement-original.json config
 ```
 
-`FileExistsError` means the frozen file already exists. Inspect/reuse it; do not overwrite it to make the command succeed. The output should show `entry_window_start=420`, `no_new_entry=120`, `min_entry_price=0.85`, `min_edge=min_ev=0.03`, and `fee_balance_precision="0.0001"` for the current original control. This uses UTF-8 on both shells and avoids old PowerShell redirection encodings.
-
-Do not substitute `config/defaults.json` assuming it is identical: that explicit historical example still contains `fee_balance_precision="0.01"`. It is not automatically loaded. [Configuration precedence](STRATEGY.md#configuration-precedence-and-reproducibility) explains saved settings and hashes.
-
-## Check discovery and initialize storage
-
-```bash
-uv run --locked btc15 discover
-uv run --locked btc15 init-db
-```
-
-`discover` should return JSON with validated or explicitly blocked contracts. A not-yet-published strike can legitimately block an upcoming contract. Public REST success does not test authenticated WebSocket subscriptions. `init-db` initializes missing schema/indexes, not a data reset.
+If the file exists, inspect/reuse it. This built-in control is different from the
+[active presets](ACTIVE_PAPER_SETTINGS.md). `config/defaults.json` is also an explicit
+example, not an automatically loaded configuration. See
+[configuration precedence](STRATEGY.md#configuration-and-deployment).
 
 ## Start the first paper session
 
 ```bash
+uv run --locked btc15 --config data/runtime/settlement-original.json discover
+uv run --locked btc15 --config data/runtime/settlement-original.json init-db
 uv run --locked btc15 --config data/runtime/settlement-original.json dashboard --run-id settlement-original --port 8000
 ```
 
-Open `http://127.0.0.1:8000`. Select **PAPER**, the normal Settlement Edge history scope, and `settlement-original`. Confirm paper execution is on, the collector and evaluations are current, and the selected configuration is the one you froze. The 5 Hz display moving alone is not proof the execution feed is healthy.
+Discovery may reject future markets awaiting a strike; public REST success does
+not verify authenticated streaming. Initialization creates missing schema, not a reset.
+In the dashboard select PAPER and the matching run. Confirm collection, evaluation,
+configuration and paper execution health; a moving 5 Hz display is insufficient.
 
-Bleep needs 33 contiguous minute candles (or a validated exchange seed), plus the configured reference warmup; missing samples or bad feed health can extend the wait. The original entry window is more than 2 and at most 7 minutes before close. The bot must also pass probability, net-EV, price, spread, liquidity, metadata, regime and risk checks. **No trade may be the correct result.** Use [Troubleshooting](TROUBLESHOOTING.md), not relaxed safeguards, to identify the stage that blocked it.
+Indicators need 33 contiguous minute candles or a validated seed. Official-reference
+ATR has its own warm-up/fallback rules. Other quality, price, timing and risk checks
+still apply. Use [troubleshooting](TROUBLESHOOTING.md) when no trade is allowed.
 
-## Stop and restart
+## Stop, resume or compare
 
-Use **Shut down safely**, confirm, and verify completion. It stops entries, cancels pending remainders, saves filled inventory and flushes the tape. It does not liquidate open positions. After a clean stop, repeat the exact start command with the same database, frozen file and run ID.
+Use **Shut down safely** and wait for confirmation. It preserves positions rather
+than liquidating them. Resume with the same database, frozen file and run ID.
+After a crash, follow [safety and recovery](SAFETY.md); do not delete checkpoints or
+clear ownership blindly. Settings edits apply to future sessions.
 
-After a crash, use [Safety and recovery](SAFETY.md); do not clear a lease or delete checkpoints as a routine restart. A run started with different configuration cannot be resumed by changing its settings file. The Settings page applies to future sessions, not the running portfolio.
+A moderate experiment uses `config/settlement-edge-paper-moderate.json`, frozen
+under a distinct name using the same exclusive-creation procedure. Resolve earlier
+exposure first; new names do not reset daily risk. Multiple assets need
+[separate directories and ledgers](CRYPTO_PAPER.md).
 
-## Optional moderate experiment
-
-Only after resolving previous exposure and stopping the previous writer, freeze the moderate preset under a different name:
-
-```bash
-uv run --locked python -c "from pathlib import Path; from dataclasses import asdict; from btc15.config import Strategy; from btc15.domain import dumps; p=Path('data/runtime/settlement-moderate.json'); p.parent.mkdir(parents=True, exist_ok=True); p.open('x', encoding='utf-8').write(dumps(asdict(Strategy.load('config/settlement-edge-paper-moderate.json')))+'\n')"
-uv run --locked btc15 --config data/runtime/settlement-moderate.json dashboard --run-id settlement-moderate --port 8000
-```
-
-This is still Settlement Edge, with a wider entry window and lower price/EV thresholds. It is an experiment, not an automatic upgrade. A new run does not reset carried-forward daily risk usage. Existing multi-strategy installations have additional [retirement requirements](SINGLE_STRATEGY.md).
-
-## Next operating tasks
-
-Use [Paper trading](PAPER_TRADING.md) for standalone/bounded operation, [Managed paper](AUTONOMOUS_PAPER.md) for Linux/WSL without an attached terminal, and [Backtesting](BACKTESTING.md) to evaluate a real complete tape. The [documentation index](README.md) separates current procedures from earlier host-specific reports.
+Next: [paper lifecycle](PAPER_TRADING.md), [managed services](AUTONOMOUS_PAPER.md),
+[backtesting](BACKTESTING.md), [tests](../tests/README.md).

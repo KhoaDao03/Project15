@@ -26,7 +26,7 @@ def decision():
 
 
 @pytest.mark.parametrize(
-    "remaining,valid", [(420, True), (420.001, False), (120.001, True), (120, False), (0, False), (-1, False)]
+    "remaining,valid", [(420, True), (420.001, False), (435, False), (420, True), (120.001, True), (120, False), (0, False), (-1, False)]
 )
 def test_entry_boundaries(market, book, config, remaining, valid):
     now = market.close_time - remaining

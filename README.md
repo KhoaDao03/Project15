@@ -15,11 +15,14 @@ real orders. Paper execution is available for local testing.
 | Understand probability calculations | [Probability model](docs/PROBABILITY_MODEL.md) |
 | Understand real orders and exits | [Live automation](docs/LIVE_AUTOMATION.md) |
 | Record portable research data | [Research logging](docs/RESEARCH_LOGGING.md) |
-| Run tests or diagnose problems | [Validation](docs/VALIDATION.md), [troubleshooting](docs/TROUBLESHOOTING.md) |
+| Run tests or diagnose problems | [Test commands](tests/README.md), [validation](docs/VALIDATION.md), [troubleshooting](docs/TROUBLESHOOTING.md) |
 
 See the [documentation index](docs/README.md) for specialist guides and historical reports.
 
 ## Configuration and deployment
+
+Research logging v2 was deployed with authorization on 2026-09-20. See the
+[deployment status](docs/RESEARCH_LOGGING.md#deployment-status).
 
 Tracked presets are templates. Existing bots use frozen runtime configurations;
 editing a preset does not update a running bot. ATR multipliers live in the

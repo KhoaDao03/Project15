@@ -192,6 +192,7 @@ async def collect(
             if live_signals
             else None
         )
+        engine.research_log = research_log
         preload = dict(status="DISABLED", samples=0)
         if paper or live_signals:
             recordings = [
@@ -199,7 +200,18 @@ async def collect(
                 for r in store.list(kind="raw_source", mode="PAPER", limit=20)
                 if r["body"]["journal"] != str(journal)
             ]
-            body, preload = await work(load_history, settings.data_dir, recordings, time.time(), config)
+            from functools import partial
+
+            body, preload = await work(
+                partial(
+                    load_history,
+                    settings.data_dir,
+                    recordings,
+                    time.time(),
+                    config,
+                    reference_journal=research_log.root / "coverage.sqlite" if research_log else None,
+                )
+            )
             # Write exactly the inputs restored, before any new live event. Do not
             # replay old market events through the executing engine.
             history_row = dict(
@@ -211,9 +223,9 @@ async def collect(
             )
             if recorder:
                 await work(recorder.append_rows, [history_row])
-            await work(engine.ingest, history_row)
             if research_log:
-                research_log.emit("input", history_row, history_row["received"])
+                research_log.capture_input(history_row, json.loads(history_row["payload"]))
+            await work(engine.ingest, history_row)
             if paper_worker:
                 paper_worker.submit([history_row])
             store.add("reference_preload", preload, engine.run_id, "PAPER", history_row["received"])
@@ -274,8 +286,18 @@ async def collect(
             reconnect.set()
             drained.clear()
 
+        def pending_lag():
+            # The worker retires completed frames while receipt appends new ones.
+            # An indexed deque read is atomic; an emptiness check followed by a
+            # read would race with the worker removing the final frame.
+            try:
+                oldest = pending_receipts[0]
+            except IndexError:
+                return 0
+            return (time.monotonic_ns() - oldest) / 1e9
+
         def check_pressure():
-            lag = (time.monotonic_ns() - pending_receipts[0]) / 1e9 if pending_receipts else 0
+            lag = pending_lag()
             recovery.pressure(lag, len(pending_receipts), queue.maxsize, time.time())
             if recovery.drain.is_set():
                 reconnect.set()
@@ -290,6 +312,8 @@ async def collect(
                 connection_id=connection,
                 payload=dumps(payload),
             )
+            if research_log:
+                research_log.capture_input(row, payload)
             if (
                 payload.get("type") in ("cfbenchmarks_value", "pyth_value")
                 and payload.get("msg", {}).get("index_id", payload.get("msg", {}).get("underlying_ticker"))
@@ -329,7 +353,7 @@ async def collect(
             # Persist the analysis decision alongside every source frame so replay
             # also applies the complete sequence without trading on the old backlog.
             for row in rows:
-                row["analysis_suspended"] = recovery.drain.is_set()
+                row["analysis_suspended"] = recovery.drain.is_set() or recovery.catching_up.is_set()
                 row["collector_entries_blocked"] = recovery.paused.is_set()
                 if paper_worker:
                     row["paper_stopping"] = stop.is_set()
@@ -377,15 +401,21 @@ async def collect(
                 elif payload.get("type") == "ticker":
                     msg = payload.get("msg", {})
                     display_tickers[msg.get("market_ticker")] = msg
+                # Retire each applied frame immediately. Leaving the entire batch
+                # outstanding until after publishing status made completed work
+                # look like a backlog and latched false health warnings.
+                pending_receipts.popleft()
             now = time.time()
             if (paper or live_signals) and time.monotonic() - last_history_save >= 30:
                 save_history(settings.data_dir, engine.ticks, now, config)
                 last_history_save = time.monotonic()
-            lag = (time.monotonic_ns() - rows[-1]["monotonic_ns"]) / 1e9
+            lag = pending_lag()
+            recovery.pressure(lag, len(pending_receipts), queue.maxsize, now)
             recovery.check(engine, now, lag, queue.qsize(), queue.maxsize, connected, stop.is_set())
             recovery_status = recovery.status()
             signature = (recovery_status["state"], tuple(recovery_status["reasons"]), recovery.warning)
-            if signature != last_recovery_status:
+            recovery_changed = signature != last_recovery_status
+            if recovery_changed:
                 store.add("collector_recovery", recovery_status, engine.run_id, "PAPER", now)
                 last_recovery_status = signature
             latest_live = max(engine.latest.values(), key=lambda b: b["timestamp"]) if engine.latest else None
@@ -421,6 +451,7 @@ async def collect(
                             floor_strike=market.spec.strike,
                             book=book.summary() if fresh else {},
                             book_received=book.received,
+                            **({"book_version": engine._research_books.get(ticker)} if research_log else {}),
                             fresh=fresh,
                             volume_fp=display_tickers.get(ticker, {}).get(
                                 "volume_fp", market.raw.get("volume_fp")
@@ -440,7 +471,9 @@ async def collect(
                     )
                 )
                 last_display = time.monotonic()
-            if now - last_status >= 1 or not connected:
+            # The executor gates entries on this status, not the recovery journal.
+            # Publish both a new block and its clearance in this same batch.
+            if now - last_status >= 1 or not connected or recovery_changed:
                 engine.flush_rejections(now)
                 simulation = paper_worker.poll() if paper_worker else None
                 save_status = store.add if record_all else store.publish_record
@@ -555,8 +588,6 @@ async def collect(
                         break
                     rows.append(item)
                 valid = await work(process_batch, rows)
-                for _ in rows:
-                    pending_receipts.popleft()
                 if not valid:
                     request_recovery("DATA_INTEGRITY_FAILURE")
                 if recovery.drain.is_set() and not connected and queue.empty():
@@ -834,6 +865,10 @@ async def collect(
                 group.create_task(reference_display()),
                 group.create_task(seed_bleep()),
             ]
+            if research_log:
+                from .research_coverage import recover_settlements
+
+                producers.append(group.create_task(recover_settlements(research_log, client, stop)))
             await stop.wait()
             # Persist shutdown draining just like overload draining. Queued inputs
             # still update books/settlements, without expensive strategy evaluation.

@@ -47,6 +47,37 @@ def test_pressure_warns_then_blocks_and_requires_reconnection(store, config, mar
     assert c.paused.is_set() and not c.reference and not c.snapshots
 
 
+def test_lag_catches_up_without_breaking_contiguous_feed(store, config, market, now):
+    e, c = ready_inputs(store, config, market, now)
+    c.check(e, now, 0, 0, 100, True)
+    c.pressure(2.1, 20, 100, now)
+    assert c.paused.is_set() and c.catching_up.is_set()
+    assert not c.drain.is_set()
+    assert c.connection == "fresh" and c.reference and market.ticker in c.snapshots
+    c.check(e, now, 0.7, 10, 100, True)
+    assert c.paused.is_set()
+    c.pressure(0.1, 1, 100, now)
+    c.check(e, now, 0.1, 1, 100, True)
+    assert not c.paused.is_set() and not c.catching_up.is_set()
+    assert c.phase == "READY" and not c.drain.is_set()
+
+
+@pytest.mark.parametrize("failure", ["stale_reference", "sequence_failure", "capacity"])
+def test_catchup_preserves_freshness_and_integrity_gates(store, config, market, now, failure):
+    e, c = ready_inputs(store, config, market, now)
+    c.pressure(2.1, 20, 100, now)
+    c.pressure(0.1, 1, 100, now)
+    if failure == "stale_reference":
+        e.ticks = [Tick(now - 10, now - 10, market.spec.strike)]
+    elif failure == "sequence_failure":
+        c.request("DATA_INTEGRITY_FAILURE", now)
+    else:
+        c.pressure(0.1, 80, 100, now)
+    c.check(e, now, 0.1, 1, 100, True)
+    assert c.paused.is_set()
+    assert c.drain.is_set() == (failure != "stale_reference")
+
+
 @pytest.mark.parametrize(
     "problem",
     [
@@ -332,6 +363,11 @@ def test_failure_drains_recovers_and_replays(store, config, tmp_path, raw, serie
     assert any(not r.get("collector_entries_blocked") for r in captured)
     assert any(r["body"]["state"] == "DRAINING" for r in store.list(kind="collector_recovery"))
     assert any(r["body"]["state"] == "READY" for r in store.list(kind="collector_recovery"))
+    # The executor reads status, not the recovery journal. Neither a new block
+    # nor a clearance may wait for the next one-second periodic publication.
+    statuses = {r["timestamp"]: r["body"] for r in store.list(kind="status")}
+    for transition in store.list(kind="collector_recovery"):
+        assert statuses[transition["timestamp"]]["recovery"] == transition["body"]
     assert not store.list(kind="fill")
     gaps = [r for r in store.list(kind="health") if r["body"]["code"] == "SEQUENCE_GAP"]
     assert bool(gaps) == (failure == "sequence_gap")

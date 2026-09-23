@@ -1,0 +1,290 @@
+[
+  {
+    "asset": "BTC",
+    "session": "20260922T025927Z-93f9ece140ac48d59ad1188ba35452aa",
+    "file": "events-1790052568765216968.jsonl.gz",
+    "first_capture": 1790052568.7640185,
+    "last_capture": 1790053168.8415287,
+    "first_seq": 9235933,
+    "last_seq": 10132832,
+    "gaps": [
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 9701414,
+          "last_missing_seq": 9701414,
+          "next_capture_at": 1790052901.6164143,
+          "previous_capture_at": 1790052901.6039078,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455645192672242,
+        "capture_seq": 9701414,
+        "captured_at": 1790052901.8972166,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025927Z-93f9ece140ac48d59ad1188ba35452aa",
+        "source_time": null,
+        "recorded_at": 1790052901.8972557
+      },
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 9848985,
+          "last_missing_seq": 9848985,
+          "next_capture_at": 1790052981.622363,
+          "previous_capture_at": 1790052981.6211882,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455725032459273,
+        "capture_seq": 9848985,
+        "captured_at": 1790052981.7370038,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025927Z-93f9ece140ac48d59ad1188ba35452aa",
+        "source_time": null,
+        "recorded_at": 1790052981.7370334
+      },
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 9902356,
+          "last_missing_seq": 9902356,
+          "next_capture_at": 1790053001.6606617,
+          "previous_capture_at": 1790053001.6499374,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455745201307205,
+        "capture_seq": 9902356,
+        "captured_at": 1790053001.9058516,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025927Z-93f9ece140ac48d59ad1188ba35452aa",
+        "source_time": null,
+        "recorded_at": 1790053001.9058871
+      },
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 9953491,
+          "last_missing_seq": 9953491,
+          "next_capture_at": 1790053021.6562169,
+          "previous_capture_at": 1790053021.6557271,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455765787228694,
+        "capture_seq": 9953491,
+        "captured_at": 1790053022.4917731,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025927Z-93f9ece140ac48d59ad1188ba35452aa",
+        "source_time": null,
+        "recorded_at": 1790053022.4918022
+      },
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 10064247,
+          "last_missing_seq": 10064247,
+          "next_capture_at": 1790053076.730686,
+          "previous_capture_at": 1790053076.682427,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455820106490590,
+        "capture_seq": 10064247,
+        "captured_at": 1790053076.811035,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025927Z-93f9ece140ac48d59ad1188ba35452aa",
+        "source_time": null,
+        "recorded_at": 1790053076.8110762
+      }
+    ],
+    "models": {
+      "total": 713,
+      "atr_ready": 713
+    }
+  },
+  {
+    "asset": "BTC",
+    "session": "20260922T025927Z-93f9ece140ac48d59ad1188ba35452aa",
+    "file": "events-1790053168844413281.jsonl.gz",
+    "first_capture": 1790053168.8424416,
+    "last_capture": 1790053768.8445754,
+    "first_seq": 10132833,
+    "last_seq": 10976040,
+    "gaps": [],
+    "models": {
+      "total": 655,
+      "atr_ready": 655
+    }
+  },
+  {
+    "asset": "ETH",
+    "session": "20260922T025932Z-8554dd01e6774a3fb35f8a0445a268ab",
+    "file": "events-1790052574027723585.jsonl.gz",
+    "first_capture": 1790052574.0258346,
+    "last_capture": 1790053174.0170593,
+    "first_seq": 2984982,
+    "last_seq": 3296513,
+    "gaps": [
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 3133231,
+          "last_missing_seq": 3133231,
+          "next_capture_at": 1790052907.5334487,
+          "previous_capture_at": 1790052907.5040812,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455650829339385,
+        "capture_seq": 3133231,
+        "captured_at": 1790052907.5338836,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025932Z-8554dd01e6774a3fb35f8a0445a268ab",
+        "source_time": null,
+        "recorded_at": 1790052907.5339243
+      },
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 3151627,
+          "last_missing_seq": 3151627,
+          "next_capture_at": 1790052933.4469938,
+          "previous_capture_at": 1790052933.4401772,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455676786659079,
+        "capture_seq": 3151627,
+        "captured_at": 1790052933.4912035,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025932Z-8554dd01e6774a3fb35f8a0445a268ab",
+        "source_time": null,
+        "recorded_at": 1790052933.4912295
+      },
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 3182503,
+          "last_missing_seq": 3182503,
+          "next_capture_at": 1790052988.6357546,
+          "previous_capture_at": 1790052988.6145918,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455731984355586,
+        "capture_seq": 3182503,
+        "captured_at": 1790052988.6888998,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025932Z-8554dd01e6774a3fb35f8a0445a268ab",
+        "source_time": null,
+        "recorded_at": 1790052988.688949
+      },
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 3206467,
+          "last_missing_seq": 3206467,
+          "next_capture_at": 1790053028.7689204,
+          "previous_capture_at": 1790053028.766294,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455772211261238,
+        "capture_seq": 3206467,
+        "captured_at": 1790053028.9158053,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025932Z-8554dd01e6774a3fb35f8a0445a268ab",
+        "source_time": null,
+        "recorded_at": 1790053028.9158385
+      },
+      {
+        "body": {
+          "affected_scope": "session",
+          "dropped_records": 1,
+          "first_missing_seq": 3235559,
+          "last_missing_seq": 3235559,
+          "next_capture_at": 1790053063.785599,
+          "previous_capture_at": 1790053063.781254,
+          "reason": "capture_loss"
+        },
+        "capture_monotonic_ns": 455807238747100,
+        "capture_seq": 3235559,
+        "captured_at": 1790053063.9432914,
+        "caused_by": null,
+        "kind": "recording_gap",
+        "processed_at": null,
+        "received_at": null,
+        "received_monotonic_ns": null,
+        "schema_version": 2,
+        "session": "20260922T025932Z-8554dd01e6774a3fb35f8a0445a268ab",
+        "source_time": null,
+        "recorded_at": 1790053063.9433384
+      }
+    ],
+    "models": {
+      "total": 721,
+      "atr_ready": 721
+    }
+  },
+  {
+    "asset": "ETH",
+    "session": "20260922T025932Z-8554dd01e6774a3fb35f8a0445a268ab",
+    "file": "events-1790053174583293033.jsonl.gz",
+    "first_capture": 1790053174.0172606,
+    "last_capture": 1790053774.597179,
+    "first_seq": 3296514,
+    "last_seq": 3583344,
+    "gaps": [],
+    "models": {
+      "total": 661,
+      "atr_ready": 661
+    }
+  }
+]

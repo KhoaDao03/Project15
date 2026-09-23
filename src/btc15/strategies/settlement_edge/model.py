@@ -144,6 +144,38 @@ def features(ticks, now, config):
         else None
     )
     out["bleep"] = indicator_inputs(bleep_candles)
+    seconds = sorted(set(int(t.source) for t in ticks))
+    gaps = [
+        dict(first_missing=a + 1, last_missing=b - 1, count=b - a - 1)
+        for a, b in zip(seconds, seconds[1:])
+        if b - a > 1
+    ]
+    valid_minutes = {c[0] for c in candles}
+    first_minute = int(ts[0] // 60)
+    incomplete = [m for m in range(first_minute, minute) if m not in valid_minutes]
+    reasons = []
+    if len(bleep_candles) < 15:
+        reasons.append("INSUFFICIENT_CONTIGUOUS_REFERENCE_CANDLES")
+    if gaps:
+        reasons.append("MISSING_REFERENCE_SECONDS")
+    if incomplete:
+        reasons.append("INCOMPLETE_REFERENCE_MINUTES")
+    out["reference_readiness"] = dict(
+        observed_samples=len(ticks),
+        oldest_source=float(ts[0]),
+        newest_source=float(ts[-1]),
+        newest_received=ticks[-1].received,
+        contiguous_candles=len(bleep_candles),
+        atr_required_candles=15,
+        indicator_required_candles=33,
+        atr_ready=out["reference_rolling_atr"] is not None,
+        reference_indicators_ready=out["bleep"] is not None,
+        missing_seconds=gaps,
+        incomplete_minutes=incomplete,
+        reasons=reasons,
+        expected_sample_interval_seconds=1,
+        current_minute_partial=bool(len(current)),
+    )
     return out
 
 

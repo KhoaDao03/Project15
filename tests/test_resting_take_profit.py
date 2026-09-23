@@ -15,11 +15,6 @@ from btc15.manual_trading import ManualOrder
 
 
 @pytest.fixture
-def anyio_backend():
-    return "asyncio"
-
-
-@pytest.fixture
 def resting(live):  # noqa: F811
     worker, _, manual, control, data, clock = live
     exchange = dict(

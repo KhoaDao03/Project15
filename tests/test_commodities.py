@@ -115,7 +115,7 @@ def test_commodity_strategy_reaches_paper_fill(commodity, store, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "remaining,allowed", [(540, False), (480, False), (420.01, False), (420, True), (120, True), (1.01, True), (1, False)]
+    "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
 )
 def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
     from test_strategy_reverification import make_book
@@ -125,13 +125,13 @@ def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed
     symbol, raw, series = commodity
     market = parse_market(raw, series)
     c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
-    assert c.min_probability == c.late_min_probability == 0.85
+    assert c.min_probability == c.late_min_probability == 0.84
     assert c.entry_window_start == 420 and c.entry_cutoff == 1
     assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
     assert not c.bleep_exchange_seed_enabled
     now = market.close_time - remaining
     lead = dict(side="yes", confirmed_normal=True, confirmed_late=True, confirmation_samples=1)
-    for confidence in [0.85, 0.8499, 0.83]:
+    for confidence in [0.84, 0.8399, 0.83]:
         d = evaluate(
             market,
             make_book("yes", ".89", ".90", now),
@@ -142,7 +142,7 @@ def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed
             now,
             c,
         )
-        assert (d["decision"] == "TRADE_CANDIDATE") == (allowed and confidence == 0.85)
+        assert (d["decision"] == "TRADE_CANDIDATE") == (allowed and confidence == 0.84)
 
 
 def test_commodity_uses_configured_sigma_and_cap(commodity):
@@ -160,7 +160,7 @@ def test_commodity_uses_configured_sigma_and_cap(commodity):
     result = probability(spec, [Tick(now, now, spot)], now, f, Strategy(asset=symbol))
     assert result["model"] == "bleep-reference-atr-finish-v5"
     assert result["atr_source"] == "official_reference_rolling"
-    assert result["sigma_t"] == pytest.approx(spot * 0.002 * math.sqrt(2) * 1.35)
+    assert result["sigma_t"] == pytest.approx(spot * 0.002 * math.sqrt(2) * (1.35 if symbol == "GOLD" else 1.20))
     assert capped_confidence(0.98, 0.76, 0.78, symbol) == 0.83
 
 

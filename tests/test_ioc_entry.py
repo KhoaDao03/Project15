@@ -131,7 +131,8 @@ def test_zero_latency_ioc_matches_at_submission(store, market, config, now):
 
 
 def test_ioc_cap_never_exceeds_max_entry_price(store, market, config, now):
-    c = replace(config, passive=False, min_edge=0.005, min_ev=0.005)
+    # Isolate limit construction: the confidence cap normally rejects this expensive entry.
+    c = replace(config, passive=False, entry_value_filters_enabled=False)
     e = initialize(store, market, now, c, "PAPER")
     book = make_book("yes", ".98", ".989", now)
     order = e.submit(market, book, candidate(), "op", now, True)

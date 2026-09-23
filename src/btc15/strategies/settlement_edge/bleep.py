@@ -4,13 +4,13 @@ import math
 from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 
 SIGMA_MULTIPLIERS = {
-    "BTC": 1.15,
-    "ETH": 1.00,
-    "SOL": 1.0,
-    "XRP": 1.0,
+    "BTC": 0.8,
+    "ETH": 1.1,
+    "SOL": 0.8,
+    "XRP": 0.7,
     "GOLD": 1.35,
-    "SILVER": 1.35,
-    "WTI": 1.35,
+    "SILVER": 1.20,
+    "WTI": 1.20,
 }
 
 
@@ -288,6 +288,12 @@ def probability(spec, ticks, now, features, config):
     remaining = distribution["remaining_samples"]
     return {
         **result,
+        "atr_floor_applied": result["atr"] > inputs["atr"],
+        "atr_fallback_reason": "INSUFFICIENT_CONTIGUOUS_REFERENCE_CANDLES"
+        if config.asset in SIGMA_MULTIPLIERS and reference_atr is None
+        else "MEASURED_ATR_BELOW_PRICE_FLOOR"
+        if result["atr"] > inputs["atr"]
+        else None,
         "atr_source": ("official_reference_rolling" if reference_atr is not None else "reference_price_floor")
         if config.asset in SIGMA_MULTIPLIERS
         else "indicator_wilder",

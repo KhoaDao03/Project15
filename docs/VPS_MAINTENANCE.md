@@ -4,58 +4,22 @@ For installation and startup, see [VPS setup](IONOS_VPS_SETUP.md).
 Run server commands as the account that owns `~/Project15` (for example,
 `root` for `/root/Project15`, or `project15` for `/home/project15/Project15`).
 
-### Visit and control
+See [deployment status](RESEARCH_LOGGING.md#deployment-status) for the deployed logging changes.
+Documentation edits need no restart.
 
-- **Public viewing:** `https://dash.example.com`.
-- **Private controls:** SSH tunnel, then `http://127.0.0.1:18000`.
-- **Editing files:** VS Code Remote SSH, folder `~/Project15` under the service account.
-- **Heavy backtests:** run on your local computer so they do not compete with live bots.
+### Controls and planned shutdown
 
-### What the shutdown button does
+Use an SSH tunnel for private controls; optional public owner controls are described
+in [cloud setup](CLOUD.md#enable-owner-controls-with-a-passcode). Their 60-second
+unlock permits saved policy changes and safe shutdown, not service starts.
+Disabling buys preserves exits; quantities affect future entries only.
 
-The passcode and checkbox authorize the existing safe shutdown workflow for all
-four markets. It does **not** sell contracts or force a stop while a live position
-or unresolved order still needs management. When allowed, it disables live entries
-and stops the collectors/private dashboard cooperatively. The order executor
-process may remain running with automation disabled.
-
-An unknown outcome is not confirmation: inspect the private dashboard or service
-logs. Do not independently stop collectors while an open position depends on them
-for exit monitoring. There is no public service-restart endpoint or strategy editor. Owner-authorized
-live policy edits are described below.
-
-After a confirmed shutdown, use the [startup commands](IONOS_VPS_SETUP.md#already-installed-start-here), verify health,
-and re-enable the desired live policies privately. Restarting the visitor resets
-its in-memory shutdown status. After a VPS reboot, enabled services start again;
-policies retain their saved enablement, including being disabled by safe shutdown.
-
-### Edit live trading and contract quantity
-
-On the HTTPS visitor site:
-
-1. Enter the owner passcode and click **Unlock for 1 minute**.
-2. Select BTC, ETH, SOL or XRP. Review the saved settings shown.
-3. Enable/disable new live buys and choose **1–20 whole contracts per entry**.
-4. Check the real-money confirmation and click **Save live settings**.
-
-Each save applies to that asset and its future markets. Disabling new buys keeps
-automatic exits running. Editing quantity does not resize positions already held.
-Enabling buys can lead to real orders as soon as existing strategy/risk checks pass.
-The same unlock allows shutdown with its separate confirmation checkbox.
-
-**All write access expires after 60 seconds.** Activity does not extend the unlock;
-enter the passcode again after expiry. The passcode itself does not change every
-minute. Expiry leaves previously saved settings in effect and does not cancel an
-already accepted action. Reloading the page loses its token; restarting the viewer
-invalidates all tokens. Neither the passcode nor token is stored in browser storage.
-
-If settings changed elsewhere or the market rolled over, refresh and review before
-saving again. For an uncertain save response, inspect the saved values before
-retrying. You cannot enable entries through a stopped or unavailable executor.
+Safe shutdown requires positive acknowledgment and never liquidates positions.
+Managed exposure/unknown orders can block it. After an approved restart, check
+health and saved policies before re-enabling buys. Ordinary restarts preserve policies;
+safe shutdown switches them off. Keep heavy replay workloads off the live host.
 
 ### Change the passcode
-
-**VPS:**
 
 ```bash
 cd ~/Project15
@@ -63,8 +27,7 @@ cd ~/Project15
 systemctl --user restart project15-public-dashboard
 ```
 
-The new passcode replaces the old one. Unlock attempts are limited globally to
-five per minute per viewer process; wait a minute if rate-limited.
+This rotates the hash and invalidates existing unlocks.
 
 ### Inspect services and storage
 
@@ -244,7 +207,7 @@ old order journal: orders or fills recorded after that backup must be reconciled
 | `Failed to look up user project15` | Use `sudo loginctl enable-linger "$(id -un)"` from the account that owns the services. |
 | `Failed to connect to bus` | Log in directly over SSH as the account that owns the services; use `systemctl --user` without sudo; verify lingering is enabled. |
 | Collector keeps restarting | Read its journal; check key path/permissions, frozen configuration, network access and disk space. |
-| Public site returns 502 | Check `project15-public-dashboard`, then `curl http://127.0.0.1:8001/api/stop`; verify Caddy targets 8001. |
+| Public site returns 502 | Check `project15-public-dashboard`, then `curl http://127.0.0.1:8001/api/view`; verify Caddy targets 8001. |
 | Visitor shows stale data or 503 | Check the private dashboard, collectors and execution service; allow initial warmup. Staleness is expected after safe shutdown. |
 | HTTPS certificate fails | Check DNS, including any AAAA record, both firewalls, and Caddy's journal. |
 | Shutdown form is missing | Check passcode setup, the updated viewer service environment, and restart the viewer. |

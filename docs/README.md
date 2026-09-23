@@ -1,45 +1,46 @@
-# Documentation index
+# Documentation
 
-Use the guides below for the current code. Preset settings are not proof of the
-configuration loaded by a running service.
+Start with one guide for the task below. Tracked presets describe templates, not
+necessarily the frozen configuration loaded by a running service.
 
-## Operations and strategy
+Research logging v2 was deployed on 2026-09-20; see [deployment status](RESEARCH_LOGGING.md#deployment-status).
+Documentation edits alone do not authorize service restarts.
 
-| Task | Guide |
+## Main guides
+
+| Task | Start here |
 | --- | --- |
-| Fresh cloud deployment | [Cloud](CLOUD.md), [IONOS VPS setup](IONOS_VPS_SETUP.md) |
-| Entry/exit behavior and settings | [Strategy](STRATEGY.md), [crypto presets](ACTIVE_PAPER_SETTINGS.md), [commodities](COMMODITIES.md) |
-| Probability and contract outcomes | [Probability model](PROBABILITY_MODEL.md), [settlement model](SETTLEMENT_MODEL.md) |
-| Real order execution | [Live automation](LIVE_AUTOMATION.md), [manual trading](MANUAL_TRADING.md) |
-| Missing trades, stale data, recovery | [Troubleshooting](TROUBLESHOOTING.md), [operational state](OPERATIONAL_STATE.md), [settlement recovery](SETTLEMENT_RECOVERY.md) |
-| Startup history and confirmation | [Reference preload](REFERENCE_PRELOAD.md), [lead confirmation](SUSTAINED_LEAD.md) |
-| Resource maintenance | [VPS maintenance](VPS_MAINTENANCE.md), [safety](SAFETY.md) |
-| Portable recordings and analysis | [Research logging](RESEARCH_LOGGING.md), [backtesting](BACKTESTING.md) |
+| Understand entries, exits and settings | [Strategy](STRATEGY.md), [crypto settings](ACTIVE_PAPER_SETTINGS.md), [commodity settings](COMMODITIES.md) |
+| Understand the calculation | [Probability model](PROBABILITY_MODEL.md), [settlement rules](SETTLEMENT_MODEL.md) |
+| Set up local paper testing | [Getting started](GETTING_STARTED.md), [multiple assets](CRYPTO_PAPER.md) |
+| Install on a fresh VPS | [VPS setup](IONOS_VPS_SETUP.md), then [cloud services](CLOUD.md) |
+| Update, back up or restart an installation | [VPS maintenance](VPS_MAINTENANCE.md) |
+| Use real orders | [Live automation](LIVE_AUTOMATION.md), [manual orders](MANUAL_TRADING.md) |
+| Diagnose missing trades or stale data | [Troubleshooting](TROUBLESHOOTING.md), [operational status](OPERATIONAL_STATE.md) |
+| Handle a halt or crash | [Safety and recovery](SAFETY.md), [settlement recovery](SETTLEMENT_RECOVERY.md) |
+| Record and replay research data | [Research logging](RESEARCH_LOGGING.md), [backtesting](BACKTESTING.md) |
+| Test a change | [Test commands](../tests/README.md), [validation and benchmarks](VALIDATION.md) |
 
-## Development and local simulation
+## Implementation references
 
-Start with [validation](VALIDATION.md) for test commands and a benchmark-script map.
-For local paper execution, see [getting started](GETTING_STARTED.md),
-[paper lifecycle](PAPER_TRADING.md), [full-position execution](FULL_POSITION_EXECUTION.md)
-and [crypto portfolios](CRYPTO_PAPER.md). Paper and replay outcomes are separate
-from real fills. The signal-only cloud profile runs no paper workers; research
-recording must be explicitly enabled.
-
-Implementation references: [architecture](ARCHITECTURE.md), [data model](DATA_MODEL.md),
-[entry economics](ENTRY_ECONOMICS.md), [trade memory](TRADE_MEMORY.md),
-[collector recovery](COLLECTION_RECOVERY.md), and [exit execution](EXIT_EXECUTION.md).
+- Structure and persistence: [architecture](ARCHITECTURE.md), [data model](DATA_MODEL.md), [recording](TRADE_RECORDING.md), [trade history](TRADE_MEMORY.md).
+- Inputs: [discovery](MARKET_DISCOVERY.md), [reference preload](REFERENCE_PRELOAD.md), [lead confirmation](SUSTAINED_LEAD.md), [entry revalidation](ENTRY_REFERENCE_REVALIDATION.md).
+- Paper execution: [lifecycle](PAPER_TRADING.md), [managed service](AUTONOMOUS_PAPER.md), [position management](POSITION_MANAGEMENT.md), [full-position execution](FULL_POSITION_EXECUTION.md), [exit matching](EXIT_EXECUTION.md).
+- Recovery: [overload handling](OVERLOAD_RECOVERY.md), [venue pauses](MARKET_PAUSE.md), [legacy portfolio retirement](SINGLE_STRATEGY.md).
+- Research experiments: [fill assumptions](FILL_EXPERIMENT.md), [convergence](CONVERGENCE_EXPERIMENT.md), [stop confirmation](STOP_CONFIRMATION_SHADOW.md).
 
 ## Historical evidence
 
-Dated reports describe a specific revision and environment, not current deployment
-status or current test counts. Retain them when comparing old behavior:
+These reports preserve measurements and actions for specific revisions and hosts.
+Their service states, thresholds and test counts are not current deployment claims.
+Do not use incident commands as setup instructions for another machine.
 
-- [Single-strategy validation, September 9](SINGLE_STRATEGY_VALIDATION.md)
-- [Reliability audit, September 11](RELIABILITY_AUDIT_20260911.md)
-- [Collector profile, September 11](COLLECTOR_PROFILE_20260911.md)
+- [Research hardening, September 8](RESEARCH_HARDENING.md)
+- [Single-strategy validation, September 9](SINGLE_STRATEGY_VALIDATION.md) and [collection recovery](COLLECTION_RECOVERY.md)
+- [Reliability audit, September 11](RELIABILITY_AUDIT_20260911.md), [collector profile](COLLECTOR_PROFILE_20260911.md), [replay validation](REPLAY_RECOVERY_VALIDATION.md)
 - [Overnight incident](OVERNIGHT_FAILURE_20260911.md) and [fix](OVERNIGHT_FAILURE_FIX_20260911.md)
-- [Connection handshake fix](CONNECTION_HANDSHAKE_FIX_20260911.md)
-- [Dashboard price flash investigation](DASHBOARD_PRICE_FLASH_20260911.md)
+- [Connection handshake fix](CONNECTION_HANDSHAKE_FIX_20260911.md) and [dashboard price investigation](DASHBOARD_PRICE_FLASH_20260911.md)
+- [Earlier crypto-fleet installation and validation](history/CRYPTO_FLEET_20260913.md)
 
-Older predictor implementations remain in Git history. Replaying an old model
-requires its original code/configuration; do not relabel old records as current results.
+Older models require their original code and configuration. Preserve their ledgers;
+do not relabel old results or rewrite checkpoint hashes as a migration shortcut.

@@ -1,0 +1,1023 @@
+{
+  "warning": "Sampled books and incomplete capture; no queue priority, cancellation model, partial previous sales, intervening books or replacement entries. Fees approximate. Unchanged positions retain actual outcomes. Diagnostic only.",
+  "results": [
+    {
+      "threshold": 0.6,
+      "delay": 0.7,
+      "complete": false,
+      "baseline": -11.1636,
+      "estimate": null,
+      "changed": 3,
+      "rows": [
+        {
+          "ticker": "KXSILVER15M-26SEP221500-00",
+          "actual": 0.1983,
+          "estimated": 0.1983,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221630-30",
+          "actual": 0.2544,
+          "estimated": 0.2544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221645-45",
+          "actual": 0.1796,
+          "estimated": 0.1796,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221715-15",
+          "actual": 0.5544,
+          "estimated": 0.5544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221730-30",
+          "actual": 0.2731,
+          "estimated": 0.2731,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221745-45",
+          "actual": 0.245,
+          "estimated": 0.245,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221800-00",
+          "actual": 0.4025,
+          "estimated": -0.24251999999999896,
+          "changed": true,
+          "trigger_at": 1790114397.2932255,
+          "fill_at": 1790114398.6730576,
+          "fill_price": 0.8800000000000001
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221815-15",
+          "actual": 0.5074,
+          "estimated": 0.5074,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221830-30",
+          "actual": 0.217,
+          "estimated": 0.217,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221945-45",
+          "actual": 0.3263,
+          "estimated": 0.3263,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222000-00",
+          "actual": 0.2357,
+          "estimated": 0.2357,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222045-45",
+          "actual": -4.2488,
+          "estimated": -4.16459703,
+          "changed": true,
+          "trigger_at": 1790124272.4769254,
+          "fill_at": 1790124273.4521883,
+          "fill_price": 0.48843000000000003
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222100-00",
+          "actual": 0.5168,
+          "estimated": 0.5168,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222145-45",
+          "actual": 0.592,
+          "estimated": 0.592,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222300-00",
+          "actual": 0.2637,
+          "estimated": 0.2637,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230000-00",
+          "actual": -6.6428,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230045-45",
+          "actual": 0.3667,
+          "estimated": 0.3667,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230115-15",
+          "actual": -5.4049,
+          "estimated": -4.105779999999999,
+          "changed": true,
+          "trigger_at": 1790140495.1958244,
+          "fill_at": 1790140496.011813,
+          "fill_price": 0.56
+        }
+      ]
+    },
+    {
+      "threshold": 0.6,
+      "delay": 2.0,
+      "complete": false,
+      "baseline": -11.1636,
+      "estimate": null,
+      "changed": 1,
+      "rows": [
+        {
+          "ticker": "KXSILVER15M-26SEP221500-00",
+          "actual": 0.1983,
+          "estimated": 0.1983,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221630-30",
+          "actual": 0.2544,
+          "estimated": 0.2544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221645-45",
+          "actual": 0.1796,
+          "estimated": 0.1796,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221715-15",
+          "actual": 0.5544,
+          "estimated": 0.5544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221730-30",
+          "actual": 0.2731,
+          "estimated": 0.2731,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221745-45",
+          "actual": 0.245,
+          "estimated": 0.245,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221800-00",
+          "actual": 0.4025,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221815-15",
+          "actual": 0.5074,
+          "estimated": 0.5074,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221830-30",
+          "actual": 0.217,
+          "estimated": 0.217,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221945-45",
+          "actual": 0.3263,
+          "estimated": 0.3263,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222000-00",
+          "actual": 0.2357,
+          "estimated": 0.2357,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222045-45",
+          "actual": -4.2488,
+          "estimated": -4.049,
+          "changed": true,
+          "trigger_at": 1790124272.4769254,
+          "fill_at": 1790124275.4672112,
+          "fill_price": 0.5
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222100-00",
+          "actual": 0.5168,
+          "estimated": 0.5168,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222145-45",
+          "actual": 0.592,
+          "estimated": 0.592,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222300-00",
+          "actual": 0.2637,
+          "estimated": 0.2637,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230000-00",
+          "actual": -6.6428,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230045-45",
+          "actual": 0.3667,
+          "estimated": 0.3667,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230115-15",
+          "actual": -5.4049,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        }
+      ]
+    },
+    {
+      "threshold": 0.65,
+      "delay": 0.7,
+      "complete": true,
+      "baseline": -11.1636,
+      "estimate": -7.141467029999998,
+      "changed": 4,
+      "rows": [
+        {
+          "ticker": "KXSILVER15M-26SEP221500-00",
+          "actual": 0.1983,
+          "estimated": 0.1983,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221630-30",
+          "actual": 0.2544,
+          "estimated": 0.2544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221645-45",
+          "actual": 0.1796,
+          "estimated": 0.1796,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221715-15",
+          "actual": 0.5544,
+          "estimated": 0.5544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221730-30",
+          "actual": 0.2731,
+          "estimated": 0.2731,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221745-45",
+          "actual": 0.245,
+          "estimated": 0.245,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221800-00",
+          "actual": 0.4025,
+          "estimated": -0.24251999999999896,
+          "changed": true,
+          "trigger_at": 1790114397.2932255,
+          "fill_at": 1790114398.6730576,
+          "fill_price": 0.8800000000000001
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221815-15",
+          "actual": 0.5074,
+          "estimated": 0.5074,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221830-30",
+          "actual": 0.217,
+          "estimated": 0.217,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221945-45",
+          "actual": 0.3263,
+          "estimated": 0.3263,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222000-00",
+          "actual": 0.2357,
+          "estimated": 0.2357,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222045-45",
+          "actual": -4.2488,
+          "estimated": -4.16459703,
+          "changed": true,
+          "trigger_at": 1790124272.4769254,
+          "fill_at": 1790124273.4521883,
+          "fill_price": 0.48843000000000003
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222100-00",
+          "actual": 0.5168,
+          "estimated": 0.5168,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222145-45",
+          "actual": 0.592,
+          "estimated": 0.592,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222300-00",
+          "actual": 0.2637,
+          "estimated": 0.2637,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230000-00",
+          "actual": -6.6428,
+          "estimated": -3.3589699999999993,
+          "changed": true,
+          "trigger_at": 1790135922.9018736,
+          "fill_at": 1790135923.9048898,
+          "fill_price": 0.63
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230045-45",
+          "actual": 0.3667,
+          "estimated": 0.3667,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230115-15",
+          "actual": -5.4049,
+          "estimated": -4.105779999999999,
+          "changed": true,
+          "trigger_at": 1790140495.1958244,
+          "fill_at": 1790140496.011813,
+          "fill_price": 0.56
+        }
+      ]
+    },
+    {
+      "threshold": 0.65,
+      "delay": 2.0,
+      "complete": false,
+      "baseline": -11.1636,
+      "estimate": null,
+      "changed": 1,
+      "rows": [
+        {
+          "ticker": "KXSILVER15M-26SEP221500-00",
+          "actual": 0.1983,
+          "estimated": 0.1983,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221630-30",
+          "actual": 0.2544,
+          "estimated": 0.2544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221645-45",
+          "actual": 0.1796,
+          "estimated": 0.1796,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221715-15",
+          "actual": 0.5544,
+          "estimated": 0.5544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221730-30",
+          "actual": 0.2731,
+          "estimated": 0.2731,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221745-45",
+          "actual": 0.245,
+          "estimated": 0.245,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221800-00",
+          "actual": 0.4025,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221815-15",
+          "actual": 0.5074,
+          "estimated": 0.5074,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221830-30",
+          "actual": 0.217,
+          "estimated": 0.217,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221945-45",
+          "actual": 0.3263,
+          "estimated": 0.3263,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222000-00",
+          "actual": 0.2357,
+          "estimated": 0.2357,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222045-45",
+          "actual": -4.2488,
+          "estimated": -4.049,
+          "changed": true,
+          "trigger_at": 1790124272.4769254,
+          "fill_at": 1790124275.4672112,
+          "fill_price": 0.5
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222100-00",
+          "actual": 0.5168,
+          "estimated": 0.5168,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222145-45",
+          "actual": 0.592,
+          "estimated": 0.592,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222300-00",
+          "actual": 0.2637,
+          "estimated": 0.2637,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230000-00",
+          "actual": -6.6428,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230045-45",
+          "actual": 0.3667,
+          "estimated": 0.3667,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230115-15",
+          "actual": -5.4049,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        }
+      ]
+    },
+    {
+      "threshold": 0.7,
+      "delay": 0.7,
+      "complete": true,
+      "baseline": -11.1636,
+      "estimate": -8.020817029999998,
+      "changed": 4,
+      "rows": [
+        {
+          "ticker": "KXSILVER15M-26SEP221500-00",
+          "actual": 0.1983,
+          "estimated": 0.1983,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221630-30",
+          "actual": 0.2544,
+          "estimated": 0.2544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221645-45",
+          "actual": 0.1796,
+          "estimated": 0.1796,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221715-15",
+          "actual": 0.5544,
+          "estimated": 0.5544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221730-30",
+          "actual": 0.2731,
+          "estimated": 0.2731,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221745-45",
+          "actual": 0.245,
+          "estimated": 0.245,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221800-00",
+          "actual": 0.4025,
+          "estimated": -0.24251999999999896,
+          "changed": true,
+          "trigger_at": 1790114397.2932255,
+          "fill_at": 1790114398.6730576,
+          "fill_price": 0.8800000000000001
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221815-15",
+          "actual": 0.5074,
+          "estimated": 0.5074,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221830-30",
+          "actual": 0.217,
+          "estimated": 0.217,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221945-45",
+          "actual": 0.3263,
+          "estimated": 0.3263,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222000-00",
+          "actual": 0.2357,
+          "estimated": 0.2357,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222045-45",
+          "actual": -4.2488,
+          "estimated": -4.16459703,
+          "changed": true,
+          "trigger_at": 1790124272.4769254,
+          "fill_at": 1790124273.4521883,
+          "fill_price": 0.48843000000000003
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222100-00",
+          "actual": 0.5168,
+          "estimated": 0.5168,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222145-45",
+          "actual": 0.592,
+          "estimated": 0.592,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222300-00",
+          "actual": 0.2637,
+          "estimated": 0.2637,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230000-00",
+          "actual": -6.6428,
+          "estimated": -2.6427999999999994,
+          "changed": true,
+          "trigger_at": 1790135904.8038964,
+          "fill_at": 1790135905.806455,
+          "fill_price": 0.7
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230045-45",
+          "actual": 0.3667,
+          "estimated": 0.3667,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230115-15",
+          "actual": -5.4049,
+          "estimated": -5.7013,
+          "changed": true,
+          "trigger_at": 1790140494.6819367,
+          "fill_at": 1790140495.6510653,
+          "fill_price": 0.4
+        }
+      ]
+    },
+    {
+      "threshold": 0.7,
+      "delay": 2.0,
+      "complete": false,
+      "baseline": -11.1636,
+      "estimate": null,
+      "changed": 2,
+      "rows": [
+        {
+          "ticker": "KXSILVER15M-26SEP221500-00",
+          "actual": 0.1983,
+          "estimated": 0.1983,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221630-30",
+          "actual": 0.2544,
+          "estimated": 0.2544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221645-45",
+          "actual": 0.1796,
+          "estimated": 0.1796,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221715-15",
+          "actual": 0.5544,
+          "estimated": 0.5544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221730-30",
+          "actual": 0.2731,
+          "estimated": 0.2731,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221745-45",
+          "actual": 0.245,
+          "estimated": 0.245,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221800-00",
+          "actual": 0.4025,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221815-15",
+          "actual": 0.5074,
+          "estimated": 0.5074,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221830-30",
+          "actual": 0.217,
+          "estimated": 0.217,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221945-45",
+          "actual": 0.3263,
+          "estimated": 0.3263,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222000-00",
+          "actual": 0.2357,
+          "estimated": 0.2357,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222045-45",
+          "actual": -4.2488,
+          "estimated": -4.049,
+          "changed": true,
+          "trigger_at": 1790124272.4769254,
+          "fill_at": 1790124275.4672112,
+          "fill_price": 0.5
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222100-00",
+          "actual": 0.5168,
+          "estimated": 0.5168,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222145-45",
+          "actual": 0.592,
+          "estimated": 0.592,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222300-00",
+          "actual": 0.2637,
+          "estimated": 0.2637,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230000-00",
+          "actual": -6.6428,
+          "estimated": -2.539929999999999,
+          "changed": true,
+          "trigger_at": 1790135904.8038964,
+          "fill_at": 1790135906.8240554,
+          "fill_price": 0.71
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230045-45",
+          "actual": 0.3667,
+          "estimated": 0.3667,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230115-15",
+          "actual": -5.4049,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        }
+      ]
+    },
+    {
+      "threshold": 0.75,
+      "delay": 0.7,
+      "complete": true,
+      "baseline": -11.1636,
+      "estimate": -7.608497029999998,
+      "changed": 4,
+      "rows": [
+        {
+          "ticker": "KXSILVER15M-26SEP221500-00",
+          "actual": 0.1983,
+          "estimated": 0.1983,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221630-30",
+          "actual": 0.2544,
+          "estimated": 0.2544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221645-45",
+          "actual": 0.1796,
+          "estimated": 0.1796,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221715-15",
+          "actual": 0.5544,
+          "estimated": 0.5544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221730-30",
+          "actual": 0.2731,
+          "estimated": 0.2731,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221745-45",
+          "actual": 0.245,
+          "estimated": 0.245,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221800-00",
+          "actual": 0.4025,
+          "estimated": -0.24251999999999896,
+          "changed": true,
+          "trigger_at": 1790114397.2932255,
+          "fill_at": 1790114398.6730576,
+          "fill_price": 0.8800000000000001
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221815-15",
+          "actual": 0.5074,
+          "estimated": 0.5074,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221830-30",
+          "actual": 0.217,
+          "estimated": 0.217,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221945-45",
+          "actual": 0.3263,
+          "estimated": 0.3263,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222000-00",
+          "actual": 0.2357,
+          "estimated": 0.2357,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222045-45",
+          "actual": -4.2488,
+          "estimated": -4.16459703,
+          "changed": true,
+          "trigger_at": 1790124272.4769254,
+          "fill_at": 1790124273.4521883,
+          "fill_price": 0.48843000000000003
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222100-00",
+          "actual": 0.5168,
+          "estimated": 0.5168,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222145-45",
+          "actual": 0.592,
+          "estimated": 0.592,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222300-00",
+          "actual": 0.2637,
+          "estimated": 0.2637,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230000-00",
+          "actual": -6.6428,
+          "estimated": -2.230479999999999,
+          "changed": true,
+          "trigger_at": 1790135831.425159,
+          "fill_at": 1790135832.4304485,
+          "fill_price": 0.74
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230045-45",
+          "actual": 0.3667,
+          "estimated": 0.3667,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230115-15",
+          "actual": -5.4049,
+          "estimated": -5.7013,
+          "changed": true,
+          "trigger_at": 1790140494.6819367,
+          "fill_at": 1790140495.6510653,
+          "fill_price": 0.4
+        }
+      ]
+    },
+    {
+      "threshold": 0.75,
+      "delay": 2.0,
+      "complete": false,
+      "baseline": -11.1636,
+      "estimate": null,
+      "changed": 2,
+      "rows": [
+        {
+          "ticker": "KXSILVER15M-26SEP221500-00",
+          "actual": 0.1983,
+          "estimated": 0.1983,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221630-30",
+          "actual": 0.2544,
+          "estimated": 0.2544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221645-45",
+          "actual": 0.1796,
+          "estimated": 0.1796,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221715-15",
+          "actual": 0.5544,
+          "estimated": 0.5544,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221730-30",
+          "actual": 0.2731,
+          "estimated": 0.2731,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221745-45",
+          "actual": 0.245,
+          "estimated": 0.245,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221800-00",
+          "actual": 0.4025,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221815-15",
+          "actual": 0.5074,
+          "estimated": 0.5074,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221830-30",
+          "actual": 0.217,
+          "estimated": 0.217,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP221945-45",
+          "actual": 0.3263,
+          "estimated": 0.3263,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222000-00",
+          "actual": 0.2357,
+          "estimated": 0.2357,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222045-45",
+          "actual": -4.2488,
+          "estimated": -4.049,
+          "changed": true,
+          "trigger_at": 1790124272.4769254,
+          "fill_at": 1790124275.4672112,
+          "fill_price": 0.5
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222100-00",
+          "actual": 0.5168,
+          "estimated": 0.5168,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222145-45",
+          "actual": 0.592,
+          "estimated": 0.592,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP222300-00",
+          "actual": 0.2637,
+          "estimated": 0.2637,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230000-00",
+          "actual": -6.6428,
+          "estimated": -2.0234799999999993,
+          "changed": true,
+          "trigger_at": 1790135831.425159,
+          "fill_at": 1790135833.435285,
+          "fill_price": 0.76
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230045-45",
+          "actual": 0.3667,
+          "estimated": 0.3667,
+          "changed": false
+        },
+        {
+          "ticker": "KXSILVER15M-26SEP230115-15",
+          "actual": -5.4049,
+          "estimated": null,
+          "changed": false,
+          "reason": "NO_TIMELY_LATER_BOOK"
+        }
+      ]
+    }
+  ]
+}

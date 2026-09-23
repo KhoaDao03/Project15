@@ -14,11 +14,6 @@ from btc15.fleet import create_fleet_app
 ORIGIN = "http://127.0.0.1:8000"
 
 
-@pytest.fixture
-def anyio_backend():
-    return "asyncio"
-
-
 def connect_dashboard(monkeypatch, service):
     def initialize(self, manifest):
         def handle(request):
@@ -174,3 +169,68 @@ def test_worker_failure_requests_service_restart_and_blocks_actions(portfolios, 
             client.post("/api/manual/orders", json={}, headers={"Origin": "http://localhost"}).status_code
             == 503
         )
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("failed_path", ["/api/execution/purchases", "/api/execution/status"])
+async def test_overview_failures_are_independent(tmp_path, failed_path):
+    client = ExecutionClient(tmp_path / "manifest.json")
+    await client.close()
+    calls = []
+
+    async def respond(request):
+        calls.append(request.url.path)
+        assert request.url.params.get_list("ticker") == ["CURRENT"]
+        if request.url.path == failed_path:
+            raise httpx.ReadTimeout("slow read")
+        return httpx.Response(
+            200,
+            json=(
+                {"running": True, "available": True, "controls": {}, "assets": {}}
+                if request.url.path.endswith("/status")
+                else {"CURRENT": {"yes": "2", "no": "0", "pending": 0}}
+            ),
+        )
+
+    client.http = httpx.AsyncClient(transport=httpx.MockTransport(respond), base_url="http://localhost")
+    try:
+        result = await client.overview(["CURRENT", "CURRENT"])
+        assert len(calls) == 2
+        if failed_path.endswith("/purchases"):
+            assert result["live"]["running"] is True
+            assert result["purchases"] is None
+        else:
+            assert result["live"]["running"] is None
+            assert result["live"]["available"] is False
+            assert result["purchases"]["CURRENT"]["yes"] == "2"
+    finally:
+        await client.close()
+
+
+def test_slow_purchase_read_does_not_block_worker_status(portfolios, monkeypatch):  # noqa: F811
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+
+    manifest, _ = portfolios
+    app = create_execution_app(manifest, settings=Settings())
+    entered, release = Event(), Event()
+
+    def slow(tickers):
+        assert tickers == ["CURRENT"]
+        entered.set()
+        assert release.wait(5)
+        return {}
+
+    monkeypatch.setattr(app.state.manual, "purchases", slow)
+    with TestClient(app, base_url="http://localhost") as service, ThreadPoolExecutor() as pool:
+        pending = pool.submit(service.get, "/api/execution/purchases?ticker=CURRENT")
+        try:
+            assert entered.wait(2)
+            status = service.get("/api/execution/status?ticker=CURRENT")
+            assert status.status_code == 200
+            assert status.json()["running"] is True
+            assert status.json()["controls"] == {}
+            assert not pending.done()
+        finally:
+            release.set()
+        assert pending.result().status_code == 200

@@ -1,0 +1,106 @@
+{
+  "start": 1790128800,
+  "end": 1790129340,
+  "assets": {
+    "BTC": {
+      "inputs": 404793,
+      "per_second": 749.6,
+      "peak_second": 2325,
+      "types": {
+        "orderbook_delta": 367436,
+        "trade": 24179,
+        "heartbeat": 1063,
+        "cfbenchmarks_value": 540,
+        "cfbenchmarks_value_5hz": 2700,
+        "ticker": 542,
+        "market_lifecycle_v2": 7136,
+        "orderbook_snapshot": 2,
+        "metadata": 19,
+        "settlement": 1122,
+        "event_lifecycle": 42,
+        "subscription_update_requested": 6,
+        "ok": 6
+      },
+      "orderbook_markets": {
+        "KXBTC15M-26SEP222215-15": 367320,
+        "KXBTC15M-26SEP222200-00": 116
+      },
+      "mean_archive_input_bytes": 914
+    },
+    "ETH": {
+      "inputs": 122454,
+      "per_second": 226.8,
+      "peak_second": 2115,
+      "types": {
+        "orderbook_delta": 106209,
+        "cfbenchmarks_value_5hz": 2700,
+        "cfbenchmarks_value": 540,
+        "ticker": 542,
+        "heartbeat": 1072,
+        "market_lifecycle_v2": 7136,
+        "metadata": 21,
+        "subscription_update_requested": 12,
+        "ok": 12,
+        "orderbook_snapshot": 3,
+        "settlement": 1027,
+        "trade": 3138,
+        "event_lifecycle": 42
+      },
+      "orderbook_markets": {
+        "KXETH15M-26SEP222200-00": 20,
+        "KXETH15M-26SEP222215-15": 106189
+      },
+      "mean_archive_input_bytes": 930
+    },
+    "SOL": {
+      "inputs": 58873,
+      "per_second": 109.0,
+      "peak_second": 1963,
+      "types": {
+        "orderbook_delta": 44424,
+        "settlement": 1465,
+        "cfbenchmarks_value_5hz": 2700,
+        "cfbenchmarks_value": 540,
+        "heartbeat": 1072,
+        "market_lifecycle_v2": 7136,
+        "ticker": 520,
+        "trade": 946,
+        "orderbook_snapshot": 2,
+        "event_lifecycle": 42,
+        "metadata": 14,
+        "subscription_update_requested": 6,
+        "ok": 6
+      },
+      "orderbook_markets": {
+        "KXSOL15M-26SEP222200-00": 37,
+        "KXSOL15M-26SEP222215-15": 44387
+      },
+      "mean_archive_input_bytes": 985
+    },
+    "XRP": {
+      "inputs": 76606,
+      "per_second": 141.9,
+      "peak_second": 1282,
+      "types": {
+        "orderbook_delta": 60332,
+        "settlement": 1241,
+        "cfbenchmarks_value": 540,
+        "cfbenchmarks_value_5hz": 2700,
+        "heartbeat": 1071,
+        "market_lifecycle_v2": 7136,
+        "ticker": 506,
+        "orderbook_snapshot": 3,
+        "trade": 3000,
+        "metadata": 17,
+        "subscription_update_requested": 9,
+        "ok": 9,
+        "event_lifecycle": 42
+      },
+      "orderbook_markets": {
+        "KXXRP15M-26SEP222200-00": 28,
+        "KXXRP15M-26SEP222215-15": 60304
+      },
+      "mean_archive_input_bytes": 956
+    }
+  }
+}

@@ -20,6 +20,7 @@ class CollectorRecovery:
         self.paused = threading.Event()
         self.paused.set()
         self.drain = threading.Event()
+        self.catching_up = threading.Event()
         self.phase = "RECOVERING"
         self.reason = "STARTUP"
         self.since = now
@@ -50,11 +51,17 @@ class CollectorRecovery:
         if warning and not self.warning:
             log.warning("Collector backlog rising: %.3fs, %s/%s events", lag, depth, capacity)
         self.warning = warning
-        if (
-            lag >= min(2.0, self.config.reference_max_age, self.config.book_max_age)
-            or depth >= capacity * 0.8
-        ):
+        if depth >= capacity * 0.8:
             self.request("PROCESSING_OVERLOAD", now)
+        elif lag >= min(2.0, self.config.reference_max_age, self.config.book_max_age):
+            # Contiguous buffered input is still usable. Suspend calculations and
+            # entries while applying every frame, instead of creating reference
+            # gaps by reconnecting an otherwise healthy socket on each burst.
+            with self._gate_lock:
+                self.paused.set()
+                if not self.catching_up.is_set() and not self.drain.is_set():
+                    self.reason, self.since = "PROCESSING_BACKLOG", now
+                self.catching_up.set()
 
     def reconnect(self):
         """Called on the worker only after the old socket and its queue are drained."""
@@ -67,6 +74,7 @@ class CollectorRecovery:
         self.reasons = ["WAITING_FOR_CONNECTION"]
         self._stalled_since.clear()
         self.drain.clear()
+        self.catching_up.clear()
 
     def observe(self, engine, row, payload, valid):
         if self.drain.is_set():
@@ -176,11 +184,17 @@ class CollectorRecovery:
                 self.phase, self.reasons = "DRAINING", [self.reason]
                 self.paused.set()
             else:
+                # A new burst can arrive while the worker checks freshness.
+                if self.catching_up.is_set() and (
+                    self.lag > self.WARNING_LAG or self.depth > capacity * self.RESUME_QUEUE_FRACTION
+                ):
+                    reasons.append("BACKLOG_NOT_DRAINED")
                 self.reasons = sorted(set(reasons))
                 self.phase = "RECOVERING" if reasons else "READY"
                 if reasons:
                     self.paused.set()
                 else:
+                    self.catching_up.clear()
                     self.paused.clear()
 
     def status(self):
@@ -189,6 +203,7 @@ class CollectorRecovery:
             reason=self.reason,
             reasons=[self.reason] if self.drain.is_set() else self.reasons,
             entries_blocked=self.paused.is_set(),
+            catching_up=self.catching_up.is_set(),
             since=self.since,
             warning=self.warning,
             oldest_event_lag=self.lag,

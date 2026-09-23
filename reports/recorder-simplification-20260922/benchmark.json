@@ -1,0 +1,63 @@
+{
+  "runs": [
+    {
+      "version": "before",
+      "trial": 0,
+      "cpu_seconds": 0.801175602,
+      "wall_seconds": 0.8147600839729421,
+      "events_per_cpu_second": 14977.989806534322,
+      "recorded": 24000,
+      "drops": 0
+    },
+    {
+      "version": "after",
+      "trial": 0,
+      "cpu_seconds": 0.8917322110000001,
+      "wall_seconds": 0.8630308249848895,
+      "events_per_cpu_second": 13456.954735932488,
+      "recorded": 24000,
+      "drops": 0
+    },
+    {
+      "version": "before",
+      "trial": 1,
+      "cpu_seconds": 0.877844305,
+      "wall_seconds": 0.8592035679612309,
+      "events_per_cpu_second": 13669.850031094067,
+      "recorded": 24000,
+      "drops": 0
+    },
+    {
+      "version": "after",
+      "trial": 1,
+      "cpu_seconds": 0.7862918949999997,
+      "wall_seconds": 0.7634247639798559,
+      "events_per_cpu_second": 15261.50794165315,
+      "recorded": 24000,
+      "drops": 0
+    },
+    {
+      "version": "before",
+      "trial": 2,
+      "cpu_seconds": 0.8578626330000003,
+      "wall_seconds": 0.8506938130012713,
+      "events_per_cpu_second": 13988.253524967318,
+      "recorded": 24000,
+      "drops": 0
+    },
+    {
+      "version": "after",
+      "trial": 2,
+      "cpu_seconds": 0.8105047089999999,
+      "wall_seconds": 0.8009800700237975,
+      "events_per_cpu_second": 14805.589488561505,
+      "recorded": 24000,
+      "drops": 0
+    }
+  ],
+  "summary": {
+    "before": 0.8578626330000003,
+    "after": 0.8105047089999999,
+    "cpu_reduction_percent": 5.52045539440117
+  }
+}

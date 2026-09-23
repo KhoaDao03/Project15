@@ -1,0 +1,36 @@
+{
+  "BTC": {
+    "observed_at": 1790046073.1066947,
+    "policy": {
+      "asset": "BTC",
+      "enabled": true,
+      "contracts": 10,
+      "revision": 158,
+      "config_version": "2c421834f356f122",
+      "stop_price": 0.55
+    },
+    "session": "20260922T025927Z-93f9ece140ac48d59ad1188ba35452aa",
+    "source_sha256": "36a58b0748af2316fb44a716d43e753aae628f70fbfa826ab4bd22442c02e7b0",
+    "process_id": 457664,
+    "started_at": 1790045967.7780578,
+    "engine_and_runner_match": true,
+    "sigma": 0.8
+  },
+  "ETH": {
+    "observed_at": 1790046073.1185374,
+    "policy": {
+      "asset": "ETH",
+      "enabled": true,
+      "contracts": 10,
+      "revision": 152,
+      "config_version": "55b71643ce6066f1",
+      "stop_price": 0.55
+    },
+    "session": "20260922T025932Z-8554dd01e6774a3fb35f8a0445a268ab",
+    "source_sha256": "36a58b0748af2316fb44a716d43e753aae628f70fbfa826ab4bd22442c02e7b0",
+    "process_id": 457739,
+    "started_at": 1790045972.733033,
+    "engine_and_runner_match": true,
+    "sigma": 1.1
+  }
+}

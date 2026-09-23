@@ -1,0 +1,115 @@
+{
+  "session": "20260922T025927Z-93f9ece140ac48d59ad1188ba35452aa",
+  "files": [
+    "events-1790045968463839991.jsonl.gz",
+    "events-1790046568527104015.jsonl.gz"
+  ],
+  "counts": {
+    "input": 1,
+    "model_calculation": 1348,
+    "reference_sample": 1195
+  },
+  "gaps": [],
+  "checked": 1348,
+  "atr_ready": 365,
+  "mismatches": [],
+  "fallback": {
+    "None": 407,
+    "INSUFFICIENT_CONTIGUOUS_REFERENCE_CANDLES": 941
+  },
+  "first_time": 1790045968.4385242,
+  "last_time": 1790047167.0935817,
+  "examples": {
+    "model": {
+      "model_id": "BTC-btc080-xrp070-20260921T174538Z-signals:5c6ac61e-abb5-4bf6-a28d-281d4f65f95a:KXBTC15M-26SEP212300-00:model",
+      "market": "KXBTC15M-26SEP212300-00",
+      "input_id": "5c6ac61e-abb5-4bf6-a28d-281d4f65f95a",
+      "evaluated_at": 1790045968.4385242,
+      "started_at": 1790045968.540879,
+      "started_monotonic_ns": 448711836335079,
+      "finished_monotonic_ns": 448711857419973,
+      "reference_input_id": null,
+      "history_input_id": "793d465c-5e50-4a78-a8e1-24966454e610",
+      "seed_input_id": null,
+      "reference": {
+        "source": 1790045966.0,
+        "received": 1790045966.0974483,
+        "price": 85741.03
+      },
+      "features": {
+        "reference": 85741.03,
+        "history_seconds": 3598.0,
+        "max_gap": 1.0,
+        "returns_count": 3585,
+        "momentum_5": 3.708980339478529e-05,
+        "rv_5": 6.991569310590619e-05,
+        "momentum_15": 0.00022211336904320866,
+        "rv_15": 5.6666917309971833e-05,
+        "momentum_30": -2.4725007187087478e-05,
+        "rv_30": 4.751874853381622e-05,
+        "momentum_60": 0.0003411432662880909,
+        "rv_60": 5.487957556782722e-05,
+        "momentum_180": 0.000608480282566326,
+        "rv_180": 5.968084722795826e-05,
+        "momentum_300": 0.0010638656829877746,
+        "rv_300": 6.044171785198655e-05,
+        "ewma": 5.4753146263237554e-05,
+        "sigma": 6.044171785198655e-05,
+        "volatility_disagreement": 0.07636953608837856,
+        "recent_jump": 0.00030375590204023695,
+        "shock": false,
+        "regime": "NORMAL",
+        "return_acceleration": 8.242127585193307e-06,
+        "consecutive_direction": -1,
+        "maximum_adverse_move": -3.2574465052115364e-05,
+        "maximum_favorable_move": 0.0011181564580744485,
+        "atr": null,
+        "bollinger": null,
+        "stochastic_rsi": null,
+        "candle_direction": 1,
+        "max_minute_shock": 89.79000000000815,
+        "bollinger_fresh": false,
+        "reference_rolling_atr": null,
+        "bleep": null,
+        "reference_readiness": {
+          "observed_samples": 3586,
+          "oldest_source": 1790042368.0,
+          "newest_source": 1790045966.0,
+          "newest_received": 1790045966.0974483,
+          "contiguous_candles": 13,
+          "atr_required_candles": 15,
+          "indicator_required_candles": 33,
+          "atr_ready": false,
+          "reference_indicators_ready": false,
+          "missing_seconds": [
+            {
+              "first_missing": 1790044191,
+              "last_missing": 1790044196,
+              "count": 6
+            },
+            {
+              "first_missing": 1790045185,
+              "last_missing": 1790045191,
+              "count": 7
+            }
+          ],
+          "incomplete_minutes": [
+            29834039,
+            29834069,
+            29834086
+          ],
+          "reasons": [
+            "INSUFFICIENT_CONTIGUOUS_REFERENCE_CANDLES",
+            "MISSING_REFERENCE_SECONDS",
+            "INCOMPLETE_REFERENCE_MINUTES"
+          ],
+          "expected_sample_interval_seconds": 1,
+          "current_minute_partial": true
+        }
+      },
+      "probability": {},
+      "error": "BLEEP_WARMUP: need 33 contiguous causal one-minute candles",
+      "config_version": "2c421834f356f122"
+    }
+  }
+}

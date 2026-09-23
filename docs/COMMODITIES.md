@@ -18,13 +18,13 @@ the published strike. They do not settle on the crypto 60-sample average.
 The probability model is `bleep-reference-atr-finish-v5`, shared with crypto.
 It uses rolling ATR from official Pyth reference candles, a Normal-CDF estimate
 of spot-to-strike distance, and the fading indicator adjustment. Commodity sigma
-uses a **1.35 multiplier**; selected-side confidence is capped at book mid
+uses a **1.35 multiplier for gold and 1.20 for silver and WTI**; selected-side confidence is capped at book mid
 **+6 percentage points**, up to 98%, and checked again before paper submission.
 
 | Setting | GOLD / SILVER / WTI |
 | --- | --- |
 | Entry window | `1 < seconds_remaining <= 420` |
-| Confidence after safety and market-respect caps | At least 85% |
+| Confidence after safety and market-respect caps | At least 84% |
 | Price range / maximum spread | 80–97¢ / disabled |
 | Same-side confirmation | One fresh sample |
 | Paper hard stop | 55¢ |
@@ -126,4 +126,4 @@ with `live_only: true` for GOLD, SILVER, and WTI. The former
 `project15-signal@SILVER`, and `project15-signal@WTI` provide live-entry signals.
 The active dashboard uses real order history only. Original simulation ledgers
 remain archived in their previous directories and are not used for live totals.
-Commodity ATR multipliers are 1.35. Existing reference warm-up checks still apply.
+Commodity ATR multipliers are gold 1.35, silver 1.20, and WTI 1.20. Existing reference warm-up checks still apply.

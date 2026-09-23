@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 import httpx
-from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response
 
 from .live_automation import install_live_automation
 from .manual_trading import install_manual_trading, local_request
@@ -73,10 +73,19 @@ def create_execution_app(manifest, *, settings=None, client_factory=None):
         return await call_next(request)
 
     @app.get("/api/execution/overview", dependencies=[Depends(local_request)])
-    async def overview():
+    def overview():
         return dict(
             live=dict(**live.state(), available=True, process_id=os.getpid()), purchases=manual.purchases()
         )
+
+    @app.get("/api/execution/status", dependencies=[Depends(local_request)])
+    def status(ticker: list[str] = Query(default=[])):
+        # Threaded, scoped reads: dashboard history must not block execution's event loop.
+        return dict(**live.state(ticker), available=True, process_id=os.getpid())
+
+    @app.get("/api/execution/purchases", dependencies=[Depends(local_request)])
+    def purchases(ticker: list[str] = Query(default=[])):
+        return manual.purchases(ticker)
 
     @app.post("/api/execution/prepare-shutdown", dependencies=[Depends(local_request)])
     async def prepare_shutdown(request: Request):
@@ -123,23 +132,31 @@ class ExecutionClient:
                 "been accepted; check its original order ID before retrying.",
             ) from None
 
-    async def overview(self):
-        try:
-            response = await self.request("GET", "/api/execution/overview", timeout=2)
-            response.raise_for_status()
-            return response.json()
-        except (HTTPException, httpx.HTTPError, ValueError):
-            return dict(
-                live=dict(
-                    running=False,
-                    available=False,
-                    controls={},
-                    assets={},
-                    messages={},
-                    error="Execution service unavailable; trading state cannot be confirmed",
-                ),
-                purchases=None,
+    async def overview(self, tickers=()):
+        query = str(httpx.QueryParams([("ticker", t) for t in dict.fromkeys(tickers)]))
+
+        async def read(path):
+            try:
+                response = await self.request("GET", path, query=query, timeout=2)
+                response.raise_for_status()
+                result = response.json()
+                return result if isinstance(result, dict) else None
+            except (HTTPException, httpx.HTTPError, ValueError):
+                return None
+
+        live, purchases = await asyncio.gather(
+            read("/api/execution/status"), read("/api/execution/purchases")
+        )
+        if live is None:
+            live = dict(
+                running=None,
+                available=False,
+                controls={},
+                assets={},
+                messages={},
+                error="Live status temporarily unavailable; trading state cannot be confirmed",
             )
+        return dict(live=live, purchases=purchases)
 
     async def prepare_shutdown(self, asset=None):
         body = dict(confirm=True)

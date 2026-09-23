@@ -1,4 +1,8 @@
-# Settlement Edge-only scope and recovery
+# Historical single-strategy migration and recovery
+
+This describes an earlier paper-only migration and its legacy recovery rules.
+For the current system use [architecture](ARCHITECTURE.md) and
+[live automation](LIVE_AUTOMATION.md). Preserve the pinned recovery revisions below.
 
 ## Implementation review (before changes)
 

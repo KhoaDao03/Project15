@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import logging
 import re
 import sqlite3
 import time
@@ -10,13 +11,14 @@ from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlparse
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import httpx
 import websockets
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field
 
+from . import execution_journal
 from .api import KalshiClient, read_timings
 from .config import Settings
 from .domain import timestamp
@@ -110,11 +112,14 @@ class ManualTrading:
         self.client_factory = client_factory
         self.order_lock = asyncio.Lock()
         self.before_manual_order = None
+        self.research_check = None
+        self.research_execution = None
         self._client = None
         self.fill_wakeup = asyncio.Event()
         self.fill_stream = dict(connected=False, last_event_at=None)
         with self.db() as db:
             db.execute("CREATE TABLE IF NOT EXISTS manual_orders (id TEXT PRIMARY KEY, body TEXT NOT NULL)")
+            execution_journal.initialize(db)
 
             for name, expression in (
                 ("state", "$.state"),
@@ -168,8 +173,15 @@ class ManualTrading:
             result = db.execute("SELECT body FROM manual_orders WHERE id=?", (order_id,)).fetchone()
         return json.loads(result[0]) if result else None
 
-    def purchases(self):
+    def purchases(self, tickers=None):
         """Cumulative confirmed dashboard buy fills by market, not current holdings."""
+        if tickers is not None and not tickers:
+            return {}
+        scope = ""
+        parameters = []
+        if tickers is not None:
+            scope = " AND json_extract(body, '$.request.ticker') IN (" + ",".join("?" for _ in tickers) + ")"
+            parameters = list(tickers)
         totals = {}
         with self.db() as db:
             rows = db.execute(
@@ -177,7 +189,9 @@ class ManualTrading:
                 "json_extract(body, '$.request.side'), json_extract(body, '$.state'), "
                 "coalesce(json_extract(body, '$.exchange_order.fill_count_fp'), '0') "
                 "FROM manual_orders WHERE json_extract(body, '$.request.action') = 'buy' "
-                "ORDER BY rowid DESC"
+                + scope
+                + " ORDER BY rowid DESC",
+                parameters,
             ).fetchall()
         for ticker, side, state, quantity in rows:
             market = totals.setdefault(ticker, dict(yes=Decimal(0), no=Decimal(0), pending=0))
@@ -191,7 +205,24 @@ class ManualTrading:
             for ticker, v in totals.items()
         }
 
-    def save(self, row):
+    def publish_execution(self, event):
+        if event is not None and self.research_execution is not None:
+            try:
+                self.research_execution(event)
+            except Exception:
+                logging.getLogger(__name__).exception(
+                    "Execution archive delivery failed; durable event retained"
+                )
+
+    def execution_event(self, kind, *, market="", body=None, received_at=None, source_time=None):
+        with self.db() as db:
+            event = execution_journal.append(
+                db, kind, market=market, body=body, received_at=received_at, source_time=source_time
+            )
+        self.publish_execution(event)
+        return event
+
+    def save(self, row, *, event="order_state", details=None, received_at=None):
         row["updated_at"] = time.time()
         with self.db() as db:
             current = db.execute("SELECT body FROM manual_orders WHERE id=?", (row["id"],)).fetchone()
@@ -210,9 +241,11 @@ class ManualTrading:
                 if "fill_notification" in previous:
                     row["fill_notification"] = previous["fill_notification"]
             db.execute("UPDATE manual_orders SET body=? WHERE id=?", (json.dumps(row), row["id"]))
+            recorded = execution_journal.append(db, event, row=row, body=details, received_at=received_at)
+        self.publish_execution(recorded)
         return row
 
-    def claim(self, order, origin="manual", reason=None, *, resting=False):
+    def claim(self, order, origin="manual", reason=None, *, resting=False, timing=None):
         payload = order.model_dump(mode="json")
         with self.db() as db:
             db.execute("BEGIN IMMEDIATE")
@@ -247,7 +280,11 @@ class ManualTrading:
             )
             if resting:
                 row["resting_take_profit"] = True
+            if timing:
+                row["timing"] = dict(timing)
             db.execute("INSERT INTO manual_orders VALUES (?, ?)", (row["id"], json.dumps(row)))
+            event = execution_journal.append(db, "order_requested", row=row)
+        self.publish_execution(event)
         return row, True
 
     @asynccontextmanager
@@ -272,6 +309,23 @@ class ManualTrading:
 
     def receive_fill(self, message):
         """Report authenticated fills without changing authoritative order/retry state."""
+        received_at = time.time()
+        accepted = self._receive_fill(message, received_at)
+        if not accepted and message.get("type") == "fill":
+            fill = message.get("msg", {})
+            self.execution_event(
+                "fill_ignored",
+                market=fill.get("market_ticker", ""),
+                body=dict(
+                    reason="duplicate_or_unmatched_notification",
+                    **execution_journal.fill_details(fill, fill.get("purchased_side", fill.get("side"))),
+                ),
+                source_time=execution_journal.fill_source_time(fill),
+                received_at=received_at,
+            )
+        return accepted
+
+    def _receive_fill(self, message, received_at):
         if message.get("type") != "fill":
             return False
         fill = message.get("msg", {})
@@ -311,6 +365,17 @@ class ManualTrading:
             row.setdefault("timing", {}).setdefault("first_fill_received_at", now)
             row["timing"]["last_fill_received_at"] = now
             db.execute("UPDATE manual_orders SET body=? WHERE id=?", (json.dumps(row), client_id))
+            source_time = execution_journal.fill_source_time(fill)
+            event = execution_journal.append(
+                db,
+                "fill",
+                row=row,
+                received_at=received_at,
+                source_time=source_time,
+                event_id=f"fill:{fill['exchange_index']}:{fill['order_id']}:{fill['trade_id']}",
+                body=execution_journal.fill_details(fill, request["side"]),
+            )
+        self.publish_execution(event)
         self.fill_wakeup.set()
         return True
 
@@ -336,6 +401,11 @@ class ManualTrading:
                                 raise ValueError("Fill subscription rejected")
                             if message.get("type") == "subscribed":
                                 self.fill_stream.update(connected=True, error=None)
+                                self.execution_event(
+                                    "fill_stream_connected",
+                                    body=dict(sid=message.get("msg", {}).get("sid")),
+                                    received_at=time.time(),
+                                )
                                 self.fill_wakeup.set()  # REST also covers events missed during disconnects.
                             if message.get("type") == "fill":
                                 self.fill_stream["last_event_at"] = time.time()
@@ -346,6 +416,11 @@ class ManualTrading:
                 self.fill_stream["error"] = type(exc).__name__
             finally:
                 self.fill_stream["connected"] = False
+                self.execution_event(
+                    "fill_stream_disconnected",
+                    body=dict(error=self.fill_stream.get("error")),
+                    received_at=time.time(),
+                )
             await asyncio.sleep(2)
 
     async def market(self, client, ticker):
@@ -453,7 +528,12 @@ class ManualTrading:
         if row["state"] == "complete":
             row.setdefault("timing", {}).setdefault("fill_confirmed_at", time.time())
         row["message"] = "Exchange order status: " + order["status"]
-        return self.save(row)
+        return self.save(
+            row,
+            event="order_reconciled",
+            received_at=time.time(),
+            details=dict(fill_history="cumulative observation; not individual fills"),
+        )
 
     async def cancel_resting(self, row):
         """Cancel our resting take-profit and verify final cumulative fills before replacing."""
@@ -464,7 +544,7 @@ class ManualTrading:
             if row["state"] not in UNRESOLVED:
                 return row
             row.setdefault("cancel_requested_at", time.time())
-            self.save(row)
+            self.save(row, event="cancellation_requested")
             async with self.client() as client:
                 if not row.get("order_id"):
                     row = await self.reconcile(client, row)
@@ -473,10 +553,17 @@ class ManualTrading:
                 path = "portfolio/events/orders/" + row["order_id"]
                 headers = client.headers("DELETE", urlparse(client.settings.rest_url).path + "/" + path)
                 row["cancel_attempted_at"] = time.time()
-                self.save(row)
+                self.save(row, event="cancellation_attempt")
                 try:
                     response = await client.http.delete(
                         path, params={"exchange_index": row["exchange_index"]}, headers=headers
+                    )
+                    received_at = time.time()
+                    self.save(
+                        row,
+                        event="cancellation_response",
+                        received_at=received_at,
+                        details=dict(http_status=response.status_code),
                     )
                     if response.status_code != 404:
                         response.raise_for_status()
@@ -484,7 +571,7 @@ class ManualTrading:
                     # A lost cancellation response may still have canceled or filled the order.
                     # Only authoritative reconciliation can allow another sale.
                     row["message"] = "Cancellation unconfirmed; reconciling before any replacement"
-                    self.save(row)
+                    self.save(row, event="cancellation_unknown")
                 return await self.reconcile(client, row)
 
     async def submit(self, order, *, authorize=None, reason=None, timing=None, resting=False):
@@ -514,7 +601,7 @@ class ManualTrading:
         if not TICKER.fullmatch(order.ticker):
             raise HTTPException(422, "Unsupported market")
         row, fresh = self.claim(
-            order, origin="bot" if authorize else "manual", reason=reason, resting=resting
+            order, origin="bot" if authorize else "manual", reason=reason, resting=resting, timing=timing
         )
         if not fresh:
             return row  # Repeated clicks/requests must never send another order.
@@ -522,9 +609,35 @@ class ManualTrading:
         self.save(row)
         preflight_start = time.monotonic()
         sent = False
+        trace = None
+        if self.research_check is not None and row["timing"].get("research_asset"):
+            trace = dict(
+                stage="live_preflight",
+                decision_id=str(uuid4()),
+                market=order.ticker,
+                order_id=row["id"],
+                collector_decision_id=row["timing"].get("decision_id"),
+                entry_check_id=row["timing"].get("execution_check_id"),
+                started_at=row["timing"]["preflight_started_at"],
+            )
+
+        def record_preflight(accepted):
+            nonlocal trace
+            if trace is not None:
+                trace.update(
+                    accepted=accepted,
+                    checked_at=time.time(),
+                    request=order.model_dump(mode="json", exclude={"confirm"}),
+                    reason=None if accepted else row.get("message"),
+                )
+                self.research_check(row["timing"]["research_asset"], trace)
+                trace = None
+
         try:
             async with self.client() as client:
                 market = await self.market(client, order.ticker)
+                if trace is not None:
+                    trace.update(market_response=market, market_observed_at=time.time())
                 balance = None
                 if authorize and order.action == "buy":
                     order = order.model_copy(
@@ -550,6 +663,14 @@ class ManualTrading:
                     holdings, balance = positions_task.result(), balance_task.result()
                 else:
                     holdings = await self.holdings(client, order.ticker, market["exchange_index"])
+                if trace is not None:
+                    trace.update(
+                        holdings=holdings,
+                        portfolio_observed_at=time.time(),
+                        balance={k: balance[k] for k in ("balance", "balance_dollars") if k in balance}
+                        if balance is not None
+                        else None,
+                    )
                 if order.action == "sell" and Decimal(holdings[order.side]) < order.count:
                     raise HTTPException(409, "Sell quantity exceeds your real position on this side")
                 opposite = "no" if order.side == "yes" else "yes"
@@ -592,14 +713,20 @@ class ManualTrading:
                     preflight_completed_at=time.time(),
                     preflight_ms=(time.monotonic() - preflight_start) * 1000,
                 )
-                self.save(row)
+                self.save(
+                    row,
+                    event="submission_attempt",
+                    details=dict(request=payload, stage="before_final_authorization"),
+                )
                 if authorize:
                     authorize()  # Recheck after journal I/O, immediately before the POST.
+                record_preflight(True)
                 row["timing"]["submitted_at"] = time.time()
                 post_start = time.monotonic()
                 sent = True
                 # No retry: network failures and 5xx may have accepted the order.
                 response = await client.http.post(path, json=payload, headers=headers)
+                received_at = time.time()
                 row["timing"].update(
                     acknowledged_at=time.time(), submission_ms=(time.monotonic() - post_start) * 1000
                 )
@@ -621,7 +748,7 @@ class ManualTrading:
                         message=f"Kalshi rejected the order (HTTP {response.status_code})"
                         + (": " + " · ".join(details.values()) if details else ""),
                     )
-                    return self.save(row)
+                    return self.save(row, event="exchange_rejection", received_at=received_at)
                 response.raise_for_status()
                 ack = response.json()
                 if ack.get("client_order_id") != row["id"] or not ack.get("order_id"):
@@ -632,11 +759,11 @@ class ManualTrading:
                     acknowledgement=ack,
                     message="Submitted. Check status to confirm fills and cancellation.",
                 )
-                self.save(row)
+                self.save(row, event="acknowledgment", received_at=received_at)
                 return await self.reconcile(client, row)
         except HTTPException as exc:
             row.update(state="rejected", message=exc.detail)
-            return self.save(row)
+            return self.save(row, event="preflight_rejection")
         except (httpx.HTTPError, KeyError, ValueError, InvalidOperation, RuntimeError, ExceptionGroup):
             row.update(
                 state="unknown" if sent else "rejected",
@@ -644,7 +771,9 @@ class ManualTrading:
                 if sent
                 else "Preflight failed; no order sent. Check Kalshi connectivity and credentials.",
             )
-            return self.save(row)
+            return self.save(row, event="submission_unknown" if sent else "preflight_failure")
+        finally:
+            record_preflight(False)
 
 
 def install_manual_trading(app, path, settings=None, client_factory=KalshiClient):

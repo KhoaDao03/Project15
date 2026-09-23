@@ -13,16 +13,10 @@ uv run --locked ruff check src tests scripts
 uv build
 ```
 
-For a focused change, run the relevant test modules first, for example:
-
-```bash
-uv run --locked pytest -q tests/test_strategy_settings.py tests/test_live_automation.py
-uv run --locked pytest -q tests/test_research_log.py tests/test_cloud_signals.py
-```
-
-With Node installed, `node --check src/btc15/static/app.js` checks JavaScript syntax.
-Node is not required to run the bot. Check formatting on changed Python files;
-keep unrelated repository-wide formatting changes separate.
+Use [the test README](../tests/README.md) for focused logging commands, shared fixtures
+and dependency requirements. Three JavaScript tests skip when Node.js is unavailable;
+install it to run those checks. Node is not needed by the bot. Check formatting only
+on changed Python files.
 
 ## Offline smoke test
 
@@ -65,8 +59,8 @@ Choose new output filenames to avoid overwriting earlier evidence.
 
 Before trusting replay, check timestamp continuity, warm-up/predecessor history,
 book depth, fees, lifecycle and settlement coverage. Report missing data and open
-positions as well as completed trades. Sampled research books have additional
-[execution limits](RESEARCH_LOGGING.md#analysis-limits); see [backtesting](BACKTESTING.md).
+positions as well as completed trades. Research archives have explicit
+[coverage and execution limits](RESEARCH_LOGGING.md#analysis-limits); see [backtesting](BACKTESTING.md).
 Zero trades and negative performance are valid findings, not reasons to alter fixtures.
 
 CI definitions: [paper validation](../.github/workflows/paper-validation.yml) and

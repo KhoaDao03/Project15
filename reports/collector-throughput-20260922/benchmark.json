@@ -1,0 +1,28 @@
+[
+  {
+    "variant": "before",
+    "events": 5000,
+    "processing_seconds": 2.80660553596681,
+    "drained_seconds": 2.8215259239659645,
+    "events_per_second": 1781.5114863577069,
+    "dropped": 0,
+    "written": 15003,
+    "final_book": {
+      "0.88": "150",
+      "0.10": "4950"
+    }
+  },
+  {
+    "variant": "after",
+    "events": 5000,
+    "processing_seconds": 1.6626029459876008,
+    "drained_seconds": 1.6653488570009358,
+    "events_per_second": 3007.3325757461325,
+    "dropped": 0,
+    "written": 10053,
+    "final_book": {
+      "0.88": "150",
+      "0.10": "4950"
+    }
+  }
+]

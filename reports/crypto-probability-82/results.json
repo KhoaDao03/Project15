@@ -1,0 +1,222 @@
+{
+  "BTC": {
+    "evaluations": 4960,
+    "band_evaluations": 59,
+    "start": 1789957398.1629562,
+    "end": 1789967307.0000908,
+    "opportunities": [
+      {
+        "ticker": "KXBTC15M-26SEP202300-00",
+        "side": "yes",
+        "confidence": 0.8231908068774643,
+        "ask": 0.9,
+        "time": 1789959342.043839,
+        "remaining": 257.9561610221863,
+        "actual_buys": [],
+        "settlement": "yes",
+        "won": true,
+        "gross_settlement_pnl_10": 1.0,
+        "time_utc": "2026-09-21T02:55:42.043839+00:00"
+      },
+      {
+        "ticker": "KXBTC15M-26SEP202345-45",
+        "side": "yes",
+        "confidence": 0.8216701595107769,
+        "ask": 0.925,
+        "time": 1789962061.0673888,
+        "remaining": 238.93261122703552,
+        "actual_buys": [
+          {
+            "time": 1789962086.4053428,
+            "side": "yes"
+          }
+        ],
+        "settlement": "yes",
+        "won": true,
+        "gross_settlement_pnl_10": 0.75,
+        "time_utc": "2026-09-21T03:41:01.067389+00:00"
+      },
+      {
+        "ticker": "KXBTC15M-26SEP210045-45",
+        "side": "yes",
+        "confidence": 0.8270392209103133,
+        "ask": 0.87,
+        "time": 1789965553.4321477,
+        "remaining": 346.56785225868225,
+        "actual_buys": [
+          {
+            "time": 1789965554.2042704,
+            "side": "yes"
+          }
+        ],
+        "settlement": "yes",
+        "won": true,
+        "gross_settlement_pnl_10": 1.3,
+        "time_utc": "2026-09-21T04:39:13.432148+00:00"
+      },
+      {
+        "ticker": "KXBTC15M-26SEP210100-00",
+        "side": "yes",
+        "confidence": 0.8203387797554903,
+        "ask": 0.85,
+        "time": 1789966680.5123441,
+        "remaining": 119.48765587806702,
+        "actual_buys": [],
+        "settlement": "no",
+        "won": false,
+        "gross_settlement_pnl_10": -8.5,
+        "time_utc": "2026-09-21T04:58:00.512344+00:00"
+      }
+    ]
+  },
+  "ETH": {
+    "evaluations": 5142,
+    "band_evaluations": 97,
+    "start": 1789957398.1169944,
+    "end": 1789967306.821067,
+    "opportunities": [
+      {
+        "ticker": "KXETH15M-26SEP202330-30",
+        "side": "yes",
+        "confidence": 0.8210281270260906,
+        "ask": 0.948,
+        "time": 1789961010.5854943,
+        "remaining": 389.41450572013855,
+        "actual_buys": [
+          {
+            "time": 1789961027.764484,
+            "side": "yes"
+          }
+        ],
+        "settlement": "yes",
+        "won": true,
+        "gross_settlement_pnl_10": 0.52,
+        "time_utc": "2026-09-21T03:23:30.585494+00:00"
+      },
+      {
+        "ticker": "KXETH15M-26SEP210000-00",
+        "side": "yes",
+        "confidence": 0.8238345396416656,
+        "ask": 0.89,
+        "time": 1789963158.0933504,
+        "remaining": 41.906649589538574,
+        "actual_buys": [
+          {
+            "time": 1789963160.111993,
+            "side": "yes"
+          }
+        ],
+        "settlement": "yes",
+        "won": true,
+        "gross_settlement_pnl_10": 1.1,
+        "time_utc": "2026-09-21T03:59:18.093350+00:00"
+      },
+      {
+        "ticker": "KXETH15M-26SEP210015-15",
+        "side": "no",
+        "confidence": 0.8247142322145302,
+        "ask": 0.94,
+        "time": 1789963800.0515256,
+        "remaining": 299.94847440719604,
+        "actual_buys": [
+          {
+            "time": 1789963817.494255,
+            "side": "no"
+          }
+        ],
+        "settlement": "no",
+        "won": true,
+        "gross_settlement_pnl_10": 0.6,
+        "time_utc": "2026-09-21T04:10:00.051526+00:00"
+      },
+      {
+        "ticker": "KXETH15M-26SEP210045-45",
+        "side": "yes",
+        "confidence": 0.8228032249046492,
+        "ask": 0.9,
+        "time": 1789965543.076302,
+        "remaining": 356.9236979484558,
+        "actual_buys": [
+          {
+            "time": 1789965545.1323934,
+            "side": "yes"
+          }
+        ],
+        "settlement": "yes",
+        "won": true,
+        "gross_settlement_pnl_10": 1.0,
+        "time_utc": "2026-09-21T04:39:03.076302+00:00"
+      }
+    ]
+  },
+  "SOL": {
+    "evaluations": 4995,
+    "band_evaluations": 53,
+    "start": 1789957397.0968523,
+    "end": 1789967306.6947722,
+    "opportunities": [
+      {
+        "ticker": "KXSOL15M-26SEP202315-15",
+        "side": "yes",
+        "confidence": 0.8268646604991406,
+        "ask": 0.917,
+        "time": 1789960083.0963812,
+        "remaining": 416.90361881256104,
+        "actual_buys": [
+          {
+            "time": 1789960248.978877,
+            "side": "yes"
+          }
+        ],
+        "settlement": "yes",
+        "won": true,
+        "gross_settlement_pnl_10": 0.83,
+        "time_utc": "2026-09-21T03:08:03.096381+00:00"
+      }
+    ]
+  },
+  "XRP": {
+    "evaluations": 4976,
+    "band_evaluations": 105,
+    "start": 1789957397.0604455,
+    "end": 1789967401.3707473,
+    "opportunities": [
+      {
+        "ticker": "KXXRP15M-26SEP202230-30",
+        "side": "yes",
+        "confidence": 0.8245147045090613,
+        "ask": 0.911,
+        "time": 1789957444.7961721,
+        "remaining": 355.2038278579712,
+        "actual_buys": [
+          {
+            "time": 1789957480.7001889,
+            "side": "yes"
+          }
+        ],
+        "settlement": "yes",
+        "won": true,
+        "gross_settlement_pnl_10": 0.89,
+        "time_utc": "2026-09-21T02:24:04.796172+00:00"
+      },
+      {
+        "ticker": "KXXRP15M-26SEP210115-15",
+        "side": "no",
+        "confidence": 0.8248742872900391,
+        "ask": 0.947,
+        "time": 1789967394.1510148,
+        "remaining": 305.8489851951599,
+        "actual_buys": [
+          {
+            "time": 1789967401.1111116,
+            "side": "no"
+          }
+        ],
+        "settlement": "no",
+        "won": true,
+        "gross_settlement_pnl_10": 0.53,
+        "time_utc": "2026-09-21T05:09:54.151015+00:00"
+      }
+    ]
+  }
+}

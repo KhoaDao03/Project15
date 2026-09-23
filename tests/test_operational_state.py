@@ -161,14 +161,10 @@ def test_health_scopes_operational_decision_to_current_paper_run(store, tmp_path
     assert store.list(limit=None) == before
 
 
-def test_dashboard_rendering_and_stale_update_guard():
-    import shutil
+def test_dashboard_rendering_and_stale_update_guard(node_binary):
     import subprocess
     from pathlib import Path
 
-    node = shutil.which("node")
-    if not node:
-        pytest.skip("Node is needed to exercise the dashboard status renderer")
     source = Path("src/btc15/static/app.js").read_text()
     block = source[source.index("let lastOperationalReceipt=") : source.index("function renderBotVersion(")]
     setup = """
@@ -193,7 +189,7 @@ assert.equal($('operational-entry').textContent,'Entry readiness unknown');
 assert.equal($('operational-metrics').children.length,0);
 assert.equal($('bot-version').textContent,'Status unavailable');
 """
-    subprocess.run([node, "-e", setup + block + checks], check=True, capture_output=True, text=True)
+    subprocess.run([node_binary, "-e", setup + block + checks], check=True, capture_output=True, text=True)
 
 
 def test_health_warning_does_not_invent_an_execution_block():

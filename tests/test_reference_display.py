@@ -1,16 +1,10 @@
 """Exercise the browser's price handler without starting a collector or browser server."""
 
-import shutil
 import subprocess
 from pathlib import Path
 
-import pytest
 
-
-def test_reference_clock_lead_does_not_flash_and_stale_data_still_clears():
-    node = shutil.which("node")
-    if not node:
-        pytest.skip("Node is needed to exercise the dashboard price renderer")
+def test_reference_clock_lead_does_not_flash_and_stale_data_still_clears(node_binary):
     source = Path("src/btc15/static/app.js").read_text()
     start = source.index("const marketStream=")
     handler = source[start : source.index("\nrefreshOfficial();", start)]
@@ -86,6 +80,6 @@ assert.equal($('live-reference').textContent,'—');
 assert.equal(liveReference,null);
 """
     result = subprocess.run(
-        [node, "-e", setup + formatters + handler + checks], capture_output=True, text=True
+        [node_binary, "-e", setup + formatters + handler + checks], capture_output=True, text=True
     )
     assert result.returncode == 0, result.stderr

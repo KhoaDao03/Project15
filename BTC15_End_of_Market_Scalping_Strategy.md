@@ -1,5 +1,8 @@
 # BTC 15-Minute End-of-Market Scalping Strategy
 
+> Original strategy proposal, preserved for reference. For implemented behavior and
+> current settings, start with [the strategy guide](docs/STRATEGY.md).
+
 > **Strategy objective:** Wait until late in a Kalshi 15-minute Bitcoin contract, identify the side that already appears likely to win, buy that side at approximately $0.85 or higher, and seek the final convergence toward $1.00.
 
 This is not a strategy for predicting Bitcoin's direction at the beginning of a 15-minute market. Its proposed edge is buying a high-probability outcome when the estimated probability of winning is sufficiently higher than the price paid, while controlling reversal and execution risks.

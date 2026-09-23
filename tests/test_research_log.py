@@ -3,16 +3,10 @@ import json
 import time
 from types import SimpleNamespace
 
-from btc15.research_log import ResearchLog, start_research_log
+from research_helpers import records
+
+from btc15.research_log import start_research_log
 from btc15.strategies.settlement_edge.config import Strategy
-
-
-def records(root):
-    return [json.loads(line) for p in root.rglob("events-*.jsonl.gz") for line in gzip.open(p, "rt")]
-
-
-def recorder(tmp_path, **kwargs):
-    return ResearchLog(tmp_path, "BTC", "test-run", Strategy(), min_free_bytes=0, **kwargs)
 
 
 def test_disabled_by_default(tmp_path, monkeypatch):
@@ -22,9 +16,9 @@ def test_disabled_by_default(tmp_path, monkeypatch):
     assert not (tmp_path / "unused").exists()
 
 
-def test_portable_records_and_source(tmp_path):
-    r = recorder(tmp_path)
-    assert r.emit("input", {"received": 123, "payload": "reference"})
+def test_portable_records_and_source(research_recorder, tmp_path):
+    r = research_recorder(tmp_path)
+    assert r.emit("input", {"received": 123, "payload": {"type": "heartbeat", "msg": {}}})
     r.close()
     assert not r.thread.is_alive()
     assert records(tmp_path)[0]["body"]["received"] == 123
@@ -32,11 +26,12 @@ def test_portable_records_and_source(tmp_path):
     assert manifest["config"]["asset"] == "BTC"
     assert manifest["source_sha256"]
     assert json.load(gzip.open(next(tmp_path.rglob("source.json.gz")), "rt"))
-    assert json.loads(next(tmp_path.rglob("status.json")).read_text())["clean_shutdown"]
+    status = json.loads(next(tmp_path.rglob("status.json")).read_text())
+    assert status["clean_shutdown"] and status["capture_complete"]
 
 
-def test_oversize_record_is_dropped_and_gap_persisted(tmp_path):
-    r = recorder(tmp_path, max_queue_bytes=512)
+def test_oversize_record_is_dropped_and_gap_persisted(research_recorder, tmp_path):
+    r = research_recorder(tmp_path, max_queue_bytes=512)
     assert not r.emit("input", {"big": "x" * 1000})
     assert r.emit("input", {"small": True})
     r.close()
@@ -47,9 +42,9 @@ def test_oversize_record_is_dropped_and_gap_persisted(tmp_path):
     assert rr[1]["kind"] == "input"
 
 
-def test_low_disk_does_not_stop_caller(tmp_path, monkeypatch):
+def test_low_disk_does_not_stop_caller(research_recorder, tmp_path, monkeypatch):
     monkeypatch.setattr("btc15.research_log.shutil.disk_usage", lambda _: SimpleNamespace(free=-1))
-    r = recorder(tmp_path)
+    r = research_recorder(tmp_path)
     r.emit("input", {})
     r.close()
     assert not records(tmp_path)
@@ -57,13 +52,13 @@ def test_low_disk_does_not_stop_caller(tmp_path, monkeypatch):
     assert r.status()["error"] == "LOW_DISK"
 
 
-def test_retention_only_deletes_closed_recordings(tmp_path):
+def test_retention_only_deletes_closed_recordings(research_recorder, tmp_path):
     old = tmp_path / "ETH" / "old"
     old.mkdir(parents=True)
     (old / "events-1.jsonl.gz").write_bytes(b"old")
     (old / "events-2.jsonl.gz.part").write_bytes(b"active")
     (old / "unrelated.txt").write_text("keep")
-    r = recorder(tmp_path, max_disk_bytes=0)
+    r = research_recorder(tmp_path, max_disk_bytes=0)
     r.emit("input", {})
     r.close()
     assert not (old / "events-1.jsonl.gz").exists()
@@ -71,22 +66,22 @@ def test_retention_only_deletes_closed_recordings(tmp_path):
     assert (old / "unrelated.txt").exists()
 
 
-def test_writer_error_does_not_escape(tmp_path):
+def test_writer_error_does_not_escape(research_recorder, tmp_path):
     root = tmp_path / "file"
     root.write_text("cannot create directory here")
-    r = recorder(root)
+    r = research_recorder(root)
     r.thread.join(2)
     assert r.status()["error"]
     assert not r.emit("input", {})
 
 
-def test_outside_window_diagnostics_and_intrasecond_crossings(tmp_path):
+def test_outside_window_diagnostics_and_intrasecond_crossings(research_recorder, tmp_path):
     from decimal import Decimal
 
     from btc15.domain import Book
 
     config = Strategy()
-    r = recorder(tmp_path)
+    r = research_recorder(tmp_path)
     now = time.time()
     book = Book()
     book.yes = {Decimal(".80"): Decimal(10)}
@@ -125,7 +120,7 @@ def test_outside_window_diagnostics_and_intrasecond_crossings(tmp_path):
     assert not r.status()["error"]
 
 
-def test_journal_capture_includes_market_and_filters_asset(tmp_path):
+def test_journal_capture_includes_market_and_filters_asset(research_recorder, tmp_path):
     import sqlite3
 
     settlement = tmp_path / "paper.db"
@@ -151,7 +146,7 @@ def test_journal_capture_includes_market_and_filters_asset(tmp_path):
                     ),
                 ),
             )
-    r = recorder(tmp_path / "logs", settlement_db=settlement, order_db=orders)
+    r = research_recorder(tmp_path / "logs", settlement_db=settlement, order_db=orders)
     # Exercise polling deterministically even if close happens before writer starts.
     r._audit_records()
     r.close()
@@ -162,8 +157,8 @@ def test_journal_capture_includes_market_and_filters_asset(tmp_path):
     assert all("user_id" not in x["exchange_order"] for x in oo)
 
 
-def test_rotation_produces_independently_readable_segments(tmp_path):
-    r = recorder(tmp_path, rotation_seconds=0)
+def test_rotation_produces_independently_readable_segments(research_recorder, tmp_path):
+    r = research_recorder(tmp_path, rotation_seconds=0)
     r.emit("input", {"number": 1})
     r.emit("input", {"number": 2})
     r.close()

@@ -1,0 +1,50 @@
+[
+  {
+    "cls": "card-heading",
+    "h": 36,
+    "font": "14px",
+    "margin": "0px"
+  },
+  {
+    "cls": "reference-line",
+    "h": 24,
+    "font": "14px",
+    "margin": "6px 0px 0px"
+  },
+  {
+    "cls": "market-details",
+    "h": 18,
+    "font": "11px",
+    "margin": "4px 0px 6px"
+  },
+  {
+    "cls": "metrics",
+    "h": 92,
+    "font": "14px",
+    "margin": "0px"
+  },
+  {
+    "cls": "trades-heading",
+    "h": 24,
+    "font": "14px",
+    "margin": "4px 0px 0px"
+  },
+  {
+    "cls": "compact-table-wrap",
+    "h": 150.5,
+    "font": "14px",
+    "margin": "0px"
+  },
+  {
+    "cls": "history-state",
+    "h": 0,
+    "font": "11px",
+    "margin": "0px"
+  },
+  {
+    "cls": "card-controls",
+    "h": 89.1875,
+    "font": "14px",
+    "margin": "0px"
+  }
+]

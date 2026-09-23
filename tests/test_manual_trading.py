@@ -378,3 +378,16 @@ def test_purchase_totals_count_fills_by_market_and_side_not_requests(venue):
     totals = manual.purchases()
     assert totals[TICKER] == dict(yes="5.25", no="1.50", pending=2)
     assert totals[TICKER + "-OLD"] == dict(yes="10.00", no="0", pending=0)
+
+
+def test_purchase_totals_can_exclude_historical_markets(venue):
+    _, _, manual, _ = venue
+    for ticker, filled in [(TICKER, "2.50"), (TICKER + "-OLD", "99")]:
+        body = request_body()
+        body.update(ticker=ticker)
+        row, _ = manual.claim(ManualOrder(**body))
+        row.update(state="complete", exchange_order={"fill_count_fp": filled})
+        manual.save(row)
+    assert manual.purchases([TICKER]) == {TICKER: dict(yes="2.50", no="0", pending=0)}
+    assert manual.purchases([]) == {}
+    assert manual.purchases(["missing"]) == {}

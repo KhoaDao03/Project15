@@ -13,11 +13,6 @@ from btc15.live_automation import LiveAutomation, LiveControl, consumes_entry_at
 
 
 @pytest.fixture
-def anyio_backend():
-    return "asyncio"
-
-
-@pytest.fixture
 def live(venue, monkeypatch, request):  # noqa: F811
     _, state, manual, _ = venue
     asset = getattr(request, "param", "ETH")

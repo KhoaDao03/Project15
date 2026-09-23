@@ -1,0 +1,212 @@
+[
+  {
+    "at": 1790045229.9267266,
+    "status_at": 1790045229.1774914,
+    "ready_at": 1790045229.6119595,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045237.9346926,
+    "status_at": 1790045237.7782118,
+    "ready_at": 1790045237.9030447,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045238.4351082,
+    "status_at": 1790045237.7782118,
+    "ready_at": 1790045237.9030447,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045293.004059,
+    "status_at": 1790045292.4064589,
+    "ready_at": 1790045292.9699368,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045327.5445085,
+    "status_at": 1790045326.65451,
+    "ready_at": 1790045327.0958023,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045360.0819154,
+    "status_at": 1790045359.216301,
+    "ready_at": 1790045359.8488152,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045391.11139,
+    "status_at": 1790045390.4739144,
+    "ready_at": 1790045390.9434123,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045404.6271129,
+    "status_at": 1790045404.3836575,
+    "ready_at": 1790045404.4416938,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045405.1279454,
+    "status_at": 1790045404.3836575,
+    "ready_at": 1790045404.4416938,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045409.1341448,
+    "status_at": 1790045408.6970732,
+    "ready_at": 1790045409.008188,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045409.634529,
+    "status_at": 1790045408.6970732,
+    "ready_at": 1790045409.008188,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045415.6400535,
+    "status_at": 1790045414.9572055,
+    "ready_at": 1790045415.3550465,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045428.1520731,
+    "status_at": 1790045427.6899815,
+    "ready_at": 1790045428.037216,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045428.6529388,
+    "status_at": 1790045427.6899815,
+    "ready_at": 1790045428.037216,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045465.6961346,
+    "status_at": 1790045464.8437903,
+    "ready_at": 1790045465.327879,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045480.209987,
+    "status_at": 1790045479.4785135,
+    "ready_at": 1790045479.9563806,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045484.7157948,
+    "status_at": 1790045484.5708117,
+    "ready_at": 1790045484.7025278,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045485.2161975,
+    "status_at": 1790045484.5708117,
+    "ready_at": 1790045484.7025278,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045491.2213624,
+    "status_at": 1790045490.7687352,
+    "ready_at": 1790045490.8881414,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045491.7218878,
+    "status_at": 1790045490.7687352,
+    "ready_at": 1790045490.8881414,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045499.7330074,
+    "status_at": 1790045499.488347,
+    "ready_at": 1790045499.6583931,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045500.2356691,
+    "status_at": 1790045499.488347,
+    "ready_at": 1790045499.6583931,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  },
+  {
+    "at": 1790045503.2380798,
+    "status_at": 1790045502.5186193,
+    "ready_at": 1790045503.1971254,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ]
+  }
+]

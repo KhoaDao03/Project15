@@ -5,6 +5,7 @@ import gzip
 import hashlib
 import json
 import logging
+import math
 import os
 import queue
 import shutil
@@ -16,25 +17,31 @@ import uuid
 from dataclasses import asdict
 from pathlib import Path
 
-from .domain import dumps
+from .domain import dumps, jsonable
+from .research_coverage import Coverage, atomic_json
 from .strategies.settlement_edge.bleep import SIGMA_MULTIPLIERS, capped_confidence
 
 LOG = logging.getLogger(__name__)
-REFERENCE = {"reference_history", "cfbenchmarks_value", "cfbenchmarks_value_5hz", "pyth_value"}
-EVENTS = {
-    "metadata",
-    "market_lifecycle_v2",
-    "connected",
-    "settlement",
-    "disconnect",
-    "stale",
-    "error",
-    "bleep_seed",
-}
+
+
+def input_source_time(payload):
+    """Normalize only known exchange clock fields; missing times remain unknown."""
+    try:
+        msg = payload.get("msg", {})
+        if payload.get("type") == "cfbenchmarks_value":
+            value = float(json.loads(msg["data"])["time"]) / 1000
+            return value if math.isfinite(value) else None
+        for key in ("source_ts_ms", "ts_ms"):
+            if key in msg:
+                value = float(msg[key]) / 1000
+                return value if math.isfinite(value) else None
+    except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
+        pass
+    return None
 
 
 class ResearchLog:
-    """One producer, one daemon writer; at most 8 MiB queued per collector."""
+    """Serialized capture from receipt/processing threads; one bounded daemon writer."""
 
     def __init__(
         self,
@@ -50,10 +57,12 @@ class ResearchLog:
         rotation_seconds=600,
         settlement_db=None,
         order_db=None,
+        producer="collector",
     ):
         self.settlement_db, self.order_db = settlement_db, order_db
         self.settlement_cursor = 0
         self.order_cursor = 0.0
+        self.execution_cursor = 0
         self.root = Path(root)
         self.asset, self.run_id = asset, run_id
         self.session = f"{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}-{uuid.uuid4().hex}"
@@ -64,21 +73,33 @@ class ResearchLog:
         self.queue = queue.Queue(maxsize=8192)
         self.lock = threading.Lock()
         self.queued_bytes = self.dropped = self.written = 0
-        self.pending_drops = 0
+        self.capture_seq = self.last_written_seq = 0
+        self.last_capture_at = None
+        self.drop_reasons = {}
         self.error = None
         self.stopping = threading.Event()
+        self.close_deadline = None
         self.last_sample, self.last_eval, self.thresholds = {}, {}, {}
         self.metadata = dict(
-            schema_version=1,
+            schema_version=2,
             asset=asset,
             run_id=run_id,
             session=self.session,
+            producer=producer,
+            process_id=os.getpid(),
             started_at=time.time(),
             config=asdict(config),
             sigma_multipliers=SIGMA_MULTIPLIERS,
             book_sampling_seconds=1,
             book_depth_levels=5,
-            execution_accuracy="sampled books; fills are estimates, not guaranteed",
+            input_capture="all received inputs, before analysis"
+            if producer == "collector"
+            else "published collector snapshots and preflight reads",
+            decision_capture="every model calculation and decision check"
+            if producer == "collector"
+            else "live entry, authorization and preflight checks",
+            execution_accuracy="complete received inputs; hypothetical fills remain estimates",
+            sequence_scope="session; gap records occupy the first missing sequence",
             max_queue_bytes=max_queue_bytes,
         )
         self.thread = threading.Thread(target=self._writer, name=f"research-log-{asset}", daemon=True)
@@ -93,44 +114,148 @@ class ResearchLog:
                 dropped=self.dropped,
                 written=self.written,
                 error=self.error,
+                last_capture_seq=self.capture_seq,
+                last_capture_at=self.last_capture_at,
+                last_written_seq=self.last_written_seq,
+                drop_reasons=dict(self.drop_reasons),
+                capture_complete=self.dropped == 0 and self.error is None,
             )
 
-    def emit(self, kind, body, timestamp=None):
-        try:
-            data = (
-                dumps(dict(schema_version=1, kind=kind, timestamp=timestamp or time.time(), body=body)) + "\n"
-            ).encode()
-            with self.lock:
+    def _drop(self, reason, count=1):
+        # Caller holds lock. Sequence holes, including a terminal hole in status,
+        # identify lost records without an unbounded side queue of gap descriptors.
+        self.dropped += count
+        self.drop_reasons[reason] = self.drop_reasons.get(reason, 0) + count
+
+    def emit(
+        self,
+        kind,
+        body,
+        received_at=None,
+        *,
+        source_time=None,
+        processed_at=None,
+        monotonic_ns=None,
+        caused_by=None,
+        coverage_payload=None,
+    ):
+        with self.lock:
+            self.capture_seq += 1
+            seq = self.capture_seq
+            captured_at = self.last_capture_at = time.time()
+            try:
+                data = json.dumps(
+                    dict(
+                        schema_version=2,
+                        session=self.session,
+                        capture_seq=seq,
+                        kind=kind,
+                        source_time=source_time,
+                        received_at=received_at,
+                        processed_at=processed_at,
+                        captured_at=captured_at,
+                        capture_monotonic_ns=time.monotonic_ns(),
+                        received_monotonic_ns=monotonic_ns,
+                        caused_by=caused_by,
+                        body=body,
+                    ),
+                    default=jsonable,
+                    allow_nan=False,
+                    separators=(",", ":"),
+                ).encode()
                 if self.stopping.is_set() or self.queued_bytes + len(data) > self.max_queue_bytes:
-                    self.dropped += 1
-                    self.pending_drops += 1
+                    self._drop("stopped" if self.stopping.is_set() else "queue_bytes")
                     return False
                 try:
-                    self.queue.put_nowait(data)
+                    # Coverage needs only a tiny subset of hot records. Snapshot
+                    # immutable fields now rather than decode their full archived
+                    # envelopes again on the writer (which shares the trading GIL).
+                    coverage_record = None
+                    if kind == "decision_check":
+                        coverage_record = dict(kind=kind, body=dict(market=body.get("market")))
+                    elif kind == "input" and isinstance(body.get("payload"), str):
+                        coverage_record = dict(
+                            kind=kind,
+                            capture_seq=seq,
+                            received_at=received_at,
+                            source_time=source_time,
+                            caused_by=caused_by,
+                            body=dict(
+                                payload=coverage_payload if coverage_payload is not None else body["payload"],
+                                connection_id=body.get("connection_id"),
+                            ),
+                        )
+                    self.queue.put_nowait((seq, captured_at, data, kind, coverage_record))
                 except queue.Full:
-                    self.dropped += 1
-                    self.pending_drops += 1
+                    self._drop("queue_records")
                     return False
                 self.queued_bytes += len(data)
-            return True
-        except Exception as exc:
-            self.fail(exc)
-            return False
+                return True
+            except Exception as exc:
+                self._drop("serialization")
+                self.error = type(exc).__name__
+                LOG.warning("Research serialization failed (%s); trading continues", self.error)
+                return False
 
     def fail(self, exc):
         with self.lock:
-            self.dropped += 1
-            self.pending_drops += 1
+            self.capture_seq += 1
+            self.last_capture_at = time.time()
+            self._drop("capture_error")
             self.error = type(exc).__name__
         LOG.warning("Research recording failure (%s); trading continues", type(exc).__name__)
 
+    def capture_input(self, row, payload):
+        # Coverage counts book/trade messages and checks sequence continuity; it
+        # does not inspect prices, quantities or depth. Reuse parsed identity
+        # fields instead of parsing the full message again on the writer.
+        # The archived row still contains the complete original payload.
+        coverage_payload = None
+        if payload.get("type") in ("orderbook_snapshot", "orderbook_delta", "trade") and isinstance(
+            payload.get("msg"), dict
+        ):
+            coverage_payload = dict(
+                type=payload["type"],
+                sid=payload.get("sid"),
+                seq=payload.get("seq"),
+                msg=dict(market_ticker=payload["msg"].get("market_ticker")),
+            )
+        return self.emit(
+            "input",
+            row,
+            row["received"],
+            source_time=input_source_time(payload),
+            monotonic_ns=row.get("monotonic_ns"),
+            caused_by=row["id"],
+            coverage_payload=coverage_payload,
+        )
+
+    def capture_execution(self, event, *, delivery):
+        return self.emit(
+            "execution_event",
+            dict(event, delivery=delivery),
+            event.get("received_at"),
+            source_time=event.get("source_time"),
+            processed_at=event["observed_at"],
+            caused_by=event.get("decision_id"),
+        )
+
+    def _execution_records(self):
+        if self.order_db and Path(self.order_db).is_file():
+            from .execution_journal import read_events
+
+            with sqlite3.connect(f"file:{self.order_db}?mode=ro", uri=True, timeout=0.1) as db:
+                if not db.execute("SELECT 1 FROM sqlite_master WHERE name='execution_events'").fetchone():
+                    return
+                for event in read_events(db, self.execution_cursor, "KX" + self.asset + "15M-", limit=500):
+                    if not self.capture_execution(event, delivery="journal_backfill"):
+                        break
+                    self.execution_cursor = event["journal_seq"]
+
     def capture(self, engine, row, payload):
-        """Called after ingestion. Copy only sampled diagnostics, never retain engine objects."""
+        """Optional sampled summaries. Authoritative inputs/checks are captured elsewhere."""
         try:
             now = row["received"]
-            kind = payload.get("type")
-            if kind in REFERENCE | EVENTS:
-                self.emit("input", row, now)
             # Inspect only current markets; stale historical evaluations must not be resampled.
             for ticker, market in engine.markets.items():
                 if not market.open_time <= now <= market.close_time:
@@ -163,6 +288,8 @@ class ResearchLog:
                             **book.summary(),
                         ),
                         now,
+                        source_time=book.source_time,
+                        caused_by=row["id"],
                     )
                     self.thresholds[key] = bands
                     self.last_sample[key] = now
@@ -183,6 +310,7 @@ class ResearchLog:
                         "evaluation",
                         dict(evaluation, confidence_83=confidence, threshold_change=crossing),
                         now,
+                        caused_by=evaluation.get("decision_id", row["id"]),
                     )
                     self.thresholds[key] = tuple(confidence)
                     self.last_sample[key] = now
@@ -203,7 +331,14 @@ class ResearchLog:
                     (self.settlement_cursor,),
                 ):
                     self.emit(
-                        "settlement_journal", dict(market=market, kind=kind, body=json.loads(body)), timestamp
+                        "settlement_journal",
+                        dict(
+                            market=market,
+                            kind=kind,
+                            journal_rowid=rowid,
+                            journal_timestamp=timestamp,
+                            body=json.loads(body),
+                        ),
                     )
                     self.settlement_cursor = rowid
         if self.order_db and Path(self.order_db).exists():
@@ -259,7 +394,7 @@ class ResearchLog:
                     and manifest.stat().st_mtime < cutoff
                     and not list(directory.glob("events-*"))
                 ):
-                    for name in ("manifest.json", "source.json.gz", "status.json"):
+                    for name in ("manifest.json", "source.json.gz", "status.json", "coverage.json"):
                         (directory / name).unlink(missing_ok=True)
                     # Only remove our own empty session directories.
                     if not any(directory.iterdir()):
@@ -268,10 +403,56 @@ class ResearchLog:
         return shutil.disk_usage(self.root).free >= self.min_free_bytes
 
     def _writer(self):
-        stream = None
-        part = None
+        stream = part = inflight = None
+        coverage = None
+        allowed = failed = drained = False
+        last_capture_at = None
+        opened = 0
+
+        def write(data):
+            nonlocal stream, part, opened
+            if stream is None:
+                part = self.directory / f"events-{time.time_ns()}.jsonl.gz.part"
+                stream = gzip.open(part, "wb", compresslevel=1)
+                opened = time.monotonic()
+            # No parse/re-encode of queued payloads on the writer.
+            stream.write(data[:-1] + b',"recorded_at":' + str(time.time()).encode() + b"}\n")
+
+        def gap(last, next_capture_at):
+            if last <= self.last_written_seq:
+                return
+            first = self.last_written_seq + 1
+            write(
+                dumps(
+                    dict(
+                        schema_version=2,
+                        session=self.session,
+                        capture_seq=first,
+                        kind="recording_gap",
+                        source_time=None,
+                        received_at=None,
+                        processed_at=None,
+                        captured_at=time.time(),
+                        capture_monotonic_ns=time.monotonic_ns(),
+                        received_monotonic_ns=None,
+                        caused_by=None,
+                        body=dict(
+                            first_missing_seq=first,
+                            last_missing_seq=last,
+                            dropped_records=last - first + 1,
+                            previous_capture_at=last_capture_at,
+                            next_capture_at=next_capture_at,
+                            affected_scope="session",
+                            reason="capture_loss",
+                        ),
+                    )
+                ).encode()
+            )
+            self.last_written_seq = last
+
         try:
             self.directory.mkdir(parents=True, mode=0o700)
+            coverage = Coverage(self.root, self.asset, self.session, self.metadata["started_at"])
             source = {
                 str(p.relative_to(Path(__file__).parent)): p.read_text()
                 for p in Path(__file__).parent.rglob("*.py")
@@ -286,10 +467,12 @@ class ResearchLog:
             with gzip.open(self.directory / "source.json.gz", "wb", compresslevel=1) as f:
                 f.write(raw)
             (self.directory / "manifest.json").write_text(dumps(self.metadata) + "\n")
-            maintenance = opened = flushed = audit_at = 0
-            allowed = False
+            maintenance = flushed = audit_at = 0
             while not self.stopping.is_set() or not self.queue.empty():
-                now = time.time()
+                now = time.monotonic()
+                if self.close_deadline is not None and now >= self.close_deadline:
+                    self.error = "SHUTDOWN_TIMEOUT"
+                    break
                 if not self.stopping.is_set() and now - audit_at >= 30:
                     try:
                         self._audit_records()
@@ -297,87 +480,121 @@ class ResearchLog:
                         self.fail(exc)
                     audit_at = now
                 if now - maintenance >= 5:
+                    if not self.stopping.is_set():
+                        try:
+                            self._execution_records()
+                        except Exception as exc:
+                            self.fail(exc)
                     allowed = self._retention()
                     maintenance = now
-                    self.error = None if allowed else "LOW_DISK"
+                    if not allowed:
+                        self.error = "LOW_DISK"
+                    elif self.error == "LOW_DISK":
+                        self.error = None
                     (self.directory / "status.json").write_text(dumps(self.status()) + "\n")
+                    coverage.prune_reference(time.time())
+                    atomic_json(self.directory / "coverage.json", coverage.summary(self.status()))
                 if stream and now - opened >= self.rotation_seconds:
                     stream.close()
                     part.rename(part.with_suffix(""))
                     stream = None
                 try:
-                    data = self.queue.get(timeout=0.25)
+                    inflight = self.queue.get(timeout=0.25)
                 except queue.Empty:
                     if stream and now - flushed >= 1:
                         stream.flush()
                         flushed = now
                     continue
+                seq, captured_at, data, kind, coverage_record = inflight
                 with self.lock:
                     self.queued_bytes -= len(data)
                 if not allowed:
                     with self.lock:
-                        self.dropped += 1
-                        self.pending_drops += 1
+                        self._drop("low_disk")
+                    inflight = None
                     continue
-                if stream is None:
-                    part = self.directory / f"events-{time.time_ns()}.jsonl.gz.part"
-                    stream = gzip.open(part, "wb", compresslevel=1)
-                    opened = now
-                with self.lock:
-                    lost = self.pending_drops
-                    self.pending_drops = 0
-                if lost:
-                    stream.write(
-                        (
-                            dumps(
-                                dict(
-                                    schema_version=1,
-                                    kind="recording_gap",
-                                    timestamp=now,
-                                    body=dict(dropped_records=lost),
-                                )
-                            )
-                            + "\n"
-                        ).encode()
-                    )
-                stream.write(data)
+                gap(seq - 1, captured_at)
+                write(data)
+                try:
+                    # Most records (notably input_processed and execution audits)
+                    # have no coverage effect. Keep them verbatim in the archive
+                    # without decoding them a second time on this CPU-bound path.
+                    if coverage_record is not None:
+                        coverage.observe(coverage_record)
+                    elif kind in (
+                        "input",
+                        "reference_sample",
+                        "settlement_observation",
+                        "model_calculation",
+                        "decision_check",
+                    ):
+                        coverage.observe(json.loads(data))
+                except Exception as exc:
+                    self.fail(exc)
+                self.last_written_seq = seq
+                last_capture_at = captured_at
                 self.written += 1
+                inflight = None
                 if now - flushed >= 1:
                     stream.flush()
                     flushed = now
+            drained = self.queue.empty()
         except Exception as exc:
+            failed = True
             self.error = type(exc).__name__
             LOG.warning("Research writer stopped (%s); trading continues", type(exc).__name__)
         finally:
             with self.lock:
                 self.stopping.set()
-                lost = self.queue.qsize()
-                self.dropped += lost
-                self.pending_drops += lost
+                if inflight is not None:
+                    self._drop("writer_failure")
+                while not self.queue.empty():
+                    _, _, data, _, _ = self.queue.get_nowait()
+                    self.queued_bytes -= len(data)
+                    self._drop("writer_failure" if failed else "shutdown_timeout")
+                last_seq = self.capture_seq
             try:
+                # Tail drops must be visible even without a following input.
+                if allowed and not failed:
+                    gap(last_seq, None)
                 if stream:
                     stream.close()
-                    part.rename(part.with_suffix(""))
+                    if not failed and drained:
+                        part.rename(part.with_suffix(""))
                 (self.directory / "status.json").write_text(
                     dumps(
                         dict(
                             self.status(),
                             closed_at=time.time(),
-                            clean_shutdown=self.stopping.is_set() and self.queue.empty(),
+                            clean_shutdown=not failed and drained,
+                            capture_complete=not failed
+                            and drained
+                            and self.dropped == 0
+                            and self.error is None,
                         )
                     )
                     + "\n"
                 )
-            except Exception:
+                if coverage is not None:
+                    final_status = dict(
+                        self.status(),
+                        capture_complete=not failed and drained and self.dropped == 0 and self.error is None,
+                    )
+                    atomic_json(self.directory / "coverage.json", coverage.summary(final_status, time.time()))
+            except Exception as exc:
+                self.error = type(exc).__name__
                 LOG.warning("Unable to finalize research recording status")
-            self.stopping.set()
+            finally:
+                if coverage is not None:
+                    coverage.close()
 
     def close(self):
+        self.close_deadline = time.monotonic() + 2
         self.stopping.set()
         self.thread.join(timeout=2)
 
 
-def start_research_log(config, run_id, *, settlement_db=None):
+def start_research_log(config, run_id, *, settlement_db=None, producer="collector", order_db=None):
     """Disabled unless explicitly enabled at deployment; no active environment changes here."""
     if os.environ.get("BTC15_RESEARCH_LOG_ENABLED") != "1":
         return None
@@ -388,8 +605,10 @@ def start_research_log(config, run_id, *, settlement_db=None):
             config.asset,
             run_id,
             config,
+            producer=producer,
             settlement_db=settlement_db,
-            order_db=Path(settlement_db).parent.parent / "manual-orders.sqlite" if settlement_db else None,
+            order_db=order_db
+            or (Path(settlement_db).parent.parent / "manual-orders.sqlite" if settlement_db else None),
         )
     except Exception:
         LOG.exception("Research recorder unavailable; trading continues")

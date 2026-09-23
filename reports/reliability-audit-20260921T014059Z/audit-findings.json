@@ -1,0 +1,24 @@
+{
+  "test_results": {
+    "passed": 77,
+    "skipped": 1,
+    "skip_reason": "Node.js unavailable for JavaScript test"
+  },
+  "executor_profile": {
+    "samples": 728,
+    "daily_loss_history_samples": 483
+  },
+  "resource_snapshot": {
+    "cpus": 6,
+    "available_memory_mib": 4355,
+    "free_disk_gib": 207
+  },
+  "orders": {
+    "unresolved_older_than_one_hour": 0,
+    "recent_btc_buy_and_take_profit": "both confirmed executed for 10 contracts"
+  },
+  "production_changes": false,
+  "watchdog": false,
+  "restart_on_failure_seconds": 15,
+  "linger": true
+}

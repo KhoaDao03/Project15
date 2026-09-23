@@ -1,0 +1,6713 @@
+[
+  {
+    "asset": "BTC",
+    "at": 1790043808.0982697,
+    "status_at": 1790043808.0278597,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.282937646,
+    "reference_age": 0.9604182243347168,
+    "queue": 416,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.277512028,
+      "outstanding_events": 404,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043808.031415,
+      "last_capture_seq": 58407154,
+      "last_written_seq": 58407142,
+      "queued_bytes": 10489,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58235112
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043808.0995266,
+    "status_at": 1790043807.4615214,
+    "reasons": [],
+    "lag": 0.001104227,
+    "reference_age": 0.38543701171875,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043807.4612303,
+      "last_capture_seq": 50254346,
+      "last_written_seq": 50254344,
+      "queued_bytes": 1492,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50254096
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043808.599819,
+    "status_at": 1790043808.0278597,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.282937646,
+    "reference_age": 0.9604182243347168,
+    "queue": 416,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.277512028,
+      "outstanding_events": 404,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043808.031415,
+      "last_capture_seq": 58407154,
+      "last_written_seq": 58407142,
+      "queued_bytes": 10489,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58235112
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043808.5999856,
+    "status_at": 1790043808.461607,
+    "reasons": [],
+    "lag": 0.00137811,
+    "reference_age": 0.39169955253601074,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043808.4614463,
+      "last_capture_seq": 50255524,
+      "last_written_seq": 50255522,
+      "queued_bytes": 3104,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50255274
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043809.1002448,
+    "status_at": 1790043808.0278597,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.282937646,
+    "reference_age": 0.9604182243347168,
+    "queue": 416,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.277512028,
+      "outstanding_events": 404,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043808.031415,
+      "last_capture_seq": 58407154,
+      "last_written_seq": 58407142,
+      "queued_bytes": 10489,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58235112
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043809.1003935,
+    "status_at": 1790043808.461607,
+    "reasons": [],
+    "lag": 0.00137811,
+    "reference_age": 0.39169955253601074,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043808.4614463,
+      "last_capture_seq": 50255524,
+      "last_written_seq": 50255522,
+      "queued_bytes": 3104,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50255274
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043809.6009083,
+    "status_at": 1790043809.2334838,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.332131006,
+    "reference_age": 1.1538360118865967,
+    "queue": 480,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.330609689,
+      "outstanding_events": 480,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043809.2334247,
+      "last_capture_seq": 58410678,
+      "last_written_seq": 58410678,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58238648
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043809.6011176,
+    "status_at": 1790043809.4629831,
+    "reasons": [],
+    "lag": 0.030168194,
+    "reference_age": 0.39734983444213867,
+    "queue": 3,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.001307278,
+      "outstanding_events": 3,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043809.4628806,
+      "last_capture_seq": 50256644,
+      "last_written_seq": 50256644,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50256396
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043810.103816,
+    "status_at": 1790043809.2334838,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.332131006,
+    "reference_age": 1.1538360118865967,
+    "queue": 480,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.330609689,
+      "outstanding_events": 480,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043809.2334247,
+      "last_capture_seq": 58410678,
+      "last_written_seq": 58410678,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58238648
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043810.1040294,
+    "status_at": 1790043809.4629831,
+    "reasons": [],
+    "lag": 0.030168194,
+    "reference_age": 0.39734983444213867,
+    "queue": 3,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.001307278,
+      "outstanding_events": 3,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043809.4628806,
+      "last_capture_seq": 50256644,
+      "last_written_seq": 50256644,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50256396
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043810.6043475,
+    "status_at": 1790043810.2341552,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.002496774,
+    "reference_age": 0.17690181732177734,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043810.2340393,
+      "last_capture_seq": 58413195,
+      "last_written_seq": 58413190,
+      "queued_bytes": 7000,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58241160
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043810.604606,
+    "status_at": 1790043810.4739783,
+    "reasons": [],
+    "lag": 0.002256685,
+    "reference_age": 0.38134145736694336,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043810.4738255,
+      "last_capture_seq": 50257283,
+      "last_written_seq": 50257279,
+      "queued_bytes": 6213,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50257031
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043811.1049721,
+    "status_at": 1790043810.2341552,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.002496774,
+    "reference_age": 0.17690181732177734,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043810.2340393,
+      "last_capture_seq": 58413195,
+      "last_written_seq": 58413190,
+      "queued_bytes": 7000,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58241160
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043811.1051803,
+    "status_at": 1790043810.4739783,
+    "reasons": [],
+    "lag": 0.002256685,
+    "reference_age": 0.38134145736694336,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043810.4738255,
+      "last_capture_seq": 50257283,
+      "last_written_seq": 50257279,
+      "queued_bytes": 6213,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50257031
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043811.6054509,
+    "status_at": 1790043811.3532705,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.118964033,
+    "reference_age": 0.259296178817749,
+    "queue": 219,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.114851996,
+      "outstanding_events": 218,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043811.354727,
+      "last_capture_seq": 58416245,
+      "last_written_seq": 58416245,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58244215
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043811.6056635,
+    "status_at": 1790043811.5040598,
+    "reasons": [],
+    "lag": 0.076945314,
+    "reference_age": 0.4534187316894531,
+    "queue": 72,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.071841277,
+      "outstanding_events": 68,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043811.5059261,
+      "last_capture_seq": 50258077,
+      "last_written_seq": 50258077,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50257829
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043812.1059365,
+    "status_at": 1790043811.3532705,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.118964033,
+    "reference_age": 0.259296178817749,
+    "queue": 219,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.114851996,
+      "outstanding_events": 218,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043811.354727,
+      "last_capture_seq": 58416245,
+      "last_written_seq": 58416245,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58244215
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043812.1060672,
+    "status_at": 1790043811.5040598,
+    "reasons": [],
+    "lag": 0.076945314,
+    "reference_age": 0.4534187316894531,
+    "queue": 72,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.071841277,
+      "outstanding_events": 68,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043811.5059261,
+      "last_capture_seq": 50258077,
+      "last_written_seq": 50258077,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50257829
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043812.606383,
+    "status_at": 1790043812.4415176,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.527245328,
+    "reference_age": 1.3475432395935059,
+    "queue": 190,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.520790593,
+      "outstanding_events": 190,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED",
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043812.4414558,
+      "last_capture_seq": 58419893,
+      "last_written_seq": 58418841,
+      "queued_bytes": 1592075,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58246811
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043812.606537,
+    "status_at": 1790043812.5231564,
+    "reasons": [],
+    "lag": 0.001523853,
+    "reference_age": 0.4304542541503906,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043812.5229588,
+      "last_capture_seq": 50258955,
+      "last_written_seq": 50258953,
+      "queued_bytes": 3101,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50258705
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043813.1068475,
+    "status_at": 1790043812.4415176,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.527245328,
+    "reference_age": 1.3475432395935059,
+    "queue": 190,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.520790593,
+      "outstanding_events": 190,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED",
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043812.4414558,
+      "last_capture_seq": 58419893,
+      "last_written_seq": 58418841,
+      "queued_bytes": 1592075,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58246811
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043813.1070938,
+    "status_at": 1790043812.5231564,
+    "reasons": [],
+    "lag": 0.001523853,
+    "reference_age": 0.4304542541503906,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043812.5229588,
+      "last_capture_seq": 50258955,
+      "last_written_seq": 50258953,
+      "queued_bytes": 3101,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50258705
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043813.607493,
+    "status_at": 1790043813.468272,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.04750442,
+    "reference_age": 0.35926342010498047,
+    "queue": 17,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.033751684,
+      "outstanding_events": 17,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043813.468197,
+      "last_capture_seq": 58422905,
+      "last_written_seq": 58422897,
+      "queued_bytes": 12783,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58250867
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043813.6077762,
+    "status_at": 1790043813.5267258,
+    "reasons": [],
+    "lag": 0.003941318,
+    "reference_age": 0.4481532573699951,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043813.5284472,
+      "last_capture_seq": 50259923,
+      "last_written_seq": 50259922,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50259674
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043814.1082222,
+    "status_at": 1790043813.468272,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.04750442,
+    "reference_age": 0.35926342010498047,
+    "queue": 17,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.033751684,
+      "outstanding_events": 17,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043813.468197,
+      "last_capture_seq": 58422905,
+      "last_written_seq": 58422897,
+      "queued_bytes": 12783,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58250867
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043814.1084316,
+    "status_at": 1790043813.5267258,
+    "reasons": [],
+    "lag": 0.003941318,
+    "reference_age": 0.4481532573699951,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043813.5284472,
+      "last_capture_seq": 50259923,
+      "last_written_seq": 50259922,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50259674
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043814.6087935,
+    "status_at": 1790043813.468272,
+    "reasons": [
+      "COLLECTOR_RECOVERING"
+    ],
+    "lag": 0.04750442,
+    "reference_age": 0.35926342010498047,
+    "queue": 17,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.033751684,
+      "outstanding_events": 17,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "WAITING_FOR_FRESH_METADATA"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043813.468197,
+      "last_capture_seq": 58422905,
+      "last_written_seq": 58422897,
+      "queued_bytes": 12783,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58250867
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043814.6091301,
+    "status_at": 1790043813.5267258,
+    "reasons": [],
+    "lag": 0.003941318,
+    "reference_age": 0.4481532573699951,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043813.5284472,
+      "last_capture_seq": 50259923,
+      "last_written_seq": 50259922,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50259674
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043815.1094568,
+    "status_at": 1790043814.8416705,
+    "reasons": [],
+    "lag": 0.501425421,
+    "reference_age": 0.7582647800445557,
+    "queue": 924,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.49956014,
+      "outstanding_events": 923,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043814.8431795,
+      "last_capture_seq": 58425850,
+      "last_written_seq": 58425850,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58253820
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043815.1096663,
+    "status_at": 1790043814.726245,
+    "reasons": [],
+    "lag": 0.213265639,
+    "reference_age": 0.6167833805084229,
+    "queue": 66,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.194114608,
+      "outstanding_events": 66,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043814.7261255,
+      "last_capture_seq": 50261354,
+      "last_written_seq": 50261354,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50261106
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043815.6100047,
+    "status_at": 1790043814.8416705,
+    "reasons": [],
+    "lag": 0.501425421,
+    "reference_age": 0.7582647800445557,
+    "queue": 924,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.49956014,
+      "outstanding_events": 923,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043814.8431795,
+      "last_capture_seq": 58425850,
+      "last_written_seq": 58425850,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58253820
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043815.610212,
+    "status_at": 1790043814.726245,
+    "reasons": [],
+    "lag": 0.213265639,
+    "reference_age": 0.6167833805084229,
+    "queue": 66,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.194114608,
+      "outstanding_events": 66,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043814.7261255,
+      "last_capture_seq": 50261354,
+      "last_written_seq": 50261354,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50261106
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043816.1106486,
+    "status_at": 1790043815.8994067,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.025530662,
+    "reference_age": 1.8160009384155273,
+    "queue": 1384,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.023969319,
+      "outstanding_events": 1384,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043815.899337,
+      "last_capture_seq": 58429319,
+      "last_written_seq": 58429319,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58257289
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043816.1108463,
+    "status_at": 1790043815.746406,
+    "reasons": [],
+    "lag": 0.001856666,
+    "reference_age": 0.6486797332763672,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043815.746309,
+      "last_capture_seq": 50262626,
+      "last_written_seq": 50262624,
+      "queued_bytes": 3099,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50262376
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043816.6111498,
+    "status_at": 1790043815.8994067,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.025530662,
+    "reference_age": 1.8160009384155273,
+    "queue": 1384,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.023969319,
+      "outstanding_events": 1384,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043815.899337,
+      "last_capture_seq": 58429319,
+      "last_written_seq": 58429319,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58257289
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043816.6115196,
+    "status_at": 1790043815.746406,
+    "reasons": [],
+    "lag": 0.001856666,
+    "reference_age": 0.6486797332763672,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043815.746309,
+      "last_capture_seq": 50262626,
+      "last_written_seq": 50262624,
+      "queued_bytes": 3099,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50262376
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043817.111843,
+    "status_at": 1790043817.0434086,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.644201442,
+    "reference_age": 1.9296436309814453,
+    "queue": 1606,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.642083598,
+      "outstanding_events": 1604,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043817.045104,
+      "last_capture_seq": 58432560,
+      "last_written_seq": 58432560,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58260530
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043817.1120799,
+    "status_at": 1790043816.756608,
+    "reasons": [],
+    "lag": 0.002083531,
+    "reference_age": 0.7099876403808594,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043816.7564332,
+      "last_capture_seq": 50263447,
+      "last_written_seq": 50263443,
+      "queued_bytes": 6201,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50263195
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043817.6124516,
+    "status_at": 1790043817.0434086,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.644201442,
+    "reference_age": 1.9296436309814453,
+    "queue": 1606,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.642083598,
+      "outstanding_events": 1604,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043817.045104,
+      "last_capture_seq": 58432560,
+      "last_written_seq": 58432560,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58260530
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043817.612706,
+    "status_at": 1790043816.756608,
+    "reasons": [],
+    "lag": 0.002083531,
+    "reference_age": 0.7099876403808594,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043816.7564332,
+      "last_capture_seq": 50263447,
+      "last_written_seq": 50263443,
+      "queued_bytes": 6201,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50263195
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043818.113023,
+    "status_at": 1790043817.0434086,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.644201442,
+    "reference_age": 1.9296436309814453,
+    "queue": 1606,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.642083598,
+      "outstanding_events": 1604,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043817.045104,
+      "last_capture_seq": 58432560,
+      "last_written_seq": 58432560,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58260530
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043818.1132898,
+    "status_at": 1790043817.7945325,
+    "reasons": [],
+    "lag": 0.036577915,
+    "reference_age": 0.7071404457092285,
+    "queue": 43,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.032724993,
+      "outstanding_events": 42,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043817.7970653,
+      "last_capture_seq": 50264974,
+      "last_written_seq": 50264974,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50264726
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043818.6135926,
+    "status_at": 1790043818.1917481,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.721706615,
+    "reference_age": 2.1292083263397217,
+    "queue": 1702,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.715842739,
+      "outstanding_events": 1691,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043818.19411,
+      "last_capture_seq": 58435678,
+      "last_written_seq": 58435667,
+      "queued_bytes": 9515,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58263637
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043818.6137362,
+    "status_at": 1790043817.7945325,
+    "reasons": [],
+    "lag": 0.036577915,
+    "reference_age": 0.7071404457092285,
+    "queue": 43,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.032724993,
+      "outstanding_events": 42,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043817.7970653,
+      "last_capture_seq": 50264974,
+      "last_written_seq": 50264974,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50264726
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043819.1140487,
+    "status_at": 1790043818.1917481,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.721706615,
+    "reference_age": 2.1292083263397217,
+    "queue": 1702,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.715842739,
+      "outstanding_events": 1691,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043818.19411,
+      "last_capture_seq": 58435678,
+      "last_written_seq": 58435667,
+      "queued_bytes": 9515,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58263637
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043819.1142135,
+    "status_at": 1790043818.801885,
+    "reasons": [],
+    "lag": 0.008869524,
+    "reference_age": 0.6842331886291504,
+    "queue": 4,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.006497173,
+      "outstanding_events": 4,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043818.8017423,
+      "last_capture_seq": 50265998,
+      "last_written_seq": 50265996,
+      "queued_bytes": 3106,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50265748
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043819.6144927,
+    "status_at": 1790043819.3444872,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.437761873,
+    "reference_age": 2.2476649284362793,
+    "queue": 1451,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.423361806,
+      "outstanding_events": 1451,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043819.344401,
+      "last_capture_seq": 58439191,
+      "last_written_seq": 58439191,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58267161
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043819.6146731,
+    "status_at": 1790043818.801885,
+    "reasons": [],
+    "lag": 0.008869524,
+    "reference_age": 0.6842331886291504,
+    "queue": 4,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.006497173,
+      "outstanding_events": 4,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043818.8017423,
+      "last_capture_seq": 50265998,
+      "last_written_seq": 50265996,
+      "queued_bytes": 3106,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50265748
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043820.1158214,
+    "status_at": 1790043819.3444872,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.437761873,
+    "reference_age": 2.2476649284362793,
+    "queue": 1451,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.423361806,
+      "outstanding_events": 1451,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043819.344401,
+      "last_capture_seq": 58439191,
+      "last_written_seq": 58439191,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58267161
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043820.116063,
+    "status_at": 1790043819.80336,
+    "reasons": [],
+    "lag": 0.001401523,
+    "reference_age": 0.744544267654419,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043819.803273,
+      "last_capture_seq": 50266408,
+      "last_written_seq": 50266404,
+      "queued_bytes": 3714,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50266156
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043820.6164293,
+    "status_at": 1790043820.4173114,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.92317876,
+    "reference_age": 1.3332784175872803,
+    "queue": 492,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.921845914,
+      "outstanding_events": 492,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043820.4172351,
+      "last_capture_seq": 58442757,
+      "last_written_seq": 58442757,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58270727
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043820.616722,
+    "status_at": 1790043819.80336,
+    "reasons": [],
+    "lag": 0.001401523,
+    "reference_age": 0.744544267654419,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043819.803273,
+      "last_capture_seq": 50266408,
+      "last_written_seq": 50266404,
+      "queued_bytes": 3714,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50266156
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043821.117134,
+    "status_at": 1790043820.4173114,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.92317876,
+    "reference_age": 1.3332784175872803,
+    "queue": 492,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.921845914,
+      "outstanding_events": 492,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043820.4172351,
+      "last_capture_seq": 58442757,
+      "last_written_seq": 58442757,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58270727
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043821.1173625,
+    "status_at": 1790043820.8520174,
+    "reasons": [],
+    "lag": 0.003492898,
+    "reference_age": 0.7277934551239014,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043820.8519235,
+      "last_capture_seq": 50266621,
+      "last_written_seq": 50266621,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50266373
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043821.617748,
+    "status_at": 1790043821.4389172,
+    "reasons": [],
+    "lag": 0.001841518,
+    "reference_age": 0.3476524353027344,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043821.4388335,
+      "last_capture_seq": 58444368,
+      "last_written_seq": 58444366,
+      "queued_bytes": 3112,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58272336
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043821.6179392,
+    "status_at": 1790043820.8520174,
+    "reasons": [],
+    "lag": 0.003492898,
+    "reference_age": 0.7277934551239014,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043820.8519235,
+      "last_capture_seq": 50266621,
+      "last_written_seq": 50266621,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50266373
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043822.1197822,
+    "status_at": 1790043821.4389172,
+    "reasons": [],
+    "lag": 0.001841518,
+    "reference_age": 0.3476524353027344,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043821.4388335,
+      "last_capture_seq": 58444368,
+      "last_written_seq": 58444366,
+      "queued_bytes": 3112,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58272336
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043822.119926,
+    "status_at": 1790043821.8736534,
+    "reasons": [],
+    "lag": 0.015984675,
+    "reference_age": 0.7721610069274902,
+    "queue": 3,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.011729527,
+      "outstanding_events": 1,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043821.8763325,
+      "last_capture_seq": 50267772,
+      "last_written_seq": 50267772,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50267524
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043822.6202192,
+    "status_at": 1790043821.4389172,
+    "reasons": [],
+    "lag": 0.001841518,
+    "reference_age": 0.3476524353027344,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043821.4388335,
+      "last_capture_seq": 58444368,
+      "last_written_seq": 58444366,
+      "queued_bytes": 3112,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58272336
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043822.6204102,
+    "status_at": 1790043821.8736534,
+    "reasons": [],
+    "lag": 0.015984675,
+    "reference_age": 0.7721610069274902,
+    "queue": 3,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.011729527,
+      "outstanding_events": 1,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043821.8763325,
+      "last_capture_seq": 50267772,
+      "last_written_seq": 50267772,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50267524
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043823.1207757,
+    "status_at": 1790043822.6257932,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.537129845,
+    "reference_age": 1.5345284938812256,
+    "queue": 617,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.53227662,
+      "outstanding_events": 600,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043822.6303852,
+      "last_capture_seq": 58448122,
+      "last_written_seq": 58446579,
+      "queued_bytes": 2088547,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58274549
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043823.120937,
+    "status_at": 1790043822.8774247,
+    "reasons": [],
+    "lag": 0.003642649,
+    "reference_age": 0.7991247177124023,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.001302278,
+      "outstanding_events": 1,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043822.8773005,
+      "last_capture_seq": 50268624,
+      "last_written_seq": 50268619,
+      "queued_bytes": 7055,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50268371
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043823.6213553,
+    "status_at": 1790043822.6257932,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.537129845,
+    "reference_age": 1.5345284938812256,
+    "queue": 617,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.53227662,
+      "outstanding_events": 600,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043822.6303852,
+      "last_capture_seq": 58448122,
+      "last_written_seq": 58446579,
+      "queued_bytes": 2088547,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58274549
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043823.6216786,
+    "status_at": 1790043822.8774247,
+    "reasons": [],
+    "lag": 0.003642649,
+    "reference_age": 0.7991247177124023,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.001302278,
+      "outstanding_events": 1,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043822.8773005,
+      "last_capture_seq": 50268624,
+      "last_written_seq": 50268619,
+      "queued_bytes": 7055,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50268371
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043824.1221201,
+    "status_at": 1790043823.7458692,
+    "reasons": [],
+    "lag": 0.477701233,
+    "reference_age": 0.6457192897796631,
+    "queue": 470,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.468776064,
+      "outstanding_events": 465,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043823.748063,
+      "last_capture_seq": 58451764,
+      "last_written_seq": 58451764,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58279734
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043824.1223276,
+    "status_at": 1790043823.8795989,
+    "reasons": [],
+    "lag": 0.000976177,
+    "reference_age": 0.7847564220428467,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043823.879451,
+      "last_capture_seq": 50269716,
+      "last_written_seq": 50269714,
+      "queued_bytes": 3101,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50269466
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043824.6226652,
+    "status_at": 1790043823.7458692,
+    "reasons": [],
+    "lag": 0.477701233,
+    "reference_age": 0.6457192897796631,
+    "queue": 470,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.468776064,
+      "outstanding_events": 465,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043823.748063,
+      "last_capture_seq": 58451764,
+      "last_written_seq": 58451764,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58279734
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043824.6228359,
+    "status_at": 1790043823.8795989,
+    "reasons": [],
+    "lag": 0.000976177,
+    "reference_age": 0.7847564220428467,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043823.879451,
+      "last_capture_seq": 50269716,
+      "last_written_seq": 50269714,
+      "queued_bytes": 3101,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50269466
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043825.123213,
+    "status_at": 1790043824.8934283,
+    "reasons": [],
+    "lag": 0.249387702,
+    "reference_age": 0.8067111968994141,
+    "queue": 399,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.246579044,
+      "outstanding_events": 399,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043824.893322,
+      "last_capture_seq": 58455469,
+      "last_written_seq": 58455469,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58283439
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043825.123454,
+    "status_at": 1790043824.8899102,
+    "reasons": [],
+    "lag": 0.002059424,
+    "reference_age": 0.839045524597168,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043824.8897624,
+      "last_capture_seq": 50271027,
+      "last_written_seq": 50271023,
+      "queued_bytes": 6198,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50270775
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043825.6254056,
+    "status_at": 1790043824.8934283,
+    "reasons": [],
+    "lag": 0.249387702,
+    "reference_age": 0.8067111968994141,
+    "queue": 399,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.246579044,
+      "outstanding_events": 399,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043824.893322,
+      "last_capture_seq": 58455469,
+      "last_written_seq": 58455469,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58283439
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043825.6257002,
+    "status_at": 1790043824.8899102,
+    "reasons": [],
+    "lag": 0.002059424,
+    "reference_age": 0.839045524597168,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043824.8897624,
+      "last_capture_seq": 50271027,
+      "last_written_seq": 50271023,
+      "queued_bytes": 6198,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50270775
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043826.1260948,
+    "status_at": 1790043825.912835,
+    "reasons": [],
+    "lag": 0.002495512,
+    "reference_age": 0.8377771377563477,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043825.9127457,
+      "last_capture_seq": 58457081,
+      "last_written_seq": 58457073,
+      "queued_bytes": 9379,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58285043
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043826.126348,
+    "status_at": 1790043825.8914587,
+    "reasons": [],
+    "lag": 0.00354664,
+    "reference_age": 0.7984879016876221,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043825.8913841,
+      "last_capture_seq": 50271458,
+      "last_written_seq": 50271458,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50271210
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043826.627058,
+    "status_at": 1790043825.912835,
+    "reasons": [],
+    "lag": 0.002495512,
+    "reference_age": 0.8377771377563477,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043825.9127457,
+      "last_capture_seq": 58457081,
+      "last_written_seq": 58457073,
+      "queued_bytes": 9379,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58285043
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043826.6271906,
+    "status_at": 1790043825.8914587,
+    "reasons": [],
+    "lag": 0.00354664,
+    "reference_age": 0.7984879016876221,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043825.8913841,
+      "last_capture_seq": 50271458,
+      "last_written_seq": 50271458,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50271210
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043827.1275089,
+    "status_at": 1790043827.011481,
+    "reasons": [],
+    "lag": 0.16742201,
+    "reference_age": 0.9569363594055176,
+    "queue": 72,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.15365567,
+      "outstanding_events": 72,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043827.0113983,
+      "last_capture_seq": 58460240,
+      "last_written_seq": 58460240,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58288210
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043827.1277199,
+    "status_at": 1790043826.8914955,
+    "reasons": [],
+    "lag": 0.003811215,
+    "reference_age": 0.7935314178466797,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043826.8913789,
+      "last_capture_seq": 50272652,
+      "last_written_seq": 50272652,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50272404
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043827.628102,
+    "status_at": 1790043827.011481,
+    "reasons": [],
+    "lag": 0.16742201,
+    "reference_age": 0.9569363594055176,
+    "queue": 72,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.15365567,
+      "outstanding_events": 72,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043827.0113983,
+      "last_capture_seq": 58460240,
+      "last_written_seq": 58460240,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58288210
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043827.6283998,
+    "status_at": 1790043826.8914955,
+    "reasons": [],
+    "lag": 0.003811215,
+    "reference_age": 0.7935314178466797,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043826.8913789,
+      "last_capture_seq": 50272652,
+      "last_written_seq": 50272652,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50272404
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043828.1287336,
+    "status_at": 1790043828.0391629,
+    "reasons": [],
+    "lag": 0.388063529,
+    "reference_age": 0.9727911949157715,
+    "queue": 704,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.384409058,
+      "outstanding_events": 692,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043828.0413632,
+      "last_capture_seq": 58463423,
+      "last_written_seq": 58463423,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58291393
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043828.128913,
+    "status_at": 1790043827.901849,
+    "reasons": [],
+    "lag": 0.010205195,
+    "reference_age": 0.8031184673309326,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043827.9017222,
+      "last_capture_seq": 50273691,
+      "last_written_seq": 50273691,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50273443
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043828.6292531,
+    "status_at": 1790043828.0391629,
+    "reasons": [],
+    "lag": 0.388063529,
+    "reference_age": 0.9727911949157715,
+    "queue": 704,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.384409058,
+      "outstanding_events": 692,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043828.0413632,
+      "last_capture_seq": 58463423,
+      "last_written_seq": 58463423,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58291393
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043828.6294644,
+    "status_at": 1790043827.901849,
+    "reasons": [],
+    "lag": 0.010205195,
+    "reference_age": 0.8031184673309326,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043827.9017222,
+      "last_capture_seq": 50273691,
+      "last_written_seq": 50273691,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50273443
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043829.1298656,
+    "status_at": 1790043828.0391629,
+    "reasons": [],
+    "lag": 0.388063529,
+    "reference_age": 0.9727911949157715,
+    "queue": 704,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.384409058,
+      "outstanding_events": 692,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043828.0413632,
+      "last_capture_seq": 58463423,
+      "last_written_seq": 58463423,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58291393
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043829.1300564,
+    "status_at": 1790043828.9050992,
+    "reasons": [],
+    "lag": 0.043104183,
+    "reference_age": 0.8131825923919678,
+    "queue": 3,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.013718612,
+      "outstanding_events": 3,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043828.9049854,
+      "last_capture_seq": 50274200,
+      "last_written_seq": 50274198,
+      "queued_bytes": 3102,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50273950
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043829.6303847,
+    "status_at": 1790043829.167951,
+    "reasons": [],
+    "lag": 0.187849701,
+    "reference_age": 1.062037467956543,
+    "queue": 110,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.186282308,
+      "outstanding_events": 110,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043829.167867,
+      "last_capture_seq": 58466601,
+      "last_written_seq": 58466601,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58294571
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043829.6306298,
+    "status_at": 1790043828.9050992,
+    "reasons": [],
+    "lag": 0.043104183,
+    "reference_age": 0.8131825923919678,
+    "queue": 3,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.013718612,
+      "outstanding_events": 3,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043828.9049854,
+      "last_capture_seq": 50274200,
+      "last_written_seq": 50274198,
+      "queued_bytes": 3102,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50273950
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043830.131143,
+    "status_at": 1790043829.167951,
+    "reasons": [],
+    "lag": 0.187849701,
+    "reference_age": 1.062037467956543,
+    "queue": 110,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.186282308,
+      "outstanding_events": 110,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043829.167867,
+      "last_capture_seq": 58466601,
+      "last_written_seq": 58466601,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58294571
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043830.1319857,
+    "status_at": 1790043829.9312804,
+    "reasons": [],
+    "lag": 0.011641453,
+    "reference_age": 0.8647964000701904,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043829.931221,
+      "last_capture_seq": 50274662,
+      "last_written_seq": 50274659,
+      "queued_bytes": 3927,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50274411
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043830.632353,
+    "status_at": 1790043830.2796128,
+    "reasons": [],
+    "lag": 0.179870715,
+    "reference_age": 0.2299356460571289,
+    "queue": 262,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.172399018,
+      "outstanding_events": 253,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043830.2827885,
+      "last_capture_seq": 58469649,
+      "last_written_seq": 58469648,
+      "queued_bytes": 869,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58297618
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043830.6326623,
+    "status_at": 1790043829.9312804,
+    "reasons": [],
+    "lag": 0.011641453,
+    "reference_age": 0.8647964000701904,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043829.931221,
+      "last_capture_seq": 50274662,
+      "last_written_seq": 50274659,
+      "queued_bytes": 3927,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50274411
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043831.1329887,
+    "status_at": 1790043830.2796128,
+    "reasons": [],
+    "lag": 0.179870715,
+    "reference_age": 0.2299356460571289,
+    "queue": 262,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.172399018,
+      "outstanding_events": 253,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043830.2827885,
+      "last_capture_seq": 58469649,
+      "last_written_seq": 58469648,
+      "queued_bytes": 869,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58297618
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043831.1332366,
+    "status_at": 1790043830.9322605,
+    "reasons": [],
+    "lag": 0.001679043,
+    "reference_age": 0.8786320686340332,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043830.9321764,
+      "last_capture_seq": 50275390,
+      "last_written_seq": 50275387,
+      "queued_bytes": 3920,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50275139
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043831.6337674,
+    "status_at": 1790043831.2979577,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.551119968,
+    "reference_age": 1.2482805252075195,
+    "queue": 720,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.54426275,
+      "outstanding_events": 719,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043831.3028283,
+      "last_capture_seq": 58473016,
+      "last_written_seq": 58473016,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58300986
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043831.6340256,
+    "status_at": 1790043830.9322605,
+    "reasons": [],
+    "lag": 0.001679043,
+    "reference_age": 0.8786320686340332,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043830.9321764,
+      "last_capture_seq": 50275390,
+      "last_written_seq": 50275387,
+      "queued_bytes": 3920,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50275139
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043832.136797,
+    "status_at": 1790043831.2979577,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.551119968,
+    "reference_age": 1.2482805252075195,
+    "queue": 720,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.54426275,
+      "outstanding_events": 719,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043831.3028283,
+      "last_capture_seq": 58473016,
+      "last_written_seq": 58473016,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58300986
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043832.1369562,
+    "status_at": 1790043831.9582605,
+    "reasons": [],
+    "lag": 0.007287813,
+    "reference_age": 0.8734543323516846,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043831.9581304,
+      "last_capture_seq": 50276446,
+      "last_written_seq": 50276446,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50276198
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043832.6373062,
+    "status_at": 1790043832.4309042,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.59505186,
+    "reference_age": 1.3329582214355469,
+    "queue": 336,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.585880542,
+      "outstanding_events": 336,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043832.4307914,
+      "last_capture_seq": 58475659,
+      "last_written_seq": 58474952,
+      "queued_bytes": 975934,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58302922
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043832.6375105,
+    "status_at": 1790043831.9582605,
+    "reasons": [],
+    "lag": 0.007287813,
+    "reference_age": 0.8734543323516846,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043831.9581304,
+      "last_capture_seq": 50276446,
+      "last_written_seq": 50276446,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50276198
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043833.1378798,
+    "status_at": 1790043832.4309042,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.59505186,
+    "reference_age": 1.3329582214355469,
+    "queue": 336,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.585880542,
+      "outstanding_events": 336,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043832.4307914,
+      "last_capture_seq": 58475659,
+      "last_written_seq": 58474952,
+      "queued_bytes": 975934,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58302922
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043833.1380847,
+    "status_at": 1790043832.9663134,
+    "reasons": [],
+    "lag": 0.018911854,
+    "reference_age": 0.8584475517272949,
+    "queue": 11,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.003436313,
+      "outstanding_events": 11,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043832.9661655,
+      "last_capture_seq": 50277502,
+      "last_written_seq": 50277502,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50277254
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043833.6384335,
+    "status_at": 1790043832.4309042,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.59505186,
+    "reference_age": 1.3329582214355469,
+    "queue": 336,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.585880542,
+      "outstanding_events": 336,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043832.4307914,
+      "last_capture_seq": 58475659,
+      "last_written_seq": 58474952,
+      "queued_bytes": 975934,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58302922
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043833.638695,
+    "status_at": 1790043832.9663134,
+    "reasons": [],
+    "lag": 0.018911854,
+    "reference_age": 0.8584475517272949,
+    "queue": 11,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.003436313,
+      "outstanding_events": 11,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043832.9661655,
+      "last_capture_seq": 50277502,
+      "last_written_seq": 50277502,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50277254
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043834.1390235,
+    "status_at": 1790043833.6662445,
+    "reasons": [],
+    "lag": 0.403405572,
+    "reference_age": 0.5830144882202148,
+    "queue": 511,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.401491629,
+      "outstanding_events": 508,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043833.6678212,
+      "last_capture_seq": 58479609,
+      "last_written_seq": 58479609,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58307579
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043834.1391907,
+    "status_at": 1790043833.968595,
+    "reasons": [],
+    "lag": 0.016820148,
+    "reference_age": 0.875403881072998,
+    "queue": 10,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.015443852,
+      "outstanding_events": 10,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043833.9684863,
+      "last_capture_seq": 50278803,
+      "last_written_seq": 50278785,
+      "queued_bytes": 25439,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50278537
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043834.6395323,
+    "status_at": 1790043833.6662445,
+    "reasons": [],
+    "lag": 0.403405572,
+    "reference_age": 0.5830144882202148,
+    "queue": 511,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.401491629,
+      "outstanding_events": 508,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043833.6678212,
+      "last_capture_seq": 58479609,
+      "last_written_seq": 58479609,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58307579
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043834.6397882,
+    "status_at": 1790043833.968595,
+    "reasons": [],
+    "lag": 0.016820148,
+    "reference_age": 0.875403881072998,
+    "queue": 10,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.015443852,
+      "outstanding_events": 10,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043833.9684863,
+      "last_capture_seq": 50278803,
+      "last_written_seq": 50278785,
+      "queued_bytes": 25439,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50278537
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043835.140129,
+    "status_at": 1790043834.82154,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.528792482,
+    "reference_age": 0.7284915447235107,
+    "queue": 356,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.526968257,
+      "outstanding_events": 356,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043834.821453,
+      "last_capture_seq": 58482461,
+      "last_written_seq": 58482461,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58310431
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043835.140425,
+    "status_at": 1790043834.972648,
+    "reasons": [],
+    "lag": 0.003066,
+    "reference_age": 0.902843713760376,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043834.9724057,
+      "last_capture_seq": 50279226,
+      "last_written_seq": 50279226,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50278978
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043835.6408412,
+    "status_at": 1790043834.82154,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.528792482,
+    "reference_age": 0.7284915447235107,
+    "queue": 356,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.526968257,
+      "outstanding_events": 356,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043834.821453,
+      "last_capture_seq": 58482461,
+      "last_written_seq": 58482461,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58310431
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043835.6410046,
+    "status_at": 1790043834.972648,
+    "reasons": [],
+    "lag": 0.003066,
+    "reference_age": 0.902843713760376,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043834.9724057,
+      "last_capture_seq": 50279226,
+      "last_written_seq": 50279226,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50278978
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043836.1413894,
+    "status_at": 1790043835.8232281,
+    "reasons": [],
+    "lag": 0.000993761,
+    "reference_age": 0.7387726306915283,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043835.8231583,
+      "last_capture_seq": 58484089,
+      "last_written_seq": 58484086,
+      "queued_bytes": 3721,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58312056
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043836.1417103,
+    "status_at": 1790043835.9890103,
+    "reasons": [],
+    "lag": 0.003010906,
+    "reference_age": 0.9432482719421387,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043835.988928,
+      "last_capture_seq": 50279486,
+      "last_written_seq": 50279486,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50279238
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043836.6420517,
+    "status_at": 1790043835.8232281,
+    "reasons": [],
+    "lag": 0.000993761,
+    "reference_age": 0.7387726306915283,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043835.8231583,
+      "last_capture_seq": 58484089,
+      "last_written_seq": 58484086,
+      "queued_bytes": 3721,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58312056
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043836.642235,
+    "status_at": 1790043835.9890103,
+    "reasons": [],
+    "lag": 0.003010906,
+    "reference_age": 0.9432482719421387,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043835.988928,
+      "last_capture_seq": 50279486,
+      "last_written_seq": 50279486,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50279238
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043837.1426506,
+    "status_at": 1790043836.8368292,
+    "reasons": [],
+    "lag": 0.004662068,
+    "reference_age": 0.7624771595001221,
+    "queue": 3,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.004141703,
+      "outstanding_events": 3,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043836.8367653,
+      "last_capture_seq": 58484783,
+      "last_written_seq": 58484769,
+      "queued_bytes": 21787,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58312739
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043837.1428654,
+    "status_at": 1790043837.064402,
+    "reasons": [],
+    "lag": 0.118575859,
+    "reference_age": 0.9592349529266357,
+    "queue": 51,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.094632646,
+      "outstanding_events": 43,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043837.0671992,
+      "last_capture_seq": 50280199,
+      "last_written_seq": 50280199,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50279951
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043837.6432693,
+    "status_at": 1790043836.8368292,
+    "reasons": [],
+    "lag": 0.004662068,
+    "reference_age": 0.7624771595001221,
+    "queue": 3,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.004141703,
+      "outstanding_events": 3,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043836.8367653,
+      "last_capture_seq": 58484783,
+      "last_written_seq": 58484769,
+      "queued_bytes": 21787,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58312739
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043837.6434848,
+    "status_at": 1790043837.064402,
+    "reasons": [],
+    "lag": 0.118575859,
+    "reference_age": 0.9592349529266357,
+    "queue": 51,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.094632646,
+      "outstanding_events": 43,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043837.0671992,
+      "last_capture_seq": 50280199,
+      "last_written_seq": 50280199,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50279951
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043838.1438572,
+    "status_at": 1790043838.030004,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.83694095,
+    "reference_age": 0.8387892246246338,
+    "queue": 1175,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.834603014,
+      "outstanding_events": 1173,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043838.031976,
+      "last_capture_seq": 58488277,
+      "last_written_seq": 58488277,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58316247
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043838.1441028,
+    "status_at": 1790043838.088768,
+    "reasons": [],
+    "lag": 0.003278237,
+    "reference_age": 1.0170636177062988,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043838.088511,
+      "last_capture_seq": 50281351,
+      "last_written_seq": 50281351,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50281103
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043838.644466,
+    "status_at": 1790043838.030004,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.83694095,
+    "reference_age": 0.8387892246246338,
+    "queue": 1175,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.834603014,
+      "outstanding_events": 1173,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043838.031976,
+      "last_capture_seq": 58488277,
+      "last_written_seq": 58488277,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58316247
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043838.6447096,
+    "status_at": 1790043838.088768,
+    "reasons": [],
+    "lag": 0.003278237,
+    "reference_age": 1.0170636177062988,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043838.088511,
+      "last_capture_seq": 50281351,
+      "last_written_seq": 50281351,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50281103
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043839.1450047,
+    "status_at": 1790043838.030004,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.83694095,
+    "reference_age": 0.8387892246246338,
+    "queue": 1175,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.834603014,
+      "outstanding_events": 1173,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043838.031976,
+      "last_capture_seq": 58488277,
+      "last_written_seq": 58488277,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58316247
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043839.145128,
+    "status_at": 1790043839.1247728,
+    "reasons": [],
+    "lag": 0.056444317,
+    "reference_age": 0.05288219451904297,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043839.127474,
+      "last_capture_seq": 50281701,
+      "last_written_seq": 50281701,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50281453
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043839.6454937,
+    "status_at": 1790043839.2411711,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.113847012,
+    "reference_age": 1.1926302909851074,
+    "queue": 874,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.111746189,
+      "outstanding_events": 874,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043839.2410543,
+      "last_capture_seq": 58491777,
+      "last_written_seq": 58491777,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58319747
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043839.6457527,
+    "status_at": 1790043839.1247728,
+    "reasons": [],
+    "lag": 0.056444317,
+    "reference_age": 0.05288219451904297,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043839.127474,
+      "last_capture_seq": 50281701,
+      "last_written_seq": 50281701,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50281453
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043840.1460772,
+    "status_at": 1790043839.2411711,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.113847012,
+    "reference_age": 1.1926302909851074,
+    "queue": 874,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.111746189,
+      "outstanding_events": 874,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043839.2410543,
+      "last_capture_seq": 58491777,
+      "last_written_seq": 58491777,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58319747
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043840.146248,
+    "status_at": 1790043839.1247728,
+    "reasons": [],
+    "lag": 0.056444317,
+    "reference_age": 0.05288219451904297,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043839.127474,
+      "last_capture_seq": 50281701,
+      "last_written_seq": 50281701,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50281453
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043840.6465387,
+    "status_at": 1790043840.588741,
+    "reasons": [],
+    "lag": 0.479872373,
+    "reference_age": 1.5288116931915283,
+    "queue": 1003,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.474593612,
+      "outstanding_events": 979,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043840.593425,
+      "last_capture_seq": 58495932,
+      "last_written_seq": 58495932,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58323902
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043840.6467214,
+    "status_at": 1790043840.2380328,
+    "reasons": [],
+    "lag": 0.140511654,
+    "reference_age": 1.166142225265503,
+    "queue": 50,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.128144413,
+      "outstanding_events": 48,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043840.2432485,
+      "last_capture_seq": 50282348,
+      "last_written_seq": 50282348,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50282100
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043841.1606472,
+    "status_at": 1790043840.588741,
+    "reasons": [],
+    "lag": 0.479872373,
+    "reference_age": 1.5288116931915283,
+    "queue": 1003,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.474593612,
+      "outstanding_events": 979,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043793.8193495,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043840.593425,
+      "last_capture_seq": 58495932,
+      "last_written_seq": 58495932,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58323902
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043841.160935,
+    "status_at": 1790043840.2380328,
+    "reasons": [],
+    "lag": 0.140511654,
+    "reference_age": 1.166142225265503,
+    "queue": 50,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.128144413,
+      "outstanding_events": 48,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043840.2432485,
+      "last_capture_seq": 50282348,
+      "last_written_seq": 50282348,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50282100
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043841.6614697,
+    "status_at": 1790043841.633325,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.237843051,
+    "reference_age": 1.399639368057251,
+    "queue": 1970,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.235825012,
+      "outstanding_events": 1968,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043841.6347442,
+      "last_capture_seq": 58499190,
+      "last_written_seq": 58499176,
+      "queued_bytes": 16944,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58327146
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043841.6618025,
+    "status_at": 1790043841.264173,
+    "reasons": [],
+    "lag": 0.00441777,
+    "reference_age": 0.20255112648010254,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043841.264014,
+      "last_capture_seq": 50283431,
+      "last_written_seq": 50283431,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50283183
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043842.1622503,
+    "status_at": 1790043841.633325,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.237843051,
+    "reference_age": 1.399639368057251,
+    "queue": 1970,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.235825012,
+      "outstanding_events": 1968,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043841.6347442,
+      "last_capture_seq": 58499190,
+      "last_written_seq": 58499176,
+      "queued_bytes": 16944,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58327146
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043842.1624446,
+    "status_at": 1790043841.264173,
+    "reasons": [],
+    "lag": 0.00441777,
+    "reference_age": 0.20255112648010254,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043841.264014,
+      "last_capture_seq": 50283431,
+      "last_written_seq": 50283431,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50283183
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043842.6628757,
+    "status_at": 1790043841.633325,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.237843051,
+    "reference_age": 1.399639368057251,
+    "queue": 1970,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.235825012,
+      "outstanding_events": 1968,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043841.6347442,
+      "last_capture_seq": 58499190,
+      "last_written_seq": 58499176,
+      "queued_bytes": 16944,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58327146
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043842.6631,
+    "status_at": 1790043842.270237,
+    "reasons": [],
+    "lag": 0.002270711,
+    "reference_age": 0.17608261108398438,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043842.270032,
+      "last_capture_seq": 50284571,
+      "last_written_seq": 50284569,
+      "queued_bytes": 3103,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50284321
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043843.163829,
+    "status_at": 1790043842.6479752,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.823461836,
+    "reference_age": 2.4142894744873047,
+    "queue": 2136,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.806627681,
+      "outstanding_events": 2131,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043842.664453,
+      "last_capture_seq": 58501621,
+      "last_written_seq": 58501617,
+      "queued_bytes": 3461,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58329587
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043843.163988,
+    "status_at": 1790043842.270237,
+    "reasons": [],
+    "lag": 0.002270711,
+    "reference_age": 0.17608261108398438,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043842.270032,
+      "last_capture_seq": 50284571,
+      "last_written_seq": 50284569,
+      "queued_bytes": 3103,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50284321
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043843.6643298,
+    "status_at": 1790043842.6479752,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.823461836,
+    "reference_age": 2.4142894744873047,
+    "queue": 2136,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.806627681,
+      "outstanding_events": 2131,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043793.8193495,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043842.664453,
+      "last_capture_seq": 58501621,
+      "last_written_seq": 58501617,
+      "queued_bytes": 3461,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58329587
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043843.664513,
+    "status_at": 1790043843.280115,
+    "reasons": [],
+    "lag": 0.035632356,
+    "reference_age": 0.17188453674316406,
+    "queue": 9,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.018959634,
+      "outstanding_events": 9,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043843.280041,
+      "last_capture_seq": 50285171,
+      "last_written_seq": 50285171,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50284923
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043844.16482,
+    "status_at": 1790043843.7421498,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 2.333342809,
+    "reference_age": 2.645811080932617,
+    "queue": 2996,
+    "recovery": {
+      "catching_up": true,
+      "entries_blocked": true,
+      "oldest_event_lag": 2.331295307,
+      "outstanding_events": 2994,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043843.7438097,
+      "last_capture_seq": 58504742,
+      "last_written_seq": 58504742,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58332712
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043844.1649852,
+    "status_at": 1790043843.280115,
+    "reasons": [],
+    "lag": 0.035632356,
+    "reference_age": 0.17188453674316406,
+    "queue": 9,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.018959634,
+      "outstanding_events": 9,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043843.280041,
+      "last_capture_seq": 50285171,
+      "last_written_seq": 50285171,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50284923
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043844.6657526,
+    "status_at": 1790043843.7421498,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 2.333342809,
+    "reference_age": 2.645811080932617,
+    "queue": 2996,
+    "recovery": {
+      "catching_up": true,
+      "entries_blocked": true,
+      "oldest_event_lag": 2.331295307,
+      "outstanding_events": 2994,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043843.7438097,
+      "last_capture_seq": 58504742,
+      "last_written_seq": 58504742,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58332712
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043844.6659687,
+    "status_at": 1790043844.2891955,
+    "reasons": [],
+    "lag": 0.021917882,
+    "reference_age": 0.17714285850524902,
+    "queue": 5,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.012201782,
+      "outstanding_events": 5,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043844.2891102,
+      "last_capture_seq": 50286750,
+      "last_written_seq": 50286633,
+      "queued_bytes": 163946,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50286385
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043845.1662688,
+    "status_at": 1790043844.8753316,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.205989772,
+    "reference_age": 1.7779576778411865,
+    "queue": 1274,
+    "recovery": {
+      "catching_up": true,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.204010266,
+      "outstanding_events": 1274,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED",
+        "WAITING_FOR_FRESH_REFERENCE"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043844.8752303,
+      "last_capture_seq": 58508657,
+      "last_written_seq": 58508624,
+      "queued_bytes": 22826,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58336594
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043845.1664236,
+    "status_at": 1790043844.2891955,
+    "reasons": [],
+    "lag": 0.021917882,
+    "reference_age": 0.17714285850524902,
+    "queue": 5,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.012201782,
+      "outstanding_events": 5,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043844.2891102,
+      "last_capture_seq": 50286750,
+      "last_written_seq": 50286633,
+      "queued_bytes": 163946,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50286385
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043845.6699295,
+    "status_at": 1790043844.8753316,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.205989772,
+    "reference_age": 1.7779576778411865,
+    "queue": 1274,
+    "recovery": {
+      "catching_up": true,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.204010266,
+      "outstanding_events": 1274,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED",
+        "WAITING_FOR_FRESH_REFERENCE"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043844.8752303,
+      "last_capture_seq": 58508657,
+      "last_written_seq": 58508624,
+      "queued_bytes": 22826,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58336594
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043845.6701405,
+    "status_at": 1790043845.3540835,
+    "reasons": [],
+    "lag": 0.004200113,
+    "reference_age": 0.2652404308319092,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043845.3539653,
+      "last_capture_seq": 50287578,
+      "last_written_seq": 50287578,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50287330
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043846.1705072,
+    "status_at": 1790043846.097965,
+    "reasons": [],
+    "lag": 0.471099401,
+    "reference_age": 1.0115957260131836,
+    "queue": 580,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.466569913,
+      "outstanding_events": 573,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043843.3765154,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043846.1002765,
+      "last_capture_seq": 58512245,
+      "last_written_seq": 58512245,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58340215
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043846.170808,
+    "status_at": 1790043845.3540835,
+    "reasons": [],
+    "lag": 0.004200113,
+    "reference_age": 0.2652404308319092,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043845.3539653,
+      "last_capture_seq": 50287578,
+      "last_written_seq": 50287578,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50287330
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043846.6711252,
+    "status_at": 1790043846.097965,
+    "reasons": [],
+    "lag": 0.471099401,
+    "reference_age": 1.0115957260131836,
+    "queue": 580,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.466569913,
+      "outstanding_events": 573,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043843.3765154,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043846.1002765,
+      "last_capture_seq": 58512245,
+      "last_written_seq": 58512245,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58340215
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043846.6713226,
+    "status_at": 1790043846.3621454,
+    "reasons": [],
+    "lag": 0.013177158,
+    "reference_age": 0.28772854804992676,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043846.3620274,
+      "last_capture_seq": 50288370,
+      "last_written_seq": 50288370,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50288122
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043847.1717157,
+    "status_at": 1790043846.097965,
+    "reasons": [],
+    "lag": 0.471099401,
+    "reference_age": 1.0115957260131836,
+    "queue": 580,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.466569913,
+      "outstanding_events": 573,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [],
+      "since": 1790043843.3765154,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043846.1002765,
+      "last_capture_seq": 58512245,
+      "last_written_seq": 58512245,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58340215
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043847.1718638,
+    "status_at": 1790043846.3621454,
+    "reasons": [],
+    "lag": 0.013177158,
+    "reference_age": 0.28772854804992676,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043846.3620274,
+      "last_capture_seq": 50288370,
+      "last_written_seq": 50288370,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50288122
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043847.6722589,
+    "status_at": 1790043847.640532,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.804403295,
+    "reference_age": 1.5509209632873535,
+    "queue": 1038,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.802106705,
+      "outstanding_events": 1038,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043847.6404197,
+      "last_capture_seq": 58515680,
+      "last_written_seq": 58515680,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58343650
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043847.6724496,
+    "status_at": 1790043847.441543,
+    "reasons": [],
+    "lag": 0.029369822,
+    "reference_age": 0.3528318405151367,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043847.4449847,
+      "last_capture_seq": 50289007,
+      "last_written_seq": 50289007,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50288759
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043848.1727674,
+    "status_at": 1790043847.640532,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.804403295,
+    "reference_age": 1.5509209632873535,
+    "queue": 1038,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.802106705,
+      "outstanding_events": 1038,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043847.6404197,
+      "last_capture_seq": 58515680,
+      "last_written_seq": 58515680,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58343650
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043848.17293,
+    "status_at": 1790043847.441543,
+    "reasons": [],
+    "lag": 0.029369822,
+    "reference_age": 0.3528318405151367,
+    "queue": 1,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043847.4449847,
+      "last_capture_seq": 50289007,
+      "last_written_seq": 50289007,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50288759
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043848.673225,
+    "status_at": 1790043847.640532,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.804403295,
+    "reference_age": 1.5509209632873535,
+    "queue": 1038,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.802106705,
+      "outstanding_events": 1038,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043847.6404197,
+      "last_capture_seq": 58515680,
+      "last_written_seq": 58515680,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58343650
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043848.6733549,
+    "status_at": 1790043848.445733,
+    "reasons": [],
+    "lag": 0.007062892,
+    "reference_age": 0.35431957244873047,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043848.445525,
+      "last_capture_seq": 50289750,
+      "last_written_seq": 50289748,
+      "queued_bytes": 3097,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50289500
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043849.1736972,
+    "status_at": 1790043848.8247106,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.744415113,
+    "reference_age": 1.6981055736541748,
+    "queue": 1394,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.742371367,
+      "outstanding_events": 1394,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043848.8246057,
+      "last_capture_seq": 58519783,
+      "last_written_seq": 58519783,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58347753
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043849.173852,
+    "status_at": 1790043848.445733,
+    "reasons": [],
+    "lag": 0.007062892,
+    "reference_age": 0.35431957244873047,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043848.445525,
+      "last_capture_seq": 50289750,
+      "last_written_seq": 50289748,
+      "queued_bytes": 3097,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50289500
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043849.6743217,
+    "status_at": 1790043848.8247106,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.744415113,
+    "reference_age": 1.6981055736541748,
+    "queue": 1394,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.742371367,
+      "outstanding_events": 1394,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043848.8246057,
+      "last_capture_seq": 58519783,
+      "last_written_seq": 58519783,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58347753
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043849.6746006,
+    "status_at": 1790043849.453043,
+    "reasons": [],
+    "lag": 0.001745979,
+    "reference_age": 0.35666608810424805,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043849.452794,
+      "last_capture_seq": 50290576,
+      "last_written_seq": 50290573,
+      "queued_bytes": 3966,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50290325
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043850.1757846,
+    "status_at": 1790043849.8307366,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.140996175,
+    "reference_age": 1.748229742050171,
+    "queue": 798,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.139324485,
+      "outstanding_events": 797,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043849.832014,
+      "last_capture_seq": 58522954,
+      "last_written_seq": 58522954,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58350924
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043850.1759257,
+    "status_at": 1790043849.453043,
+    "reasons": [],
+    "lag": 0.001745979,
+    "reference_age": 0.35666608810424805,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043849.452794,
+      "last_capture_seq": 50290576,
+      "last_written_seq": 50290573,
+      "queued_bytes": 3966,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50290325
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043850.6762195,
+    "status_at": 1790043849.8307366,
+    "reasons": [
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.140996175,
+    "reference_age": 1.748229742050171,
+    "queue": 798,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.139324485,
+      "outstanding_events": 797,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043849.832014,
+      "last_capture_seq": 58522954,
+      "last_written_seq": 58522954,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58350924
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043850.6763954,
+    "status_at": 1790043850.4555845,
+    "reasons": [],
+    "lag": 0.000838418,
+    "reference_age": 0.369748592376709,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043850.4553604,
+      "last_capture_seq": 50291327,
+      "last_written_seq": 50291325,
+      "queued_bytes": 1495,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50291077
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043851.1778948,
+    "status_at": 1790043850.9790623,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.607668848,
+    "reference_age": 0.9063167572021484,
+    "queue": 959,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.603186317,
+      "outstanding_events": 959,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043850.9790003,
+      "last_capture_seq": 58526826,
+      "last_written_seq": 58526826,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58354796
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043851.178115,
+    "status_at": 1790043850.4555845,
+    "reasons": [],
+    "lag": 0.000838418,
+    "reference_age": 0.369748592376709,
+    "queue": 0,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043850.4553604,
+      "last_capture_seq": 50291327,
+      "last_written_seq": 50291325,
+      "queued_bytes": 1495,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50291077
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043851.6784415,
+    "status_at": 1790043850.9790623,
+    "reasons": [
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 0.607668848,
+    "reference_age": 0.9063167572021484,
+    "queue": 959,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 0.603186317,
+      "outstanding_events": 959,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043850.9790003,
+      "last_capture_seq": 58526826,
+      "last_written_seq": 58526826,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58354796
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043851.6787004,
+    "status_at": 1790043851.4869263,
+    "reasons": [],
+    "lag": 0.039595234,
+    "reference_age": 0.3684961795806885,
+    "queue": 17,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.036953389,
+      "outstanding_events": 17,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043851.4868371,
+      "last_capture_seq": 50292973,
+      "last_written_seq": 50292973,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50292725
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043852.1790211,
+    "status_at": 1790043852.1553085,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.078983105,
+    "reference_age": 2.0825629234313965,
+    "queue": 987,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.07698268,
+      "outstanding_events": 987,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043852.1552324,
+      "last_capture_seq": 58530643,
+      "last_written_seq": 58530643,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58358613
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043852.1791596,
+    "status_at": 1790043851.4869263,
+    "reasons": [],
+    "lag": 0.039595234,
+    "reference_age": 0.3684961795806885,
+    "queue": 17,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0.036953389,
+      "outstanding_events": 17,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043851.4868371,
+      "last_capture_seq": 50292973,
+      "last_written_seq": 50292973,
+      "queued_bytes": 0,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50292725
+    }
+  },
+  {
+    "asset": "BTC",
+    "at": 1790043852.679516,
+    "status_at": 1790043852.1553085,
+    "reasons": [
+      "STALE_REFERENCE",
+      "PROCESSING_LAG",
+      "COLLECTOR_RECOVERING",
+      "BACKLOG_WARNING"
+    ],
+    "lag": 1.078983105,
+    "reference_age": 2.0825629234313965,
+    "queue": 987,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": true,
+      "oldest_event_lag": 1.07698268,
+      "outstanding_events": 987,
+      "reason": "PROCESSING_BACKLOG",
+      "reasons": [
+        "BACKLOG_NOT_DRAINED"
+      ],
+      "since": 1790043843.3765154,
+      "state": "RECOVERING",
+      "warning": true
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 142,
+        "queue_records": 171888
+      },
+      "dropped": 172030,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043852.1552324,
+      "last_capture_seq": 58530643,
+      "last_written_seq": 58530643,
+      "queued_bytes": 0,
+      "session": "20260921T174631Z-9d2e2d63f4614d0aa7443043e7271809",
+      "written": 58358613
+    }
+  },
+  {
+    "asset": "ETH",
+    "at": 1790043852.6798017,
+    "status_at": 1790043852.5257607,
+    "reasons": [],
+    "lag": 0.014117028,
+    "reference_age": 0.4307222366333008,
+    "queue": 5,
+    "recovery": {
+      "catching_up": false,
+      "entries_blocked": false,
+      "oldest_event_lag": 0,
+      "outstanding_events": 0,
+      "reason": "STARTUP",
+      "reasons": [],
+      "since": 1789962796.1633997,
+      "state": "READY",
+      "warning": false
+    },
+    "logging": {
+      "capture_complete": false,
+      "drop_reasons": {
+        "capture_error": 248
+      },
+      "dropped": 248,
+      "enabled": true,
+      "error": "OperationalError",
+      "last_capture_at": 1790043852.532008,
+      "last_capture_seq": 50294073,
+      "last_written_seq": 50294068,
+      "queued_bytes": 4333,
+      "session": "20260921T035315Z-e1d7da8600b54b3cab3e963c15777035",
+      "written": 50293820
+    }
+  }
+]

@@ -1,0 +1,37 @@
+{
+  "BTC": {
+    "runner.py": true,
+    "research_log.py": true,
+    "collector_recovery.py": true
+  },
+  "ETH": {
+    "runner.py": false,
+    "research_log.py": false,
+    "collector_recovery.py": true
+  },
+  "SOL": {
+    "runner.py": false,
+    "research_log.py": false,
+    "collector_recovery.py": true
+  },
+  "XRP": {
+    "runner.py": false,
+    "research_log.py": false,
+    "collector_recovery.py": true
+  },
+  "GOLD": {
+    "runner.py": false,
+    "research_log.py": false,
+    "collector_recovery.py": true
+  },
+  "SILVER": {
+    "runner.py": false,
+    "research_log.py": false,
+    "collector_recovery.py": true
+  },
+  "WTI": {
+    "runner.py": false,
+    "research_log.py": false,
+    "collector_recovery.py": true
+  }
+}

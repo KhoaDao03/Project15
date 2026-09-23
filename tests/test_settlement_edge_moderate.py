@@ -49,6 +49,7 @@ def test_preset_changes_only_declared_entry_thresholds():
         "min_entry_price": 0.80,
         "min_edge": 0.02,
         "min_ev": 0.02,
+        "max_spread": 1.0,
     }
 
 
@@ -56,7 +57,6 @@ def test_preset_changes_only_declared_entry_thresholds():
     "inputs,old_reason",
     [
         ({}, "MIN_EV"),
-        ({"ask": 0.82}, "MIN_PRICE"),
         ({"probability": 0.97, "remaining": 540}, "ENTRY_WINDOW"),
     ],
 )
@@ -85,3 +85,13 @@ def test_moderate_keeps_safety_and_confidence_gates(market, inputs, reason):
     result = decision(market, Strategy.load(PRESET), **inputs)
     assert result["decision"] == "NO_TRADE"
     assert reason in {r["code"] for r in result["reasons"]}
+
+
+def test_lower_price_floor_keeps_capped_probability_gate(market):
+    original = decision(market, Strategy(), ask=0.82)
+    moderate = decision(market, Strategy.load(PRESET), ask=0.82)
+    assert "MIN_PRICE" in {r["code"] for r in original["reasons"]}
+    reasons = {r["code"] for r in moderate["reasons"]}
+    assert "MIN_PRICE" not in reasons
+    assert "MIN_PROBABILITY" in reasons
+    assert moderate["decision"] == "NO_TRADE"

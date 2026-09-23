@@ -51,7 +51,11 @@ def test_snapshot_requests_avoid_history_and_keep_rows_on_failure(store, monkeyp
         store.add(
             "trade_result",
             dict(cost=8, bought=10, proceeds=10, fees=0.1, net_pnl=1.9, side="yes", opened=4),
-            "current", "PAPER", 5, "next-market", "next-trade",
+            "current",
+            "PAPER",
+            5,
+            "next-market",
+            "next-trade",
         )
         app.state.refresh_recent_trades()
         refreshed = client.get(url).json()
@@ -61,7 +65,7 @@ def test_snapshot_requests_avoid_history_and_keep_rows_on_failure(store, monkeyp
         assert app.state.recent_trade_version == version + 1
 
 
-def test_delayed_notice_preserves_rows_and_is_not_duplicated():
+def test_delayed_notice_preserves_rows_and_is_not_duplicated(node_binary):
     source = Path("src/btc15/static/app.js").read_text()
     function = source[
         source.index("function markTradesDelayed(") : source.index("async function refreshFleet(")
@@ -81,4 +85,4 @@ assert.equal(children.length,2);assert.equal(children[0],trade);
 assert.match(children[1].textContent,/Update delayed/);
 """
     )
-    subprocess.run(["node", "-e", program], check=True)
+    subprocess.run([node_binary, "-e", program], check=True)

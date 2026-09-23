@@ -574,7 +574,7 @@ async function refreshFleet(){
     const selected=assetBase.split('/')[2]||data.default_asset;
     $('asset-details-label').textContent=selected+' · decisions, positions and feed details';
     $('fleet-status').textContent=(liveOnlyFleet?'Live bots · P&L after recorded fees · latest 3 purchases per asset · updated ':'Active paper runs · P&L after recorded fees · latest 3 purchases per asset · updated ')+new Date(data.server_time*1000).toLocaleTimeString()+'. Select an asset for full history and settings.';
-    if(data.live?.available===false)$('fleet-status').textContent+=' Live execution unavailable; order and position status cannot be confirmed.';
+    if(data.live?.available===false)$('fleet-status').textContent+=' Live status temporarily unavailable; trading state cannot be confirmed.';
     $('fleet-total').textContent=(data.totals_complete?'Realized net P&L · ':'Partial realized net P&L · ')+money(data.realized_pnl);
     for(const row of data.assets){
       let card=fleetCards.get(row.asset);
@@ -607,11 +607,17 @@ async function refreshFleet(){
         const updateLive=(ticker,state)=>{
           if(row.paper_only){liveStatus.textContent='Paper validation · real trading disabled';return;}
           const changed=ticker!==liveTicker;if(changed){liveTicker=ticker;liveDirty=false;}
+          if(!state||state.available===false||typeof state.running!=='boolean'){
+            liveSave.disabled=true;liveTakeover.disabled=true;liveEnabled.disabled=true;liveCount.disabled=true;
+            liveStatus.textContent='Live status temporarily unavailable · displayed settings are unconfirmed';
+            return;
+          }
+          liveEnabled.disabled=false;liveCount.disabled=false;
           const control=state?.controls?.[ticker],policy=state?.assets?.[row.asset];const guardChanged=policy?.revision!==liveRevision;liveRevision=policy?.revision||0;
           if(policy?.loss_guard&&!policy.enabled&&guardChanged){liveDirty=false;liveEnabled.checked=false;}
           if(!liveDirty&&!liveBusy){liveEnabled.checked=policy?.enabled||false;liveCount.value=policy?.contracts||10;}
           liveSave.disabled=liveBusy||!ticker||!state?.running;liveTakeover.disabled=liveBusy||!ticker;
-          if(!liveDirty&&!liveBusy)liveStatus.textContent=!state?.running?'Live worker unavailable':policy?.loss_guard?.reason||state?.messages?.[ticker]||(control?.paused?'Manual control · automatic exits paused':policy?.enabled?'Live buys enabled · continues across markets':'New buys off · automatic exits continue');
+          if(!liveDirty&&!liveBusy)liveStatus.textContent=!state.running?'Live worker stopped':policy?.loss_guard?.reason||state?.messages?.[ticker]||(control?.paused?'Manual control · automatic exits paused':policy?.enabled?'Live buys enabled · continues across markets':'New buys off · automatic exits continue');
         };
         const quick=text('div','','fleet-quick'),buySections=text('div','','fleet-buy-sections'),quickBuys=[];
         for(const outcome of ['yes','no']){

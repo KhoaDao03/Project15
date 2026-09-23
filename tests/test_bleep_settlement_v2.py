@@ -159,7 +159,7 @@ def test_engine_records_new_model(store, market, config, remaining):
 @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
 @pytest.mark.parametrize(
     "remaining,allowed",
-    [(540, False), (480, False), (420.01, False), (420, True), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
 )
 def test_deployed_entry_window(market, asset, remaining, allowed):
     from test_strategy_reverification import make_book

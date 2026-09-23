@@ -7,11 +7,6 @@ import pytest
 from btc15.live_settlement_recovery import recover_live_settlements
 
 
-@pytest.fixture
-def anyio_backend():
-    return "asyncio"
-
-
 @pytest.mark.anyio
 @pytest.mark.parametrize("invalid", [None, "not_final", "wrong_ticker", "wrong_close", "future"])
 async def test_official_recovery_without_collector_history_is_validated_and_idempotent(

@@ -1,5 +1,8 @@
 # Live-only cloud deployment
 
+Research logging v2 was deployed on 2026-09-20. See
+[deployment status](RESEARCH_LOGGING.md#deployment-status) for the current fleet.
+
 For a walkthrough from a fresh Ubuntu VPS through domain/HTTPS and passcode setup,
 see [Step-by-step IONOS VPS setup](IONOS_VPS_SETUP.md).
 
@@ -22,8 +25,7 @@ dashboard does not restart the order executor.
 Use a dedicated Linux account with this reviewed checkout at `~/Project15`, Python
 3.12 and uv installed. Deploy the reviewed working tree, including its new files;
 an old Git commit will not contain local changes. Exclude `.env`, `.venv`, `data`,
-private keys and local caches when transferring code. Do not copy the 53 GB local
-research directory into a fresh deployment.
+private keys and local caches when transferring code. Keep research archives out of a fresh runtime transfer.
 
 From `~/Project15`:
 
@@ -80,100 +82,55 @@ retained for compatibility; fills shown through the live journal are real fills.
 
 ## Optional public view-only dashboard
 
-The separate `public-dashboard` app shows BTC, ETH, SOL, XRP, GOLD, SILVER, and WTI markets, reference prices,
-recorded wins/losses and net P&L, open-position counts, and the latest five trades
-per asset. These trading results become public when you publish its domain.
-It has no manual-order, strategy-editing or generic proxy routes. Optional owner
-controls allow live buy enable/disable and 1–20 contracts per entry for each asset,
-plus safe shutdown of a selected bot or all bots. To stop one bot, unlock owner
-controls, select it under **Stop one bot**, confirm, and click **Stop selected bot**.
-The other collectors and dashboard stay running. **Shut down all bots** remains
-available. Both actions refuse shutdown while managed live positions or unresolved
-orders still need the affected feed; neither action liquidates contracts. Per-bot
-status is shown until shutdown is confirmed. Restart a stopped collector through
-its systemd service. `POST /api/unlock` checks the passcode and issues a token valid
-for exactly 60 seconds. Both `POST /api/control` and `POST /api/stop` require it.
-All other non-GET/HEAD requests are rejected on the server, including direct API calls.
-The original dashboard remains private and retains the controls you use over SSH.
-The shared live executor also switches off an asset after its daily realized live
-bot P&L reaches −$20 (UTC, including fees). Both dashboards show the saved switch
-and loss-guard reason; exits continue. See [live automation](LIVE_AUTOMATION.md).
+The public app on loopback **8001** shows selected market, reference and trading
+results. Publishing its domain makes those results public. It has no manual-order,
+strategy-editing or arbitrary proxy routes. Start it after installing the units:
 
 ```bash
 systemctl --user enable --now project15-public-dashboard
 ```
 
-This assumes the service files were copied and `daemon-reload` was run as above.
-For a local preview, run `.venv/bin/btc15 public-dashboard` and open
-`http://127.0.0.1:8001`. On a remote host you can forward that port through SSH too.
+For local preview use `.venv/bin/btc15 public-dashboard`. Follow
+[VPS HTTPS setup](IONOS_VPS_SETUP.md#optional-public-website) for DNS and Caddy.
+Expose only SSH and proxy ports 80/443; **never proxy the private app on 8000**.
 
-The viewer binds to loopback port **8001**. Point your domain's DNS to the VPS,
-install Caddy, and use `deploy/cloud/Caddyfile.example` as its site configuration,
-replacing `dash.example.com` with your actual domain. Expose only SSH and the
-reverse proxy's HTTP/HTTPS ports (80/443); keep 8000 and 8001 private. **Never point
-the public reverse proxy at port 8000 or route private `/api` paths through it.**
-The example sends every public path to the view-only app, including unknown paths,
-which return 404. Caddy handles HTTPS once DNS and network access are configured.
-
-The viewer reads fixed GET endpoints on the private dashboard every five seconds
-and publishes only selected display fields. Browser requests never choose an
-upstream URL or forward headers/cookies. Only authenticated owner actions trigger
-fixed upstream POSTs for live settings or shutdown; snapshot reads come from a periodic cache.
-It does not load trading credentials, open ledgers, or connect to the executor.
-It shares the service account in this minimal deployment; it is an application
-boundary, not OS-level isolation against a compromised process.
-When the private dashboard is unavailable, the viewer labels its last snapshot
-stale, or returns 503 if no snapshot exists. An active viewer does not prove that
-trading is healthy. Heavy public traffic still consumes server/network resources.
+The viewer polls fixed private GET endpoints every five seconds and exposes only
+selected fields. It does not load exchange credentials, ledgers or the executor.
+It shares the service account, so this is an application boundary, not OS isolation.
+When upstream is unavailable it marks the last snapshot stale, or returns 503
+before the first snapshot. A working viewer does not establish healthy trading.
 
 ### Enable owner controls with a passcode
 
-On the server, after preparing `data/cloud`, run:
+After runtime preparation, on the server:
 
 ```bash
 .venv/bin/python scripts/set_public_shutdown_passcode.py
 systemctl --user restart project15-public-dashboard
 ```
 
-If updating an existing service installation, first copy the updated service file
-to `~/.config/systemd/user/` and run `systemctl --user daemon-reload`.
-Enter a unique 16–256-character passcode privately in the terminal (prefer a
-password-manager-generated value). Do not put it in chat, source code or a URL.
-The tool stores only a salted PBKDF2-SHA256 hash (600,000 iterations), in a file
-readable only by its owner. Run it again and restart the viewer to rotate the code.
-The service reads `PROJECT15_SHUTDOWN_SECRET_FILE`; if the file is absent, owner controls
-are disabled and their panel is hidden. Use HTTPS on the domain before entering it.
+Use a private 16–256-character passcode and HTTPS. The tool stores an owner-readable
+salted PBKDF2-SHA256 hash (600,000 iterations); the service reads
+`PROJECT15_SHUTDOWN_SECRET_FILE`. Without it, owner controls are disabled/hidden.
+Repeat the command to rotate the passcode. Updated units need copying and daemon-reload.
 
-Enter the passcode in **Unlock for 1 minute**. The server checks same-origin JSON
-requests, a small body limit, and a global maximum of five unlock attempts per
-minute (in memory, reset when the viewer restarts). It does not trust forwarded
-IP headers for this limit. The passcode is cleared from the input, never included
-in snapshots, and never sent upstream. A random authorization token is held only
-in browser memory; neither token nor passcode goes in a URL or local storage.
+Unlock authorizes confirmed live buy enable/disable, quantity 1–20, and safe shutdown
+of one configured asset or all bots. It expires exactly 60 seconds after authentication;
+actions do not extend it, and expiry does not undo saved settings. Tokens stay in
+browser memory; a viewer restart invalidates them. Neither token nor passcode belongs
+in URLs or browser storage. Same-origin JSON/body limits and a global five-attempts-
+per-minute unlock limit apply; forwarded IP headers do not bypass that limit.
 
-The unlock expires **60 seconds after successful authentication**, independently
-of browser timing. Saves and shutdown do not extend it. At expiry, enter the same
-passcode again to obtain a fresh unlock. Expiry does not undo a saved policy or
-cancel an already accepted shutdown. Restarting the viewer invalidates all tokens.
+Revision checks, stale data and unavailable execution can block edits. Disabling
+buys preserves exits; quantity changes affect future orders. The
+[daily loss guard](LIVE_AUTOMATION.md#daily-live-loss-guard) still applies.
 
-Choose an asset, review its saved policy, set new buys on/off and 1–20 whole
-contracts, confirm the real-money settings, and click Save. These settings apply
-to that asset and future markets. Disabling buys preserves automatic exits; a
-quantity change does not resize contracts already held. Revision checks reject
-settings changed concurrently in the private dashboard. Stale snapshots or an
-unavailable executor block live edits. Re-enabling buys can cause real orders
-when the existing strategy and risk checks pass; it does not start stopped services.
-
-An accepted request uses the existing private dashboard's safe shutdown procedure.
-**Live positions or unresolved orders still under management block shutdown.** It
-does not liquidate positions or override this guard. When allowed, live entries
-are disabled and collectors shut down cooperatively; the order executor process
-may remain running, with automation disabled. Restarting trading requires the
-private controls and services. The viewer reports completion only after a positive
-shutdown acknowledgement, not merely because the private dashboard disconnects.
-An uncertain result requires checking the private dashboard/services. Status is
-held in memory and resets if the viewer restarts. Public viewing remains available
-with stale snapshots after the private dashboard stops.
+Safe shutdown never liquidates or overrides managed-position/unresolved-order
+guards. One-asset shutdown leaves other collectors running. Require a positive
+acknowledgment, not an upstream disconnect; inspect uncertain outcomes privately.
+Allowed shutdown disables entries and cooperatively stops collectors; execution
+may remain running. Public controls cannot start services. Viewer status is in
+memory and can remain stale after shutdown.
 
 ## Operation and acceptance
 
@@ -201,7 +158,9 @@ service's shutdown preparation disables new entries and retains order state.
 Do not independently stop collectors while expecting open positions to retain
 fresh stop monitoring. Closing the browser or SSH tunnel leaves the bots running.
 
-Raw feed capture is disabled, so this profile cannot replay every skipped decision.
+Ordinary raw feed capture is disabled. Optional [v2 research capture](RESEARCH_LOGGING.md)
+can record inputs/decisions when enabled separately on approved collector/executor
+processes; without it this profile cannot replay every skipped decision.
 It retains current status/evaluations, contract/settlement evidence, reference cache
 and the real-order journal. Those durable records still grow over time; monitor disk
 usage and back up `data/cloud` using SQLite's backup API or after a clean shutdown.

@@ -77,10 +77,14 @@ def test_cli_uses_saved_settings_unless_explicit_config(tmp_path, monkeypatch, c
 
 
 @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
-def test_crypto_preset_allows_one_sample_and_immediate_retries(asset):
+def test_crypto_preset_entry_policy(asset):
     c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
     assert c.entry_window_start == 420
     assert c.confirmation_count() == c.confirmation_count(True) == 1
     assert c.entry_retry_cooldown == 0
     assert c.max_entry_retries == 2
     assert c.sustained_lead_enabled and c.entry_cutoff == 1
+    assert c.min_lead_sigma == c.late_min_lead_sigma == 0
+    assert c.late_entry_enabled
+    assert c.min_probability == c.late_min_probability == 0.83
+    assert (c.min_entry_price, c.max_entry_price, c.fixed_stop_price) == (0.80, 0.97, 0.55)

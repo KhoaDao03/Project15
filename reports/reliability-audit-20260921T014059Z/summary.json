@@ -1,0 +1,12 @@
+{
+  "samples": 73,
+  "failed_probes": 0,
+  "duration_minutes": 7.99675206343333,
+  "blocked_samples": 6,
+  "warning_samples": 4,
+  "median_lag": 0.003290524,
+  "p95_lag": 0.496849695,
+  "max_lag": 1.700444093,
+  "max_executor_cycle_age": 3.8075406551361084,
+  "new_btc_recording_drops": 0
+}

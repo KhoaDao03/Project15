@@ -18,7 +18,7 @@ indicator_up = clip(0.5 + 0.12 * indicator_lean, 0.05, 0.95)
 p_up = clip((1 - weight) * base_up + weight * indicator_up, 0.02, 0.98)
 ```
 
-Multipliers are **BTC 1.15, ETH 1.00, SOL 1.00, XRP 1.00**. GOLD, SILVER and WTI use **1.35**. The existing
+Multipliers are **BTC 0.80, ETH 1.10, SOL 0.80, XRP 0.70**. GOLD uses **1.35**; SILVER and WTI use **1.20**. The existing
 indicator lean uses Wilder RSI/Stochastic RSI and Bollinger Bands. Project15's
 causal candle construction is retained. ATR averages the 14 true ranges from the
 last 15 contiguous official-reference candles, including the causal current minute,
@@ -68,8 +68,8 @@ All four cloud presets require **confidence ≥83%** and
 exactly 1 second is blocked. Price, quality, freshness, confirmation,
 risk and execution checks remain additional requirements. The separate directional
 Bollinger entry veto is disabled across all seven presets; the indicator adjustment
-inside the probability model is unchanged. The 80–95¢ purchase
-range and 99¢ take-profit / 55¢ hard-stop settings are unchanged.
+inside the probability model is unchanged. Entry price and exit thresholds are
+maintained in [active settings](ACTIVE_PAPER_SETTINGS.md).
 
 ## Settlement evidence and limitations
 
@@ -93,4 +93,4 @@ These are uncalibrated model estimates and confidence caps, not established win
 rates or evidence of profitability. Normal price increments can miss jumps.
 
 Commodity presets require **confidence ≥85%** for both standard and late entries,
-after the same safety and market-respect caps. Their ATR multiplier is 1.35.
+after the same safety and market-respect caps. Their ATR multipliers are gold 1.35, silver 1.20, and WTI 1.20.

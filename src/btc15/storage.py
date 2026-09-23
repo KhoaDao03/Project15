@@ -379,6 +379,21 @@ class Store:
         existing = self._connection.get()
         if existing is not None:
             return existing.execute(self._state_query, dict(run=run_id, ticker=market)).scalar()
+        if self.engine.dialect.name == "sqlite":
+            # This hot read needs neither SQL compilation nor a transaction wrapper.
+            # Read the database every time: external updates must remain visible.
+            connection = self.engine.raw_connection()
+            try:
+                cursor = connection.cursor()
+                try:
+                    row = cursor.execute(
+                        "SELECT state FROM states WHERE run_id=? AND market=?", (run_id, market)
+                    ).fetchone()
+                    return row[0] if row else None
+                finally:
+                    cursor.close()
+            finally:
+                connection.close()
         # Reads need no commit, but must still see an enclosing transaction's writes.
         with self.engine.connect() as c:
             return c.execute(self._state_query, dict(run=run_id, ticker=market)).scalar()
