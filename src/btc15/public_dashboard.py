@@ -13,12 +13,19 @@ from pathlib import Path
 from time import monotonic
 
 import httpx
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse
 
 
 def pick(source, names):
     return {name: source.get(name) for name in names.split()}
+
+
+def public_trade(trade):
+    return {
+        **pick(trade, "market timestamp"),
+        **pick(trade["body"], "status side bought quantity entry exit fees net_pnl opened market_result exit_timestamp exit_type"),
+    }
 
 
 async def read_snapshot(client):
@@ -31,7 +38,7 @@ async def read_snapshot(client):
         if asset not in ("BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"):
             continue
         public = pick(row, "asset healthy price open_positions realized_pnl wins losses completed_trades "
-                      "win_rate current_streak longest_win_streak longest_loss_streak")
+                      "breakeven_trades win_rate current_streak longest_win_streak longest_loss_streak")
         public["live_policy"] = pick(fleet.get("live", {}).get("assets", {}).get(asset, {}), "enabled contracts revision loss_guard")
         public["state"] = row.get("operational", {}).get("state", "UNAVAILABLE")
         public["markets"] = [
@@ -45,10 +52,7 @@ async def read_snapshot(client):
         data = trades.json()
         public["trades_stale"] = bool(data.get("stale", False))
         public["trades"] = [
-            {
-                **pick(trade, "market timestamp"),
-                **pick(trade["body"], "status side bought quantity entry exit fees net_pnl opened market_result exit_timestamp exit_type"),
-            }
+            public_trade(trade)
             for trade in data["rows"][:5]
         ]
         assets.append(public)
@@ -163,7 +167,7 @@ def create_public_app(admin_port=8000):
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Content-Security-Policy"] = (
-            "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; "
+            "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; "
             "frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
         )
         return response
@@ -315,6 +319,31 @@ def create_public_app(admin_port=8000):
     @app.get("/viewer.css")
     def stylesheet():
         return FileResponse(static / "viewer.css", media_type="text/css")
+
+    @app.get("/logo.svg")
+    def logo():
+        return FileResponse(static / "logo.svg", media_type="image/svg+xml")
+
+    @app.get("/api/history/{asset}")
+    async def history(asset: str, offset: int = Query(0, ge=0), limit: int = Query(25, ge=1, le=100)):
+        if asset not in ("BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"):
+            raise HTTPException(404, "Unknown market")
+        try:
+            # Resolve the run privately, using the same recorded source as the snapshot.
+            fleet_response = await upstream.get("/api/fleet")
+            fleet_response.raise_for_status()
+            row = next((r for r in fleet_response.json()["assets"] if r["asset"] == asset), None)
+            if row is None:
+                raise HTTPException(503, "Market history unavailable")
+            response = await upstream.get(f"/assets/{asset}/api/trades", params=dict(
+                run_id=row["run_id"], mode="PAPER", include_open="true", offset=offset, limit=limit,
+            ), timeout=15)
+            response.raise_for_status()
+            data = response.json()
+            return dict(rows=[public_trade(trade) for trade in data["rows"][:limit]],
+                        total=data["total"], offset=offset, limit=limit, stale=bool(data.get("stale", False)))
+        except (httpx.HTTPError, ValueError, KeyError, TypeError):
+            raise HTTPException(503, "Market history unavailable; try again later") from None
 
     @app.get("/api/view")
     def view():

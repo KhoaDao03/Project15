@@ -349,3 +349,63 @@ def test_individual_stop_tracks_confirmed_completion(owner_app):
         assert state['status'] == 'idle'
         html = client.get('/').text
         assert 'id="asset-stop-form"' in html and 'id="stop-form"' in html
+
+
+def test_history_pages_are_bounded_and_sanitized(monkeypatch):
+    requests = []
+
+    async def read(client):
+        return dict(assets=[], updated_at=public.time.time())
+
+    def handle(request):
+        requests.append(request)
+        if request.url.path == '/api/fleet':
+            return httpx.Response(200, json=fleet_data())
+        offset = int(request.url.params['offset'])
+        limit = int(request.url.params['limit'])
+        return httpx.Response(200, json=dict(total=63, rows=[dict(
+            market=f'BTC-{i}', timestamp=i, run_id='private-run',
+            body=dict(status='CLOSED', net_pnl=.125, opened=i-1, exit_timestamp=i,
+                      exit_type='settlement', secret='private-order'),
+        ) for i in range(offset, min(offset+limit, 63))]))
+
+    original = httpx.AsyncClient
+    monkeypatch.setattr(public, 'read_snapshot', read)
+    monkeypatch.setattr(public.httpx, 'AsyncClient', lambda **kwargs: original(
+        **kwargs, transport=httpx.MockTransport(handle)))
+    with TestClient(public.create_public_app()) as client:
+        first = client.get('/api/history/BTC?offset=0&limit=25').json()
+        second = client.get('/api/history/BTC?offset=25&limit=25').json()
+        assert len(first['rows']) == len(second['rows']) == 25
+        assert first['total'] == second['total'] == 63
+        assert first['rows'][-1]['market'] == 'BTC-24'
+        assert second['rows'][0]['market'] == 'BTC-25'
+        assert 'private' not in str(first)
+        assert len(client.get('/api/history/BTC?offset=50&limit=25').json()['rows']) == 13
+        before = len(requests)
+        for query in ('limit=101', 'limit=0', 'offset=-1'):
+            assert client.get('/api/history/BTC?'+query).status_code == 422
+        assert client.get('/api/history/DOGE').status_code == 404
+        assert len(requests) == before
+        assert all(r.method == 'GET' for r in requests)
+        assert requests[1].url.params['run_id'] == 'BTC-signals'
+        assert requests[1].url.params['mode'] == 'PAPER'
+        assert client.get('/logo.svg').status_code == 200
+        assert "img-src 'self'" in client.get('/').headers['content-security-policy']
+
+
+def test_history_failure_hides_private_error(monkeypatch):
+    async def read(client):
+        return dict(assets=[], updated_at=public.time.time())
+
+    def handle(request):
+        raise httpx.ConnectError('private-host-and-credentials')
+
+    original = httpx.AsyncClient
+    monkeypatch.setattr(public, 'read_snapshot', read)
+    monkeypatch.setattr(public.httpx, 'AsyncClient', lambda **kwargs: original(
+        **kwargs, transport=httpx.MockTransport(handle)))
+    with TestClient(public.create_public_app()) as client:
+        response = client.get('/api/history/BTC')
+        assert response.status_code == 503
+        assert 'private' not in response.text
