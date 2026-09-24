@@ -11,7 +11,7 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 0.80; ETH 1.10; SOL 0.80; XRP 0.70 |
+| ATR sigma multiplier | BTC 0.80; ETH 0.95; SOL 0.90; XRP 0.70 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH; +10pp SOL/XRP; maximum 98% |
 | Purchase range | 80–97¢ |
 | Same-side confirmations | 1 standard; 1 late |

@@ -20,8 +20,11 @@ def atomic_json(path, body):
 
 
 class Coverage:
-    def __init__(self, root, asset, session, started_at):
+    def __init__(self, root, asset, session, started_at, capture_mode="full"):
         self.asset, self.session, self.started_at = asset, session, started_at
+        self.capture_mode = capture_mode
+        self.gaps = []
+        self.gap_records = 0
         self.db = sqlite3.connect(Path(root) / INDEX_NAME, timeout=2)
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute(
@@ -59,6 +62,25 @@ class Coverage:
 
     def observe(self, record):
         kind, body = record["kind"], record["body"]
+        if kind == "recording_gap":
+            self.gap_records += body["dropped_records"]
+            start = body.get("previous_capture_at")
+            start = self.started_at if start is None else start
+            end = body.get("next_capture_at")
+            if end is not None and end < start:
+                start, end = end, start
+            self.gaps.append(
+                dict(
+                    start=start,
+                    end=end,
+                )
+            )
+            return
+        if kind == "book" and body.get("capture_mode") == "sampled":
+            market = self.market(body["market"])
+            market["sampled_books"] = market.get("sampled_books", 0) + 1
+            market["last_sampled_book_at"] = record["received_at"]
+            return
         if kind == "reference_sample":
             old = self.db.execute(
                 "SELECT price FROM reference_samples WHERE asset=? AND source=?", (self.asset, body["source"])
@@ -125,6 +147,8 @@ class Coverage:
         if sid is not None and seq is not None:
             previous = self.sequences.get(sid)
             sequence_gap = previous is not None and seq != previous + 1
+            if self.capture_mode == "sampled" and event == "orderbook_snapshot":
+                sequence_gap = False  # Deltas on this subscription are intentionally omitted.
             self.sequences[sid] = seq
         if ticker and ticker.startswith("KX" + self.asset + "15M-"):
             market = self.market(ticker)
@@ -206,11 +230,33 @@ class Coverage:
                 reasons.append("BOOK_CONTINUITY_BREAK")
             if value["sequence_gaps"]:
                 reasons.append("EXCHANGE_SEQUENCE_GAP")
-            if not status.get("capture_complete"):
+            # Dependencies may extend into the preceding hour of reference history.
+            # A late unrelated loss does not retroactively invalidate earlier markets.
+            affected = [
+                index
+                for index, g in enumerate(self.gaps)
+                if opened is None
+                or closed is None
+                or (g["start"] <= closed and (g["end"] is None or g["end"] >= opened - 3600))
+            ]
+            if affected:
+                reasons.append("RECORDING_GAP_IN_DEPENDENCIES")
+            if status.get("dropped", 0) > self.gap_records or (
+                not status.get("capture_complete") and not self.gaps
+            ):
                 reasons.append("RECORDING_INCOMPLETE")
+            if "coverage_rebuild_required" in status.get("diagnostics", {}):
+                reasons.append("COVERAGE_REBUILD_REQUIRED")
             if value.get("settlement_conflict"):
                 reasons.append("CONFLICTING_SETTLEMENT")
-            result.append(dict(value, incomplete_reasons=reasons))
+            result.append(
+                dict(
+                    value,
+                    incomplete_reasons=reasons,
+                    capture_mode=self.capture_mode,
+                    recording_gap_indexes=affected,
+                )
+            )
         return dict(
             schema_version=2,
             session=self.session,
@@ -218,6 +264,9 @@ class Coverage:
             observed_at=now,
             final=ended_at is not None,
             capture_complete=status.get("capture_complete", False),
+            capture_mode=self.capture_mode,
+            exact_replay=self.capture_mode == "full",
+            recording_gap_intervals=list(self.gaps),
             markets=result,
             note="Coverage evidence, not proof of fill or execution-state completeness",
         )

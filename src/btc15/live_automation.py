@@ -12,7 +12,7 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 
-from . import execution_journal
+from . import backlog_entry, execution_journal
 from .decision_notifications import DecisionListener
 from .domain import timestamp
 from .live_loss_guard import LIMIT, daily_pnl
@@ -539,7 +539,7 @@ class LiveAutomation:
             exit_policy=dict(resting_take_profit=0.99, cancel_resting_below=0.70, rearm_resting=False),
         )
 
-    def book(self, control, now, trace=None):
+    def book(self, control, now, trace=None, *, backlog_bypass=False):
         asset, member, snapshot, market = self.market_info(control["ticker"])
         # The collector can publish while preceding database reads are in progress.
         now = max(now, time.time())
@@ -553,14 +553,18 @@ class LiveAutomation:
                 ),
                 book_checked_at=now,
             )
+        publication_age = now - snapshot.get("published_at", 0)
+        stale_allowed = backlog_bypass and market.get("book_valid") is True
         if (
             snapshot.get("run_id") != member["run_id"]
             or not snapshot.get("connected")
-            or not 0 <= now - snapshot.get("published_at", 0) <= 2
-            or not market.get("fresh")
+            or not backlog_entry.finite_age(snapshot.get("published_at"), 1)
+            or not backlog_entry.finite_age(publication_age)
+            or (publication_age > 2 and not stale_allowed)
+            or (not market.get("fresh") and not stale_allowed)
         ):
             raise HTTPException(409, "Waiting for a fresh connected market book")
-        return market["book"]
+        return (market.get("backlog_book") or market["book"]) if stale_allowed else market["book"]
 
     def research_check(self, asset, body):
         recorder = self.research_logs.get(asset)
@@ -611,9 +615,11 @@ class LiveAutomation:
         if policy and not policy["enabled"]:
             raise HTTPException(409, "Asset live buys disabled")
         report = health(self.stores[asset], member["run_id"])
+        bypass = backlog_entry.permitted(asset, report)
         if trace is not None:
             trace["health"] = report
-        if not report["healthy"]:
+            trace["backlog_entry_bypass"] = bypass
+        if not report["healthy"] and not bypass:
             raise HTTPException(409, "Collector health blocks automatic entry")
         record = self.stores[asset].read_market_display("evaluation:" + member["run_id"]) or {}
         d = record.get("body", {})
@@ -625,14 +631,16 @@ class LiveAutomation:
         if (
             record.get("market") != control["ticker"]
             or d.get("versions", {}).get("config") != config.version
-            or not 0 <= now - d.get("timestamp", 0) <= 2
-            or not 0 <= now - d.get("model_evaluated_at", 0) <= 2
+            or not all(
+                backlog_entry.finite_age(d.get(k), 1)
+                and backlog_entry.finite_age(now - d[k])
+                and (bypass or now - d[k] <= 2)
+                for k in ("timestamp", "model_evaluated_at")
+            )
         ):
             raise HTTPException(409, "Waiting for a fresh matching strategy decision")
         # Paper inventory and its cooldown do not represent the real account.
-        reasons = [
-            r for r in d.get("reasons", []) if r["code"] not in ("EXISTING_ENTRY", "POST_CLOSE_COOLDOWN")
-        ]
+        reasons = backlog_entry.decision_reasons(d, config, bypass)
         if reasons or d.get("decision") not in ("NO_TRADE", "TRADE_CANDIDATE"):
             raise HTTPException(409, "Strategy entry filters: " + ", ".join(r["code"] for r in reasons))
         remaining = control["close_time"] - max(now, time.time())
@@ -649,7 +657,7 @@ class LiveAutomation:
             or p < config.probability_floor(remaining <= config.no_new_entry)
         ):
             raise HTTPException(409, "Probability floor not met")
-        book = self.book(control, now, trace)
+        book = self.book(control, now, trace, backlog_bypass=bypass)
         remaining = control["close_time"] - max(now, time.time())
         if trace is not None:
             trace["final_window_checked_at"] = control["close_time"] - remaining
@@ -669,6 +677,18 @@ class LiveAutomation:
         # The tick grid is validated again against venue metadata before submission.
         # Use the same maximum for signal eligibility and real buy orders.
         limit = Decimal(str(config.max_entry_price))
+        if bypass:
+            d = dict(
+                d,
+                backlog_entry_bypass=dict(
+                    asset=asset,
+                    health_reasons=report["reasons"],
+                    processing_lag=report["status"]["processing_lag"],
+                    queue_depth=report["status"]["queue_depth"],
+                    decision_age=now - d["timestamp"],
+                    model_age=now - d["model_evaluated_at"],
+                ),
+            )
         return side, limit, d
 
     async def reconcile(self):
@@ -847,6 +867,8 @@ class LiveAutomation:
                 return
             side, limit, decision = self.entry(control, now)
             timing = dict(decision_at=decision.get("timestamp"), decision_detected_at=time.time())
+            if control["asset"] == "BTC":
+                timing["backlog_entry_policy"] = dict(initial=decision.get("backlog_entry_bypass"))
             if decision.get("execution_check_id"):
                 timing.update(
                     decision_id=decision.get("decision_id"), execution_check_id=decision["execution_check_id"]
@@ -873,6 +895,9 @@ class LiveAutomation:
                 latest_side, latest_limit, latest = self.entry(
                     current, time.time(), stage="live_entry_recheck"
                 )
+                # Persist the final recheck, even when optional research capture fails.
+                if current["asset"] == "BTC":
+                    timing["backlog_entry_policy"]["submission"] = latest.get("backlog_entry_bypass")
                 if trace is not None:
                     trace.update(
                         entry_check_id=latest.get("execution_check_id"),

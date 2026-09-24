@@ -42,7 +42,15 @@ async def read_snapshot(client):
         public["live_policy"] = pick(fleet.get("live", {}).get("assets", {}).get(asset, {}), "enabled contracts revision loss_guard")
         public["state"] = row.get("operational", {}).get("state", "UNAVAILABLE")
         public["markets"] = [
-            pick(market, "ticker fresh") for market in row.get("markets", [])
+            {
+                **pick(market, "ticker fresh"),
+                "probability": (
+                    pick(market["probability"], "available p_yes p_no side confidence timestamp quality_warning")
+                    if market.get("fresh") and market.get("probability", {}).get("available")
+                    else {"available": False}
+                ),
+            }
+            for market in row.get("markets", [])
         ]
         trades = await client.get(
             f"/assets/{asset}/api/trades",

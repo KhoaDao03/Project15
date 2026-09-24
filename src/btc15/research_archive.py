@@ -13,7 +13,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from .research_coverage import atomic_json
+from .research_coverage import Coverage, atomic_json
 
 
 def digest(path):
@@ -21,7 +21,7 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def archive(source, destination):
+def archive(source, destination, *, rebuild_coverage=False):
     source, destination = Path(source).resolve(), Path(destination).resolve()
     if not source.is_dir():
         raise ValueError("Source directory does not exist")
@@ -61,12 +61,78 @@ def archive(source, destination):
                 except (OSError, ValueError):
                     continue
                 atomic_json(destination / path.relative_to(source), body)
-    result = report(destination)
+    result = report(destination, rebuild_coverage=rebuild_coverage)
     atomic_json(destination / "archive-report.json", result)
     return dict(copied_files=copied, **result)
 
 
-def report(root):
+def rebuild_session_coverage(directory, manifest):
+    """Recompute interval evidence from retained events, never editing originals.
+
+    Historical generic gap markers remain losses: their missing event types
+    cannot be inferred retrospectively. An incomplete tail is also retained.
+    """
+    status_path = directory / "status.json"
+    status = json.loads(status_path.read_text()) if status_path.exists() else {}
+    with tempfile.TemporaryDirectory(prefix="research-coverage-") as scratch:
+        coverage = Coverage(
+            scratch,
+            manifest["asset"],
+            manifest["session"],
+            manifest["started_at"],
+            manifest.get("capture_mode", "full"),
+        )
+        expected, last = 1, manifest["started_at"]
+        errors = []
+
+        def missing(count, following):
+            coverage.observe(
+                dict(
+                    kind="recording_gap",
+                    body=dict(dropped_records=count, previous_capture_at=last, next_capture_at=following),
+                )
+            )
+
+        try:
+            for segment in sorted(directory.glob("events-*.jsonl.gz")):
+                try:
+                    with gzip.open(segment, "rt") as stream:
+                        for line in stream:
+                            event = json.loads(line)
+                            seq = event["capture_seq"]
+                            if seq > expected:
+                                missing(seq - expected, event.get("captured_at"))
+                            elif seq < expected:
+                                raise ValueError("Reversed or duplicate capture sequence")
+                            coverage.observe(event)
+                            expected = (
+                                event["body"]["last_missing_seq"] + 1
+                                if event["kind"] == "recording_gap"
+                                else seq + 1
+                            )
+                            last = event.get("captured_at", last)
+                except (OSError, ValueError, KeyError, EOFError) as exc:
+                    errors.append(dict(file=segment.name, error=str(exc)))
+            high_water = status.get("last_capture_seq", expected - 1)
+            if high_water >= expected:
+                missing(high_water - expected + 1, None)
+            rebuilt = dict(
+                capture_complete=not coverage.gaps and not errors,
+                dropped=coverage.gap_records,
+                diagnostics={"coverage_rebuild_required": errors} if errors else {},
+            )
+            result = coverage.summary(rebuilt, last)
+            result.update(
+                final=bool(status.get("clean_shutdown")),
+                errors=errors,
+                note="Interval evidence only; verify reference/model, execution and settlement dependencies before replay.",
+            )
+            return result
+        finally:
+            coverage.close()
+
+
+def report(root, *, rebuild_coverage=False):
     sessions, hashes = [], {}
     for path in sorted(Path(root).glob("*/*/manifest.json")):
         manifest = json.loads(path.read_text())
@@ -80,6 +146,9 @@ def report(root):
             gaps=[],
             errors=[],
             receipt_days_utc=[],
+            capture_mode=manifest.get(
+                "capture_mode", "full" if manifest.get("schema_version") == 2 else "legacy_sampled"
+            ),
         )
         days = set()
         expected = 1
@@ -118,6 +187,8 @@ def report(root):
             row["errors"].append(dict(reason="UNVERIFIED_CAPTURE_TAIL", retained_high_water=expected - 1))
         coverage = directory / "coverage.json"
         row["coverage"] = json.loads(coverage.read_text()) if coverage.exists() else None
+        if rebuild_coverage and manifest.get("schema_version") in (2, 3):
+            row["rebuilt_coverage"] = rebuild_session_coverage(directory, manifest)
         for name in ("manifest.json", "source.json.gz"):
             item = directory / name
             if item.exists():
@@ -136,8 +207,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
     parser.add_argument("destination", type=Path)
+    parser.add_argument(
+        "--rebuild-coverage",
+        action="store_true",
+        help="Rebuild per-market gap evidence from retained records (extra offline scan)",
+    )
     args = parser.parse_args()
-    result = archive(args.source, args.destination)
+    result = archive(args.source, args.destination, rebuild_coverage=args.rebuild_coverage)
     print(json.dumps(dict(copied_files=result["copied_files"], sessions=len(result["sessions"]))))
 
 

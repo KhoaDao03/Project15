@@ -1,0 +1,51 @@
+--- 
++++ 
+@@ -137,6 +137,7 @@
+         processed_at=None,
+         monotonic_ns=None,
+         caused_by=None,
++        coverage_payload=None,
+     ):
+         with self.lock:
+             self.capture_seq += 1
+@@ -179,7 +180,10 @@
+                             received_at=received_at,
+                             source_time=source_time,
+                             caused_by=caused_by,
+-                            body=dict(payload=body["payload"], connection_id=body.get("connection_id")),
++                            body=dict(
++                                payload=coverage_payload if coverage_payload is not None else body["payload"],
++                                connection_id=body.get("connection_id"),
++                            ),
+                         )
+                     self.queue.put_nowait((seq, captured_at, data, kind, coverage_record))
+                 except queue.Full:
+@@ -202,6 +206,20 @@
+         LOG.warning("Research recording failure (%s); trading continues", type(exc).__name__)
+ 
+     def capture_input(self, row, payload):
++        # Coverage counts book/trade messages and checks sequence continuity; it
++        # does not inspect prices, quantities or depth. Reuse parsed identity
++        # fields instead of parsing the full message again on the writer.
++        # The archived row still contains the complete original payload.
++        coverage_payload = None
++        if payload.get("type") in ("orderbook_snapshot", "orderbook_delta", "trade") and isinstance(
++            payload.get("msg"), dict
++        ):
++            coverage_payload = dict(
++                type=payload["type"],
++                sid=payload.get("sid"),
++                seq=payload.get("seq"),
++                msg=dict(market_ticker=payload["msg"].get("market_ticker")),
++            )
+         return self.emit(
+             "input",
+             row,
+@@ -209,6 +227,7 @@
+             source_time=input_source_time(payload),
+             monotonic_ns=row.get("monotonic_ns"),
+             caused_by=row["id"],
++            coverage_payload=coverage_payload,
+         )
+ 
+     def capture_execution(self, event, *, delivery):

@@ -16,7 +16,9 @@ def fleet_data():
             price=100, realized_pnl=1.25, wins=2, losses=1,
             win_rate=2/3, current_streak=-1, longest_win_streak=2, longest_loss_streak=1,
             operational=dict(state='COLLECTING', failure='private-file-path'),
-            markets=[dict(ticker=asset + '-market', fresh=True, manual_purchases={'secret': 1})],
+            markets=[dict(ticker=asset + '-market', fresh=True, manual_purchases={'secret': 1},
+                          probability=dict(available=True, p_yes=.82, p_no=.18, side="yes", confidence=.75, timestamp=100,
+                                           quality_warning=False, secret='private-model-field'))],
         ) for asset in ('BTC', 'ETH', 'SOL', 'XRP', 'GOLD', 'SILVER', 'WTI')],
     )
 
@@ -52,6 +54,9 @@ def test_snapshot_reads_fixed_paths_and_removes_private_fields(market_result):
     assert snapshot['assets'][0]['current_streak'] == -1
     assert snapshot['assets'][0]['longest_win_streak'] == 2
     assert snapshot['assets'][0]['longest_loss_streak'] == 1
+    assert snapshot['assets'][0]['markets'][0]['probability'] == dict(
+        available=True, p_yes=.82, p_no=.18, side="yes", confidence=.75, timestamp=100, quality_warning=False,
+    )
     assert 'secret' not in str(snapshot)
     assert 'private-' not in str(snapshot)
     assert len(calls) == 8
@@ -409,3 +414,25 @@ def test_history_failure_hides_private_error(monkeypatch):
         response = client.get('/api/history/BTC')
         assert response.status_code == 503
         assert 'private' not in response.text
+
+
+@pytest.mark.parametrize('fresh,probability', [
+    (False, dict(available=True, p_yes=.9, p_no=.1, timestamp=100)),
+    (True, dict(available=False, p_yes=.9, p_no=.1, timestamp=100)),
+    (True, {}),
+])
+def test_public_probability_unavailable_for_stale_or_missing_evaluation(fresh, probability):
+    def handle(request):
+        if request.url.path == '/api/fleet':
+            data = fleet_data()
+            for asset in data['assets']:
+                asset['markets'][0].update(fresh=fresh, probability=probability)
+            return httpx.Response(200, json=data)
+        return httpx.Response(200, json={'rows': []})
+
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handle), base_url='http://local') as client:
+            return await public.read_snapshot(client)
+
+    data = asyncio.run(run())
+    assert all(a['markets'][0]['probability'] == {'available': False} for a in data['assets'])

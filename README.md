@@ -21,7 +21,7 @@ See the [documentation index](docs/README.md) for specialist guides and historic
 
 ## Configuration and deployment
 
-Research logging v2 was deployed with authorization on 2026-09-20. See the
+Research logging repairs and sampled collector capture were deployed on 2026-09-24. See the
 [deployment status](docs/RESEARCH_LOGGING.md#deployment-status).
 
 Tracked presets are templates. Existing bots use frozen runtime configurations;

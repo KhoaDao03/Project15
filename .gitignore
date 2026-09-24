@@ -18,3 +18,4 @@ __pycache__/
 
 # Portable research capture archives (never commit market data).
 /research-logs/
+/research-logs-archive/

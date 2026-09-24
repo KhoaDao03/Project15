@@ -1,0 +1,66 @@
+{
+  "runs": [
+    {
+      "mode": "full",
+      "trial": 0,
+      "cpu_seconds": 1.7215300499999997,
+      "written": 40080,
+      "sampled_out": {},
+      "bytes": 1464853
+    },
+    {
+      "mode": "sampled",
+      "trial": 0,
+      "cpu_seconds": 0.11396034099999985,
+      "written": 1080,
+      "sampled_out": {
+        "input_processed": 20000,
+        "orderbook_delta": 19000
+      },
+      "bytes": 54320
+    },
+    {
+      "mode": "full",
+      "trial": 1,
+      "cpu_seconds": 1.606136277,
+      "written": 40080,
+      "sampled_out": {},
+      "bytes": 1461343
+    },
+    {
+      "mode": "sampled",
+      "trial": 1,
+      "cpu_seconds": 0.09588821700000061,
+      "written": 1080,
+      "sampled_out": {
+        "input_processed": 20000,
+        "orderbook_delta": 19000
+      },
+      "bytes": 53969
+    },
+    {
+      "mode": "full",
+      "trial": 2,
+      "cpu_seconds": 1.640187676,
+      "written": 40080,
+      "sampled_out": {},
+      "bytes": 1461190
+    },
+    {
+      "mode": "sampled",
+      "trial": 2,
+      "cpu_seconds": 0.10842476399999956,
+      "written": 1080,
+      "sampled_out": {
+        "input_processed": 20000,
+        "orderbook_delta": 19000
+      },
+      "bytes": 53965
+    }
+  ],
+  "summary": {
+    "full": 1.640187676,
+    "sampled": 0.10842476399999956,
+    "cpu_reduction_percent": 93.38949038658674
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "deleted_at": 1790234755.945944,
+  "deleted_segments": 39,
+  "deleted_bytes": 1376110996,
+  "remaining_bytes": 3705220,
+  "note": "Keep small session context files to avoid racing active archive writers. Active logs, trading databases and backups untouched; future archival remains enabled."
+}

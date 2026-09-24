@@ -14,6 +14,7 @@ import sys
 import threading
 import time
 import uuid
+from contextlib import closing
 from dataclasses import asdict
 from pathlib import Path
 
@@ -58,12 +59,28 @@ class ResearchLog:
         settlement_db=None,
         order_db=None,
         producer="collector",
+        capture_mode="full",
+        archive_dir=None,
     ):
+        if capture_mode not in ("full", "sampled"):
+            raise ValueError("Research capture_mode must be full or sampled")
         self.settlement_db, self.order_db = settlement_db, order_db
         self.settlement_cursor = 0
         self.order_cursor = 0.0
         self.execution_cursor = 0
         self.root = Path(root)
+        self.archive_dir = (
+            Path(archive_dir) if archive_dir else self.root.with_name(self.root.name + "-archive")
+        )
+        if (
+            self.root.resolve() == self.archive_dir.resolve()
+            or self.root.resolve() in self.archive_dir.resolve().parents
+            or self.archive_dir.resolve() in self.root.resolve().parents
+        ):
+            raise ValueError("Research archive must be separate from the capture directory")
+        self.capture_mode = capture_mode
+        self.sampled_out = {}
+        self.diagnostics = {}
         self.asset, self.run_id = asset, run_id
         self.session = f"{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}-{uuid.uuid4().hex}"
         self.directory = self.root / asset / self.session
@@ -81,7 +98,9 @@ class ResearchLog:
         self.close_deadline = None
         self.last_sample, self.last_eval, self.thresholds = {}, {}, {}
         self.metadata = dict(
-            schema_version=2,
+            schema_version=3 if capture_mode == "sampled" else 2,
+            capture_mode=capture_mode,
+            exact_replay=capture_mode == "full",
             asset=asset,
             run_id=run_id,
             session=self.session,
@@ -91,7 +110,7 @@ class ResearchLog:
             config=asdict(config),
             sigma_multipliers=SIGMA_MULTIPLIERS,
             book_sampling_seconds=1,
-            book_depth_levels=5,
+            book_depth_levels=None if capture_mode == "sampled" else 5,
             input_capture="all received inputs, before analysis"
             if producer == "collector"
             else "published collector snapshots and preflight reads",
@@ -102,6 +121,11 @@ class ResearchLog:
             sequence_scope="session; gap records occupy the first missing sequence",
             max_queue_bytes=max_queue_bytes,
         )
+        if capture_mode == "sampled":
+            self.metadata.update(
+                input_capture="received inputs except depth deltas; no per-input processing records",
+                execution_accuracy="sampled observed books; intrasecond prices and fills are estimates",
+            )
         self.thread = threading.Thread(target=self._writer, name=f"research-log-{asset}", daemon=True)
         self.thread.start()
 
@@ -119,6 +143,12 @@ class ResearchLog:
                 last_written_seq=self.last_written_seq,
                 drop_reasons=dict(self.drop_reasons),
                 capture_complete=self.dropped == 0 and self.error is None,
+                capture_mode=self.capture_mode,
+                exact_replay=self.capture_mode == "full",
+                sampled_out=dict(self.sampled_out),
+                diagnostics={k: dict(v) for k, v in self.diagnostics.items()},
+                journal_reads_healthy=not any(k.endswith("journal_read") for k in self.diagnostics),
+                coverage_index_healthy=not any(k.startswith("coverage_") for k in self.diagnostics),
             )
 
     def _drop(self, reason, count=1):
@@ -140,13 +170,16 @@ class ResearchLog:
         coverage_payload=None,
     ):
         with self.lock:
+            if self.capture_mode == "sampled" and kind == "input_processed":
+                self.sampled_out[kind] = self.sampled_out.get(kind, 0) + 1
+                return True
             self.capture_seq += 1
             seq = self.capture_seq
             captured_at = self.last_capture_at = time.time()
             try:
                 data = json.dumps(
                     dict(
-                        schema_version=2,
+                        schema_version=self.metadata["schema_version"],
                         session=self.session,
                         capture_seq=seq,
                         kind=kind,
@@ -205,7 +238,34 @@ class ResearchLog:
             self.error = type(exc).__name__
         LOG.warning("Research recording failure (%s); trading continues", type(exc).__name__)
 
+    def diagnostic(self, operation, exc):
+        # A retryable database read is not a lost feed input. Keep its cursor
+        # unchanged and expose the operation and SQLite cause without a fake gap.
+        with self.lock:
+            old = self.diagnostics.get(operation, {})
+            self.diagnostics[operation] = dict(
+                count=old.get("count", 0) + 1,
+                at=time.time(),
+                error=type(exc).__name__,
+                sqlite_errorname=getattr(exc, "sqlite_errorname", None),
+                message=str(exc)[:240],
+            )
+        LOG.warning("Research %s failed (%s): %s", operation, type(exc).__name__, str(exc)[:240])
+
+    def _poll(self, operation, callback):
+        try:
+            callback()
+        except Exception as exc:
+            self.diagnostic(operation, exc)
+        else:
+            with self.lock:
+                self.diagnostics.pop(operation, None)
+
     def capture_input(self, row, payload):
+        if self.capture_mode == "sampled" and payload.get("type") == "orderbook_delta":
+            with self.lock:
+                self.sampled_out["orderbook_delta"] = self.sampled_out.get("orderbook_delta", 0) + 1
+            return True
         # Coverage counts book/trade messages and checks sequence continuity; it
         # does not inspect prices, quantities or depth. Reuse parsed identity
         # fields instead of parsing the full message again on the writer.
@@ -244,13 +304,14 @@ class ResearchLog:
         if self.order_db and Path(self.order_db).is_file():
             from .execution_journal import read_events
 
-            with sqlite3.connect(f"file:{self.order_db}?mode=ro", uri=True, timeout=0.1) as db:
+            with closing(sqlite3.connect(f"file:{self.order_db}?mode=ro", uri=True, timeout=0)) as db:
                 if not db.execute("SELECT 1 FROM sqlite_master WHERE name='execution_events'").fetchone():
                     return
-                for event in read_events(db, self.execution_cursor, "KX" + self.asset + "15M-", limit=500):
-                    if not self.capture_execution(event, delivery="journal_backfill"):
-                        break
-                    self.execution_cursor = event["journal_seq"]
+                events = list(read_events(db, self.execution_cursor, "KX" + self.asset + "15M-", limit=500))
+            for event in events:
+                if not self.capture_execution(event, delivery="journal_backfill"):
+                    break
+                self.execution_cursor = event["journal_seq"]
 
     def capture(self, engine, row, payload):
         """Optional sampled summaries. Authoritative inputs/checks are captured elsewhere."""
@@ -285,6 +346,15 @@ class ResearchLog:
                             valid=book.valid,
                             fresh=fresh,
                             threshold_change=crossing,
+                            **(
+                                dict(
+                                    capture_mode="sampled",
+                                    yes_levels=[[str(p), str(q)] for p, q in book.yes.items()],
+                                    no_levels=[[str(p), str(q)] for p, q in book.no.items()],
+                                )
+                                if self.capture_mode == "sampled"
+                                else {}
+                            ),
                             **book.summary(),
                         ),
                         now,
@@ -322,57 +392,64 @@ class ResearchLog:
             self.fail(exc)
 
     def _audit_records(self):
-        """Read local journals off the trading thread; no credentials or network requests."""
+        """Read legacy journals without holding SQLite locks during serialization."""
         if self.settlement_db and Path(self.settlement_db).exists():
-            with sqlite3.connect(f"file:{self.settlement_db}?mode=ro", uri=True, timeout=0.1) as db:
-                for rowid, market, timestamp, kind, body in db.execute(
+            with closing(sqlite3.connect(f"file:{self.settlement_db}?mode=ro", uri=True, timeout=0)) as db:
+                rows = db.execute(
                     "select rowid,market,timestamp,kind,body from records where rowid>? "
                     "and kind in ('settlement','settlement_evidence') order by rowid limit 200",
                     (self.settlement_cursor,),
+                ).fetchall()
+            for rowid, market, timestamp, kind, body in rows:
+                if not self.emit(
+                    "settlement_journal",
+                    dict(
+                        market=market,
+                        kind=kind,
+                        journal_rowid=rowid,
+                        journal_timestamp=timestamp,
+                        body=json.loads(body),
+                    ),
                 ):
-                    self.emit(
-                        "settlement_journal",
-                        dict(
-                            market=market,
-                            kind=kind,
-                            journal_rowid=rowid,
-                            journal_timestamp=timestamp,
-                            body=json.loads(body),
-                        ),
-                    )
-                    self.settlement_cursor = rowid
+                    return
+                self.settlement_cursor = rowid
         if self.order_db and Path(self.order_db).exists():
-            with sqlite3.connect(f"file:{self.order_db}?mode=ro", uri=True, timeout=0.1) as db:
+            with closing(sqlite3.connect(f"file:{self.order_db}?mode=ro", uri=True, timeout=0)) as db:
+                # The durable event stream/checkpoint already includes order state.
+                # Do not scan/serialize all order snapshots as well every 30 seconds.
+                if db.execute("SELECT 1 FROM sqlite_master WHERE name='execution_events'").fetchone():
+                    return
                 cutoff = time.time()
-                for (raw,) in db.execute(
+                rows = db.execute(
                     "select body from manual_orders where json_extract(body,'$.updated_at')>=? "
                     "and json_extract(body,'$.updated_at')<? "
                     "and json_extract(body,'$.request.ticker') like ?",
                     (self.order_cursor, cutoff, "KX" + self.asset + "15M-%"),
-                ):
-                    body = json.loads(raw)
-                    # Exclude account identifiers and any future arbitrary journal fields.
-                    event = {
-                        k: body[k]
-                        for k in (
-                            "id",
-                            "request",
-                            "state",
-                            "created_at",
-                            "updated_at",
-                            "origin",
-                            "automation_reason",
-                            "timing",
-                            "order_id",
-                            "effective_limit_cents",
-                        )
-                        if k in body
-                    }
-                    event["exchange_order"] = {
-                        k: v for k, v in (body.get("exchange_order") or {}).items() if k != "user_id"
-                    }
-                    self.emit("order_journal", event)
-                self.order_cursor = cutoff
+                ).fetchall()
+            for (raw,) in rows:
+                body = json.loads(raw)
+                event = {
+                    k: body[k]
+                    for k in (
+                        "id",
+                        "request",
+                        "state",
+                        "created_at",
+                        "updated_at",
+                        "origin",
+                        "automation_reason",
+                        "timing",
+                        "order_id",
+                        "effective_limit_cents",
+                    )
+                    if k in body
+                }
+                event["exchange_order"] = {
+                    k: v for k, v in (body.get("exchange_order") or {}).items() if k != "user_id"
+                }
+                if not self.emit("order_journal", event):
+                    return
+            self.order_cursor = cutoff
 
     def _retention(self):
         # Shared cap across assets; lock only the background writers, never trading.
@@ -385,22 +462,50 @@ class ResearchLog:
             for p in files:
                 size = p.stat().st_size
                 if p.stat().st_mtime < cutoff or total > self.max_disk_bytes:
-                    p.unlink()
+                    # Preserve retired segments and their reconstruction context.
+                    # A same-filesystem rename is cheap and cannot expose a partial
+                    # segment. Failure leaves the original intact for the next pass.
+                    self._archive_segment(p)
                     total -= size
-            for manifest in self.root.glob("*/*/manifest.json"):
-                directory = manifest.parent
-                if (
-                    directory != self.directory
-                    and manifest.stat().st_mtime < cutoff
-                    and not list(directory.glob("events-*"))
-                ):
-                    for name in ("manifest.json", "source.json.gz", "status.json", "coverage.json"):
-                        (directory / name).unlink(missing_ok=True)
-                    # Only remove our own empty session directories.
-                    if not any(directory.iterdir()):
-                        directory.rmdir()
+            # Keep session context in the hot directory: a running session can
+            # later update coverage or receive settlement evidence for old markets.
             # Open segments may temporarily exceed the cap until rotation; never delete live files.
         return shutil.disk_usage(self.root).free >= self.min_free_bytes
+
+    def _archive_segment(self, path):
+        from .research_archive import digest
+
+        destination = self.archive_dir / path.parent.relative_to(self.root)
+        destination.mkdir(parents=True, exist_ok=True, mode=0o700)
+        segment_target = destination / path.name
+        if segment_target.exists() and digest(path) != digest(segment_target):
+            raise ValueError("Archive segment conflict: " + path.name)
+        # Validate immutable context before changing any archived file.
+        for name in ("manifest.json", "source.json.gz"):
+            source, target = path.parent / name, destination / name
+            if not source.is_file():
+                raise ValueError("Missing archive context: " + name)
+            if target.exists() and digest(source) != digest(target):
+                raise ValueError("Archive context conflict: " + name)
+        for name in ("manifest.json", "source.json.gz", "coverage.json", "status.json"):
+            source, target = path.parent / name, destination / name
+            if name in ("manifest.json", "source.json.gz") and target.exists():
+                continue
+            if source.is_file():
+                if name in ("coverage.json", "status.json"):
+                    try:
+                        body = json.loads(source.read_text())
+                    except ValueError:
+                        continue  # Older writers may be updating advisory summaries.
+                    atomic_json(target, body)
+                    continue
+                temporary = target.with_suffix(target.suffix + ".tmp")
+                shutil.copyfile(source, temporary)
+                os.replace(temporary, target)
+        if segment_target.exists():
+            path.unlink()  # A verified identical archived copy already exists.
+        else:
+            path.rename(segment_target)
 
     def _writer(self):
         stream = part = inflight = None
@@ -422,37 +527,42 @@ class ResearchLog:
             if last <= self.last_written_seq:
                 return
             first = self.last_written_seq + 1
-            write(
-                dumps(
-                    dict(
-                        schema_version=2,
-                        session=self.session,
-                        capture_seq=first,
-                        kind="recording_gap",
-                        source_time=None,
-                        received_at=None,
-                        processed_at=None,
-                        captured_at=time.time(),
-                        capture_monotonic_ns=time.monotonic_ns(),
-                        received_monotonic_ns=None,
-                        caused_by=None,
-                        body=dict(
-                            first_missing_seq=first,
-                            last_missing_seq=last,
-                            dropped_records=last - first + 1,
-                            previous_capture_at=last_capture_at,
-                            next_capture_at=next_capture_at,
-                            affected_scope="session",
-                            reason="capture_loss",
-                        ),
-                    )
-                ).encode()
+            event = dict(
+                schema_version=self.metadata["schema_version"],
+                session=self.session,
+                capture_seq=first,
+                kind="recording_gap",
+                source_time=None,
+                received_at=None,
+                processed_at=None,
+                captured_at=time.time(),
+                capture_monotonic_ns=time.monotonic_ns(),
+                received_monotonic_ns=None,
+                caused_by=None,
+                body=dict(
+                    first_missing_seq=first,
+                    last_missing_seq=last,
+                    dropped_records=last - first + 1,
+                    previous_capture_at=last_capture_at,
+                    next_capture_at=next_capture_at,
+                    affected_scope="capture_interval",
+                    reason="capture_loss",
+                ),
             )
+            write(dumps(event).encode())
+            if coverage is not None:
+                coverage.observe(event)
             self.last_written_seq = last
 
         try:
             self.directory.mkdir(parents=True, mode=0o700)
-            coverage = Coverage(self.root, self.asset, self.session, self.metadata["started_at"])
+            coverage = Coverage(
+                self.root,
+                self.asset,
+                self.session,
+                self.metadata["started_at"],
+                capture_mode=self.capture_mode,
+            )
             source = {
                 str(p.relative_to(Path(__file__).parent)): p.read_text()
                 for p in Path(__file__).parent.rglob("*.py")
@@ -474,26 +584,32 @@ class ResearchLog:
                     self.error = "SHUTDOWN_TIMEOUT"
                     break
                 if not self.stopping.is_set() and now - audit_at >= 30:
-                    try:
-                        self._audit_records()
-                    except Exception as exc:
-                        self.fail(exc)
+                    self._poll("legacy_journal_read", self._audit_records)
                     audit_at = now
                 if now - maintenance >= 5:
                     if not self.stopping.is_set():
-                        try:
-                            self._execution_records()
-                        except Exception as exc:
-                            self.fail(exc)
-                    allowed = self._retention()
+                        self._poll("execution_journal_read", self._execution_records)
+                    try:
+                        allowed = self._retention()
+                    except Exception as exc:
+                        self.diagnostic("retention_archive", exc)
+                        allowed = shutil.disk_usage(self.root).free >= self.min_free_bytes
+                    else:
+                        with self.lock:
+                            self.diagnostics.pop("retention_archive", None)
                     maintenance = now
                     if not allowed:
                         self.error = "LOW_DISK"
                     elif self.error == "LOW_DISK":
                         self.error = None
-                    (self.directory / "status.json").write_text(dumps(self.status()) + "\n")
-                    coverage.prune_reference(time.time())
-                    atomic_json(self.directory / "coverage.json", coverage.summary(self.status()))
+                    atomic_json(self.directory / "status.json", self.status())
+                    self._poll("coverage_maintenance", lambda: coverage.prune_reference(time.time()))
+                    self._poll(
+                        "coverage_summary",
+                        lambda: atomic_json(
+                            self.directory / "coverage.json", coverage.summary(self.status())
+                        ),
+                    )
                 if stream and now - opened >= self.rotation_seconds:
                     stream.close()
                     part.rename(part.with_suffix(""))
@@ -523,6 +639,7 @@ class ResearchLog:
                         coverage.observe(coverage_record)
                     elif kind in (
                         "input",
+                        "book",
                         "reference_sample",
                         "settlement_observation",
                         "model_calculation",
@@ -530,7 +647,9 @@ class ResearchLog:
                     ):
                         coverage.observe(json.loads(data))
                 except Exception as exc:
-                    self.fail(exc)
+                    # The raw record was already written successfully. A coverage
+                    # index failure requires a rebuild, not an invented feed gap.
+                    self.diagnostic("coverage_rebuild_required", exc)
                 self.last_written_seq = seq
                 last_capture_at = captured_at
                 self.written += 1
@@ -606,6 +725,8 @@ def start_research_log(config, run_id, *, settlement_db=None, producer="collecto
             run_id,
             config,
             producer=producer,
+            capture_mode=os.environ.get("BTC15_RESEARCH_LOG_MODE", "full"),
+            archive_dir=os.environ.get("BTC15_RESEARCH_ARCHIVE_DIR"),
             settlement_db=settlement_db,
             order_db=order_db
             or (Path(settlement_db).parent.parent / "manual-orders.sqlite" if settlement_db else None),

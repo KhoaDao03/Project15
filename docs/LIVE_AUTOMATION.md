@@ -1,5 +1,37 @@
 # Live automation
 
+## BTC backlog entry exception
+
+BTC automatic entries may use aged book/reference/model inputs during a confirmed
+processing backlog, as explicitly requested by the operator. A current status
+(at most five seconds old), connected feed, nonempty queue and at least 0.5 seconds
+of processing lag must establish the backlog. Only backlog and associated data-age
+rejections are waived. Research logging failures already do not independently
+block execution; they do not authorize bypassing unrelated failures.
+
+The executor uses the last matching strategy decision for the current market and
+configuration, and a validated collector book. During backlog, there is no normal
+two-second decision/model age ceiling. The collector publishes a separate
+`backlog_book` when a valid BTC book is too old for the normal display. The bypass
+is re-evaluated immediately before order submission and ceases once backlog clears.
+Health reporting remains unchanged; a recovering collector is not relabeled healthy.
+
+Missing metadata, disconnection, unsequenced/invalid books, actual reference gaps,
+clock errors, missing model output, market closure, price/probability rules, account
+checks, live controls and loss guards still reject entries. A stale-reference/book
+quality-score penalty alone may be removed; unrelated quality penalties remain.
+Other assets and fresh-quote requirements for new exit triggers are unchanged.
+Already committed exits retain their existing reconciliation behavior.
+
+`timing.backlog_entry_policy` in the durable order journal records the initial and
+submission-time exception, including queue depth and model/decision age, even when
+optional research capture is unavailable. The trade-off is deliberate: BTC may buy
+using a price or probability estimate that no longer matches the market. This policy
+does not increase processing capacity or fix the metadata refresh cadence.
+
+This change requires the updated collector and executor to be loaded; editing the
+source does not reconfigure already-running processes.
+
 The independent execution service places real orders from published collector
 signals. The fleet dashboard forwards controls and manual tickets to it. Keep
 `TRADING_MODE=PAPER` and `ENABLE_LIVE_TRADING=false`; these guard the legacy

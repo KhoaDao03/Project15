@@ -1,9 +1,34 @@
-# Research logging v2
+# Research logging: full and sampled capture
 
 Deployed with authorization on 2026-09-20. Portable recording is disabled by default
 on fresh installations; it is enabled for the existing collectors and executor.
 It does not change strategy parameters; reference preload can restore previously
 accepted samples with their original timing. Old v1 files remain sampled archives.
+
+## Deployed repair — 2026-09-24
+
+Deployed on 2026-09-24: all seven collectors use sampled capture; the executor
+uses full capture. Historical gaps and deleted files cannot be recovered by
+changing the recorder.
+
+Set `BTC15_RESEARCH_LOG_MODE=sampled` on **collectors** for lower-volume exploratory
+backtests. Full mode remains the default; leave the executor in full mode.
+Sampled mode uses schema 3 and `exact_replay=false`: it intentionally omits raw
+book deltas and per-input processing records, before serialization/queue admission.
+It retains raw reference/trade messages, accepted reference samples, every actual
+model/decision, executions and settlement evidence. Decision IDs may refer to an
+omitted depth input in sampled mode; that is intentional, not a sequence hole.
+`book` records include all
+observed `yes_levels`/`no_levels` once per second, plus existing threshold crossings.
+These are real observations, not interpolated prices. `sampled_out` counts intentional
+omissions separately from actual `dropped` records.
+
+A backtester must explicitly opt into estimated execution for schema 3. Use the
+last book **already observed** at the simulated decision/fill time, bound its age,
+and label the result estimated. Never backfill earlier gaps with future snapshots,
+interpolate official reference samples, or combine estimated and strict replay
+results without distinguishing them. One-second books do not resolve 250 ms fills.
+The external backtester is not part of this repository.
 
 ## Enablement and files
 
@@ -28,7 +53,7 @@ model multipliers. Keep manifest/source files with events. Segments rotate every
 ten minutes. Exclude `.part` files from ordinary transfers/analysis; a finalized
 gzip file alone does not prove complete capture.
 
-## Complete inputs and decision checks
+## Complete inputs and decision checks (full mode)
 
 | Record | Evidence |
 | --- | --- |
@@ -48,10 +73,9 @@ Capture cannot recover frames the application never received.
 
 The recorder reuses parsed message identities for book/trade coverage counters,
 avoiding a second parse of their full payloads. Archived messages still retain
-every field and level. This recorder optimization is staged as of 2026-09-22;
-it requires a separate deployment to reach running services.
+every field and level in full mode. This optimization was deployed on 2026-09-24.
 
-Signal collectors apply and record every depth update, but changes below the best
+Signal collectors apply every depth update (recording each in full mode), but changes below the best
 bid/ask do not repeat an entry check when the executable prices, available liquidity,
 health gates and entry-window state are unchanged. They still evaluate on the
 one-second schedule and official reference updates. Changes to executable quotes,
@@ -59,7 +83,7 @@ freshness or entry boundaries trigger immediate checks. Every check actually
 performed is recorded; a processed input need not have a `decision_check` record.
 Top quantities are compared up to the larger of the strategy's maximum order size
 and minimum liquidity requirement; fluctuations above that amount cannot change
-entry eligibility. Full depth and exact quantities are still applied and recorded,
+entry eligibility. Full depth and exact quantities are still applied (and recorded in full mode),
 and the executor validates current liquidity before placing an order.
 Paper order and position management retains its per-event checks.
 
@@ -69,7 +93,8 @@ collector decision/book and observed health/policy. Preflight observations inclu
 validated metadata, holdings and balance, but not credentials or authentication
 headers. Their `*_observed_at` fields are caller observations, not transport clocks.
 
-Sampled books retain top-five levels at one-second intervals and 55/99¢ band changes;
+Full-mode book summaries retain top-five levels; schema 3 retains all observed levels.
+Both use one-second intervals and 55/99¢ band changes;
 evaluations retain one-second/83% band changes. Initial observations are changes,
 not proven upward crossings. Models are never recalculated just for logging.
 
@@ -100,13 +125,22 @@ when the bot first learned an outcome.
 
 Sequences are allocated before serialization/admission. A `recording_gap` occupies
 the first missing sequence and records the missing range, count and surrounding
-capture times when known. It follows queued predecessors. Conservatively treat
-all markets in that producer session as affected.
+capture times when known. It follows queued predecessors. Per-market coverage
+marks gaps overlapping that market or its preceding hour of reference dependencies;
+late losses no longer invalidate completed earlier markets. Per-market
+`recording_gap_indexes` refer to the summary's `recording_gap_intervals`. Unknown/unlocated
+losses remain conservative. This is coverage evidence, not a promise of replay eligibility.
 
 Terminal loss is marked when possible; status also records capture/written
 high-water marks, drops, reasons and errors. Disk failure or a crash can leave an
 unknown tail and stale status. `clean_shutdown` means drained/finalized;
-`capture_complete` additionally requires no recorded errors or drops. Neither proves
+`capture_complete` describes successful capture of the selected mode's records;
+check `capture_mode`/`exact_replay` separately. `diagnostics` identifies failed journal
+reads (with SQLite codes/messages), coverage-index failures and archive failures.
+Journal reads release locks before serialization and retry without advancing past
+undelivered events; failed reads no longer fabricate feed gaps. Modern immutable
+execution journals replace redundant polling of order snapshots. Coverage failures
+leave archived raw records intact and request a rebuild. Neither capture flag proves
 upstream continuity, full settlement/execution coverage or retained older segments.
 
 To resume interval-based replay after a gap, re-establish a fresh book, adequate
@@ -176,7 +210,7 @@ rewritten to imply earlier knowledge. Future/unobserved windows remain partial.
 | Per-recorder queue | 8 MiB serialized payload and 8,192 records; producers never wait for disk |
 | Writer | One daemon thread; gzip level 1, roughly one-second flush, ten-minute rotation |
 | Maintenance | Roughly every five seconds, using monotonic elapsed time |
-| Retention | Closed segments oldest-first after seven days or over a shared 20 GiB allowance, including source/manifest sizes |
+| Active-log retention | Move closed segments and context to the archive after seven days or over the shared 20 GiB allowance; do not delete unarchived data |
 | Free disk below 30 GiB | Portable capture drops records; trading continues |
 | Shutdown | Two-second drain budget; failed/timed-out sessions remain incomplete |
 
@@ -189,19 +223,32 @@ one hour; settlement obligations persist. Inspect interrupted files manually.
 
 ## Multiweek archives
 
-Archive regularly before seven-day retention removes data. After deployment:
+The recorder moves closed segments to a sibling `research-logs-archive/`
+directory before retiring them from `research-logs/`. `BTC15_RESEARCH_ARCHIVE_DIR`
+can select another **same-filesystem** path outside the active log tree. Moves are
+atomic; existing immutable conflicts or archive failures leave originals intact and
+report diagnostics. Open `.part` files are never moved. Context remains with both
+trees. The archive is not automatically deleted and is not an off-host backup.
+The 30 GiB free-space reserve still stops new capture when exhausted; export the
+archive to other storage before then. More retention cannot create missing history.
+
+Collect **both** trees for analysis. Combine archived segments first and active
+closed segments second, into a separate destination, so newer advisory summaries
+win. Run these offline on downloaded copies or at low priority:
 
 ```bash
-rsync -av --exclude='*.part' --exclude='.retention.lock' --exclude='*.sqlite*' --exclude='*.tmp' \
-  user@YOUR_VPS:/root/Project15/research-logs/ /path/to/staging/
-.venv/bin/python -m btc15.research_archive /path/to/staging /path/to/research-archive
+.venv/bin/python -m btc15.research_archive research-logs-archive /path/to/combined
+.venv/bin/python -m btc15.research_archive research-logs /path/to/combined --rebuild-coverage
 ```
 
-Use distinct source/destination trees and one archive process at a time. A same-host
-source can be the recording root. Never use `--delete`: older archives should survive
-server retention. The tool copies completed files, checks immutable conflicts and
-snapshots advisory status/coverage; active files/live databases are excluded. Retry
-if retention races copying. No scheduler is installed or enabled by this work.
+Never use `--delete` for exports. The tool excludes `.part` files and live databases,
+checks immutable conflicts and retries additively if rotation races copying.
+`--rebuild-coverage` adds per-market `rebuilt_coverage` to the report from the retained
+events, independent of stale session-wide flags. It preserves unknown prefixes,
+missing sequence ranges and unverified tails; historical generic gap records are
+not reclassified as harmless database retries. Full-session global flags alone
+should not be used as the backtest interval filter. Validate book, reference/model,
+settlement and execution dependencies for each candidate interval.
 
 `archive-report.json` contains SHA-256 inventories, event counts, gaps, discontinuities,
 unverified tails, provisional sessions, coverage snapshots and UTC receipt days.
@@ -210,11 +257,23 @@ and outages; weeks of collection require real elapsed time after deployment.
 
 ## Analysis limits
 
-V2 requires a version-aware replay reader; this change does not implement a new
+Schemas 2 (full) and 3 (sampled) require a version-aware replay reader; this change does not implement a new
 backtester. Actual-bot replay needs valid checkpoints and uninterrupted dependencies.
 Counterfactual fills still estimate latency, queue position, fees and available depth.
 
 ## Deployment status
+
+Latest deployment: 2026-09-24 at 04:22 UTC. All seven collectors, executor and both
+dashboards restarted with the recorder repairs, pending BTC backlog policy and
+dashboard changes. ETH uses multiplier 0.95 in a new run; previous runs remain intact.
+Live switches, quantities and risk settings were preserved. Initial post-recovery
+checks found all seven collectors healthy with zero recording drops. Later samples
+showed intermittent metadata-freshness recovery gates; these still block entry. A transient
+journal lock retried successfully without becoming a capture gap. Validation:
+1,882 tests passed, 3 skipped, including a passing browser test. See the
+[deployment report](../reports/deployment-20260924/report.md).
+
+### Previous deployment
 
 Deployed on 2026-09-20: all seven collectors, the separate executor and both
 dashboards were restarted on the tested source. Collector and executor recording

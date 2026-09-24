@@ -450,6 +450,16 @@ async def collect(
                             status=market.status,
                             floor_strike=market.spec.strike,
                             book=book.summary() if fresh else {},
+                            book_valid=book.valid,
+                            **(
+                                {"backlog_book": book.summary()}
+                                if live_signals
+                                and config.asset == "BTC"
+                                and connected
+                                and book.valid
+                                and not fresh
+                                else {}
+                            ),
                             book_received=book.received,
                             **({"book_version": engine._research_books.get(ticker)} if research_log else {}),
                             fresh=fresh,

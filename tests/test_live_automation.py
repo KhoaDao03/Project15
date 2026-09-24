@@ -24,7 +24,8 @@ def live(venue, monkeypatch, request):  # noqa: F811
     monkeypatch.setattr(sys.modules[__name__], "TICKER", ticker)
     monkeypatch.setattr(test_manual_trading, "TICKER", ticker)
     state["ticker"] = ticker
-    config = Strategy.load(f"config/settlement-edge-{asset.lower()}-paper.json")
+    preset = "active" if asset == "BTC" else asset.lower()
+    config = Strategy.load(f"config/settlement-edge-{preset}-paper.json")
     now = time.time()
     clock = [now]
     data = dict(bid=0.89, ask=0.90, reasons=[], side="yes", healthy=True, fresh=True)

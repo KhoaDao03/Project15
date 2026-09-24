@@ -34,6 +34,31 @@ function leaders(assets){const crypto=assets.filter(a=>symbols.slice(0,4).includ
 function liveBuyingStatus(data,asset){if(data.stale||!data.live_available||typeof asset.live_policy?.enabled!=='boolean')return ['Unavailable','buying-unknown'];return asset.live_policy.enabled?['ON','buying-on']:['OFF','buying-off'];}
 function buyingBadge(data,asset){const [label,cls]=liveBuyingStatus(data,asset);const badge=el('span',label,'badge live-buying '+cls);badge.title='Saved new-buy setting; entries require strategy and health checks. Automatic exits are separate.';return badge;}
 function statusBadge(data,asset){return el('span',data.stale?'Updates delayed':asset.healthy?asset.state:'Checks pending','badge '+(data.stale||!asset.healthy?'status-warning':''));}
+function entryConfidenceView(data,asset,detail=false){
+  const root=el('div','','probability'+(detail?' probability-detail':''));
+  const values=detail?el('div','','probability-values'):root;
+  const context=detail?el('div','','probability-context'):null;
+  if(detail){values.append(el('small','Entry confidence'));root.append(values,context);}
+  const markets=asset.markets||[];
+  if(!markets.length)values.append(el('span','Unavailable','muted'));
+  for(const market of markets){
+    const line=el('div','','probability-market'),p=market.probability;
+    if(markets.length>1)line.append(el('small',market.ticker));
+    const available=!data.stale&&market.fresh&&p?.available===true&&
+      ['yes','no'].includes(p.side)&&numeric(p.confidence)&&p.confidence>=0&&p.confidence<=1&&numeric(p.timestamp);
+    if(available){
+      line.append(el('span',p.side.toUpperCase()+' '+percent(p.confidence)));
+      if(detail){
+        if(markets.length>1)context.append(el('small',market.ticker));
+        context.append(el('small','As of '+new Date(p.timestamp*1000).toLocaleString()));
+        if(p.quality_warning)context.append(el('small','Data quality warning','stale'));
+      }
+    }else line.append(el('span','Unavailable','muted'));
+    values.append(line);
+  }
+  if(detail)root.append(el('small','Capped confidence for the selected side; other entry checks still apply.','probability-note'));
+  return root;
+}
 function selectMarket(asset){if(ownerBusy)return;selected=asset;$('live-asset').value=asset;$('stop-asset').value=asset;draftDirty=false;draftRevision=-1;draftTicker='';$('live-confirm').checked=false;$('asset-stop-confirm').checked=false;liveMessage.textContent='';historyOffset=0;historyRequest++;if(ownerLatest)render(ownerLatest);if(historyMode)loadHistory();}
 function performanceCells(row,a){for(const [key,format] of [['realized_pnl',signedMoney],['completed_trades',count],['wins',count],['losses',count],['breakeven_trades',count],['win_rate',percent],['open_positions',count]])row.append(el('td',format(a[key]),key==='realized_pnl'?pnlClass(a[key]):''));}
 function render(data){
@@ -54,9 +79,9 @@ function render(data){
   $('comparison').replaceChildren(...rows);
   const totals=el('tr',''),label=el('td',partial?'TOTAL · partial':'TOTAL (7 markets)');label.colSpan=2;totals.append(label);performanceCells(totals,total);$('totals').replaceChildren(totals);
   $('insight').textContent=(top.length?(top.map(a=>a.asset).join(' and ')+(top.length>1?' share the crypto lead':' leads crypto')+' by recorded realized P&L. '):'Crypto ranking requires available completed history for all four markets. ')+(partial?'Some totals are unavailable or partial. ':'')+'These are recorded trade results, not underlying market-price returns.';
-  $('market-status').replaceChildren(...assets.map(a=>{const row=el('tr',''),market=el('td',''),price=el('td',money(a.price)),status=el('td',''),buying=el('td','');market.append(marketButton(a.asset));if(!a.markets?.length||a.markets.some(m=>!m.fresh))price.append(el('small','⚠ Stale market data','stale'));status.append(statusBadge(data,a));buying.append(buyingBadge(data,a));row.append(market,price,status,buying);return row;}));
+  $('market-status').replaceChildren(...assets.map(a=>{const row=el('tr','',selected===a.asset?'selected':''),market=el('td',''),price=el('td',money(a.price)),status=el('td',''),buying=el('td','');market.append(marketButton(a.asset));if(!a.markets?.length||a.markets.some(m=>!m.fresh))price.append(el('small','⚠ Stale market data','stale'));status.append(statusBadge(data,a));buying.append(buyingBadge(data,a));const probability=el('td','');probability.append(entryConfidenceView(data,a));row.append(market,price,probability,status,buying);row.addEventListener('click',event=>{if(!event.target.closest('button'))selectMarket(a.asset);});return row;}));
   const asset=assets.find(a=>a.asset===selected);$('detail-title').textContent=names(selected)+' / Market detail';$('detail-icon').replaceWith(Object.assign(coin(selected),{id:'detail-icon'}));
-  const reference=el('div','','reference-row'),price=el('div',''),status=el('div','');price.append(el('small','Reference price'),el('strong',money(asset.price)));status.append(el('small','Operational status'),el('br',''),statusBadge(data,asset));reference.append(price,status);
+  const reference=el('div','','reference-row'),price=el('div',''),status=el('div','');price.append(el('small','Reference price'),el('strong',money(asset.price)));status.append(el('small','Operational status'),el('br',''),statusBadge(data,asset));reference.append(price,status,entryConfidenceView(data,asset,true));
   const source=el('div','','source');source.append(el('small','Source market identifier(s)'),el('span',asset.markets?.map(m=>m.ticker+(m.fresh?'':' · stale')).join(', ')||'Unavailable'));
   const streaks=el('div','','streaks');streaks.append(el('strong','Performance (recorded)'));for(const [name,value] of [['Current win streak',numeric(asset.current_streak)?Math.max(0,asset.current_streak):null],['Current loss streak',numeric(asset.current_streak)?Math.max(0,-asset.current_streak):null],['Longest win streak',asset.longest_win_streak],['Longest loss streak',asset.longest_loss_streak]]){const line=el('div','','streak-row');line.append(el('span',name),el('span',count(value)));streaks.append(line);}$('detail').replaceChildren(reference,source,streaks);
   for(const button of $('market-tabs').children)button.setAttribute('aria-pressed',String(button.dataset.asset===selected));

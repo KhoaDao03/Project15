@@ -1,0 +1,233 @@
+{
+  "collectors": {
+    "BTC": {
+      "healthy": true,
+      "reasons": [],
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0.122654843,
+        "outstanding_events": 20,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790223749.7639058,
+        "state": "READY",
+        "warning": false
+      },
+      "status_age": 0.037422895431518555,
+      "connected": true,
+      "processing_lag": 0.127169528,
+      "queue_depth": 20,
+      "run_id": "BTC-btc080-xrp070-20260921T174538Z-signals"
+    },
+    "ETH": {
+      "healthy": true,
+      "reasons": [],
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790223748.4651551,
+        "state": "READY",
+        "warning": false
+      },
+      "status_age": 0.9712088108062744,
+      "connected": true,
+      "processing_lag": 0.000441256,
+      "queue_depth": 0,
+      "run_id": "ETH-atr095-20260924T042224Z-signals"
+    },
+    "SOL": {
+      "healthy": false,
+      "reasons": [
+        "COLLECTOR_RECOVERING"
+      ],
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [
+          "WAITING_FOR_FRESH_METADATA"
+        ],
+        "since": 1790223749.922542,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "status_age": 0.4158296585083008,
+      "connected": true,
+      "processing_lag": 0.000751817,
+      "queue_depth": 0,
+      "run_id": "SOL-atr090-110-080-20260921T022113Z-signals"
+    },
+    "XRP": {
+      "healthy": false,
+      "reasons": [
+        "COLLECTOR_RECOVERING"
+      ],
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0.002048987,
+        "outstanding_events": 4,
+        "reason": "STARTUP",
+        "reasons": [
+          "WAITING_FOR_FRESH_METADATA"
+        ],
+        "since": 1790223748.4804003,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "status_age": 0.6221814155578613,
+      "connected": true,
+      "processing_lag": 0.005307458,
+      "queue_depth": 6,
+      "run_id": "XRP-btc080-xrp070-20260921T174538Z-signals"
+    },
+    "GOLD": {
+      "healthy": true,
+      "reasons": [],
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790223748.6591113,
+        "state": "READY",
+        "warning": false
+      },
+      "status_age": 0.290194034576416,
+      "connected": true,
+      "processing_lag": 0.00161831,
+      "queue_depth": 0,
+      "run_id": "GOLD-commodity84-20260921T041738Z-signals"
+    },
+    "SILVER": {
+      "healthy": true,
+      "reasons": [],
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790223748.2218373,
+        "state": "READY",
+        "warning": false
+      },
+      "status_age": 0.5003941059112549,
+      "connected": true,
+      "processing_lag": 0.001814929,
+      "queue_depth": 0,
+      "run_id": "SILVER-silver-wti120-20260923T015351Z-signals"
+    },
+    "WTI": {
+      "healthy": true,
+      "reasons": [],
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790223748.585689,
+        "state": "READY",
+        "warning": false
+      },
+      "status_age": 0.7812926769256592,
+      "connected": true,
+      "processing_lag": 0.003202427,
+      "queue_depth": 0,
+      "run_id": "WTI-silver-wti120-20260923T015351Z-signals"
+    }
+  },
+  "logging": {
+    "BTC": {
+      "capture_mode": "sampled",
+      "dropped": 0,
+      "drop_reasons": {},
+      "diagnostics": {},
+      "sampled_out": {
+        "input_processed": 65666,
+        "orderbook_delta": 60512
+      },
+      "written": 20788
+    },
+    "ETH": {
+      "capture_mode": "sampled",
+      "dropped": 0,
+      "drop_reasons": {},
+      "diagnostics": {},
+      "sampled_out": {
+        "input_processed": 27537,
+        "orderbook_delta": 25436
+      },
+      "written": 17275
+    },
+    "SOL": {
+      "capture_mode": "sampled",
+      "dropped": 0,
+      "drop_reasons": {},
+      "diagnostics": {},
+      "sampled_out": {
+        "input_processed": 12774,
+        "orderbook_delta": 10982
+      },
+      "written": 17390
+    },
+    "XRP": {
+      "capture_mode": "sampled",
+      "dropped": 0,
+      "drop_reasons": {},
+      "diagnostics": {},
+      "sampled_out": {
+        "input_processed": 13827,
+        "orderbook_delta": 12055
+      },
+      "written": 16701
+    },
+    "GOLD": {
+      "capture_mode": "sampled",
+      "dropped": 0,
+      "drop_reasons": {},
+      "diagnostics": {},
+      "sampled_out": {
+        "input_processed": 22375,
+        "orderbook_delta": 20985
+      },
+      "written": 8192
+    },
+    "SILVER": {
+      "capture_mode": "sampled",
+      "dropped": 0,
+      "drop_reasons": {},
+      "diagnostics": {},
+      "sampled_out": {
+        "input_processed": 14823,
+        "orderbook_delta": 14014
+      },
+      "written": 10627
+    },
+    "WTI": {
+      "capture_mode": "sampled",
+      "dropped": 0,
+      "drop_reasons": {},
+      "diagnostics": {},
+      "sampled_out": {
+        "input_processed": 14840,
+        "orderbook_delta": 13856
+      },
+      "written": 11824
+    }
+  },
+  "all_services_running": true,
+  "policies_preserved": true
+}

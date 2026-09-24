@@ -1,0 +1,331 @@
+{
+  "checked_at": 1790220686.757138,
+  "commodities": {
+    "GOLD": {
+      "policy": {
+        "asset": "GOLD",
+        "enabled": false,
+        "contracts": 10,
+        "revision": 129,
+        "config_version": "792cfea047ce5570",
+        "stop_price": 0.55
+      },
+      "status": {
+        "body": {
+          "clock_ok": true,
+          "connected": true,
+          "daily": {
+            "exposure": 0.0,
+            "pnl": 0.0,
+            "trades": 0
+          },
+          "exchange_open": true,
+          "exposure": 0,
+          "halted": false,
+          "live_enabled": false,
+          "live_signals": true,
+          "markets": [
+            "KXGOLD15M-26SEP230145-45",
+            "KXGOLD15M-26SEP232345-45"
+          ],
+          "maximum_queue": 138,
+          "mode": "PAPER",
+          "models": [
+            {
+              "entries_active": true,
+              "halted": false,
+              "model": {
+                "asset": "GOLD",
+                "config_hash": "792cfea047ce5570",
+                "model_id": "settlement-edge",
+                "model_name": "GOLD15 Settlement Edge",
+                "model_version": "v1"
+              },
+              "open_positions": 0,
+              "realized_pnl": 0.0,
+              "run_id": "GOLD-commodity84-20260921T041738Z-signals",
+              "strategy_enabled": true
+            }
+          ],
+          "paper_execution": false,
+          "paper_worker": null,
+          "positions": {},
+          "processing_lag": 0.001785814,
+          "queue_capacity": 20000,
+          "queue_depth": 0,
+          "recording": "signals_only",
+          "recovery": {
+            "catching_up": false,
+            "entries_blocked": false,
+            "oldest_event_lag": 0,
+            "outstanding_events": 0,
+            "reason": "STARTUP",
+            "reasons": [],
+            "since": 1790220654.237948,
+            "state": "READY",
+            "warning": false
+          },
+          "reference_age": 0.38205599784851074,
+          "reference_preload": {
+            "errors": [],
+            "max_gap": 0,
+            "newest_age": null,
+            "newest_source": null,
+            "oldest_source": null,
+            "paths": [
+              "/root/Project15/research-logs/coverage.sqlite"
+            ],
+            "samples": 0,
+            "source": "cache_and_accepted_journal",
+            "status": "COLD_START"
+          },
+          "research_logging": {
+            "capture_complete": true,
+            "drop_reasons": {},
+            "dropped": 0,
+            "enabled": true,
+            "error": null,
+            "last_capture_at": 1790220685.9077094,
+            "last_capture_seq": 11850,
+            "last_written_seq": 11850,
+            "queued_bytes": 0,
+            "session": "20260924T033054Z-ffdd8d2f70294cdcabec517ccc59536c",
+            "written": 11850
+          },
+          "run_id": "GOLD-commodity84-20260921T041738Z-signals",
+          "settlement_recovery": {},
+          "venue_pauses": {}
+        },
+        "id": "status:GOLD-commodity84-20260921T041738Z-signals",
+        "kind": "status",
+        "market": "",
+        "mode": "PAPER",
+        "opportunity_id": "",
+        "run_id": "GOLD-commodity84-20260921T041738Z-signals",
+        "timestamp": 1790220685.9077878
+      },
+      "recorded_bytes": 1654059
+    },
+    "SILVER": {
+      "policy": {
+        "asset": "SILVER",
+        "enabled": false,
+        "contracts": 10,
+        "revision": 140,
+        "config_version": "40518cd03483bb5f",
+        "stop_price": 0.55
+      },
+      "status": {
+        "body": {
+          "clock_ok": true,
+          "connected": true,
+          "daily": {
+            "exposure": 0.0,
+            "pnl": 0.0,
+            "trades": 0
+          },
+          "exchange_open": true,
+          "exposure": 0,
+          "halted": false,
+          "live_enabled": false,
+          "live_signals": true,
+          "markets": [
+            "KXSILVER15M-26SEP222300-00",
+            "KXSILVER15M-26SEP230000-00",
+            "KXSILVER15M-26SEP230045-45",
+            "KXSILVER15M-26SEP230145-45",
+            "KXSILVER15M-26SEP232345-45"
+          ],
+          "maximum_queue": 133,
+          "mode": "PAPER",
+          "models": [
+            {
+              "entries_active": true,
+              "halted": false,
+              "model": {
+                "asset": "SILVER",
+                "config_hash": "40518cd03483bb5f",
+                "model_id": "settlement-edge",
+                "model_name": "SILVER15 Settlement Edge",
+                "model_version": "v1"
+              },
+              "open_positions": 0,
+              "realized_pnl": 0.0,
+              "run_id": "SILVER-silver-wti120-20260923T015351Z-signals",
+              "strategy_enabled": true
+            }
+          ],
+          "paper_execution": false,
+          "paper_worker": null,
+          "positions": {},
+          "processing_lag": 0.001187303,
+          "queue_capacity": 20000,
+          "queue_depth": 0,
+          "recording": "signals_only",
+          "recovery": {
+            "catching_up": false,
+            "entries_blocked": false,
+            "oldest_event_lag": 0,
+            "outstanding_events": 0,
+            "reason": "STARTUP",
+            "reasons": [],
+            "since": 1790220652.8067093,
+            "state": "READY",
+            "warning": false
+          },
+          "reference_age": 0.7181363105773926,
+          "reference_preload": {
+            "errors": [],
+            "max_gap": 0,
+            "newest_age": null,
+            "newest_source": null,
+            "oldest_source": null,
+            "paths": [
+              "/root/Project15/research-logs/coverage.sqlite"
+            ],
+            "samples": 0,
+            "source": "cache_and_accepted_journal",
+            "status": "COLD_START"
+          },
+          "research_logging": {
+            "capture_complete": true,
+            "drop_reasons": {},
+            "dropped": 0,
+            "enabled": true,
+            "error": null,
+            "last_capture_at": 1790220686.2419074,
+            "last_capture_seq": 14517,
+            "last_written_seq": 14515,
+            "queued_bytes": 1430,
+            "session": "20260924T033052Z-a54ecade49674db98ba539eae0f31161",
+            "written": 14515
+          },
+          "run_id": "SILVER-silver-wti120-20260923T015351Z-signals",
+          "settlement_recovery": {},
+          "venue_pauses": {}
+        },
+        "id": "status:SILVER-silver-wti120-20260923T015351Z-signals",
+        "kind": "status",
+        "market": "",
+        "mode": "PAPER",
+        "opportunity_id": "",
+        "run_id": "SILVER-silver-wti120-20260923T015351Z-signals",
+        "timestamp": 1790220686.2420335
+      },
+      "recorded_bytes": 2115461
+    },
+    "WTI": {
+      "policy": {
+        "asset": "WTI",
+        "enabled": false,
+        "contracts": 10,
+        "revision": 137,
+        "config_version": "0dc2a0d1318a8e3f",
+        "stop_price": 0.55
+      },
+      "status": {
+        "body": {
+          "clock_ok": true,
+          "connected": true,
+          "daily": {
+            "exposure": 0.0,
+            "pnl": 0.0,
+            "trades": 0
+          },
+          "exchange_open": true,
+          "exposure": 0,
+          "halted": false,
+          "live_enabled": false,
+          "live_signals": true,
+          "markets": [
+            "KXWTI15M-26SEP222245-45",
+            "KXWTI15M-26SEP222300-00",
+            "KXWTI15M-26SEP222315-15",
+            "KXWTI15M-26SEP222330-30",
+            "KXWTI15M-26SEP222345-45",
+            "KXWTI15M-26SEP230000-00",
+            "KXWTI15M-26SEP230115-15",
+            "KXWTI15M-26SEP230130-30",
+            "KXWTI15M-26SEP230145-45",
+            "KXWTI15M-26SEP232345-45"
+          ],
+          "maximum_queue": 464,
+          "mode": "PAPER",
+          "models": [
+            {
+              "entries_active": true,
+              "halted": false,
+              "model": {
+                "asset": "WTI",
+                "config_hash": "0dc2a0d1318a8e3f",
+                "model_id": "settlement-edge",
+                "model_name": "WTI15 Settlement Edge",
+                "model_version": "v1"
+              },
+              "open_positions": 0,
+              "realized_pnl": 0.0,
+              "run_id": "WTI-silver-wti120-20260923T015351Z-signals",
+              "strategy_enabled": true
+            }
+          ],
+          "paper_execution": false,
+          "paper_worker": null,
+          "positions": {},
+          "processing_lag": 0.000768358,
+          "queue_capacity": 20000,
+          "queue_depth": 0,
+          "recording": "signals_only",
+          "recovery": {
+            "catching_up": false,
+            "entries_blocked": false,
+            "oldest_event_lag": 0,
+            "outstanding_events": 0,
+            "reason": "STARTUP",
+            "reasons": [],
+            "since": 1790220652.9223306,
+            "state": "READY",
+            "warning": false
+          },
+          "reference_age": 0.3406643867492676,
+          "reference_preload": {
+            "errors": [],
+            "max_gap": 0,
+            "newest_age": null,
+            "newest_source": null,
+            "oldest_source": null,
+            "paths": [
+              "/root/Project15/research-logs/coverage.sqlite"
+            ],
+            "samples": 0,
+            "source": "cache_and_accepted_journal",
+            "status": "COLD_START"
+          },
+          "research_logging": {
+            "capture_complete": true,
+            "drop_reasons": {},
+            "dropped": 0,
+            "enabled": true,
+            "error": null,
+            "last_capture_at": 1790220685.8399436,
+            "last_capture_seq": 14166,
+            "last_written_seq": 14165,
+            "queued_bytes": 608,
+            "session": "20260924T033052Z-4f22f960977e4adea3c676518705df26",
+            "written": 14165
+          },
+          "run_id": "WTI-silver-wti120-20260923T015351Z-signals",
+          "settlement_recovery": {},
+          "venue_pauses": {}
+        },
+        "id": "status:WTI-silver-wti120-20260923T015351Z-signals",
+        "kind": "status",
+        "market": "",
+        "mode": "PAPER",
+        "opportunity_id": "",
+        "run_id": "WTI-silver-wti120-20260923T015351Z-signals",
+        "timestamp": 1790220685.8400362
+      },
+      "recorded_bytes": 1992234
+    }
+  }
+}

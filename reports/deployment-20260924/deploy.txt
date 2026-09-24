@@ -1,0 +1,4 @@
+Shutdown guard passed; stopping services.
+Backing up stopped databases and source.
+Migration and policy restoration complete; starting all services.
+All services started; live verification required.

@@ -12,6 +12,13 @@ preview = runpy.run_path(str(ROOT / 'scripts/preview_public_ui.py'))
 def test_public_ui_selection_history_owner_and_layout():
     playwright = pytest.importorskip('playwright.sync_api')
     snapshot = preview['sample_view']()
+    import time
+    for asset in snapshot['assets']:
+        for market in asset['markets']:
+            yes = .35 if asset['asset'] == 'ETH' else .82
+            market['probability'] = dict(available=True, p_yes=yes, p_no=1-yes,
+                                         side='no' if asset['asset']=='ETH' else 'yes', confidence=.60 if asset['asset']=='ETH' else .75,
+                                         timestamp=time.time(), quality_warning=False)
     state = {'reject': False, 'stale': False, 'expires': 60, 'view_fail': False}
     posts = []
     errors = []
@@ -65,6 +72,15 @@ def test_public_ui_selection_history_owner_and_layout():
         expect(page.locator('#live-contracts')).to_have_value('10')
         expect(page.locator('#live-contracts')).to_be_disabled()
         assert page.locator('#comparison .market-button').count() == 7
+        expect(page.locator('[aria-label="Market status"] thead')).to_contain_text('Entry confidence')
+        expect(page.locator('#market-status .probability').first).to_have_text('YES 75.0%')
+        expect(page.locator('#detail .probability')).to_contain_text('YES 75.0%')
+        expect(page.locator('#detail .probability')).to_contain_text('As of')
+        assert page.evaluate("entryConfidenceView({stale:true},ownerLatest.assets[0]).textContent") == 'Unavailable'
+        assert page.evaluate("entryConfidenceView({stale:false},{markets:[]}).textContent") == 'Unavailable'
+        assert page.evaluate("entryConfidenceView({stale:false},{markets:[{fresh:false,probability:{available:true,p_yes:.9,p_no:.1,timestamp:1}}]}).textContent") == 'Unavailable'
+        for confidence, side in [(None, 'yes'), (1.2, 'yes'), (.8, None)]:
+            assert page.evaluate("([confidence,side]) => entryConfidenceView({stale:false},{markets:[{fresh:true,probability:{available:true,p_yes:.9,p_no:.1,confidence,side,timestamp:1}}]}).textContent", [confidence,side]) == 'Unavailable'
         metrics = page.evaluate('summarize(ownerLatest.assets)')
         assert metrics['completed_trades'] == 1090
         assert metrics['breakeven_trades'] == 7
@@ -76,6 +92,7 @@ def test_public_ui_selection_history_owner_and_layout():
         assert page.evaluate('leaders(ownerLatest.assets.map(a=>({...a,realized_pnl:null}))).length') == 0
         page.locator('#comparison .market-button').filter(has_text='ETH').click()
         expect(page.locator('#detail-title')).to_have_text('ETH / Market detail')
+        expect(page.locator('#detail .probability')).to_contain_text('NO 60.0%')
         expect(page.locator('#market-tabs [data-asset=ETH]')).to_have_attribute('aria-pressed', 'true')
         expect(page.locator('#trades-title')).to_have_text('ETH · Latest 5 trades')
         assert posts == []
@@ -117,6 +134,8 @@ def test_public_ui_selection_history_owner_and_layout():
         expect(page.locator('#connection')).to_contain_text('Updates unavailable')
         expect(page.locator('#asset-stop-fields button')).to_be_disabled()
         expect(page.locator('#market-status .live-buying').first).to_have_text('Unavailable')
+        expect(page.locator('#market-status .probability').first).to_have_text('Unavailable')
+        expect(page.locator('#detail .probability')).not_to_contain_text('YES 75.0%')
         state['view_fail'] = False
         state['expires'] = 1
         page.locator('#owner-passcode').fill('test-only-passcode-1234')

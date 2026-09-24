@@ -52,16 +52,22 @@ def test_low_disk_does_not_stop_caller(research_recorder, tmp_path, monkeypatch)
     assert r.status()["error"] == "LOW_DISK"
 
 
-def test_retention_only_deletes_closed_recordings(research_recorder, tmp_path):
+def test_retention_archives_closed_recordings_with_context(research_recorder, tmp_path):
     old = tmp_path / "ETH" / "old"
     old.mkdir(parents=True)
     (old / "events-1.jsonl.gz").write_bytes(b"old")
     (old / "events-2.jsonl.gz.part").write_bytes(b"active")
     (old / "unrelated.txt").write_text("keep")
+    (old / "manifest.json").write_text('{"session":"old"}')
+    (old / "source.json.gz").write_bytes(b"source")
     r = research_recorder(tmp_path, max_disk_bytes=0)
     r.emit("input", {})
     r.close()
     assert not (old / "events-1.jsonl.gz").exists()
+    archived = r.archive_dir / "ETH" / "old"
+    assert (archived / "events-1.jsonl.gz").read_bytes() == b"old"
+    assert (archived / "source.json.gz").read_bytes() == b"source"
+    assert json.loads((archived / "manifest.json").read_text()) == {"session": "old"}
     assert (old / "events-2.jsonl.gz.part").exists()
     assert (old / "unrelated.txt").exists()
 

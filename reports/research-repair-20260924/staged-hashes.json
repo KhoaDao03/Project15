@@ -1,0 +1,9 @@
+{
+  "src/btc15/research_log.py": "83978fdeb03e796a4b18888709c1f06f4fe5114dca8472ba62c0e1b9e25f67fd",
+  "src/btc15/research_coverage.py": "0c7f9b3ac63062e23f80900b7bebbc7b268d0e613fc343b373642fcafb653cdf",
+  "src/btc15/research_archive.py": "1cbaad2cfa2a22337312040aa4230528c0dc661fc0fbd32cbba86ad8f6226659",
+  "tests/test_research_repair.py": "5a11e8749d2ab5f1588aab5e43910e13bab89606444d34f0385f0b2725a6180e",
+  "tests/test_research_log.py": "230492ccfd93da5f82aea288cc9194a9f2af691895562755a5d5d59bcf6b3110",
+  "docs/RESEARCH_LOGGING.md": "4a2b556ba867ea901770a9340702cdc4cc5825d2e39266dc1f3532dec83fa42a",
+  "deploy/cloud/examples/research-sampled.conf": "695c41d25a8aa2b04387780e75bfb893d5472e849c4d20faca1f68d3a33eb0fe"
+}

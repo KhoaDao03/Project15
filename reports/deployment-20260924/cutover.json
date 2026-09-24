@@ -1,0 +1,16 @@
+{
+  "completed_at": 1790223746.2273626,
+  "backup": "/root/project15-backups/eth095-20260924T041518Z",
+  "eth_previous_run": "ETH-atr090-110-080-20260921T022113Z-signals",
+  "eth_run": "ETH-atr095-20260924T042224Z-signals",
+  "sigma_multiplier": 0.95,
+  "versions": {
+    "BTC": "2c421834f356f122",
+    "ETH": "55b71643ce6066f1",
+    "SOL": "e75ddd9a42b086be",
+    "XRP": "8c815c852e03529b",
+    "GOLD": "792cfea047ce5570",
+    "SILVER": "40518cd03483bb5f",
+    "WTI": "0dc2a0d1318a8e3f"
+  }
+}
