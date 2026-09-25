@@ -57,8 +57,9 @@ Read [crypto settings](ACTIVE_PAPER_SETTINGS.md) or [commodity settings](COMMODI
 for thresholds. Standard/late windows, fresh same-side confirmation, healthy
 reference/book data, valid metadata, capped probability, price and risk checks
 apply again before submission. Paper inventory/cooldowns do not describe real
-holdings. Live buys require a flat real position, sufficient cash including fees,
-and at most one filled bot entry per ticker.
+holdings. Live buys require a flat real position and at most one filled bot entry
+per ticker. Balance is not fetched during automatic-buy preflight; Kalshi enforces
+funds at submission. Dashboard balance display remains available.
 
 Buys are fill-or-kill for the full selected quantity. Their limit is the configured
 maximum entry price, rounded down to a supported purchased-outcome tick. The
@@ -75,8 +76,8 @@ conservatively. Uncertain responses block replacements until reconciled.
 
 | Trigger | Order behavior |
 | --- | --- |
-| Held-side bid ≥99¢ | Sell remaining bot holdings with a 99¢ minimum; never round this floor down |
-| Held-side bid ≤55¢ | Commit to selling remaining bot holdings with a 1¢ minimum; overrides take-profit |
+| Take-profit | Disabled (`take_profit=null`); no automatic 99¢ sale |
+| Held-side bid ≤55¢ | Commit to selling remaining bot holdings with a 1¢ minimum |
 
 IOC exits are reduce-only and may partially fill. After reconciliation, retry only
 the confirmed remainder, at least two seconds apart while the market stays open.
@@ -87,17 +88,12 @@ Manual positions are not adopted. Triggers and limits do not guarantee fills.
 
 ### Resting take-profit
 
-After a confirmed buy, place one 99¢ GTC sell for the confirmed quantity still held,
-expiring at market close. Partial fills leave its remainder working. Rejection
-leaves the IOC exits available. Kalshi does not support reduce-only GTC orders,
-so placement checks holdings; external position changes can invalidate the size.
-Use manual takeover before managing that position elsewhere.
+Resting take-profit is disabled for all active assets (`take_profit=null`). No new
+99¢ GTC sell orders are placed. Any existing resting take-profit order is canceled
+and reconciled before a replacement stop sale. Uncertain cancellation blocks a
+replacement until the remaining holdings are confirmed. Positions otherwise stay
+open until the 55¢ stop triggers or exchange settlement.
 
-A fresh bid **below 70¢** cancels the remaining offer permanently for that position;
-exactly 70¢ does not. The 99¢ profit and 55¢ stop triggers remain for unsold contracts.
-At either exit trigger, cancel and reconcile the resting offer before placing an
-IOC for the confirmed remainder. Unknown cancellation/acknowledgment blocks a
-replacement. A direct jump to the stop can still incur cancellation latency.
 Manual takeover does not liquidate; safe shutdown waits for cancellation confirmation.
 
 Protocol references: [create order](https://docs.kalshi.com/api-reference/orders/create-order-v2),
@@ -142,14 +138,82 @@ events, checkpoints, timing fields and coverage limits.
 
 ## Latency and working set
 
+### Dedicated stop monitor (deployed 2026-09-25)
+
+The executor runs an independent asynchronous stop monitor for confirmed bot
+holdings. Collector book publications send a best-effort quote notification after
+the database write commits; the monitor also polls every 100 ms. Publications
+retain the collector's existing approximately 50 ms display cadence, so this is
+not a guarantee of observing every exchange tick or reacting within 100 ms.
+
+A fresh held-side best bid at or below the configured stop (55¢ in the active
+controls) commits `HARD_STOP` to the durable control before any network wait.
+Committed stops survive rebounds, stale quotes and restarts. Detection in other
+markets continues while an exit awaits the exchange. Per-market locks coordinate
+the normal loop, stop submissions and central reconciliation. Queued stop
+submissions precede queued buys at the shared account lock; requests already in
+progress are not interrupted.
+
+Hard-stop submission performs one fresh series/market/holdings preflight, instead
+of fetching these both in the market loop and again in submission. Sell quantity
+is bounded by both the bot's journal remainder and actual holdings. The reduce-only
+IOC order retains its 1¢ floor, final authorization, uncertain-order handling and
+two-second spacing between sent exit attempts. Zero holdings does not clear the
+stop or consume a sent-attempt cooldown. Manual takeover still blocks submission.
+
+Order timing includes `stop_detected_at`, `stop_bid`, `quote_received_at` and
+`quote_published_at` when available, alongside existing POST timing. This path
+still inherits collector lag and the existing REST rate limiter. No direct
+exchange quote connection is added. Deployed on 2026-09-25 at 00:19:38 UTC;
+see the [latency and deployment report](../reports/stop-latency-20260925/report.md)
+for measurements and their limits.
+
+### Burst read budget and buy balance removal (deployed 2026-09-25)
+
+The implementation replaces per-client 200 ms spacing with a token bucket
+shared by credentialed clients under the same OS user and API origin. It uses the
+account limits verified on 2026-09-25: 200 tokens/second and 600-token capacity.
+Most reads cost 10 tokens; CF Benchmarks reads cost 50; individual order-status
+reads cost 2. Other discounted endpoints conservatively cost 10 locally.
+
+A private `/tmp/btc15-read-budget-UID/` file and short nonblocking file locks account
+for collectors, executor and dashboard reads together. Network calls and sleeps
+never hold the lock. New, corrupt or previous-boot state starts with zero credit;
+process restarts reuse existing credit rather than allocating another bucket.
+Anonymous clients without account credentials use an in-memory budget. Different
+OS users, hosts and external clients are outside this coordination boundary.
+
+Available credit permits immediate bursts; exhausted credit waits for refill.
+Ordinary reads leave 30 tokens for hard-stop preflight, and the existing queued-stop
+submission priority remains. A 429 discards local credit and imposes shared bounded
+backoff; retries still consume tokens, remain bounded and are included in timing.
+No automatic POST retries are added. Limits/costs must be rechecked before deploying
+this version to a different account or after an exchange rate-policy change.
+
+Automatic buy preflight now reads series, market and fresh holdings, then rechecks
+controls before POST. It does not fetch account balance or locally authorize cash
+sufficiency. Kalshi determines whether funds cover an order. Balance display and
+manual ticket context remain available. Sent insufficient-funds rejections retain
+the existing entry-attempt accounting and retry limit. Research preflight records
+explicitly mark `balance_check=not_performed`; no balance value is fabricated.
+
+Deployed on 2026-09-25 at 05:17:47 UTC with a coordinated restart of all seven
+collectors, executor and private dashboard. See the
+[deployment report](../reports/read-budget-deployment-20260925/report.md).
+Mixing old per-client limiters with the shared budget does not provide full fleet
+accounting.
+
+### Entry loop and shared transport
+
 Changed eligible/ineligible decisions publish after each collector batch. A
 best-effort private Unix datagram wakes execution after the committed write;
 the worker rereads authoritative state. It also polls 100 ms after each cycle.
 Markets remain sequential and submissions share one account lock, so this is
 not a 100 ms decision-to-order guarantee.
 
-One reused HTTP client fetches fresh holdings/balance concurrently within the
-existing rate limit. No balance/holdings cache authorizes orders. Order timing
+The executor reuses one HTTP client, fetches fresh holdings without a balance
+preflight, and shares its read budget with collectors. No holdings cache authorizes
+orders. Order timing
 records publication/detection, coordination, preflight, POST/response and REST
 confirmation. `timing.reads` separates waits, network time, retries and status;
 concurrent durations overlap. `fill_confirmed_at` means REST terminal confirmation,

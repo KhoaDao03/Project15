@@ -17,6 +17,7 @@ const coinPaths={
  SILVER:'m9 4-2 6h10l-2-6H9ZM4 13l-3 7h10l-2-7H4Zm11 0-2 7h10l-3-7h-5Z',
  WTI:'M12 2C10 8 5 10 5 15a7 7 0 0 0 14 0c0-5-5-7-7-13Z'
 };
+let latest=null;
 let selected='BTC',historyMode=false,historyOffset=0,historyTotal=0,historyBusy=false,historyRequest=0;
 function coin(asset){
   const node=el('span','','coin '+asset.toLowerCase()),svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS('http://www.w3.org/2000/svg','path');
@@ -59,11 +60,11 @@ function entryConfidenceView(data,asset,detail=false){
   if(detail)root.append(el('small','Capped confidence for the selected side; other entry checks still apply.','probability-note'));
   return root;
 }
-function selectMarket(asset){if(ownerBusy)return;selected=asset;$('live-asset').value=asset;$('stop-asset').value=asset;draftDirty=false;draftRevision=-1;draftTicker='';$('live-confirm').checked=false;$('asset-stop-confirm').checked=false;liveMessage.textContent='';historyOffset=0;historyRequest++;if(ownerLatest)render(ownerLatest);if(historyMode)loadHistory();}
-function performanceCells(row,a){for(const [key,format] of [['realized_pnl',signedMoney],['completed_trades',count],['wins',count],['losses',count],['breakeven_trades',count],['win_rate',percent],['open_positions',count]])row.append(el('td',format(a[key]),key==='realized_pnl'?pnlClass(a[key]):''));}
+function selectMarket(asset){selected=asset;historyOffset=0;historyRequest++;if(latest)render(latest);if(historyMode)loadHistory();}
+function streakLabel(value){if(!numeric(value))return '—';if(value===0)return 'No streak';return Math.abs(value)+' '+(value>0?(value===1?'win':'wins'):(value===-1?'loss':'losses'));}
+function performanceCells(row,a){for(const [key,format] of [['realized_pnl',signedMoney],['completed_trades',count],['wins',count],['losses',count],['win_rate',percent],['current_streak',streakLabel],['open_positions',count]])row.append(el('td',format(a[key]),['realized_pnl','current_streak'].includes(key)?pnlClass(a[key]):''));}
 function render(data){
-  for(const asset of data.assets){const previous=ownerLatest?.assets.find(a=>a.asset===asset.asset);if((previous?.live_policy?.revision??-1)>(asset.live_policy?.revision??-1))asset.live_policy=previous.live_policy;}
-  renderOwner(data);
+  latest=data;
   $('connection').textContent=data.stale?'Updates delayed':'Connected';$('connection').className=data.stale?'stale':'';
   if(numeric(data.updated_at))$('updated').textContent=new Date(data.updated_at*1000).toLocaleString();
   const assets=symbols.map(asset=>data.assets.find(a=>a.asset===asset)||{asset,markets:[],trades:[]});
@@ -74,7 +75,7 @@ function render(data){
   for(const [label,group] of [['Digital assets',assets.slice(0,4)],['Commodities',assets.slice(4)]]){
     const heading=el('tr','','group-row'),cell=el('td',label.toUpperCase());cell.colSpan=9;heading.append(cell);rows.push(heading);
     group.sort((a,b)=>(numeric(b.realized_pnl)?b.realized_pnl:-Infinity)-(numeric(a.realized_pnl)?a.realized_pnl:-Infinity));
-    for(const a of group){const row=el('tr','',selected===a.asset?'selected':''),market=el('td','');market.append(marketButton(a.asset));if(top.some(t=>t.asset===a.asset))market.firstChild.append(el('span',top.length>1?'Joint top':'Top crypto','top-badge'));const rank=numeric(a.realized_pnl)?1+group.filter(b=>numeric(b.realized_pnl)&&b.realized_pnl>a.realized_pnl).length:'—';row.append(el('td',rank),market);performanceCells(row,a);rows.push(row);}
+    for(const a of group){const row=el('tr','',selected===a.asset?'selected':''),market=el('td','');market.append(marketButton(a.asset));if(top.some(t=>t.asset===a.asset))market.firstChild.append(el('span',top.length>1?'Joint top':'Top crypto','top-badge'));const rank=numeric(a.realized_pnl)?1+group.filter(b=>numeric(b.realized_pnl)&&b.realized_pnl>a.realized_pnl).length:'—';row.append(el('td',rank),market);performanceCells(row,a);row.addEventListener('click',event=>{if(!event.target.closest('button'))selectMarket(a.asset);});rows.push(row);}
   }
   $('comparison').replaceChildren(...rows);
   const totals=el('tr',''),label=el('td',partial?'TOTAL · partial':'TOTAL (7 markets)');label.colSpan=2;totals.append(label);performanceCells(totals,total);$('totals').replaceChildren(totals);
@@ -88,7 +89,7 @@ function render(data){
   $('trades-title').textContent=names(selected)+(historyMode?' · Trade records':' · Latest 5 trades');
   $('trade-scope').textContent=asset.trades_stale?'Trade updates delayed · displayed records may be stale.':'Recent rows shown; all-time totals above cover recorded history.';
   if(!historyMode)renderTrades(asset.trades||[]);
-  updateLocks();
+
 }
 function renderTrades(trades){const wrap=el('div','','table-wrap');wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label','Trade records');const table=el('table',''),head=el('thead',''),headers=el('tr','');for(const label of ['Market / time','Status','Market settled','Side / quantity','Entry','Exit','Fees','Net P&L'])headers.append(el('th',label));head.append(headers);table.append(head);const body=el('tbody','');
   for(const trade of trades){const row=el('tr',''),market=el('td',trade.market,'market');market.append(el('small',numeric(trade.opened??trade.timestamp)?new Date((trade.opened??trade.timestamp)*1000).toLocaleString():'Time unavailable'));row.append(market);const open=trade.status==='OPEN';for(const value of [open?'OPEN':'CLOSED',trade.market_result==='yes'?'YES':trade.market_result==='no'?'NO':'Pending / unknown',(trade.side??'—').toUpperCase()+' / '+(trade.bought??'—'),money(trade.entry),open?'Pending':money(trade.exit),money(trade.fees)])row.append(el('td',value));if(!open&&trade.exit_timestamp)row.children[5].append(el('small',(trade.exit_type==='settlement'?'Settled: ':'Sold / exit: ')+new Date(trade.exit_timestamp*1000).toLocaleString()));row.append(el('td',open?'Pending':signedMoney(trade.net_pnl),open?'':pnlClass(trade.net_pnl)));body.append(row);}
@@ -97,116 +98,8 @@ function renderTrades(trades){const wrap=el('div','','table-wrap');wrap.tabIndex
 async function loadHistory(){const request=++historyRequest,asset=selected;historyBusy=true;$('trades').replaceChildren(el('p','Loading recorded history…'));$('history-message').textContent='';updatePagination();try{const response=await fetch('/api/history/'+asset+'?offset='+historyOffset+'&limit=25',{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!response.ok)throw new Error('History unavailable. Try again.');const data=await response.json();if(request!==historyRequest)return;historyTotal=data.total;renderTrades(data.rows);$('history-message').textContent=data.stale?'History updates delayed.':'Available recorded history · '+historyTotal.toLocaleString()+' trades.';}catch(error){if(request===historyRequest)$('history-message').textContent=error.message;}finally{if(request===historyRequest){historyBusy=false;updatePagination();}}}
 function updatePagination(){$('pagination').hidden=!historyMode;$('previous').disabled=historyBusy||historyOffset===0;$('next').disabled=historyBusy||historyOffset+25>=historyTotal;$('page-info').textContent=historyBusy?'Loading…':historyTotal?`${historyOffset+1}–${Math.min(historyOffset+25,historyTotal)} of ${historyTotal}`:'No records';}
 for(const asset of symbols){const button=el('button',asset==='WTI'?'OIL':asset);button.dataset.asset=asset;button.type='button';button.addEventListener('click',()=>selectMarket(asset));$('market-tabs').append(button);}
-$('browse').addEventListener('click',()=>{historyMode=!historyMode;historyOffset=0;historyRequest++;$('browse').textContent=historyMode?'Latest 5 trades':'Browse all records';$('history-message').textContent='';updatePagination();if(ownerLatest)render(ownerLatest);if(historyMode)loadHistory();});
+$('browse').addEventListener('click',()=>{historyMode=!historyMode;historyOffset=0;historyRequest++;$('browse').textContent=historyMode?'Latest 5 trades':'Browse all records';$('history-message').textContent='';updatePagination();if(latest)render(latest);if(historyMode)loadHistory();});
 $('previous').addEventListener('click',()=>{historyOffset=Math.max(0,historyOffset-25);loadHistory();});$('next').addEventListener('click',()=>{historyOffset+=25;loadHistory();});
-async function refresh(){try{const response=await fetch('/api/view',{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!response.ok)throw new Error('Unavailable');const data=await response.json();data.stale=data.stale||!numeric(data.updated_at)||Date.now()/1000-data.updated_at>20;render(data);}catch{if(ownerLatest){ownerLatest.stale=true;render(ownerLatest);}updateLocks();$('connection').textContent='Updates unavailable · values may be out of date';$('connection').className='stale';}finally{setTimeout(refresh,5000);}}
-let ownerToken='', ownerDeadline=0, ownerLatest=null, ownerBusy=false, ownerBlocked=true;
-let assetStopStates={},ownerConfigured=false;
-const stopBlocked=asset=>['stopping','stopped','unknown'].includes(assetStopStates[asset]?.status);
-let draftRevision=-1, draftTicker='', draftDirty=false;
-const stopMessage=document.getElementById('stop-message');
-const liveMessage=document.getElementById('live-message');
-function unlocked(){return ownerToken&&performance.now()<ownerDeadline;}
-function updateLocks(){
-  if(!unlocked()){ownerToken='';document.getElementById('unlock-status').textContent=ownerConfigured?'Locked':'Not configured';}
-  else document.getElementById('unlock-status').textContent='Unlocked · '+Math.ceil((ownerDeadline-performance.now())/1000)+' seconds remaining';
-  document.getElementById('live-fields').disabled=!unlocked()||ownerBusy||ownerBlocked||!ownerLatest||ownerLatest.stale||!ownerLatest.live_available||!draftTicker||stopBlocked(document.getElementById('live-asset').value);
-  const selected=document.getElementById('stop-asset').value;
-  document.getElementById('asset-stop-fields').disabled=!unlocked()||ownerBusy||ownerBlocked||!ownerLatest||ownerLatest.stale||stopBlocked(selected);
-  document.getElementById('asset-stop-message').textContent=assetStopStates[selected]?.message||'';
-  document.getElementById('stop-fields').disabled=!unlocked()||ownerBusy||ownerBlocked||!ownerLatest||ownerLatest.stale;
-  $('unlock-form').querySelector('button').disabled=ownerBusy||!ownerConfigured;
-  $('owner-passcode').disabled=ownerBusy||!ownerConfigured;
-  $('access-state').textContent=unlocked()?'Owner view · Controls unlocked':'Visitor view · Owner controls locked';
-  $('control-reason').textContent=ownerBusy?'Request in progress…':!ownerConfigured?'Owner access is not configured.':!unlocked()?'⌑ Unlock owner access below to make changes.':ownerBlocked||stopBlocked(selected)?'Controls unavailable: resolve bot shutdown first.':!ownerLatest||ownerLatest.stale||!ownerLatest.live_available||!draftTicker?'Live settings unavailable; waiting for fresh market data.':'Owner access unlocked. Confirm changes before submitting.';
-  $('live-contracts').disabled=ownerBusy;
-  for(const button of document.querySelectorAll('.market-button,.tabs button'))button.disabled=ownerBusy;
-}
-function renderOwner(data){
-  ownerLatest=data;
-  const asset=data.assets.find(a=>a.asset===document.getElementById('live-asset').value);
-  if(!asset){draftTicker='';updateLocks();return;}
-  const policy=asset.live_policy||{},revision=policy.revision??0;
-  draftTicker=asset.markets?.find(m=>m.fresh)?.ticker||'';
-  document.getElementById('live-current').textContent='Saved: '+(typeof policy.enabled==='boolean'?(policy.enabled?'new buys ON':'new buys OFF'):'unavailable')+' · '+(policy.contracts??'not set')+' contracts per entry';
-  if(policy.loss_guard&&!policy.enabled&&revision>draftRevision){draftDirty=false;document.getElementById('live-enabled').checked=false;}
-  if(policy.loss_guard)document.getElementById('live-current').textContent+=' · '+policy.loss_guard.reason;
-  if(!draftDirty&&revision>=draftRevision){
-    draftRevision=revision;draftTicker=asset.markets.find(m=>m.fresh)?.ticker||'';
-    document.getElementById('live-enabled').checked=policy.enabled===true;
-    document.getElementById('live-contracts').value=policy.contracts??'';
-  }updateLocks();
-}
-document.getElementById('live-asset').addEventListener('change',()=>{draftDirty=false;draftRevision=-1;document.getElementById('live-confirm').checked=false;if(ownerLatest)renderOwner(ownerLatest);});
-for(const id of ['live-enabled','live-contracts'])document.getElementById(id).addEventListener('input',()=>{draftDirty=true;document.getElementById('live-confirm').checked=false;});
-async function ownerPost(path,body){
-  if(!unlocked()){updateLocks();throw new Error('Enter the passcode again.');}
-  const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+ownerToken},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
-  const data=await response.json();
-  if(response.status===401){ownerToken='';updateLocks();}
-  if(!response.ok)throw new Error(data.detail||'Action failed. Refresh before retrying.');
-  return data;
-}
-document.getElementById('unlock-form').addEventListener('submit',async event=>{
-  event.preventDefault();if(ownerBusy)return;
-  const input=document.getElementById('owner-passcode'),passcode=input.value;input.value='';
-  ownerBusy=true;ownerToken='';updateLocks();
-  const started=performance.now();
-  try{
-    const response=await fetch('/api/unlock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({passcode}),signal:AbortSignal.timeout(10000)});
-    const data=await response.json();if(!response.ok)throw new Error(data.detail||'Unlock failed');
-    ownerToken=data.token;ownerDeadline=started+data.expires_in*1000;
-  }catch(error){liveMessage.textContent=error.message;}
-  finally{ownerBusy=false;updateLocks();}
-});
-document.getElementById('live-form').addEventListener('submit',async event=>{
-  event.preventDefault();if(ownerBusy||$('live-fields').disabled)return;
-  if(!document.getElementById('live-confirm').checked){liveMessage.textContent='Confirm the real-money settings before saving.';return;}
-  const enabled=document.getElementById('live-enabled').checked;
-  const payload={asset:document.getElementById('live-asset').value,ticker:draftTicker,revision:draftRevision,enabled,contracts:Number(document.getElementById('live-contracts').value),confirm:enabled?'ENABLE_REAL_TRADING':''};
-  ownerBusy=true;updateLocks();
-  try{
-    const result=await ownerPost('/api/control',payload);draftDirty=false;draftRevision=result.revision;
-    const saved=ownerLatest.assets.find(a=>a.asset===payload.asset);
-    saved.live_policy={...saved.live_policy,...result};renderOwner(ownerLatest);
-    liveMessage.textContent='Saved: '+result.contracts+' contracts per entry. '+(result.enabled?'New live buys enabled.':'New buys disabled; automatic exits continue.');
-  }catch(error){liveMessage.textContent=error.message+' Refresh and review the saved settings before retrying.';draftDirty=false;draftRevision=-1;draftTicker='';ownerLatest.stale=true;}
-  finally{ownerBusy=false;document.getElementById('live-confirm').checked=false;updateLocks();}
-});
-async function refreshStop(){
-  try{
-    const response=await fetch('/api/stop',{cache:'no-store',signal:AbortSignal.timeout(8000)});
-    if(!response.ok)throw new Error('Unavailable');const state=await response.json();
-    ownerConfigured=state.enabled===true;
-    assetStopStates=state.assets||{};
-    ownerBlocked=['stopping','stopped','unknown'].includes(state.status);
-    if(state.message)stopMessage.textContent=state.message;
-  }catch{ownerConfigured=false;ownerBlocked=true;stopMessage.textContent='Shutdown status unavailable. Check the private dashboard.';}
-  finally{updateLocks();setTimeout(refreshStop,2000);}
-}
-document.getElementById('stop-form').addEventListener('submit',async event=>{
-  event.preventDefault();if(ownerBusy||$('stop-fields').disabled)return;ownerBusy=true;updateLocks();
-  try{const data=await ownerPost('/api/stop',{confirm:document.getElementById('stop-confirm').checked});ownerBlocked=true;stopMessage.textContent=data.message;}
-  catch(error){stopMessage.textContent=error.message;}
-  finally{ownerBusy=false;document.getElementById('stop-confirm').checked=false;updateLocks();}
-});
-setInterval(updateLocks,250);
-refreshStop();
-
-document.getElementById('stop-asset').addEventListener('change',()=>{document.getElementById('asset-stop-confirm').checked=false;updateLocks();});
-document.getElementById('asset-stop-form').addEventListener('submit',async event=>{
-  event.preventDefault();if(ownerBusy||$('asset-stop-fields').disabled)return;
-  const asset=document.getElementById('stop-asset').value;
-  ownerBusy=true;updateLocks();
-  try{assetStopStates[asset]=await ownerPost('/api/stop',{asset,confirm:document.getElementById('asset-stop-confirm').checked});}
-  catch(error){assetStopStates[asset]={status:'unknown',message:error.message};}
-  finally{ownerBusy=false;document.getElementById('asset-stop-confirm').checked=false;updateLocks();}
-});
-
-for(const [id,enabled] of [['enable-buying',true],['disable-buying',false]])$(id).addEventListener('click',()=>{
-  if($('live-fields').disabled||ownerBusy)return;
-  if(!$('live-confirm').checked){liveMessage.textContent='Confirm the real-money settings before changing live buying.';return;}
-  $('live-enabled').checked=enabled;draftDirty=true;$('live-form').requestSubmit();
-});
-setInterval(()=>{if(ownerLatest&&!ownerLatest.stale&&Date.now()/1000-ownerLatest.updated_at>20){ownerLatest.stale=true;render(ownerLatest);}},1000);
+async function refresh(){try{const response=await fetch('/api/view',{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!response.ok)throw new Error('Unavailable');const data=await response.json();data.stale=data.stale||!numeric(data.updated_at)||Date.now()/1000-data.updated_at>20;render(data);}catch{if(latest){latest.stale=true;render(latest);}$('connection').textContent='Updates unavailable · values may be out of date';$('connection').className='stale';}finally{setTimeout(refresh,5000);}}
+setInterval(()=>{if(latest&&!latest.stale&&Date.now()/1000-latest.updated_at>20){latest.stale=true;render(latest);}},1000);
 refresh();

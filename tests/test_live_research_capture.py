@@ -49,7 +49,8 @@ async def test_entry_authorization_and_preflight_capture_exact_inputs(attach, li
         "input_id": "book-delta",
     }
     assert by_stage["live_authorization"]["entry_check_id"] == by_stage["live_entry_recheck"]["decision_id"]
-    assert by_stage["live_preflight"]["balance"] == {"balance": 10000}
+    assert by_stage["live_preflight"]["balance_check"] == "not_performed"
+    assert "balance" not in by_stage["live_preflight"]
     assert by_stage["live_preflight"]["holdings"] == {"yes": "0.00", "no": "0.00"}
     assert by_stage["live_preflight"]["market_response"]["status"] == "active"
     assert len(state["posts"]) == 1
@@ -74,15 +75,16 @@ def test_rejected_entry_is_retained(attach, live, tmp_path):  # noqa: F811
 @pytest.mark.anyio
 async def test_preflight_rejection_is_retained_without_submission(attach, live, tmp_path):  # noqa: F811
     worker, state, manual, control, data, clock = live
-    state["balance_response"] = {"balance": 0}
+    state["position"] = "1"
     log = attach(worker, tmp_path)
     try:
         await worker.step_market(control)
     finally:
         log.close()
     check = next(r["body"] for r in records(tmp_path) if r["body"].get("stage") == "live_preflight")
-    assert not check["accepted"] and check["balance"] == {"balance": 0}
-    assert "Insufficient real cash" in check["reason"]
+    assert not check["accepted"] and check["holdings"]["yes"] == "1"
+    assert check["balance_check"] == "not_performed"
+    assert "flat real position" in check["reason"]
     assert not state["posts"]
 
 

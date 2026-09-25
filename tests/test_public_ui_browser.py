@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 preview = runpy.run_path(str(ROOT / 'scripts/preview_public_ui.py'))
 
 
-def test_public_ui_selection_history_owner_and_layout():
+def test_public_ui_selection_history_and_layout():
     playwright = pytest.importorskip('playwright.sync_api')
     snapshot = preview['sample_view']()
     import time
@@ -19,8 +19,8 @@ def test_public_ui_selection_history_owner_and_layout():
             market['probability'] = dict(available=True, p_yes=yes, p_no=1-yes,
                                          side='no' if asset['asset']=='ETH' else 'yes', confidence=.60 if asset['asset']=='ETH' else .75,
                                          timestamp=time.time(), quality_warning=False)
-    state = {'reject': False, 'stale': False, 'expires': 60, 'view_fail': False}
-    posts = []
+    state = {'stale': False, 'view_fail': False}
+    requests = []
     errors = []
 
     with playwright.sync_playwright() as p:
@@ -31,23 +31,13 @@ def test_public_ui_selection_history_owner_and_layout():
         def route(request_route):
             request = request_route.request
             path = request.url.split('http://ui.test')[-1]
+            requests.append((request.method, path))
+            assert request.method == 'GET'
             if path == '/api/view':
                 import time
                 snapshot['updated_at'] = time.time()
                 snapshot['stale'] = state['stale']
                 return request_route.fulfill(status=503 if state['view_fail'] else 200, json=snapshot)
-            if path == '/api/stop' and request.method == 'GET':
-                return request_route.fulfill(json=dict(enabled=True, status='idle', assets={}))
-            if path == '/api/unlock':
-                return request_route.fulfill(json=dict(token='fixture-token', expires_in=state['expires']))
-            if path == '/api/control':
-                payload = request.post_data_json
-                posts.append(payload)
-                if state['reject']:
-                    return request_route.fulfill(status=409, json={'detail': 'Settings changed. Refresh and review.'})
-                policy = snapshot['assets'][next(i for i,a in enumerate(snapshot['assets']) if a['asset']==payload['asset'])]['live_policy']
-                policy.update(enabled=payload['enabled'], contracts=payload['contracts'], revision=policy['revision']+1)
-                return request_route.fulfill(json=policy)
             if path.startswith('/api/history/'):
                 from urllib.parse import parse_qs, urlparse
                 url = urlparse(path)
@@ -69,33 +59,32 @@ def test_public_ui_selection_history_owner_and_layout():
         page.goto('http://ui.test/')
         expect = playwright.expect
         expect(page.locator('#connection')).to_have_text('Connected')
-        expect(page.locator('#live-contracts')).to_have_value('10')
-        expect(page.locator('#live-contracts')).to_be_disabled()
+        expect(page.locator('form, #owner-section, .shutdown')).to_have_count(0)
+        expect(page.locator('body')).not_to_contain_text('Owner controls')
         assert page.locator('#comparison .market-button').count() == 7
         expect(page.locator('[aria-label="Market status"] thead')).to_contain_text('Entry confidence')
         expect(page.locator('#market-status .probability').first).to_have_text('YES 75.0%')
         expect(page.locator('#detail .probability')).to_contain_text('YES 75.0%')
         expect(page.locator('#detail .probability')).to_contain_text('As of')
-        assert page.evaluate("entryConfidenceView({stale:true},ownerLatest.assets[0]).textContent") == 'Unavailable'
+        assert page.evaluate("entryConfidenceView({stale:true},latest.assets[0]).textContent") == 'Unavailable'
         assert page.evaluate("entryConfidenceView({stale:false},{markets:[]}).textContent") == 'Unavailable'
         assert page.evaluate("entryConfidenceView({stale:false},{markets:[{fresh:false,probability:{available:true,p_yes:.9,p_no:.1,timestamp:1}}]}).textContent") == 'Unavailable'
         for confidence, side in [(None, 'yes'), (1.2, 'yes'), (.8, None)]:
             assert page.evaluate("([confidence,side]) => entryConfidenceView({stale:false},{markets:[{fresh:true,probability:{available:true,p_yes:.9,p_no:.1,confidence,side,timestamp:1}}]}).textContent", [confidence,side]) == 'Unavailable'
-        metrics = page.evaluate('summarize(ownerLatest.assets)')
+        metrics = page.evaluate('summarize(latest.assets)')
         assert metrics['completed_trades'] == 1090
         assert metrics['breakeven_trades'] == 7
         assert metrics['win_rate'] == pytest.approx(958/1090)
-        assert page.evaluate('summarize(ownerLatest.assets.slice(1)).realized_pnl') is None
-        assert page.evaluate('summarize(ownerLatest.assets.map(a=>({...a,completed_trades:0,wins:0}))).win_rate') is None
-        assert page.evaluate('leaders(ownerLatest.assets.map(a=>({...a,realized_pnl:1}))).length') == 4
-        assert page.evaluate('leaders(ownerLatest.assets.map(a=>({...a,completed_trades:0}))).length') == 0
-        assert page.evaluate('leaders(ownerLatest.assets.map(a=>({...a,realized_pnl:null}))).length') == 0
+        assert page.evaluate('summarize(latest.assets.slice(1)).realized_pnl') is None
+        assert page.evaluate('summarize(latest.assets.map(a=>({...a,completed_trades:0,wins:0}))).win_rate') is None
+        assert page.evaluate('leaders(latest.assets.map(a=>({...a,realized_pnl:1}))).length') == 4
+        assert page.evaluate('leaders(latest.assets.map(a=>({...a,completed_trades:0}))).length') == 0
+        assert page.evaluate('leaders(latest.assets.map(a=>({...a,realized_pnl:null}))).length') == 0
         page.locator('#comparison .market-button').filter(has_text='ETH').click()
         expect(page.locator('#detail-title')).to_have_text('ETH / Market detail')
         expect(page.locator('#detail .probability')).to_contain_text('NO 60.0%')
         expect(page.locator('#market-tabs [data-asset=ETH]')).to_have_attribute('aria-pressed', 'true')
         expect(page.locator('#trades-title')).to_have_text('ETH · Latest 5 trades')
-        assert posts == []
         page.locator('#browse').click()
         expect(page.locator('#trades tbody tr')).to_have_count(25)
         page.locator('#next').click()
@@ -107,41 +96,13 @@ def test_public_ui_selection_history_owner_and_layout():
         expect(page.locator('#trades tbody tr').first).to_contain_text('DEMO-WTI')
         page.locator('#browse').click()
         page.locator('#market-tabs [data-asset=BTC]').click()
-        page.locator('#owner-passcode').fill('test-only-passcode-1234')
-        page.locator('#unlock-form button').click()
-        expect(page.locator('#owner-passcode')).to_have_value('')
-        expect(page.locator('#live-contracts')).to_be_enabled()
-        page.locator('#live-contracts').fill('13')
-        page.wait_for_timeout(5200)
-        expect(page.locator('#live-contracts')).to_have_value('13')
-        page.locator('#live-confirm').check()
-        page.locator('#live-form button[type=submit]').click()
-        expect(page.locator('#live-message')).to_contain_text('Saved: 13')
-        assert posts[-1]['asset'] == 'BTC' and posts[-1]['contracts'] == 13
-        expect(page.locator('#live-current')).to_contain_text('13 contracts')
-        page.locator('#live-confirm').check()
-        page.locator('#disable-buying').click()
-        expect(page.locator('#live-message')).to_contain_text('New buys disabled')
-        assert posts[-1]['enabled'] is False
-        state['reject'] = True
-        page.locator('#live-contracts').fill('14')
-        page.locator('#live-confirm').check()
-        page.locator('#live-form button[type=submit]').click()
-        expect(page.locator('#live-message')).to_contain_text('Settings changed')
-        expect(page.locator('#live-contracts')).to_be_disabled()
         state['view_fail'] = True
         page.wait_for_timeout(5200)
         expect(page.locator('#connection')).to_contain_text('Updates unavailable')
-        expect(page.locator('#asset-stop-fields button')).to_be_disabled()
         expect(page.locator('#market-status .live-buying').first).to_have_text('Unavailable')
         expect(page.locator('#market-status .probability').first).to_have_text('Unavailable')
         expect(page.locator('#detail .probability')).not_to_contain_text('YES 75.0%')
         state['view_fail'] = False
-        state['expires'] = 1
-        page.locator('#owner-passcode').fill('test-only-passcode-1234')
-        page.locator('#unlock-form button').click()
-        page.wait_for_timeout(1300)
-        expect(page.locator('#unlock-status')).to_have_text('Locked')
         assert page.evaluate('localStorage.length') == 0
         assert page.evaluate('sessionStorage.length') == 0
         page.reload()
@@ -153,5 +114,7 @@ def test_public_ui_selection_history_owner_and_layout():
                 folder = ROOT / 'reports/public-ui'
                 folder.mkdir(exist_ok=True)
                 page.screenshot(path=str(folder / f'{name}.png'), full_page=True)
+        assert all(method == 'GET' for method, _ in requests)
+        assert not any(path.startswith(('/api/stop', '/api/unlock', '/api/control')) for _, path in requests)
         assert not errors
         browser.close()

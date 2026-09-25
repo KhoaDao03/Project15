@@ -1,0 +1,3 @@
+dekings.org, www.dekings.org {
+    reverse_proxy unix//run/project15-public/http.sock
+}

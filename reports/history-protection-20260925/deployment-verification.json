@@ -1,0 +1,26 @@
+{
+  "dekings.org": {
+    "/api/history/BTC?offset=0&limit=1": {
+      "status": 200,
+      "stale": false
+    },
+    "/api/view": {
+      "status": 200,
+      "stale": false
+    },
+    "invalid_limit": 422
+  },
+  "www.dekings.org": {
+    "/api/history/BTC?offset=0&limit=1": {
+      "status": 200,
+      "stale": false
+    },
+    "/api/view": {
+      "status": 200,
+      "stale": false
+    },
+    "invalid_limit": 422
+  },
+  "deployed_sha256": "5c8e040c2dc97c3bfee31f6ff46f674d69a7ccb77460dde31534a86e6266f076",
+  "private_and_publisher_process_ids_unchanged": true
+}

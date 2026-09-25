@@ -1,0 +1,19 @@
+[Unit]
+Description=Publish sanitized Project15 data for the isolated public website
+After=project15-dashboard.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Project15
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=%h/Project15/.venv/bin/python -m btc15.public_export --output /var/lib/project15-public
+Restart=on-failure
+RestartSec=15
+UMask=0027
+NoNewPrivileges=true
+MemoryMax=256M
+TasksMax=32
+CPUQuota=25%
+
+[Install]
+WantedBy=default.target

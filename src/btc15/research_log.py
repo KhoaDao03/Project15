@@ -19,6 +19,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from .domain import dumps, jsonable
+from .research_control import read_control
 from .research_coverage import Coverage, atomic_json
 from .strategies.settlement_edge.bleep import SIGMA_MULTIPLIERS, capped_confidence
 
@@ -80,6 +81,10 @@ class ResearchLog:
             raise ValueError("Research archive must be separate from the capture directory")
         self.capture_mode = capture_mode
         self.sampled_out = {}
+        self.paused = False
+        self.paused_intervals = 0
+        self.suppressed_records = 0
+        self.pause_started_at = None
         self.diagnostics = {}
         self.asset, self.run_id = asset, run_id
         self.session = f"{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}-{uuid.uuid4().hex}"
@@ -126,6 +131,7 @@ class ResearchLog:
                 input_capture="received inputs except depth deltas; no per-input processing records",
                 execution_accuracy="sampled observed books; intrasecond prices and fills are estimates",
             )
+        self._poll("logging_control", self._sync_control)
         self.thread = threading.Thread(target=self._writer, name=f"research-log-{asset}", daemon=True)
         self.thread.start()
 
@@ -133,6 +139,10 @@ class ResearchLog:
         with self.lock:
             return dict(
                 enabled=True,
+                paused=self.paused,
+                paused_intervals=self.paused_intervals,
+                suppressed_records=self.suppressed_records,
+                pause_started_at=self.pause_started_at,
                 session=self.session,
                 queued_bytes=self.queued_bytes,
                 dropped=self.dropped,
@@ -142,7 +152,7 @@ class ResearchLog:
                 last_capture_at=self.last_capture_at,
                 last_written_seq=self.last_written_seq,
                 drop_reasons=dict(self.drop_reasons),
-                capture_complete=self.dropped == 0 and self.error is None,
+                capture_complete=self.dropped == 0 and self.error is None and self.paused_intervals == 0,
                 capture_mode=self.capture_mode,
                 exact_replay=self.capture_mode == "full",
                 sampled_out=dict(self.sampled_out),
@@ -170,6 +180,9 @@ class ResearchLog:
         coverage_payload=None,
     ):
         with self.lock:
+            if self.paused:
+                self.suppressed_records += 1
+                return False
             if self.capture_mode == "sampled" and kind == "input_processed":
                 self.sampled_out[kind] = self.sampled_out.get(kind, 0) + 1
                 return True
@@ -261,7 +274,36 @@ class ResearchLog:
             with self.lock:
                 self.diagnostics.pop(operation, None)
 
+    def _sync_control(self):
+        paused = not read_control(self.root).get(self.asset, True)
+        if paused == self.paused:
+            return
+        if paused:
+            self.emit("recording_control", dict(action="stop", asset=self.asset), time.time())
+            with self.lock:
+                self.paused = True
+                self.pause_started_at = time.time()
+                self.paused_intervals += 1
+                # Reserve a gap even if no inputs arrive while stopped. The next
+                # admitted event bounds it; an unfinished pause is an unknown tail.
+                self.capture_seq += 1
+                self.last_capture_at = self.pause_started_at
+        else:
+            with self.lock:
+                self.paused = False
+                started = self.pause_started_at
+                self.pause_started_at = None
+            self.emit(
+                "recording_control",
+                dict(action="start", asset=self.asset, pause_started_at=started),
+                time.time(),
+            )
+
     def capture_input(self, row, payload):
+        with self.lock:
+            if self.paused:
+                self.suppressed_records += 1
+                return False
         if self.capture_mode == "sampled" and payload.get("type") == "orderbook_delta":
             with self.lock:
                 self.sampled_out["orderbook_delta"] = self.sampled_out.get("orderbook_delta", 0) + 1
@@ -315,6 +357,8 @@ class ResearchLog:
 
     def capture(self, engine, row, payload):
         """Optional sampled summaries. Authoritative inputs/checks are captured elsewhere."""
+        if self.paused:
+            return
         try:
             now = row["received"]
             # Inspect only current markets; stale historical evaluations must not be resampled.
@@ -577,17 +621,20 @@ class ResearchLog:
             with gzip.open(self.directory / "source.json.gz", "wb", compresslevel=1) as f:
                 f.write(raw)
             (self.directory / "manifest.json").write_text(dumps(self.metadata) + "\n")
-            maintenance = flushed = audit_at = 0
+            maintenance = flushed = audit_at = control_at = 0
             while not self.stopping.is_set() or not self.queue.empty():
                 now = time.monotonic()
                 if self.close_deadline is not None and now >= self.close_deadline:
                     self.error = "SHUTDOWN_TIMEOUT"
                     break
-                if not self.stopping.is_set() and now - audit_at >= 30:
+                if not self.stopping.is_set() and now - control_at >= 1:
+                    self._poll("logging_control", self._sync_control)
+                    control_at = now
+                if not self.stopping.is_set() and not self.paused and now - audit_at >= 30:
                     self._poll("legacy_journal_read", self._audit_records)
                     audit_at = now
                 if now - maintenance >= 5:
-                    if not self.stopping.is_set():
+                    if not self.stopping.is_set() and not self.paused:
                         self._poll("execution_journal_read", self._execution_records)
                     try:
                         allowed = self._retention()
@@ -610,7 +657,7 @@ class ResearchLog:
                             self.directory / "coverage.json", coverage.summary(self.status())
                         ),
                     )
-                if stream and now - opened >= self.rotation_seconds:
+                if stream and (now - opened >= self.rotation_seconds or (self.paused and self.queue.empty())):
                     stream.close()
                     part.rename(part.with_suffix(""))
                     stream = None
@@ -689,6 +736,7 @@ class ResearchLog:
                             capture_complete=not failed
                             and drained
                             and self.dropped == 0
+                            and self.paused_intervals == 0
                             and self.error is None,
                         )
                     )
@@ -697,7 +745,11 @@ class ResearchLog:
                 if coverage is not None:
                     final_status = dict(
                         self.status(),
-                        capture_complete=not failed and drained and self.dropped == 0 and self.error is None,
+                        capture_complete=not failed
+                        and drained
+                        and self.dropped == 0
+                        and self.error is None
+                        and self.paused_intervals == 0,
                     )
                     atomic_json(self.directory / "coverage.json", coverage.summary(final_status, time.time()))
             except Exception as exc:

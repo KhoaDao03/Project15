@@ -8,7 +8,25 @@ import pytest
 
 from btc15.api import KalshiClient, read_timings
 from btc15.config import Settings
-from btc15.decision_notifications import DecisionListener, notification_path, notify_decision
+from btc15.decision_notifications import DecisionListener, notification_path, notify_decision, notify_quote
+
+
+@pytest.mark.anyio
+async def test_quote_notification_wakes_only_stop_listener(tmp_path):
+    database = str(tmp_path / "quotes.db")
+    decision, stop = asyncio.Event(), asyncio.Event()
+    listener = DecisionListener([database], decision, stop)
+    listener.start()
+    try:
+        notify_quote(database)
+        await asyncio.wait_for(stop.wait(), 0.2)
+        assert not decision.is_set()
+        stop.clear()
+        notify_decision(database)
+        await asyncio.wait_for(decision.wait(), 0.2)
+        assert not stop.is_set()
+    finally:
+        listener.close()
 
 
 @pytest.mark.anyio
@@ -90,6 +108,7 @@ def test_collector_publishes_and_notifies_before_next_status_tick(
     monkeypatch.setattr(runner.websockets, "connect", lambda *a, **k: Socket())
     original = runner.Engine.ingest
     published = []
+    quotes = []
 
     def ingest(self, row):
         payload = json.loads(row["payload"]) if isinstance(row["payload"], str) else row["payload"]
@@ -113,6 +132,14 @@ def test_collector_publishes_and_notifies_before_next_status_tick(
         published.append((time.monotonic(), record["body"]["timestamp"]))
 
     monkeypatch.setattr(runner, "notify_decision", notified)
+
+    def quote_notified(database):
+        # The quote wakeup must also follow a committed publication.
+        snapshot = store.read_market_display()
+        assert snapshot and "markets" in snapshot
+        quotes.append(snapshot["published_at"])
+
+    monkeypatch.setattr(runner, "notify_quote", quote_notified)
     asyncio.run(
         runner.collect(
             Settings(data_dir=str(tmp_path)),
@@ -126,3 +153,4 @@ def test_collector_publishes_and_notifies_before_next_status_tick(
     assert len(published) >= 2
     assert published[1][0] - published[0][0] < 1
     assert published[1][1] > published[0][1]
+    assert quotes

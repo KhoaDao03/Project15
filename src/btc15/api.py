@@ -12,8 +12,10 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
 from .assets import asset_spec
+from .read_budget import ReadBudget, read_cost, shared_budget_path
 
 read_timings = ContextVar("kalshi_read_timings", default=None)
+stop_reads = ContextVar("kalshi_stop_reads", default=False)
 
 
 class KalshiClient:
@@ -26,8 +28,9 @@ class KalshiClient:
                 Path(settings.private_key_path).read_bytes(), password=None
             )
         self.last_clock_skew = None
-        self._read_lock = asyncio.Lock()
-        self._next_read = 0.0
+        self.read_budget = ReadBudget(
+            shared_budget_path(settings.rest_url) if settings.api_key_id else None
+        )
 
     def headers(self, method, path):
         if self.key is None or not self.settings.api_key_id:
@@ -69,14 +72,8 @@ class KalshiClient:
 
     async def _get(self, path, params, authenticated, metric):
         for attempt in range(4):
-            # Budget our client at 50 read tokens/second, including retries.
-            # Ordinary reads cost 10; CF passthrough reads cost 50.
             wait_started = time.monotonic()
-            async with self._read_lock:
-                await asyncio.sleep(max(0, self._next_read - time.monotonic()))
-                self._next_read = time.monotonic() + (
-                    1.0 if path.lstrip("/").startswith("cfbenchmarks/") else 0.2
-                )
+            await self.read_budget.acquire(read_cost(path), stop=stop_reads.get())
             if metric is not None:
                 metric["attempts"] += 1
                 metric["rate_wait_ms"] += (time.monotonic() - wait_started) * 1000
@@ -92,13 +89,16 @@ class KalshiClient:
                 if metric is not None:
                     metric["network_ms"] += (time.monotonic() - network_started) * 1000
             if response.status_code == 429 or response.status_code >= 500:
+                try:
+                    delay = float(response.headers.get("Retry-After", 2**attempt))
+                except ValueError:
+                    delay = 2**attempt
+                delay = min(10, max(0.1, delay))
+                if response.status_code == 429:
+                    await self.read_budget.penalize(delay)
                 if attempt < 3:
-                    try:
-                        delay = float(response.headers.get("Retry-After", 2**attempt))
-                    except ValueError:
-                        delay = 2**attempt
                     retry_started = time.monotonic()
-                    await asyncio.sleep(min(10, max(0.1, delay)))
+                    await asyncio.sleep(delay)
                     if metric is not None:
                         metric["retry_wait_ms"] += (time.monotonic() - retry_started) * 1000
                     continue

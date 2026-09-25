@@ -19,7 +19,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field
 
 from . import execution_journal
-from .api import KalshiClient, read_timings
+from .api import KalshiClient, read_timings, stop_reads
 from .config import Settings
 from .domain import timestamp
 
@@ -111,6 +111,9 @@ class ManualTrading:
         self.settings = settings or Settings.env()
         self.client_factory = client_factory
         self.order_lock = asyncio.Lock()
+        self._pending_stops = 0
+        self._stops_drained = asyncio.Event()
+        self._stops_drained.set()
         self.before_manual_order = None
         self.research_check = None
         self.research_execution = None
@@ -574,6 +577,31 @@ class ManualTrading:
                     self.save(row, event="cancellation_unknown")
                 return await self.reconcile(client, row)
 
+    @asynccontextmanager
+    async def submission_slot(self, *, stop=False, buy=False):
+        """Queued stops precede buys; an in-flight request is never interrupted."""
+        if stop:
+            self._pending_stops += 1
+            self._stops_drained.clear()
+        acquired = False
+        try:
+            while True:
+                await self.order_lock.acquire()
+                acquired = True
+                if not buy or not self._pending_stops:
+                    break
+                self.order_lock.release()
+                acquired = False
+                await self._stops_drained.wait()
+            yield
+        finally:
+            if acquired:
+                self.order_lock.release()
+            if stop:
+                self._pending_stops -= 1
+                if not self._pending_stops:
+                    self._stops_drained.set()
+
     async def submit(self, order, *, authorize=None, reason=None, timing=None, resting=False):
         if resting and not (
             authorize
@@ -586,15 +614,20 @@ class ManualTrading:
             self.before_manual_order(order.ticker)
         timing = dict(timing or {}, submission_requested_at=time.time())
         wait_start = time.monotonic()
-        async with self.order_lock:
+        async with self.submission_slot(
+            stop=bool(authorize and reason == "HARD_STOP" and order.action == "sell"),
+            buy=order.action == "buy",
+        ):
             timing["coordination_wait_ms"] = (time.monotonic() - wait_start) * 1000
             timing["reads"] = []
             token = read_timings.set(timing["reads"])
+            priority = stop_reads.set(bool(authorize and reason == "HARD_STOP" and order.action == "sell"))
             try:
                 return await self._submit(
                     order, authorize=authorize, reason=reason, timing=timing, resting=resting
                 )
             finally:
+                stop_reads.reset(priority)
                 read_timings.reset(token)
 
     async def _submit(self, order, *, authorize=None, reason=None, timing=None, resting=False):
@@ -638,7 +671,6 @@ class ManualTrading:
                 market = await self.market(client, order.ticker)
                 if trace is not None:
                     trace.update(market_response=market, market_observed_at=time.time())
-                balance = None
                 if authorize and order.action == "buy":
                     order = order.model_copy(
                         update={
@@ -649,28 +681,19 @@ class ManualTrading:
                         }
                     )
                     row["effective_limit_cents"] = str(order.limit_cents)
-                    async with asyncio.TaskGroup() as group:
-                        positions_task = group.create_task(
-                            self.holdings(client, order.ticker, market["exchange_index"])
-                        )
-                        balance_task = group.create_task(
-                            client.get(
-                                "portfolio/balance",
-                                {"subaccount": 0, "exchange_index": market["exchange_index"]},
-                                True,
-                            )
-                        )
-                    holdings, balance = positions_task.result(), balance_task.result()
-                else:
-                    holdings = await self.holdings(client, order.ticker, market["exchange_index"])
+                holdings = await self.holdings(client, order.ticker, market["exchange_index"])
                 if trace is not None:
                     trace.update(
                         holdings=holdings,
                         portfolio_observed_at=time.time(),
-                        balance={k: balance[k] for k in ("balance", "balance_dollars") if k in balance}
-                        if balance is not None
-                        else None,
+                        balance_check="not_performed",
                     )
+                if authorize and reason == "HARD_STOP" and order.action == "sell":
+                    count = min(order.count, Decimal(holdings[order.side]))
+                    if count <= 0:
+                        raise HTTPException(409, "Exit pending; exchange reports zero holdings, rechecking")
+                    order = order.model_copy(update={"count": count})
+                    row["request"]["count"] = str(count)
                 if order.action == "sell" and Decimal(holdings[order.side]) < order.count:
                     raise HTTPException(409, "Sell quantity exceeds your real position on this side")
                 opposite = "no" if order.side == "yes" else "yes"
@@ -681,18 +704,6 @@ class ManualTrading:
                 if authorize:
                     if order.action == "buy" and any(Decimal(v) > 0 for v in holdings.values()):
                         raise HTTPException(409, "Automatic entry requires a flat real position")
-                    if order.action == "buy":
-                        cash = (
-                            Decimal(balance["balance_dollars"])
-                            if "balance_dollars" in balance
-                            else Decimal(balance["balance"]) / 100
-                        )
-                        price = order.limit_cents / 100
-                        maximum_cost = order.count * (price + Decimal(".07") * price * (1 - price)) + Decimal(
-                            ".01"
-                        )
-                        if not cash.is_finite() or cash < maximum_cost:
-                            raise HTTPException(409, "Insufficient real cash for automatic entry and fees")
                 payload = exchange_order(order, market["exchange_index"], resting=resting)
                 if resting:
                     # Kalshi only supports reduce_only for IOC, not resting orders.

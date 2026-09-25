@@ -5,6 +5,47 @@ on fresh installations; it is enabled for the existing collectors and executor.
 It does not change strategy parameters; reference preload can restore previously
 accepted samples with their original timing. Old v1 files remain sampled archives.
 
+## Start/stop controls — deployed 2026-09-25
+
+Deployed with a guarded restart on 2026-09-25. All seven markets remain recording;
+no pause was requested. Both collector and executor recorders loaded the controls.
+From the project root:
+
+```bash
+.venv/bin/python -m btc15.research_control stop crypto
+.venv/bin/python -m btc15.research_control start commodities
+.venv/bin/python -m btc15.research_control stop ETH GOLD
+.venv/bin/python -m btc15.research_control start all
+.venv/bin/python -m btc15.research_control status
+```
+
+Supported markets: BTC, ETH, SOL, XRP, GOLD, SILVER, WTI. Commands accept multiple
+markets, or the groups `crypto`, `commodities`, `all`. Use `--root /path/to/research-logs`
+when the recording directory differs. Changes persist in `logging-control.json`.
+Commands report **requested** state; enabled recorder writers normally acknowledge
+within about one second, subject to writer load. Check their `paused` status
+(in collector/executor research status or session `status.json`) for acknowledgement.
+Collectors and executor recorders independently follow the same per-market switch.
+A process launched with `BTC15_RESEARCH_LOG_ENABLED` disabled has no recorder and
+still requires a restart to enable this facility.
+
+Stop blocks new research capture before serialization, drains already queued events,
+and closes the current segment. Small status/coverage files and retention maintenance
+continue. It does not stop trading, change entry settings, delete recordings, or stop
+mandatory trading journals and UI statistics. Start resumes into a new segment;
+durable execution/settlement journals may subsequently backfill their original events.
+No missing order-book or reference inputs are invented. Existing settlement recovery
+may continue polling while paused, but its research output is suppressed.
+
+Every pause reserves an explicit recording gap, even when no inputs arrive. Start/stop
+markers carry receipt/capture/writer timing; a pause still open at shutdown has an
+unknown end. `paused_intervals` and `suppressed_records` are separate from accidental
+`dropped` records. Sessions containing pauses are not complete replay sessions; readers
+must validate interval dependencies and require fresh book/reference evidence after
+resuming. Full mode cannot resume exact replay from deltas alone after a pause.
+Malformed controls retain each running recorder's last applied state and report a
+`logging_control` diagnostic. Absent switches default to recording enabled.
+
 ## Deployed repair — 2026-09-24
 
 Deployed on 2026-09-24: all seven collectors use sampled capture; the executor

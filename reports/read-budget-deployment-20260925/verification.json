@@ -1,0 +1,266 @@
+{
+  "at": 1790313558.692375,
+  "running": true,
+  "policies": {
+    "GOLD": {
+      "asset": "GOLD",
+      "enabled": false,
+      "contracts": 10,
+      "revision": 143,
+      "config_version": "36248f622d235072",
+      "stop_price": 0.55
+    },
+    "SILVER": {
+      "asset": "SILVER",
+      "enabled": false,
+      "contracts": 10,
+      "revision": 154,
+      "config_version": "3522c4db80354e2b",
+      "stop_price": 0.55
+    },
+    "WTI": {
+      "asset": "WTI",
+      "enabled": false,
+      "contracts": 10,
+      "revision": 151,
+      "config_version": "90c802a2d776c0b8",
+      "stop_price": 0.55
+    },
+    "SOL": {
+      "asset": "SOL",
+      "enabled": true,
+      "contracts": 10,
+      "revision": 170,
+      "config_version": "60c595a579c271bd",
+      "stop_price": 0.55
+    },
+    "XRP": {
+      "asset": "XRP",
+      "enabled": true,
+      "contracts": 10,
+      "revision": 170,
+      "config_version": "ddea64c3e3bc8c38",
+      "stop_price": 0.55
+    },
+    "BTC": {
+      "asset": "BTC",
+      "enabled": true,
+      "contracts": 10,
+      "revision": 186,
+      "config_version": "c46350764255c1b3",
+      "stop_price": 0.55
+    },
+    "ETH": {
+      "asset": "ETH",
+      "enabled": true,
+      "contracts": 10,
+      "revision": 180,
+      "config_version": "0d43111ed71ba52f",
+      "stop_price": 0.55
+    }
+  },
+  "guard": {
+    "limit": -50.0,
+    "check_interval_seconds": 900,
+    "basis": "all_time_dashboard_realized",
+    "pnl": 12.8052,
+    "updated_at": 1790313479.327066,
+    "triggered": false,
+    "error": null
+  },
+  "source_checks": {
+    "BTC": true,
+    "ETH": true,
+    "SOL": true,
+    "XRP": true,
+    "GOLD": true,
+    "SILVER": true,
+    "WTI": true
+  },
+  "collectors": [
+    {
+      "asset": "BTC",
+      "healthy": true,
+      "connected": true,
+      "lag": 0.002415686,
+      "recovery": "READY",
+      "entry_reasons": [
+        "ENTRY_WINDOW",
+        "REFERENCE_GAP",
+        "MODEL_QUALITY",
+        "MIN_PRICE",
+        "MIN_PROBABILITY"
+      ]
+    },
+    {
+      "asset": "ETH",
+      "healthy": true,
+      "connected": true,
+      "lag": 0.002427979,
+      "recovery": "READY",
+      "entry_reasons": [
+        "ENTRY_WINDOW",
+        "REFERENCE_GAP",
+        "MODEL_QUALITY",
+        "MIN_PRICE",
+        "MIN_PROBABILITY"
+      ]
+    },
+    {
+      "asset": "SOL",
+      "healthy": true,
+      "connected": true,
+      "lag": 0.003130697,
+      "recovery": "READY",
+      "entry_reasons": [
+        "ENTRY_WINDOW",
+        "REFERENCE_GAP",
+        "MODEL_QUALITY",
+        "MIN_PRICE",
+        "MIN_PROBABILITY"
+      ]
+    },
+    {
+      "asset": "XRP",
+      "healthy": true,
+      "connected": true,
+      "lag": 0.001087318,
+      "recovery": "READY",
+      "entry_reasons": [
+        "ENTRY_WINDOW",
+        "REFERENCE_GAP",
+        "MODEL_QUALITY",
+        "MIN_PRICE",
+        "MIN_PROBABILITY"
+      ]
+    },
+    {
+      "asset": "GOLD",
+      "healthy": true,
+      "connected": true,
+      "lag": 0.002395139,
+      "recovery": "READY",
+      "entry_reasons": [
+        "MODEL_UNAVAILABLE"
+      ]
+    },
+    {
+      "asset": "SILVER",
+      "healthy": true,
+      "connected": true,
+      "lag": 0.003102924,
+      "recovery": "READY",
+      "entry_reasons": [
+        "MODEL_UNAVAILABLE"
+      ]
+    },
+    {
+      "asset": "WTI",
+      "healthy": true,
+      "connected": true,
+      "lag": 0.002671676,
+      "recovery": "READY",
+      "entry_reasons": [
+        "MODEL_UNAVAILABLE"
+      ]
+    }
+  ],
+  "recorders": {
+    "BTC": {
+      "dropped": 0,
+      "error": null,
+      "capture_complete": true,
+      "diagnostics": {},
+      "journal_reads_healthy": true
+    },
+    "ETH": {
+      "dropped": 0,
+      "error": null,
+      "capture_complete": true,
+      "diagnostics": {},
+      "journal_reads_healthy": true
+    },
+    "SOL": {
+      "dropped": 0,
+      "error": null,
+      "capture_complete": true,
+      "diagnostics": {},
+      "journal_reads_healthy": true
+    },
+    "XRP": {
+      "dropped": 0,
+      "error": null,
+      "capture_complete": true,
+      "diagnostics": {},
+      "journal_reads_healthy": true
+    },
+    "GOLD": {
+      "dropped": 0,
+      "error": null,
+      "capture_complete": true,
+      "diagnostics": {},
+      "journal_reads_healthy": true
+    },
+    "SILVER": {
+      "dropped": 0,
+      "error": null,
+      "capture_complete": true,
+      "diagnostics": {},
+      "journal_reads_healthy": true
+    },
+    "WTI": {
+      "dropped": 0,
+      "error": null,
+      "capture_complete": true,
+      "diagnostics": {},
+      "journal_reads_healthy": true
+    }
+  },
+  "hashes_unchanged": true,
+  "budget": {
+    "boot": "26b75076-13c2-4d3e-beba-f61092beff63",
+    "at": 716297.927537795,
+    "tokens": 519.8428868036717,
+    "blocked_until": 716235.247671133,
+    "cooldown_remaining": 0
+  },
+  "services": "NRestarts=0\nExecMainStartTimestamp=Fri 2026-09-25 05:17:47 UTC\nId=project15-execution.service\nActiveState=active\n\nNRestarts=0\nExecMainStartTimestamp=Fri 2026-09-25 05:17:47 UTC\nId=project15-dashboard.service\nActiveState=active\n\nNRestarts=0\nExecMainStartTimestamp=Fri 2026-09-25 05:17:47 UTC\nId=project15-signal@BTC.service\nActiveState=active\n\nNRestarts=0\nExecMainStartTimestamp=Fri 2026-09-25 05:17:47 UTC\nId=project15-signal@ETH.service\nActiveState=active\n\nNRestarts=0\nExecMainStartTimestamp=Fri 2026-09-25 05:17:47 UTC\nId=project15-signal@SOL.service\nActiveState=active\n\nNRestarts=0\nExecMainStartTimestamp=Fri 2026-09-25 05:17:47 UTC\nId=project15-signal@XRP.service\nActiveState=active\n\nNRestarts=0\nExecMainStartTimestamp=Fri 2026-09-25 05:17:47 UTC\nId=project15-signal@GOLD.service\nActiveState=active\n\nNRestarts=0\nExecMainStartTimestamp=Fri 2026-09-25 05:17:47 UTC\nId=project15-signal@SILVER.service\nActiveState=active\n\nNRestarts=0\nExecMainStartTimestamp=Fri 2026-09-25 05:17:47 UTC\nId=project15-signal@WTI.service\nActiveState=active\n",
+  "shared_file_identity": {
+    "project15-execution": [
+      64769,
+      9961516
+    ],
+    "project15-dashboard": [
+      64769,
+      9961516
+    ],
+    "project15-signal@BTC": [
+      64769,
+      9961516
+    ],
+    "project15-signal@ETH": [
+      64769,
+      9961516
+    ],
+    "project15-signal@SOL": [
+      64769,
+      9961516
+    ],
+    "project15-signal@XRP": [
+      64769,
+      9961516
+    ],
+    "project15-signal@GOLD": [
+      64769,
+      9961516
+    ],
+    "project15-signal@SILVER": [
+      64769,
+      9961516
+    ],
+    "project15-signal@WTI": [
+      64769,
+      9961516
+    ]
+  }
+}

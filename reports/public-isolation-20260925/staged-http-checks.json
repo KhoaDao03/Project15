@@ -1,0 +1,74 @@
+{
+  "snapshot": {
+    "status": 200,
+    "stale": false,
+    "assets": 7
+  },
+  "history": {
+    "BTC": {
+      "status": 200,
+      "total": 30,
+      "stale": false
+    },
+    "ETH": {
+      "status": 200,
+      "total": 18,
+      "stale": false
+    },
+    "SOL": {
+      "status": 200,
+      "total": 17,
+      "stale": false
+    },
+    "XRP": {
+      "status": 200,
+      "total": 32,
+      "stale": false
+    },
+    "GOLD": {
+      "status": 200,
+      "total": 0,
+      "stale": false
+    },
+    "SILVER": {
+      "status": 200,
+      "total": 0,
+      "stale": false
+    },
+    "WTI": {
+      "status": 200,
+      "total": 0,
+      "stale": false
+    }
+  },
+  "blocked_routes": {
+    "/api/unlock": {
+      "GET": 404,
+      "POST": 405
+    },
+    "/api/control": {
+      "GET": 404,
+      "POST": 405
+    },
+    "/api/stop": {
+      "GET": 404,
+      "POST": 405
+    },
+    "/api/shutdown": {
+      "GET": 404,
+      "POST": 405
+    },
+    "/api/manual/orders": {
+      "GET": 404,
+      "POST": 405
+    },
+    "/api/live/control": {
+      "GET": 404,
+      "POST": 405
+    },
+    "/api/strategy": {
+      "GET": 404,
+      "POST": 405
+    }
+  }
+}

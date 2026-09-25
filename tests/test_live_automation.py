@@ -25,7 +25,9 @@ def live(venue, monkeypatch, request):  # noqa: F811
     monkeypatch.setattr(test_manual_trading, "TICKER", ticker)
     state["ticker"] = ticker
     preset = "active" if asset == "BTC" else asset.lower()
-    config = Strategy.load(f"config/settlement-edge-{preset}-paper.json")
+    from dataclasses import replace
+
+    config = replace(Strategy.load(f"config/settlement-edge-{preset}-paper.json"), take_profit=0.99)
     now = time.time()
     clock = [now]
     data = dict(bid=0.89, ask=0.90, reasons=[], side="yes", healthy=True, fresh=True)
@@ -90,14 +92,14 @@ def test_cap_snaps_in_yes_and_no_price_space():
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_buy_full_quantity_once_and_restart(live):
     worker, state, manual, control, data, clock = live
     await worker.step_market(control)
     assert len(state["posts"]) == 1
     assert state["posts"][0]["time_in_force"] == "fill_or_kill"
     assert state["posts"][0]["count"] == "10.00"
-    assert state["posts"][0]["price"] == "0.9700"
+    assert state["posts"][0]["price"] == "0.9600"
     assert manual.rows()[0]["origin"] == "bot"
     state["position"] = "10"
     restarted = LiveAutomation(manual, worker.members, worker.stores)
@@ -109,7 +111,7 @@ async def test_buy_full_quantity_once_and_restart(live):
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_disabled_buys_keep_stop_exits_and_sell_only_held(live):
     worker, state, manual, control, data, clock = live
     await worker.step_market(control)
@@ -124,7 +126,7 @@ async def test_disabled_buys_keep_stop_exits_and_sell_only_held(live):
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_take_profit_floor_and_hard_stop_override_after_no_fill(live):
     worker, state, manual, control, data, clock = live
     state["price_ranges"] = [dict(start=".001", end=".999", step=".001")]
@@ -153,7 +155,7 @@ async def test_manual_takeover_blocks_all_automation(live):
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_unknown_ack_never_creates_replacement(live):
     worker, state, manual, control, data, clock = live
     state["post_error"] = "timeout"
@@ -168,7 +170,7 @@ async def test_unknown_ack_never_creates_replacement(live):
 
 @pytest.mark.parametrize("block", ["stale", "health", "probability", "price"])
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_entry_gates_block_real_post(live, block):
     worker, state, manual, control, data, clock = live
     if block == "stale":
@@ -203,7 +205,7 @@ async def test_count_20_and_no_side_stop_payload(live):
         LiveControl(ticker=TICKER, enabled=True, contracts=20, revision=1, confirm="ENABLE_REAL_TRADING")
     )
     await worker.step_market(control)
-    assert state["posts"][0]["count"] == "20.00" and state["posts"][0]["price"] == "0.0300"
+    assert state["posts"][0]["count"] == "20.00" and state["posts"][0]["price"] == "0.0400"
     state["position"] = "-20"
     data["bid"] = 0.50
     await worker.step_market(control)
@@ -252,11 +254,13 @@ async def test_control_change_during_preflight_stops_post(live, monkeypatch):
 
 
 @pytest.mark.anyio
-async def test_insufficient_cash_never_posts(live):
+async def test_local_balance_does_not_gate_automatic_buys(live):
     worker, state, manual, control, data, clock = live
-    state["balance_response"] = {"balance": 100}
+    state["balance_response"] = {"balance": 0}
+    state["balance_error"] = True
     await worker.step_market(control)
-    assert not state["posts"] and manual.rows()[0]["state"] == "rejected"
+    assert len(state["posts"]) == 1
+    assert "portfolio/balance" not in state["reads"]
 
 
 @pytest.mark.anyio
@@ -531,7 +535,7 @@ def test_uncertain_or_exchange_attempts_still_consume_allowance(extra):
 @pytest.mark.anyio
 @pytest.mark.parametrize("side", ["yes", "no"])
 @pytest.mark.parametrize("bid,exits", [(0.989, False), (0.99, True), (0.999, True)])
-@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
     worker, state, manual, control, data, clock = live
     data["side"] = side
@@ -553,17 +557,17 @@ async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("side", ["yes", "no"])
-@pytest.mark.parametrize("live", ["ETH", "GOLD", "SILVER", "WTI"], indirect=True)
-async def test_live_buy_limit_matches_97_cent_entry_filter(live, side):
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+async def test_live_buy_limit_matches_96_cent_entry_filter(live, side):
     worker, state, manual, control, data, clock = live
-    data.update(side=side, bid=0.96, ask=0.971)
+    data.update(side=side, bid=0.95, ask=0.961)
     with pytest.raises(HTTPException, match="entry price/spread"):
         await worker.step_market(control)
     assert not state["posts"]
-    data["ask"] = 0.97
+    data["ask"] = 0.96
     await worker.step_market(control)
     order = state["posts"][-1]
-    assert order["price"] == ("0.9700" if side == "yes" else "0.0300")
+    assert order["price"] == ("0.9600" if side == "yes" else "0.0400")
     assert order["time_in_force"] == "fill_or_kill"
 
 
@@ -641,3 +645,26 @@ def test_entry_rechecks_cutoff_after_book_read(live, monkeypatch):
     monkeypatch.setattr(worker, "market_info", delayed_read)
     with pytest.raises(HTTPException, match="Outside entry window"):
         worker.entry(control, clock[0])
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("side", ["yes", "no"])
+async def test_disabled_take_profit_holds_at_99_but_keeps_stop(live, side):
+    from dataclasses import replace
+
+    worker, state, manual, control, data, clock = live
+    data["side"] = side
+    await worker.step_market(control)
+    member = worker.members[control["asset"]]
+    member["config"] = replace(member["config"], take_profit=None)
+    state["position"] = "10" if side == "yes" else "-10"
+    for bid in [0.90, 0.99, 0.999]:
+        data["bid"] = bid
+        await worker.step_market(control)
+        assert len(state["posts"]) == 1
+    data["bid"] = 0.55
+    await worker.step_market(control)
+    assert len(state["posts"]) == 2
+    assert worker.controls()[TICKER]["exit_reason"] == "HARD_STOP"
+    assert state["posts"][-1]["reduce_only"]

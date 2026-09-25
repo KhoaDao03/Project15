@@ -353,7 +353,7 @@ def test_individual_stop_tracks_confirmed_completion(owner_app):
         assert state['assets']['WTI']['status'] == 'stopped'
         assert state['status'] == 'idle'
         html = client.get('/').text
-        assert 'id="asset-stop-form"' in html and 'id="stop-form"' in html
+        assert 'id="asset-stop-form"' not in html and 'id="stop-form"' not in html
 
 
 def test_history_pages_are_bounded_and_sanitized(monkeypatch):

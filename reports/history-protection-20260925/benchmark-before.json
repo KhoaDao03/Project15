@@ -1,0 +1,14 @@
+{
+  "statuses": {
+    "200": 100
+  },
+  "seconds": 17.82,
+  "cpu_seconds": 4.464,
+  "history_decodes": 100,
+  "decoded_bytes": 154785600,
+  "retry_after_on_every_429": true,
+  "recovery_status": 200,
+  "snapshot_status": 200,
+  "network_connection_attempts": [],
+  "peak_rss_kib": 165300
+}

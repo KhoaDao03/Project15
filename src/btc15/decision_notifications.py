@@ -13,19 +13,28 @@ def notification_path(database):
 
 
 def notify_decision(database):
+    _notify(database, b"decision")
+
+
+def notify_quote(database):
+    _notify(database, b"quote")
+
+
+def _notify(database, message):
     if not database or database == ":memory:":
         return
     try:
         with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as sender:
             sender.setblocking(False)
-            sender.sendto(b"decision", str(notification_path(database)))
+            sender.sendto(message, str(notification_path(database)))
     except OSError:
         pass  # Missing listener or full queue must never delay collection.
 
 
 class DecisionListener:
-    def __init__(self, databases, wakeup):
+    def __init__(self, databases, wakeup, quote_wakeup=None):
         self.databases, self.wakeup = databases, wakeup
+        self.quote_wakeup = quote_wakeup
         self.sockets = []
 
     def start(self):
@@ -50,10 +59,14 @@ class DecisionListener:
         # Bound each callback so a burst cannot monopolize the event loop.
         for _ in range(64):
             try:
-                receiver.recv(64)
+                message = receiver.recv(64)
             except BlockingIOError:
                 break
-            self.wakeup.set()
+            if message == b"quote":
+                if self.quote_wakeup is not None:
+                    self.quote_wakeup.set()
+            else:
+                self.wakeup.set()
 
     def close(self):
         loop = asyncio.get_running_loop()

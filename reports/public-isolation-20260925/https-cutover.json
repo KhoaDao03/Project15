@@ -1,0 +1,14 @@
+{
+  "dekings.org": {
+    "https": true,
+    "new_service_header": true,
+    "assets": 7,
+    "stale": false
+  },
+  "www.dekings.org": {
+    "https": true,
+    "new_service_header": true,
+    "assets": 7,
+    "stale": false
+  }
+}

@@ -357,3 +357,23 @@ async def test_expired_controls_skip_journal_scans_but_pending_orders_are_reconc
     monkeypatch.setattr(manual, "rows", original)
     await worker.reconcile()
     assert resting_order(exchange)["status"] == "canceled"
+
+
+@pytest.mark.anyio
+async def test_disable_take_profit_cancels_existing_offer_and_keeps_stop(resting):
+    from dataclasses import replace
+
+    worker, manual, control, data, clock, exchange, fill = resting
+    await worker.step_market(control)
+    order = resting_order(exchange)
+    member = worker.members[control["asset"]]
+    member["config"] = replace(member["config"], take_profit=None)
+    data["bid"] = 0.99
+    await worker.step_market(control)
+    assert order["status"] == "canceled"
+    assert len(exchange["orders"]) == 2
+    assert abs(exchange["position"]) == 10
+    data["bid"] = 0.55
+    await worker.step_market(control)
+    assert exchange["position"] == 0
+    assert worker.controls()[TICKER]["exit_reason"] == "HARD_STOP"

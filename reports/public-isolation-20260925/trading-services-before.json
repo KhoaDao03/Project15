@@ -1,0 +1,38 @@
+{
+  "project15-dashboard": {
+    "MainPID": "645991",
+    "ActiveState": "active"
+  },
+  "project15-execution": {
+    "MainPID": "645990",
+    "ActiveState": "active"
+  },
+  "project15-signal@BTC": {
+    "MainPID": "645982",
+    "ActiveState": "active"
+  },
+  "project15-signal@ETH": {
+    "MainPID": "645983",
+    "ActiveState": "active"
+  },
+  "project15-signal@SOL": {
+    "MainPID": "645984",
+    "ActiveState": "active"
+  },
+  "project15-signal@XRP": {
+    "MainPID": "645985",
+    "ActiveState": "active"
+  },
+  "project15-signal@GOLD": {
+    "MainPID": "645986",
+    "ActiveState": "active"
+  },
+  "project15-signal@SILVER": {
+    "MainPID": "645987",
+    "ActiveState": "active"
+  },
+  "project15-signal@WTI": {
+    "MainPID": "645988",
+    "ActiveState": "active"
+  }
+}

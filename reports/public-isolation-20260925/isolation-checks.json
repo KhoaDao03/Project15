@@ -1,0 +1,11 @@
+{
+  "exchange_credentials_inaccessible": true,
+  "owner_passcode_hash_inaccessible": true,
+  "trading_journal_inaccessible": true,
+  "application_read_only": true,
+  "snapshot_read_only": true,
+  "host_port_8000_blocked": true,
+  "host_port_2019_blocked": true,
+  "executor_socket_blocked": true,
+  "public_snapshot_readable": true
+}

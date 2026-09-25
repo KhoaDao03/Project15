@@ -11,15 +11,15 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 0.80; ETH 0.95; SOL 0.90; XRP 0.70 |
+| ATR sigma multiplier | BTC 0.75; ETH 1.00; SOL 0.95; XRP 0.85 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH; +10pp SOL/XRP; maximum 98% |
-| Purchase range | 80–97¢ |
+| Purchase range | 80–96¢ |
 | Same-side confirmations | 1 standard; 1 late |
 | Normalized lead minimum | Disabled; fresh side confirmation remains |
 | Directional Bollinger entry filter | Disabled |
 | Net-edge / expected-value vetoes | Disabled |
 | Paper sizing | 10 contracts, all or none within the price cap |
-| Paper take-profit | Held-side bid ≥99¢ |
+| Take-profit / resting profit orders | Disabled (`take_profit=null`) |
 | Hard stop | Held-side bid ≤55¢ |
 | Model probability / hold-value exits | Disabled |
 | Standard cashout / profit-value exits | Disabled |
@@ -28,7 +28,7 @@ Despite their filenames, these are also the source for fresh cloud signal config
 
 Any remaining inventory settles at expiration. Full-position paper sells stay
 committed and consume available depth; triggers are not guaranteed fill prices.
-Live automation shares the probability/entry strategy and 99¢/55¢ exit thresholds,
+Live automation shares the probability/entry strategy and the 55¢ stop threshold,
 with separate resting-order handling and user-selected quantity; see
 [live automation](LIVE_AUTOMATION.md).
 

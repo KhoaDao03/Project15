@@ -1,0 +1,5 @@
+{
+  "src/btc15/public_site.py": "5c8e040c2dc97c3bfee31f6ff46f674d69a7ccb77460dde31534a86e6266f076",
+  "tests/test_history_protection.py": "a7f0164134e39617c1fbce8a73d51ec2fc50f4133a5445af6f383178fcef2dd5",
+  "docs/PUBLIC_WEBSITE_ISOLATION.md": "8855e86c4cef3b55c573ab3a7ea714acccd6178f68dd5f528bd84f57ac89d50b"
+}

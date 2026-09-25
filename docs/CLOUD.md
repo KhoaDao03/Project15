@@ -82,6 +82,12 @@ retained for compatibility; fills shown through the live journal are real fills.
 
 ## Optional public view-only dashboard
 
+**Current production deployment:** use the [isolated read-only public website](PUBLIC_WEBSITE_ISOLATION.md).
+It runs as `public-web` behind a Unix socket and reads scheduled sanitized exports.
+The public site has no owner controls or direct private-API access. The port-8001
+viewer and passcode instructions below describe the legacy deployment; do not
+enable them on the isolated installation.
+
 The public app on loopback **8001** shows selected market, reference and trading
 results. Publishing its domain makes those results public. It has no manual-order,
 strategy-editing or arbitrary proxy routes. Start it after installing the units:

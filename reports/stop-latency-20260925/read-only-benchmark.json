@@ -1,0 +1,423 @@
+{
+  "method": "Synthetic holdings and quote; real GETs; every non-GET blocked before network; no exchange acknowledgement measured",
+  "ticker": "KXETH15M-26SEP242030-30",
+  "measured_at": 1790295751.40589,
+  "summary": {
+    "before": {
+      "n": 5,
+      "median_ms": 1051.992654800415,
+      "min_ms": 1045.1915264129639,
+      "max_ms": 1055.6588172912598
+    },
+    "after": {
+      "n": 5,
+      "median_ms": 452.6956081390381,
+      "min_ms": 450.0012397766113,
+      "max_ms": 457.66568183898926
+    }
+  },
+  "samples": [
+    {
+      "version": "before",
+      "iteration": 0,
+      "get_count": 6,
+      "stop_commit_to_request_boundary_ms": 1055.6588172912598,
+      "invocation_to_request_boundary_ms": 1058.4216117858887,
+      "preflight_ms": 605.5728968931362,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 159.37919507268816,
+          "network_ms": 26.16871800273657,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295723.908282,
+          "http_status": 200,
+          "total_ms": 185.64927205443382
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 175.36359501536936,
+          "network_ms": 27.802704949863255,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295724.0939438,
+          "http_status": 200,
+          "total_ms": 203.34133796859533
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 172.36331093590707,
+          "network_ms": 32.98032307066023,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295724.2973611,
+          "http_status": 200,
+          "total_ms": 206.5750699257478
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "iteration": 0,
+      "get_count": 3,
+      "stop_commit_to_request_boundary_ms": 457.66568183898926,
+      "invocation_to_request_boundary_ms": 460.12306213378906,
+      "preflight_ms": 441.49245508015156,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 0.08314603473991156,
+          "network_ms": 26.451385929249227,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295726.617524,
+          "http_status": 200,
+          "total_ms": 26.654547080397606
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 175.35113194026053,
+          "network_ms": 28.651312924921513,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295726.6441903,
+          "http_status": 200,
+          "total_ms": 204.24706302583218
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 172.2175390459597,
+          "network_ms": 28.84110901504755,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295726.848491,
+          "http_status": 200,
+          "total_ms": 202.51820795238018
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "iteration": 1,
+      "get_count": 6,
+      "stop_commit_to_request_boundary_ms": 1050.1506328582764,
+      "invocation_to_request_boundary_ms": 1052.5455474853516,
+      "preflight_ms": 596.3231790810823,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 155.47962894197553,
+          "network_ms": 26.89967502374202,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295729.5639627,
+          "http_status": 200,
+          "total_ms": 182.48489301186055
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 173.22794999927282,
+          "network_ms": 27.135837939567864,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295729.7464552,
+          "http_status": 200,
+          "total_ms": 200.48990205395967
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 173.45089802984148,
+          "network_ms": 29.987522982992232,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295729.9469867,
+          "http_status": 200,
+          "total_ms": 204.8590489430353
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "iteration": 1,
+      "get_count": 3,
+      "stop_commit_to_request_boundary_ms": 451.6751766204834,
+      "invocation_to_request_boundary_ms": 453.97019386291504,
+      "preflight_ms": 438.8816000428051,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 0.05156593397259712,
+          "network_ms": 26.16358792874962,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295732.2143834,
+          "http_status": 200,
+          "total_ms": 26.324879960156977
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 175.37713097408414,
+          "network_ms": 27.370106894522905,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295732.2407198,
+          "http_status": 200,
+          "total_ms": 202.89573492482305
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 173.34424809087068,
+          "network_ms": 29.17566301766783,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295732.4436522,
+          "http_status": 200,
+          "total_ms": 203.67139601148665
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "iteration": 2,
+      "get_count": 6,
+      "stop_commit_to_request_boundary_ms": 1053.1392097473145,
+      "invocation_to_request_boundary_ms": 1055.6528568267822,
+      "preflight_ms": 608.8670730823651,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 164.4051909679547,
+          "network_ms": 26.204444002360106,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295735.1362221,
+          "http_status": 200,
+          "total_ms": 190.73207408655435
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 175.33985199406743,
+          "network_ms": 28.70613499544561,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295735.3269644,
+          "http_status": 200,
+          "total_ms": 204.1781049920246
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 172.37091704737395,
+          "network_ms": 32.353822025470436,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295735.5311716,
+          "http_status": 200,
+          "total_ms": 206.42281498294324
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "iteration": 2,
+      "get_count": 3,
+      "stop_commit_to_request_boundary_ms": 452.91900634765625,
+      "invocation_to_request_boundary_ms": 456.02869987487793,
+      "preflight_ms": 437.772735953331,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 0.058017903938889503,
+          "network_ms": 27.06340199802071,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295737.7968752,
+          "http_status": 200,
+          "total_ms": 27.237036963924766
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 173.404861940071,
+          "network_ms": 27.79062301851809,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295737.8241222,
+          "http_status": 200,
+          "total_ms": 201.37281506322324
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 172.37178795039654,
+          "network_ms": 29.016125947237015,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295738.025527,
+          "http_status": 200,
+          "total_ms": 202.63980701565742
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "iteration": 3,
+      "get_count": 6,
+      "stop_commit_to_request_boundary_ms": 1045.1915264129639,
+      "invocation_to_request_boundary_ms": 1047.6977825164795,
+      "preflight_ms": 604.0907950373366,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 167.3636370105669,
+          "network_ms": 27.023638016544282,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295740.717752,
+          "http_status": 200,
+          "total_ms": 194.5180989569053
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 173.38620696682483,
+          "network_ms": 29.449186054989696,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295740.9122808,
+          "http_status": 200,
+          "total_ms": 202.9665479203686
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 171.69739690143615,
+          "network_ms": 28.74983800575137,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295741.1152864,
+          "http_status": 200,
+          "total_ms": 201.81463297922164
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "iteration": 3,
+      "get_count": 3,
+      "stop_commit_to_request_boundary_ms": 450.0012397766113,
+      "invocation_to_request_boundary_ms": 452.47411727905273,
+      "preflight_ms": 440.4119250830263,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 0.051306094974279404,
+          "network_ms": 26.158467982895672,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295743.3724189,
+          "http_status": 200,
+          "total_ms": 26.29571594297886
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 175.31585693359375,
+          "network_ms": 26.73192194197327,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295743.3987212,
+          "http_status": 200,
+          "total_ms": 202.19005504623055
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 175.3228500019759,
+          "network_ms": 30.30931600369513,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295743.6009421,
+          "http_status": 200,
+          "total_ms": 207.31086691375822
+        }
+      ]
+    },
+    {
+      "version": "before",
+      "iteration": 4,
+      "get_count": 6,
+      "stop_commit_to_request_boundary_ms": 1051.992654800415,
+      "invocation_to_request_boundary_ms": 1054.3572902679443,
+      "preflight_ms": 602.8144690208137,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 160.35173705313355,
+          "network_ms": 26.115077082067728,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295746.2994132,
+          "http_status": 200,
+          "total_ms": 186.55674194451421
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 175.89881899766624,
+          "network_ms": 30.10038600768894,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295746.485978,
+          "http_status": 200,
+          "total_ms": 206.1530010541901
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 170.53232598118484,
+          "network_ms": 29.245214071124792,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295746.69218,
+          "http_status": 200,
+          "total_ms": 201.0362260043621
+        }
+      ]
+    },
+    {
+      "version": "after",
+      "iteration": 4,
+      "get_count": 3,
+      "stop_commit_to_request_boundary_ms": 452.6956081390381,
+      "invocation_to_request_boundary_ms": 454.95152473449707,
+      "preflight_ms": 440.7606259919703,
+      "reads": [
+        {
+          "endpoint": "series/KXETH15M",
+          "attempts": 1,
+          "rate_wait_ms": 0.051897019147872925,
+          "network_ms": 26.659316034056246,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295748.9516234,
+          "http_status": 200,
+          "total_ms": 26.810158044099808
+        },
+        {
+          "endpoint": "markets/KXETH15M-26SEP242030-30",
+          "attempts": 1,
+          "rate_wait_ms": 175.2344350097701,
+          "network_ms": 27.65817497856915,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295748.9784415,
+          "http_status": 200,
+          "total_ms": 203.01793597172946
+        },
+        {
+          "endpoint": "portfolio/positions",
+          "attempts": 1,
+          "rate_wait_ms": 173.34289592690766,
+          "network_ms": 30.951127992011607,
+          "retry_wait_ms": 0.0,
+          "started_at": 1790295749.181497,
+          "http_status": 200,
+          "total_ms": 205.8526090113446
+        }
+      ]
+    }
+  ],
+  "blocked_non_get_requests": 10,
+  "real_order_requests_sent": 0
+}

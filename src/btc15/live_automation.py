@@ -8,6 +8,7 @@ import math
 import time
 from decimal import Decimal
 from uuid import uuid4
+from weakref import WeakValueDictionary
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
@@ -63,9 +64,15 @@ class LiveAutomation:
         self.lock_file = None
         self.research_logs = {}
         self.global_loss_guard = None
+        self.stop_wakeup = asyncio.Event()
+        self._market_locks = WeakValueDictionary()
         with manual.db() as db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS live_controls (ticker TEXT PRIMARY KEY, body TEXT NOT NULL)"
+            )
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS live_controls_close_time "
+                "ON live_controls(json_extract(body, '$.close_time'))"
             )
             db.execute("CREATE TABLE IF NOT EXISTS live_assets (asset TEXT PRIMARY KEY, body TEXT NOT NULL)")
         # Carry existing user switch choices into the persistent asset controls.
@@ -536,7 +543,18 @@ class LiveAutomation:
             if tickers is None
             else {t: self.messages[t] for t in tickers if t in self.messages},
             research_logging={asset: recorder.status() for asset, recorder in self.research_logs.items()},
-            exit_policy=dict(resting_take_profit=0.99, cancel_resting_below=0.70, rearm_resting=False),
+            exit_policy=dict(
+                resting_take_profit=next(
+                    (
+                        m["config"].take_profit
+                        for m in self.members.values()
+                        if m["config"].take_profit is not None
+                    ),
+                    None,
+                ),
+                cancel_resting_below=0.70,
+                rearm_resting=False,
+            ),
         )
 
     def book(self, control, now, trace=None, *, backlog_bypass=False):
@@ -707,13 +725,17 @@ class LiveAutomation:
             async with self.manual.client() as client:
                 for row in pending:
                     try:
-                        control = controls.get(row["request"]["ticker"], {})
-                        if row.get("resting_take_profit") and time.time() >= control.get(
-                            "close_time", float("inf")
-                        ):
-                            await self.manual.cancel_resting(row)
-                        else:
-                            await self.manual.reconcile(client, row)
+                        async with self.market_lock(row["request"]["ticker"]):
+                            row = self.manual.row(row["id"])
+                            if row is None or row["state"] not in UNRESOLVED:
+                                continue
+                            control = controls.get(row["request"]["ticker"], {})
+                            if row.get("resting_take_profit") and time.time() >= control.get(
+                                "close_time", float("inf")
+                            ):
+                                await self.manual.cancel_resting(row)
+                            else:
+                                await self.manual.reconcile(client, row)
                     except Exception:
                         self.messages[row["request"]["ticker"]] = (
                             "Order outcome unresolved; waiting for exchange reconciliation"
@@ -733,20 +755,23 @@ class LiveAutomation:
         ]
         if not rows:
             return False
+        take_profit = self.members[control["asset"]]["config"].take_profit
         bid = None
+        quote_trace = {}
         try:
-            bid = self.book(control, time.time()).get(rows[0]["request"]["side"] + "_bid")
+            bid = self.book(control, time.time(), quote_trace).get(rows[0]["request"]["side"] + "_bid")
         except HTTPException:
             pass
         if bid is not None and bid < 0.70:
             control["resting_disabled"] = True
         if not control.get("paused") and bid is not None:
             if bid <= control["stop_price"]:
-                control["exit_reason"] = "HARD_STOP"
-            elif bid >= 0.99 and not control.get("exit_reason"):
+                self.commit_stop(control, bid, quote_trace)
+            elif take_profit is not None and bid >= take_profit and not control.get("exit_reason"):
                 control["exit_reason"] = "TAKE_PROFIT"
         cancel = (
-            control.get("paused")
+            take_profit is None
+            or control.get("paused")
             or time.time() >= control["close_time"]
             or control.get("resting_disabled")
             or control.get("exit_reason")
@@ -768,14 +793,110 @@ class LiveAutomation:
                 return True
             return False  # Caller reloads cumulative fills before sizing an IOC replacement.
         self.messages[control["ticker"]] = (
-            "99¢ resting sale active; monitoring fills and the 70¢ cancellation threshold"
+            f"{take_profit * 100:g}¢ resting sale active; monitoring fills and the 70¢ cancellation threshold"
         )
         return True
 
-    async def step_market(self, control):
+    def market_lock(self, ticker):
+        return self._market_locks.setdefault(ticker, asyncio.Lock())
+
+    def commit_stop(self, control, bid, trace):
+        if control.get("exit_reason") == "HARD_STOP":
+            return
+        snapshot = trace.get("book_snapshot", {})
+        control.update(
+            exit_reason="HARD_STOP",
+            stop_timing=dict(
+                stop_detected_at=time.time(),
+                stop_bid=bid,
+                quote_received_at=snapshot.get("market", {}).get("book_received"),
+                quote_published_at=snapshot.get("published_at"),
+            ),
+        )
+        self.write(control)
+
+    def detect_stops(self):
+        """Commit fresh bid triggers without waiting for any exchange request."""
+        stops = []
+        now = time.time()
+        with self.manual.db() as db:
+            controls = {
+                ticker: json.loads(body) for ticker, body in db.execute(
+                    "SELECT ticker,body FROM live_controls WHERE json_extract(body, '$.close_time') > ?",
+                    (now,),
+                )
+            }
+        active = [t for t, c in controls.items() if not c.get("paused")]
+        positions = {}
+        for row in self.manual.rows(tickers=active, origin="bot"):
+            count = Decimal((row.get("exchange_order") or {}).get("fill_count_fp", "0"))
+            key = (row["request"]["ticker"], row["request"]["side"])
+            positions[key] = positions.get(key, Decimal(0)) + (
+                count if row["request"]["action"] == "buy" else -count
+            )
+        for (ticker, side), count in positions.items():
+            if count <= 0:
+                continue
+            control = controls[ticker]
+            if control.get("exit_reason") != "HARD_STOP":
+                trace = {}
+                try:
+                    bid = self.book(control, now, trace).get(side + "_bid")
+                except HTTPException:
+                    continue
+                if bid is None or not math.isfinite(bid) or not 0 <= bid <= control["stop_price"]:
+                    continue
+                self.commit_stop(control, bid, trace)
+            stops.append(control)
+        return stops
+
+    async def watch_stops(self):
+        """Observe every publication independently of sequential market processing."""
+        tasks = {}
+
+        async def execute(control):
+            try:
+                await self.step_market(control, stops_only=True)
+            except HTTPException as exc:
+                self.messages[control["ticker"]] = str(exc.detail)
+            except Exception:
+                log.exception("Stop execution failed; durable trigger retained")
+
+        try:
+            while self.running:
+                self.stop_wakeup.clear()
+                try:
+                    for control in self.detect_stops():
+                        ticker = control["ticker"]
+                        if ticker not in tasks or tasks[ticker].done():
+                            tasks[ticker] = asyncio.create_task(execute(control))
+                    tasks = {ticker: task for ticker, task in tasks.items() if not task.done()}
+                except Exception:
+                    log.exception("Stop monitoring failed; retrying")
+                try:
+                    await asyncio.wait_for(self.stop_wakeup.wait(), timeout=0.1)
+                except TimeoutError:
+                    pass
+        finally:
+            # Let sent orders finish journaling/reconciliation before service teardown.
+            await asyncio.gather(*tasks.values(), return_exceptions=True)
+
+    async def step_market(self, control, *, stops_only=False):
+        async with self.market_lock(control["ticker"]):
+            if stops_only:
+                current = self.control(control["ticker"])
+                if not current or current.get("exit_reason") != "HARD_STOP":
+                    return
+            return await self._step_market(control, stops_only=stops_only)
+
+    async def _step_market(self, control, *, stops_only=False):
         ticker = control["ticker"]
         control = self.control(ticker) or control
         now = time.time()
+        take_profit = self.members[control["asset"]]["config"].take_profit
+        if take_profit is None and control.get("exit_reason") in ("TAKE_PROFIT", "RESTING_TAKE_PROFIT"):
+            control.pop("exit_reason")
+            self.write(control)
         timing = {}
         resting = False
         # Historical controls are numerous. Do not scan the order journal for each expired market.
@@ -814,8 +935,9 @@ class LiveAutomation:
         if held:
             side = next(r["request"]["side"] for r in buys if filled(r) > 0)
             reason = control.get("exit_reason")
+            quote_trace = {}
             try:
-                bid = self.book(control, now).get(side + "_bid")
+                bid = self.book(control, now, quote_trace).get(side + "_bid")
             except HTTPException:
                 if not reason:
                     raise
@@ -823,39 +945,54 @@ class LiveAutomation:
             # Fresh quotes establish a trigger; a committed exit survives feed loss.
             if bid is not None and bid <= control["stop_price"]:
                 reason = "HARD_STOP"
-            elif not reason and bid is not None and bid >= 0.99:
+                self.commit_stop(control, bid, quote_trace)
+            elif not reason and take_profit is not None and bid is not None and bid >= take_profit:
                 reason = "TAKE_PROFIT"
             if reason and reason != control.get("exit_reason"):
                 control["exit_reason"] = reason
                 self.write(control)
+            if reason == "HARD_STOP":
+                timing.update(control.get("stop_timing", {}))
             if not reason:
+                if take_profit is None:
+                    self.messages[ticker] = (
+                        f"Holding {held} {side.upper()} · stop {control['stop_price'] * 100:g}¢; take profit disabled"
+                    )
+                    return
                 if bid is not None and bid < 0.70:
                     control["resting_disabled"] = True
                     self.write(control)
                 if control.get("resting_disabled") or any(r.get("resting_take_profit") for r in orders):
                     self.messages[ticker] = (
-                        f"Holding {held} {side.upper()} · stop {control['stop_price'] * 100:g}¢ / take profit 99¢"
+                        f"Holding {held} {side.upper()} · stop {control['stop_price'] * 100:g}¢ / take profit {take_profit * 100:g}¢"
                     )
                     return
                 resting = True
                 reason = "RESTING_TAKE_PROFIT"
             sells = [
-                r for r in orders if r["request"]["action"] == "sell" and not r.get("resting_take_profit")
+                r for r in orders
+                if r["request"]["action"] == "sell"
+                and not r.get("resting_take_profit")
+                and consumes_entry_attempt(r)
             ]
             if sells and now - max(r["created_at"] for r in sells) < 2:
                 return
-            async with self.manual.client() as client:
-                market = await self.manual.market(client, ticker)
-                positions = await self.manual.holdings(client, ticker, market["exchange_index"])
-            count = min(held, Decimal(positions[side]))
+            count = held
+            if reason != "HARD_STOP":
+                async with self.manual.client() as client:
+                    market = await self.manual.market(client, ticker)
+                    positions = await self.manual.holdings(client, ticker, market["exchange_index"])
+                count = min(held, Decimal(positions[side]))
             if count <= 0:
                 self.messages[ticker] = (
                     f"Exit pending · journal remainder {held}; exchange reports zero holdings, rechecking"
                 )
                 return
-            limit = Decimal(".01") if reason == "HARD_STOP" else Decimal(".99")
+            limit = Decimal(".01") if reason == "HARD_STOP" else Decimal(str(take_profit))
             action = "sell"
         else:
+            if stops_only:
+                return
             if not control["enabled"]:
                 return
             config = self.members[control["asset"]]["config"]
@@ -953,7 +1090,7 @@ class LiveAutomation:
             and result["state"] not in UNRESOLVED
             and Decimal((result.get("exchange_order") or {}).get("fill_count_fp", "0")) > 0
         ):
-            await self.step_market(self.control(ticker))
+            await self._step_market(self.control(ticker))
         if (
             action == "buy"
             and result["state"] not in UNRESOLVED
@@ -964,7 +1101,7 @@ class LiveAutomation:
             # Revalidate immediately after a confirmed empty attempt. The journal's
             # submitted-attempt count bounds this to the initial buy plus retries.
             # Pre-submit failures return to the worker loop for fresh validation.
-            await self.step_market(self.control(ticker))
+            await self._step_market(self.control(ticker))
 
     async def run(self):
         self.lock_file = open(str(self.manual.path) + ".live.lock", "a")
@@ -1001,10 +1138,12 @@ class LiveAutomation:
                 and store.engine.url.database not in (None, ":memory:")
             ],
             self.manual.fill_wakeup,
+            self.stop_wakeup,
         )
         listener.start()
         fill_task = asyncio.create_task(self.manual.watch_fills())
         settlement_task = asyncio.create_task(self.recover_settlements())
+        stop_task = asyncio.create_task(self.watch_stops())
         loss_checked_at = 0
         try:
             while True:
@@ -1043,6 +1182,8 @@ class LiveAutomation:
                 self.manual.fill_wakeup.clear()
         finally:
             self.running = False
+            self.stop_wakeup.set()
+            await stop_task
             self.global_loss_guard.stop.set()
             await guard_task
             listener.close()

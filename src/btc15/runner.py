@@ -13,7 +13,7 @@ import websockets
 
 from .api import KalshiClient, subscriptions
 from .collector_recovery import CollectorRecovery
-from .decision_notifications import notify_decision
+from .decision_notifications import notify_decision, notify_quote
 from .domain import Book, dumps, parse_market
 from .engine import Engine
 from .models import guard_archived_exposure, require_single_run
@@ -481,6 +481,8 @@ async def collect(
                     )
                 )
                 last_display = time.monotonic()
+                if (paper or live_signals) and store.engine.dialect.name == "sqlite":
+                    notify_quote(store.engine.url.database)
             # The executor gates entries on this status, not the recovery journal.
             # Publish both a new block and its clearance in this same batch.
             if now - last_status >= 1 or not connected or recovery_changed:

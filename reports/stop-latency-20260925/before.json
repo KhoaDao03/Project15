@@ -1,0 +1,1501 @@
+{
+  "since": 1790209023.8205743,
+  "until": 1790295423.8206594,
+  "submitted_stop_attempts": 24,
+  "first_stop_orders": 24,
+  "metrics": {
+    "stop_commit_to_post_ms": {
+      "n": 24,
+      "median": 1994.8948621749878,
+      "p95": 3503.858804702759,
+      "minimum": 1046.7979907989502,
+      "maximum": 4212.347030639648
+    },
+    "preflight_ms": {
+      "n": 24,
+      "median": 600.8262199466117,
+      "p95": 1441.0492869792506,
+      "minimum": 439.86565293744206,
+      "maximum": 1728.9591049775481
+    },
+    "submission_ms": {
+      "n": 24,
+      "median": 28.836740995757282,
+      "p95": 30.811452073976398,
+      "minimum": 23.76081794500351,
+      "maximum": 31.54823207296431
+    },
+    "coordination_wait_ms": {
+      "n": 24,
+      "median": 0.003951485268771648,
+      "p95": 0.005881069228053093,
+      "minimum": 0.003005960024893284,
+      "maximum": 0.005920999683439732
+    }
+  },
+  "orders": [
+    {
+      "ticker": "KXSOL15M-26SEP232100-00",
+      "order_id": "2a98575f-f73a-4cec-a5dd-a2562e22b4f0",
+      "state": "complete",
+      "trigger_committed_at": 1790211357.4306648,
+      "timing": {
+        "research_asset": "SOL",
+        "submission_requested_at": 1790211357.8676453,
+        "coordination_wait_ms": 0.003496999852359295,
+        "reads": [
+          {
+            "endpoint": "series/KXSOL15M",
+            "attempts": 1,
+            "rate_wait_ms": 0.09652995504438877,
+            "network_ms": 30.454281019046903,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211358.6161022,
+            "http_status": 200,
+            "total_ms": 30.656559974886477
+          },
+          {
+            "endpoint": "markets/KXSOL15M-26SEP232100-00",
+            "attempts": 1,
+            "rate_wait_ms": 170.31843506265432,
+            "network_ms": 29.02628807350993,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211358.6467676,
+            "http_status": 200,
+            "total_ms": 199.4441789574921
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 171.2914879899472,
+            "network_ms": 31.41050203703344,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211358.846246,
+            "http_status": 200,
+            "total_ms": 204.02913400903344
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d0e9-8118-7531-aad4-d6973f1d0cfb",
+            "attempts": 1,
+            "rate_wait_ms": 110.08718190714717,
+            "network_ms": 28.81790790706873,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211359.1077917,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 140.2241881005466
+          }
+        ],
+        "preflight_started_at": 1790211358.6077359,
+        "preflight_completed_at": 1790211359.0706818,
+        "preflight_ms": 454.74902901332825,
+        "submitted_at": 1790211359.075129,
+        "acknowledged_at": 1790211359.1040466,
+        "submission_ms": 28.916782001033425,
+        "fill_confirmed_at": 1790211360.2540765
+      }
+    },
+    {
+      "ticker": "KXBTC15M-26SEP232100-00",
+      "order_id": "6c2238dc-7b81-4d7c-bf80-4e714339a21d",
+      "state": "complete",
+      "trigger_committed_at": 1790211427.8161159,
+      "timing": {
+        "research_asset": "BTC",
+        "submission_requested_at": 1790211428.3669722,
+        "coordination_wait_ms": 0.0038869911804795265,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "rate_wait_ms": 161.76971001550555,
+            "network_ms": 27.93164807371795,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211428.3742604,
+            "http_status": 200,
+            "total_ms": 189.81503101531416
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26SEP232100-00",
+            "attempts": 1,
+            "rate_wait_ms": 172.84547700546682,
+            "network_ms": 31.926658004522324,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211428.564085,
+            "http_status": 200,
+            "total_ms": 204.9065879546106
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 168.72611502185464,
+            "network_ms": 29.99128494411707,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211428.7690291,
+            "http_status": 200,
+            "total_ms": 199.80974297504872
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d0ea-8ea0-783b-9a38-65394d9970d0",
+            "attempts": 1,
+            "rate_wait_ms": 125.66586094908416,
+            "network_ms": 28.86670909356326,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211429.0123007,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 156.44617308862507
+          }
+        ],
+        "preflight_started_at": 1790211428.3714628,
+        "preflight_completed_at": 1790211428.975304,
+        "preflight_ms": 601.1015330441296,
+        "submitted_at": 1790211428.9782517,
+        "acknowledged_at": 1790211429.0069814,
+        "submission_ms": 28.728981036692858,
+        "fill_confirmed_at": 1790211429.8127928
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP232100-00",
+      "order_id": "bc4e497e-e5d4-4585-8707-2a36e4e0c868",
+      "state": "complete",
+      "trigger_committed_at": 1790211430.011807,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790211430.4515944,
+        "coordination_wait_ms": 0.005920999683439732,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 76.39053906314075,
+            "network_ms": 27.80607296153903,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211430.541466,
+            "http_status": 200,
+            "total_ms": 104.28480699192733
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP232100-00",
+            "attempts": 1,
+            "rate_wait_ms": 172.48861002735794,
+            "network_ms": 31.0824669431895,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211430.645758,
+            "http_status": 200,
+            "total_ms": 203.69708293583244
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 169.53213303349912,
+            "network_ms": 31.882334034889936,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211430.8494937,
+            "http_status": 200,
+            "total_ms": 202.47726805973798
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d0ea-9a58-7ae2-8569-176733ae3260",
+            "attempts": 1,
+            "rate_wait_ms": 67.44492996949703,
+            "network_ms": 30.63037001993507,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790211431.152165,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 99.19758199248463
+          }
+        ],
+        "preflight_started_at": 1790211430.5375314,
+        "preflight_completed_at": 1790211431.0577223,
+        "preflight_ms": 516.3841630565003,
+        "submitted_at": 1790211431.062001,
+        "acknowledged_at": 1790211431.0912516,
+        "submission_ms": 29.2499759234488,
+        "fill_confirmed_at": 1790211432.3967724
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP232145-45",
+      "order_id": "fb18f127-209e-4f7a-bee3-cff7c721c64d",
+      "state": "complete",
+      "trigger_committed_at": 1790214014.4654999,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790214014.9006152,
+        "coordination_wait_ms": 0.0048889778554439545,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 161.55811003409326,
+            "network_ms": 24.738956009969115,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790214014.9104817,
+            "http_status": 200,
+            "total_ms": 186.3973030121997
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP232145-45",
+            "attempts": 1,
+            "rate_wait_ms": 175.4803020739928,
+            "network_ms": 24.585066945292056,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790214015.0968866,
+            "http_status": 200,
+            "total_ms": 200.21577994339168
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 175.5922109587118,
+            "network_ms": 27.012753998860717,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790214015.2971342,
+            "http_status": 200,
+            "total_ms": 204.22927604522556
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d112-0818-7440-a8ee-fca3ec8ef9a0",
+            "attempts": 1,
+            "rate_wait_ms": 121.78080505691469,
+            "network_ms": 24.995516054332256,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790214015.552098,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 148.53238896466792
+          }
+        ],
+        "preflight_started_at": 1790214014.9054155,
+        "preflight_completed_at": 1790214015.507162,
+        "preflight_ms": 596.7620250303298,
+        "submitted_at": 1790214015.5122979,
+        "acknowledged_at": 1790214015.5395772,
+        "submission_ms": 27.278371970169246,
+        "fill_confirmed_at": 1790214016.1634107
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP232215-15",
+      "order_id": "75ecdfa0-31d2-46c7-908b-76f38be6ad35",
+      "state": "complete",
+      "trigger_committed_at": 1790215981.7877111,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790215982.2228343,
+        "coordination_wait_ms": 0.0033460091799497604,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 161.51944594457746,
+            "network_ms": 25.69910406600684,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790215982.2319708,
+            "http_status": 200,
+            "total_ms": 187.357860035263
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP232215-15",
+            "attempts": 1,
+            "rate_wait_ms": 174.58414600696415,
+            "network_ms": 28.79414800554514,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790215982.4193404,
+            "http_status": 200,
+            "total_ms": 203.5221039550379
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 171.77499702665955,
+            "network_ms": 30.99404799286276,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790215982.6229138,
+            "http_status": 200,
+            "total_ms": 204.48362396564335
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d130-0f98-7947-8f03-8c6cb936ee26",
+            "attempts": 1,
+            "rate_wait_ms": 0.1265060855075717,
+            "network_ms": 36.82626597583294,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790215983.7136962,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 38.166474900208414
+          }
+        ],
+        "preflight_started_at": 1790215982.2267478,
+        "preflight_completed_at": 1790215983.672935,
+        "preflight_ms": 1441.0492869792506,
+        "submitted_at": 1790215983.6782622,
+        "acknowledged_at": 1790215983.7058554,
+        "submission_ms": 27.592548984102905,
+        "fill_confirmed_at": 1790215984.279782
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP240145-45",
+      "order_id": "2ae0b3f0-4dcd-4fd9-834f-7d4c78d4b1d4",
+      "state": "complete",
+      "trigger_committed_at": 1790228327.3509138,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790228328.918106,
+        "coordination_wait_ms": 0.0037070130929350853,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 0.061413971707224846,
+            "network_ms": 26.32436598651111,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790228329.670351,
+            "http_status": 200,
+            "total_ms": 26.475806953385472
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP240145-45",
+            "attempts": 1,
+            "rate_wait_ms": 174.66768494341522,
+            "network_ms": 26.44190494902432,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790228329.696834,
+            "http_status": 200,
+            "total_ms": 201.24063501134515
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 174.51466689817607,
+            "network_ms": 30.282289953902364,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790228329.8981059,
+            "http_status": 200,
+            "total_ms": 205.91980090830475
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d1ec-7610-77b3-af6e-c1fd91c81b71",
+            "attempts": 1,
+            "rate_wait_ms": 125.65696006640792,
+            "network_ms": 26.31895407103002,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790228330.1480575,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 153.6502909148112
+          }
+        ],
+        "preflight_started_at": 1790228329.664883,
+        "preflight_completed_at": 1790228330.110164,
+        "preflight_ms": 439.86565293744206,
+        "submitted_at": 1790228330.115422,
+        "acknowledged_at": 1790228330.142428,
+        "submission_ms": 27.00520004145801,
+        "fill_confirmed_at": 1790228330.7135057
+      }
+    },
+    {
+      "ticker": "KXBTC15M-26SEP240145-45",
+      "order_id": "37fd743e-ce04-4baa-9eb5-c5d6f7baab6f",
+      "state": "complete",
+      "trigger_committed_at": 1790228522.9270728,
+      "timing": {
+        "research_asset": "BTC",
+        "submission_requested_at": 1790228523.361925,
+        "coordination_wait_ms": 0.003476976417005062,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "rate_wait_ms": 162.52463194541633,
+            "network_ms": 29.359575011767447,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790228523.3689427,
+            "http_status": 200,
+            "total_ms": 191.98153901379555
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26SEP240145-45",
+            "attempts": 1,
+            "rate_wait_ms": 171.668229973875,
+            "network_ms": 30.59680201113224,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790228523.560933,
+            "http_status": 200,
+            "total_ms": 202.38081004936248
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 169.5769530488178,
+            "network_ms": 32.67030604183674,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790228523.7633507,
+            "http_status": 200,
+            "total_ms": 203.78726406488568
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d1ef-67f8-7947-9767-99d74315d5a0",
+            "attempts": 1,
+            "rate_wait_ms": 121.0868830094114,
+            "network_ms": 29.911127989180386,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790228524.0127888,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 152.0279219839722
+          }
+        ],
+        "preflight_started_at": 1790228523.3655996,
+        "preflight_completed_at": 1790228523.9731123,
+        "preflight_ms": 604.2515230365098,
+        "submitted_at": 1790228523.9780269,
+        "acknowledged_at": 1790228524.0074098,
+        "submission_ms": 29.382668086327612,
+        "fill_confirmed_at": 1790228524.3675323
+      }
+    },
+    {
+      "ticker": "KXBTC15M-26SEP240615-15",
+      "order_id": "bc72997e-8cc6-4795-9b0c-27d3489aad8d",
+      "state": "complete",
+      "trigger_committed_at": 1790244765.6641052,
+      "timing": {
+        "research_asset": "BTC",
+        "submission_requested_at": 1790244767.3269322,
+        "coordination_wait_ms": 0.0034660333767533302,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "rate_wait_ms": 168.79302693996578,
+            "network_ms": 23.55164592154324,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790244767.3331172,
+            "http_status": 200,
+            "total_ms": 192.47239199467003
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26SEP240615-15",
+            "attempts": 1,
+            "rate_wait_ms": 176.64017993956804,
+            "network_ms": 24.778613937087357,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790244767.5255973,
+            "http_status": 200,
+            "total_ms": 201.54411799740046
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 175.82940205466002,
+            "network_ms": 31.723317108117044,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790244767.7271776,
+            "http_status": 200,
+            "total_ms": 209.8534960532561
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d2e7-4518-71e9-b4cc-e49f70f3599e",
+            "attempts": 1,
+            "rate_wait_ms": 128.91618499998003,
+            "network_ms": 25.02918301615864,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790244767.97495,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 155.1171620376408
+          }
+        ],
+        "preflight_started_at": 1790244767.330651,
+        "preflight_completed_at": 1790244767.9429643,
+        "preflight_ms": 609.8885849351063,
+        "submitted_at": 1790244767.947216,
+        "acknowledged_at": 1790244767.9709775,
+        "submission_ms": 23.76081794500351,
+        "fill_confirmed_at": 1790244768.7333176
+      }
+    },
+    {
+      "ticker": "KXETH15M-26SEP240630-30",
+      "order_id": "43b631d7-c4eb-471b-9c6e-a08d5ed4e993",
+      "state": "complete",
+      "trigger_committed_at": 1790245763.7802799,
+      "timing": {
+        "research_asset": "ETH",
+        "submission_requested_at": 1790245765.339969,
+        "coordination_wait_ms": 0.00401597935706377,
+        "reads": [
+          {
+            "endpoint": "series/KXETH15M",
+            "attempts": 1,
+            "rate_wait_ms": 163.68317499291152,
+            "network_ms": 24.160924018360674,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790245765.3496249,
+            "http_status": 200,
+            "total_ms": 187.96182901132852
+          },
+          {
+            "endpoint": "markets/KXETH15M-26SEP240630-30",
+            "attempts": 1,
+            "rate_wait_ms": 176.7660949844867,
+            "network_ms": 25.61396500095725,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790245765.5375943,
+            "http_status": 200,
+            "total_ms": 202.4933520006016
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 177.3031409829855,
+            "network_ms": 31.705852947197855,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790245765.740123,
+            "http_status": 200,
+            "total_ms": 210.0600020494312
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d2f6-8370-7406-88ca-09e1264894fa",
+            "attempts": 1,
+            "rate_wait_ms": 0.047810026444494724,
+            "network_ms": 28.794592013582587,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790245766.731435,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 30.05000203847885
+          }
+        ],
+        "preflight_started_at": 1790245765.3466084,
+        "preflight_completed_at": 1790245766.6980503,
+        "preflight_ms": 1348.5278940061107,
+        "submitted_at": 1790245766.7018373,
+        "acknowledged_at": 1790245766.7277453,
+        "submission_ms": 25.907483999617398,
+        "fill_confirmed_at": 1790245767.7352455
+      }
+    },
+    {
+      "ticker": "KXBTC15M-26SEP240830-30",
+      "order_id": "5adae8b1-b161-4fa7-be3b-08180c2b54bd",
+      "state": "complete",
+      "trigger_committed_at": 1790252787.5734859,
+      "timing": {
+        "research_asset": "BTC",
+        "submission_requested_at": 1790252788.1717224,
+        "coordination_wait_ms": 0.0035660341382026672,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "rate_wait_ms": 138.83340591564775,
+            "network_ms": 31.094535952433944,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790252788.2021203,
+            "http_status": 200,
+            "total_ms": 170.0355130014941
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26SEP240830-30",
+            "attempts": 1,
+            "rate_wait_ms": 169.48903200682253,
+            "network_ms": 29.724198044277728,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790252788.3721662,
+            "http_status": 200,
+            "total_ms": 199.3062839610502
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 170.89754296466708,
+            "network_ms": 34.988376894034445,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790252788.5714982,
+            "http_status": 200,
+            "total_ms": 207.62299199122936
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d361-ad08-72e1-b837-83375644ce80",
+            "attempts": 1,
+            "rate_wait_ms": 0.056936987675726414,
+            "network_ms": 32.55535406060517,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790252789.6592748,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 34.028765046969056
+          }
+        ],
+        "preflight_started_at": 1790252788.177865,
+        "preflight_completed_at": 1790252789.6197968,
+        "preflight_ms": 1417.7733960095793,
+        "submitted_at": 1790252789.6249354,
+        "acknowledged_at": 1790252789.6542118,
+        "submission_ms": 29.27551092579961,
+        "fill_confirmed_at": 1790252789.8950903
+      }
+    },
+    {
+      "ticker": "KXETH15M-26SEP240830-30",
+      "order_id": "fe9b4f35-65b5-45f0-becb-396e8001274b",
+      "state": "complete",
+      "trigger_committed_at": 1790252821.1015308,
+      "timing": {
+        "research_asset": "ETH",
+        "submission_requested_at": 1790252821.5413363,
+        "coordination_wait_ms": 0.004327972419559956,
+        "reads": [
+          {
+            "endpoint": "series/KXETH15M",
+            "attempts": 1,
+            "rate_wait_ms": 156.60028904676437,
+            "network_ms": 29.23717990051955,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790252821.5521815,
+            "http_status": 200,
+            "total_ms": 185.93317898921669
+          },
+          {
+            "endpoint": "markets/KXETH15M-26SEP240830-30",
+            "attempts": 1,
+            "rate_wait_ms": 171.5861960547045,
+            "network_ms": 30.47077509108931,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790252821.7381232,
+            "http_status": 200,
+            "total_ms": 202.18766399193555
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 170.67133903037757,
+            "network_ms": 32.08950697444379,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790252821.9403589,
+            "http_status": 200,
+            "total_ms": 204.2521210387349
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d362-2df0-7eb1-8551-822cfb772cec",
+            "attempts": 1,
+            "rate_wait_ms": 120.34966296050698,
+            "network_ms": 32.770519028417766,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790252822.1911073,
+            "http_status": 200,
+            "total_ms": 154.2746180202812
+          }
+        ],
+        "preflight_started_at": 1790252821.5490026,
+        "preflight_completed_at": 1790252822.15082,
+        "preflight_ms": 598.7148659769446,
+        "submitted_at": 1790252822.1553044,
+        "acknowledged_at": 1790252822.1858282,
+        "submission_ms": 30.522871995344758,
+        "fill_confirmed_at": 1790252822.345394
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP240845-45",
+      "order_id": "99ff5ac3-8d0e-47b0-9e1a-c0022859b128",
+      "state": "complete",
+      "trigger_committed_at": 1790253721.050701,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790253721.4893088,
+        "coordination_wait_ms": 0.003235996700823307,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 151.97477699257433,
+            "network_ms": 29.100849060341716,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790253721.5042078,
+            "http_status": 200,
+            "total_ms": 181.19331600610167
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP240845-45",
+            "attempts": 1,
+            "rate_wait_ms": 171.5568620711565,
+            "network_ms": 28.599658980965614,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790253721.6854103,
+            "http_status": 200,
+            "total_ms": 200.2650360809639
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 173.1031279778108,
+            "network_ms": 30.113292974419892,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790253721.8857105,
+            "http_status": 200,
+            "total_ms": 204.80275189038366
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d36f-ed78-7778-8c3b-52a0b5b3bca4",
+            "attempts": 1,
+            "rate_wait_ms": 0.052127987146377563,
+            "network_ms": 33.08001905679703,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790253723.2750962,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 34.28724000696093
+          }
+        ],
+        "preflight_started_at": 1790253721.4981012,
+        "preflight_completed_at": 1790253723.2330737,
+        "preflight_ms": 1728.9591049775481,
+        "submitted_at": 1790253723.2422369,
+        "acknowledged_at": 1790253723.2709398,
+        "submission_ms": 28.702571988105774,
+        "fill_confirmed_at": 1790253723.5054085
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP241015-15",
+      "order_id": "505cdf77-97bc-4c30-bbfb-cef06a6eea2f",
+      "state": "complete",
+      "trigger_committed_at": 1790259230.976509,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790259233.20169,
+        "coordination_wait_ms": 0.0035170232877135277,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 160.82786594051868,
+            "network_ms": 30.18434694968164,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790259233.209831,
+            "http_status": 200,
+            "total_ms": 191.10470602754503
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP241015-15",
+            "attempts": 1,
+            "rate_wait_ms": 170.7083259243518,
+            "network_ms": 27.754837996326387,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790259233.4009428,
+            "http_status": 200,
+            "total_ms": 198.5778990201652
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 172.96219698619097,
+            "network_ms": 30.388280050829053,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790259233.599579,
+            "http_status": 200,
+            "total_ms": 204.52720893081278
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d3c4-00e8-78ab-bf5f-eb03c31aa9bf",
+            "attempts": 1,
+            "rate_wait_ms": 124.82857995200902,
+            "network_ms": 28.679950977675617,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790259233.848038,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 154.65708100236952
+          }
+        ],
+        "preflight_started_at": 1790259233.2069778,
+        "preflight_completed_at": 1790259233.8103173,
+        "preflight_ms": 600.5603659432381,
+        "submitted_at": 1790259233.814924,
+        "acknowledged_at": 1790259233.842685,
+        "submission_ms": 27.76013792026788,
+        "fill_confirmed_at": 1790259234.8512535
+      }
+    },
+    {
+      "ticker": "KXETH15M-26SEP241245-45",
+      "order_id": "d1930a87-be9c-4d51-988d-86667c4abf13",
+      "state": "complete",
+      "trigger_committed_at": 1790268215.649861,
+      "timing": {
+        "research_asset": "ETH",
+        "submission_requested_at": 1790268216.0898836,
+        "coordination_wait_ms": 0.005781068466603756,
+        "reads": [
+          {
+            "endpoint": "series/KXETH15M",
+            "attempts": 1,
+            "rate_wait_ms": 160.60263791587204,
+            "network_ms": 29.45811697281897,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790268216.0966296,
+            "http_status": 200,
+            "total_ms": 190.16713299788535
+          },
+          {
+            "endpoint": "markets/KXETH15M-26SEP241245-45",
+            "attempts": 1,
+            "rate_wait_ms": 171.46499501541257,
+            "network_ms": 31.761663034558296,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790268216.2868054,
+            "http_status": 200,
+            "total_ms": 203.33880896214396
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 168.50166104268283,
+            "network_ms": 32.52405091188848,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790268216.4901812,
+            "http_status": 200,
+            "total_ms": 202.85943907219917
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d44d-12c0-770f-a90f-f4d38fc7e85f",
+            "attempts": 1,
+            "rate_wait_ms": 118.04281896911561,
+            "network_ms": 30.851989053189754,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790268216.7418597,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 150.21455998066813
+          }
+        ],
+        "preflight_started_at": 1790268216.0932333,
+        "preflight_completed_at": 1790268216.6988168,
+        "preflight_ms": 602.2457109065726,
+        "submitted_at": 1790268216.702464,
+        "acknowledged_at": 1790268216.7340128,
+        "submission_ms": 31.54823207296431,
+        "fill_confirmed_at": 1790268217.6299727
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP241245-45",
+      "order_id": "e848e515-d286-427d-b175-a7b0fba23c5e",
+      "state": "complete",
+      "trigger_committed_at": 1790268254.9692752,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790268255.4941304,
+        "coordination_wait_ms": 0.004708999767899513,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 156.58706601243466,
+            "network_ms": 30.129843042232096,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790268255.503335,
+            "http_status": 200,
+            "total_ms": 186.82947906199843
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP241245-45",
+            "attempts": 1,
+            "rate_wait_ms": 170.51244189497083,
+            "network_ms": 30.289081041701138,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790268255.690174,
+            "http_status": 200,
+            "total_ms": 200.91243006754667
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 170.53216905333102,
+            "network_ms": 31.92679805215448,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790268255.8911293,
+            "http_status": 200,
+            "total_ms": 203.66982801351696
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d44d-af00-7ab7-9bbe-02f9b5050746",
+            "attempts": 1,
+            "rate_wait_ms": 119.02428604662418,
+            "network_ms": 34.64147704653442,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790268256.1428728,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 155.1243249559775
+          }
+        ],
+        "preflight_started_at": 1790268255.5002882,
+        "preflight_completed_at": 1790268256.1016636,
+        "preflight_ms": 598.4089090488851,
+        "submitted_at": 1790268256.1088145,
+        "acknowledged_at": 1790268256.1387568,
+        "submission_ms": 29.941819957457483,
+        "fill_confirmed_at": 1790268256.4999406
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP241400-00",
+      "order_id": "ba473a3c-3b43-4e77-b18f-c950879c10cc",
+      "state": "complete",
+      "trigger_committed_at": 1790272628.0899765,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790272628.531742,
+        "coordination_wait_ms": 0.005881069228053093,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 0.12014503590762615,
+            "network_ms": 29.911575955338776,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790272629.3829548,
+            "http_status": 200,
+            "total_ms": 30.17650404945016
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP241400-00",
+            "attempts": 1,
+            "rate_wait_ms": 371.18990696035326,
+            "network_ms": 29.6182680176571,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790272629.413142,
+            "http_status": 200,
+            "total_ms": 401.00799803622067
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 170.4567481065169,
+            "network_ms": 30.964309931732714,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790272629.814183,
+            "http_status": 200,
+            "total_ms": 202.40903599187732
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d490-6cf0-7320-8762-725f9e2fe980",
+            "attempts": 1,
+            "rate_wait_ms": 118.83118294645101,
+            "network_ms": 29.19309097342193,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790272630.0660667,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 149.13649705704302
+          }
+        ],
+        "preflight_started_at": 1790272629.3783693,
+        "preflight_completed_at": 1790272630.0241873,
+        "preflight_ms": 641.4660379523411,
+        "submitted_at": 1790272630.0283167,
+        "acknowledged_at": 1790272630.0576944,
+        "submission_ms": 29.377146973274648,
+        "fill_confirmed_at": 1790272631.5059536
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP241415-15",
+      "order_id": "45df88c3-ee98-499d-98aa-9f2d9b41ccb0",
+      "state": "complete",
+      "trigger_committed_at": 1790273441.9328182,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790273442.802537,
+        "coordination_wait_ms": 0.0046889763325452805,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 161.7004870204255,
+            "network_ms": 26.34528698399663,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790273442.8122249,
+            "http_status": 200,
+            "total_ms": 188.1711290916428
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP241415-15",
+            "attempts": 1,
+            "rate_wait_ms": 174.56429707817733,
+            "network_ms": 25.71715204976499,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790273443.0004056,
+            "http_status": 200,
+            "total_ms": 200.3888109466061
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 174.53677591402084,
+            "network_ms": 27.830266044475138,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790273443.200825,
+            "http_status": 200,
+            "total_ms": 203.6802100483328
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d49c-d4b8-74a3-8655-6470946f9ac6",
+            "attempts": 1,
+            "rate_wait_ms": 122.74708598852158,
+            "network_ms": 26.894815964624286,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790273443.4528759,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 150.9110570186749
+          }
+        ],
+        "preflight_started_at": 1790273442.8066711,
+        "preflight_completed_at": 1790273443.4132266,
+        "preflight_ms": 601.0920739499852,
+        "submitted_at": 1790273443.4182048,
+        "acknowledged_at": 1790273443.4433293,
+        "submission_ms": 25.124192936345935,
+        "fill_confirmed_at": 1790273444.4644988
+      }
+    },
+    {
+      "ticker": "KXBTC15M-26SEP241600-00",
+      "order_id": "cfaf85fb-d0d5-4045-bb9d-3c5af7384b53",
+      "state": "complete",
+      "trigger_committed_at": 1790279792.5271642,
+      "timing": {
+        "research_asset": "BTC",
+        "submission_requested_at": 1790279795.3631651,
+        "coordination_wait_ms": 0.003005960024893284,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "rate_wait_ms": 156.70877206139266,
+            "network_ms": 29.464978957548738,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790279795.3732662,
+            "http_status": 200,
+            "total_ms": 186.26897095236927
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26SEP241600-00",
+            "attempts": 1,
+            "rate_wait_ms": 171.54721007682383,
+            "network_ms": 29.640308930538595,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790279795.5595424,
+            "http_status": 200,
+            "total_ms": 201.33772992994636
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 170.5461209639907,
+            "network_ms": 31.73044405411929,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790279795.7609308,
+            "http_status": 200,
+            "total_ms": 203.59954005107284
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d4fd-c138-78b1-8c87-4d8bee00e983",
+            "attempts": 1,
+            "rate_wait_ms": 121.37965799774975,
+            "network_ms": 29.4707000721246,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790279796.0108984,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 151.86730702407658
+          }
+        ],
+        "preflight_started_at": 1790279795.3692997,
+        "preflight_completed_at": 1790279795.970688,
+        "preflight_ms": 597.5000309990719,
+        "submitted_at": 1790279795.9761865,
+        "acknowledged_at": 1790279796.0067532,
+        "submission_ms": 30.56633798405528,
+        "fill_confirmed_at": 1790279797.0982146
+      }
+    },
+    {
+      "ticker": "KXBTC15M-26SEP241630-30",
+      "order_id": "bce0f3ed-c445-4b05-b7ee-a3db39a2d7d2",
+      "state": "complete",
+      "trigger_committed_at": 1790281706.7952306,
+      "timing": {
+        "research_asset": "BTC",
+        "submission_requested_at": 1790281707.2388005,
+        "coordination_wait_ms": 0.00332703348249197,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "rate_wait_ms": 0.07785600610077381,
+            "network_ms": 29.015915002673864,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790281709.0424204,
+            "http_status": 200,
+            "total_ms": 29.24034500028938
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26SEP241630-30",
+            "attempts": 1,
+            "rate_wait_ms": 171.51523102074862,
+            "network_ms": 31.177400960586965,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790281709.0716717,
+            "http_status": 200,
+            "total_ms": 202.82015204429626
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 169.57427805755287,
+            "network_ms": 30.8369129197672,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790281709.274541,
+            "http_status": 200,
+            "total_ms": 201.50671200826764
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d51a-f5c8-72d9-b30d-c80c292206ab",
+            "attempts": 1,
+            "rate_wait_ms": 124.873241991736,
+            "network_ms": 30.265925102867186,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790281709.5196187,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 156.58357099164277
+          }
+        ],
+        "preflight_started_at": 1790281707.99282,
+        "preflight_completed_at": 1790281709.4834766,
+        "preflight_ms": 441.1341929808259,
+        "submitted_at": 1790281709.4870784,
+        "acknowledged_at": 1790281709.5158358,
+        "submission_ms": 28.75669999048114,
+        "fill_confirmed_at": 1790281710.5031228
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP241700-00",
+      "order_id": "97f88e7e-a700-444d-9c45-ee4edc86ff50",
+      "state": "complete",
+      "trigger_committed_at": 1790283515.2118874,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790283518.1032927,
+        "coordination_wait_ms": 0.0031460076570510864,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 141.72982599120587,
+            "network_ms": 30.31516505870968,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790283518.127348,
+            "http_status": 200,
+            "total_ms": 172.17380297370255
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP241700-00",
+            "attempts": 1,
+            "rate_wait_ms": 169.92979205679148,
+            "network_ms": 30.97900899592787,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790283518.299533,
+            "http_status": 200,
+            "total_ms": 201.0955709265545
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 169.7533909464255,
+            "network_ms": 31.498702010139823,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790283518.500677,
+            "http_status": 200,
+            "total_ms": 202.57459895219654
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d536-9030-7553-aa1f-0f718171c221",
+            "attempts": 1,
+            "rate_wait_ms": 120.99524703808129,
+            "network_ms": 30.499932006932795,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790283518.75025,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 152.63009397313
+          }
+        ],
+        "preflight_started_at": 1790283518.11586,
+        "preflight_completed_at": 1790283518.710347,
+        "preflight_ms": 583.1248449394479,
+        "submitted_at": 1790283518.7157462,
+        "acknowledged_at": 1790283518.7462485,
+        "submission_ms": 30.5016350466758,
+        "fill_confirmed_at": 1790283519.6030169
+      }
+    },
+    {
+      "ticker": "KXETH15M-26SEP241745-45",
+      "order_id": "d8823b23-8ad2-4a6b-9d88-91cd90ab8982",
+      "state": "complete",
+      "trigger_committed_at": 1790286200.970725,
+      "timing": {
+        "research_asset": "ETH",
+        "submission_requested_at": 1790286202.6529357,
+        "coordination_wait_ms": 0.005059991963207722,
+        "reads": [
+          {
+            "endpoint": "series/KXETH15M",
+            "attempts": 1,
+            "rate_wait_ms": 0.09615998715162277,
+            "network_ms": 25.191309046931565,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790286203.9029443,
+            "http_status": 200,
+            "total_ms": 25.389511021785438
+          },
+          {
+            "endpoint": "markets/KXETH15M-26SEP241745-45",
+            "attempts": 1,
+            "rate_wait_ms": 175.44379003811628,
+            "network_ms": 27.7807479724288,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790286203.9283423,
+            "http_status": 200,
+            "total_ms": 203.32970598246902
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 172.7609159424901,
+            "network_ms": 27.74832700379193,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790286204.1317036,
+            "http_status": 200,
+            "total_ms": 202.0581440301612
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d55f-9048-764e-8d41-b70fe4862c70",
+            "attempts": 1,
+            "rate_wait_ms": 0.07114291656762362,
+            "network_ms": 31.071339966729283,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790286205.2139776,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 32.290893024764955
+          }
+        ],
+        "preflight_started_at": 1790286202.6635115,
+        "preflight_completed_at": 1790286205.1787188,
+        "preflight_ms": 1275.8650979958475,
+        "submitted_at": 1790286205.183072,
+        "acknowledged_at": 1790286205.208849,
+        "submission_ms": 25.776384980417788,
+        "fill_confirmed_at": 1790286205.9516437
+      }
+    },
+    {
+      "ticker": "KXBTC15M-26SEP241845-45",
+      "order_id": "ae2b331b-bdac-4b3d-a9c6-d5b5206c59ea",
+      "state": "complete",
+      "trigger_committed_at": 1790289827.1173913,
+      "timing": {
+        "research_asset": "BTC",
+        "submission_requested_at": 1790289828.6061385,
+        "coordination_wait_ms": 0.00516907311975956,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "rate_wait_ms": 154.59870104677975,
+            "network_ms": 29.877032968215644,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790289828.6162083,
+            "http_status": 200,
+            "total_ms": 184.6176499966532
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26SEP241845-45",
+            "attempts": 1,
+            "rate_wait_ms": 170.53169896826148,
+            "network_ms": 30.541334999725223,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790289828.8008356,
+            "http_status": 200,
+            "total_ms": 201.1931090382859
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 170.62790994532406,
+            "network_ms": 34.05223903246224,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790289829.0020654,
+            "http_status": 200,
+            "total_ms": 206.19462302420288
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d596-dc88-7b57-9862-9c7d1a6b453a",
+            "attempts": 1,
+            "rate_wait_ms": 118.26555302832276,
+            "network_ms": 30.562184983864427,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790289829.2551336,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 150.70187696255744
+          }
+        ],
+        "preflight_started_at": 1790289828.611914,
+        "preflight_completed_at": 1790289829.2143211,
+        "preflight_ms": 598.1947079999372,
+        "submitted_at": 1790289829.2194452,
+        "acknowledged_at": 1790289829.2502577,
+        "submission_ms": 30.811452073976398,
+        "fill_confirmed_at": 1790289829.8887482
+      }
+    },
+    {
+      "ticker": "KXXRP15M-26SEP241915-15",
+      "order_id": "3bc186af-969f-412c-bd4f-8196ce4a9bdc",
+      "state": "complete",
+      "trigger_committed_at": 1790291560.8160207,
+      "timing": {
+        "research_asset": "XRP",
+        "submission_requested_at": 1790291562.3237305,
+        "coordination_wait_ms": 0.0055299606174230576,
+        "reads": [
+          {
+            "endpoint": "series/KXXRP15M",
+            "attempts": 1,
+            "rate_wait_ms": 161.09039704315364,
+            "network_ms": 28.46798102837056,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790291562.331904,
+            "http_status": 200,
+            "total_ms": 189.71854797564447
+          },
+          {
+            "endpoint": "markets/KXXRP15M-26SEP241915-15",
+            "attempts": 1,
+            "rate_wait_ms": 172.94583295006305,
+            "network_ms": 31.577093061059713,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790291562.521632,
+            "http_status": 200,
+            "total_ms": 204.70362494233996
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 168.88232494238764,
+            "network_ms": 29.66914197895676,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790291562.7263806,
+            "http_status": 200,
+            "total_ms": 200.07522800005972
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d5b1-4e10-78fb-9dd2-f03e3adfdd08",
+            "attempts": 1,
+            "rate_wait_ms": 123.08936601039022,
+            "network_ms": 32.043045037426054,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790291562.973098,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 157.05717506352812
+          }
+        ],
+        "preflight_started_at": 1790291562.328302,
+        "preflight_completed_at": 1790291562.932274,
+        "preflight_ms": 600.5292059853673,
+        "submitted_at": 1790291562.9379992,
+        "acknowledged_at": 1790291562.967295,
+        "submission_ms": 29.29500991012901,
+        "fill_confirmed_at": 1790291563.9583814
+      }
+    },
+    {
+      "ticker": "KXBTC15M-26SEP242000-00",
+      "order_id": "f1ebe10b-47a8-47cf-8f8c-07854c098429",
+      "state": "complete",
+      "trigger_committed_at": 1790294228.295846,
+      "timing": {
+        "research_asset": "BTC",
+        "submission_requested_at": 1790294228.7350779,
+        "coordination_wait_ms": 0.005449983291327953,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "rate_wait_ms": 161.60240094177425,
+            "network_ms": 27.197006973437965,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790294228.7432563,
+            "http_status": 200,
+            "total_ms": 188.90696996822953
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26SEP242000-00",
+            "attempts": 1,
+            "rate_wait_ms": 173.50285302381963,
+            "network_ms": 27.71455398760736,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790294228.9321723,
+            "http_status": 200,
+            "total_ms": 201.34077803231776
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "rate_wait_ms": 172.53801901824772,
+            "network_ms": 30.87371902074665,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790294229.1335726,
+            "http_status": 200,
+            "total_ms": 204.88710596691817
+          },
+          {
+            "endpoint": "portfolio/orders/01a0d5da-0008-7d3d-9609-51d6063b06bb",
+            "attempts": 1,
+            "rate_wait_ms": 123.21357894688845,
+            "network_ms": 28.39097799733281,
+            "retry_wait_ms": 0.0,
+            "started_at": 1790294229.3840482,
+            "http_status": 404,
+            "error": "HTTPStatusError",
+            "total_ms": 153.27005099970847
+          }
+        ],
+        "preflight_started_at": 1790294228.7400508,
+        "preflight_completed_at": 1790294229.3467276,
+        "preflight_ms": 603.5271780565381,
+        "submitted_at": 1790294229.3518295,
+        "acknowledged_at": 1790294229.3783586,
+        "submission_ms": 26.528378017246723,
+        "fill_confirmed_at": 1790294230.116876
+      }
+    }
+  ]
+}

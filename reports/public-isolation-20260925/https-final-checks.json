@@ -1,0 +1,34 @@
+{
+  "dekings.org": {
+    "/": 200,
+    "/viewer.js": 200,
+    "/viewer.css": 200,
+    "/logo.svg": 200,
+    "/api/view": 200,
+    "/api/history/BTC": 200,
+    "/api/history/WTI": 200,
+    "/api/control": 404,
+    "/api/unlock": 404,
+    "/api/stop": 404,
+    "/api/manual/orders": 404,
+    "POST /api/control": 405,
+    "POST /api/unlock": 405,
+    "POST /api/stop": 405
+  },
+  "www.dekings.org": {
+    "/": 200,
+    "/viewer.js": 200,
+    "/viewer.css": 200,
+    "/logo.svg": 200,
+    "/api/view": 200,
+    "/api/history/BTC": 200,
+    "/api/history/WTI": 200,
+    "/api/control": 404,
+    "/api/unlock": 404,
+    "/api/stop": 404,
+    "/api/manual/orders": 404,
+    "POST /api/control": 405,
+    "POST /api/unlock": 405,
+    "POST /api/stop": 405
+  }
+}

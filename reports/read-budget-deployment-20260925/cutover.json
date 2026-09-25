@@ -1,0 +1,56 @@
+{
+  "started_at": 1790313467.6166663,
+  "shutdown": {
+    "status": "stopped",
+    "message": "All paper collectors stopped safely. Dashboard is closing.",
+    "assets": {
+      "BTC": {
+        "status": "stopped",
+        "message": "Bot stopped safely. Saved positions can be resumed; dashboard is closing.",
+        "open_positions": 0
+      },
+      "ETH": {
+        "status": "stopped",
+        "message": "Bot stopped safely. Saved positions can be resumed; dashboard is closing.",
+        "open_positions": 0
+      },
+      "SOL": {
+        "status": "stopped",
+        "message": "Bot stopped safely. Saved positions can be resumed; dashboard is closing.",
+        "open_positions": 0
+      },
+      "XRP": {
+        "status": "stopped",
+        "message": "Bot stopped safely. Saved positions can be resumed; dashboard is closing.",
+        "open_positions": 0
+      },
+      "GOLD": {
+        "status": "stopped",
+        "message": "Bot stopped safely. Saved positions can be resumed; dashboard is closing.",
+        "open_positions": 0
+      },
+      "SILVER": {
+        "status": "stopped",
+        "message": "Bot stopped safely. Saved positions can be resumed; dashboard is closing.",
+        "open_positions": 0
+      },
+      "WTI": {
+        "status": "stopped",
+        "message": "Bot stopped safely. Saved positions can be resumed; dashboard is closing.",
+        "open_positions": 0
+      }
+    },
+    "open_positions": 0
+  },
+  "units": [
+    "project15-signal@BTC",
+    "project15-signal@ETH",
+    "project15-signal@SOL",
+    "project15-signal@XRP",
+    "project15-signal@GOLD",
+    "project15-signal@SILVER",
+    "project15-signal@WTI",
+    "project15-execution",
+    "project15-dashboard"
+  ]
+}

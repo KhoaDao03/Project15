@@ -30,29 +30,25 @@ async def test_entry_reuses_connection_and_reads_metadata_once(live):  # noqa: F
 
 
 @pytest.mark.anyio
-async def test_holdings_and_balance_overlap(live, monkeypatch):  # noqa: F811
+async def test_buy_checks_holdings_without_fetching_balance(live, monkeypatch):  # noqa: F811
     worker, state, manual, control, *_ = live
-    holdings_started = asyncio.Event()
-    balance_started = asyncio.Event()
+    calls = []
     original = manual.holdings
     async with manual.client() as client:
         get = client.get
 
         async def holdings(*args):
-            holdings_started.set()
-            await asyncio.wait_for(balance_started.wait(), 1)
+            calls.append("holdings")
             return await original(*args)
 
         async def read(path, *args):
-            if path == "portfolio/balance":
-                balance_started.set()
-                await asyncio.wait_for(holdings_started.wait(), 1)
+            assert path != "portfolio/balance", "Buy preflight must not fetch balance"
             return await get(path, *args)
 
         monkeypatch.setattr(manual, "holdings", holdings)
         monkeypatch.setattr(client, "get", read)
     await worker.step_market(control)
-    assert len(state["posts"]) == 1
+    assert calls and len(state["posts"]) == 1
 
 
 @pytest.mark.anyio

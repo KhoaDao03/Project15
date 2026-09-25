@@ -131,6 +131,10 @@ positions, order journals or risk state.
 
 ## Optional public website
 
+For the current `public-web` deployment, follow [public website isolation](PUBLIC_WEBSITE_ISOLATION.md)
+instead of the legacy port-8001/passcode setup below. Caddy connects to a Unix
+socket; owner controls remain private through SSH.
+
 The site publishes trading results. First start the viewer and configure any owner
 passcode using [cloud instructions](CLOUD.md#optional-public-view-only-dashboard).
 Use HTTPS before entering the passcode.
