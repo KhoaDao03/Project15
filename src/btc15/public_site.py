@@ -12,7 +12,7 @@ from time import monotonic
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, JSONResponse
 
-ASSETS = ("BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI")
+ASSETS = ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI")
 HISTORY_RATE = 5
 HISTORY_BURST = 10
 HISTORY_CONCURRENCY = 2
@@ -127,6 +127,10 @@ def create_app(data_dir=None):
     @app.get("/viewer.css")
     def stylesheet():
         return FileResponse(static / "viewer.css", media_type="text/css")
+
+    @app.get("/section-logo.svg")
+    def section_logo():
+        return FileResponse(static / "section-logo.svg", media_type="image/svg+xml")
 
     @app.get("/logo.svg")
     def logo():

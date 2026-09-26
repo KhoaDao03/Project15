@@ -37,7 +37,7 @@ def stage(destination):
             shutil.copyfile(source, target)
             manifest[str(target.relative_to(destination))] = hashlib.sha256(target.read_bytes()).hexdigest()
     for name in ("public_site.py", "public_static/index.html", "public_static/viewer.js",
-                 "public_static/viewer.css", "public_static/logo.svg"):
+                 "public_static/viewer.css", "public_static/logo.svg", "public_static/section-logo.svg"):
         target = destination / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(root / "src/btc15" / name, target)

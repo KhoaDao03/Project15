@@ -18,7 +18,7 @@ indicator_up = clip(0.5 + 0.12 * indicator_lean, 0.05, 0.95)
 p_up = clip((1 - weight) * base_up + weight * indicator_up, 0.02, 0.98)
 ```
 
-Multipliers are **BTC 0.75, ETH 1.00, SOL 0.95, XRP 0.85**. GOLD uses **1.35**; SILVER and WTI use **1.20**. The existing
+Multipliers are **BTC 0.80, ETH 0.80, SOL 1.00, XRP 1.25, BNB 1.15, HYPE 0.85, DOGE 1.10**. GOLD uses **1.35**; SILVER and WTI use **1.20**. The existing
 indicator lean uses Wilder RSI/Stochastic RSI and Bollinger Bands. Project15's
 causal candle construction is retained. ATR averages the 14 true ranges from the
 last 15 contiguous official-reference candles, including the causal current minute,
@@ -54,7 +54,7 @@ the contract comparator; model NO probability is exactly one minus model YES.
 
 Selected-side confidence is the smaller of the safety-adjusted model probability
 and `clip(clip((bid + ask) / 2, 0.01, 0.99) + premium, 0.02, 0.98)`.
-The premium is **0.06 for BTC/ETH/GOLD/SILVER/WTI** and **0.10 for SOL/XRP**. Missing or invalid
+The premium is **0.06 for BTC/ETH/BNB/HYPE/DOGE/GOLD/SILVER/WTI** and **0.10 for SOL/XRP**. Missing or invalid
 quotes cannot qualify. Capping one side does not increase the other side's odds.
 
 `p_yes/no` remain the model probabilities; `conservative_probability` in the

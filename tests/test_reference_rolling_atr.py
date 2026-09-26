@@ -39,7 +39,7 @@ def test_reference_gap_prevents_stitching_rolling_window():
     assert features(ticks, 2400, Strategy())["reference_rolling_atr"] is None
 
 
-@pytest.mark.parametrize("asset", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"])
+@pytest.mark.parametrize("asset", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"])
 def test_seed_atr_cannot_change_crypto_probability(market, asset):
     c = Strategy(asset=asset)
     now = market.close_time - 120

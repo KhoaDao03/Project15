@@ -4,10 +4,13 @@ import math
 from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 
 SIGMA_MULTIPLIERS = {
-    "BTC": 0.75,
-    "ETH": 1.00,
-    "SOL": 0.95,
-    "XRP": 0.85,
+    "BTC": 0.80,
+    "ETH": 0.80,
+    "SOL": 1.00,
+    "XRP": 1.25,
+    "BNB": 1.15,
+    "HYPE": 0.85,
+    "DOGE": 1.10,
     "GOLD": 1.35,
     "SILVER": 1.20,
     "WTI": 1.20,
@@ -30,7 +33,7 @@ def capped_confidence(probability, bid, ask, asset):
         return None
     # Preserve decimal quote boundaries (e.g. exactly 77c mid + 6pp = 83%).
     mid = min(Decimal(".99"), max(Decimal(".01"), (Decimal(str(bid)) + Decimal(str(ask))) / 2))
-    premium = Decimal(".06") if asset in ("BTC", "ETH", "GOLD", "SILVER", "WTI") else Decimal(".10")
+    premium = Decimal(".06") if asset in ("BTC", "ETH", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI") else Decimal(".10")
     cap = float(min(Decimal(".98"), max(Decimal(".02"), mid + premium)))
     return min(probability, cap)
 

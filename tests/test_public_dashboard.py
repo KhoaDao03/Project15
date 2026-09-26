@@ -19,7 +19,7 @@ def fleet_data():
             markets=[dict(ticker=asset + '-market', fresh=True, manual_purchases={'secret': 1},
                           probability=dict(available=True, p_yes=.82, p_no=.18, side="yes", confidence=.75, timestamp=100,
                                            quality_warning=False, secret='private-model-field'))],
-        ) for asset in ('BTC', 'ETH', 'SOL', 'XRP', 'GOLD', 'SILVER', 'WTI')],
+        ) for asset in ('BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'HYPE', 'DOGE', 'GOLD', 'SILVER', 'WTI')],
     )
 
 
@@ -43,7 +43,7 @@ def test_snapshot_reads_fixed_paths_and_removes_private_fields(market_result):
             return await public.read_snapshot(client)
 
     snapshot = asyncio.run(run())
-    assert len(snapshot['assets']) == 7
+    assert len(snapshot['assets']) == 10
     assert snapshot['live_only'] is True
     assert snapshot['assets'][0]['trades'][0]['net_pnl'] == .3
     assert snapshot['assets'][0]['trades'][0]['market_result'] == market_result
@@ -59,9 +59,9 @@ def test_snapshot_reads_fixed_paths_and_removes_private_fields(market_result):
     )
     assert 'secret' not in str(snapshot)
     assert 'private-' not in str(snapshot)
-    assert len(calls) == 8
+    assert len(calls) == 11
     assert all(request.method == 'GET' for request in calls)
-    assert {r.url.path for r in calls} == {'/api/fleet', *[f'/assets/{a}/api/trades' for a in ('BTC', 'ETH', 'SOL', 'XRP', 'GOLD', 'SILVER', 'WTI')]}
+    assert {r.url.path for r in calls} == {'/api/fleet', *[f'/assets/{a}/api/trades' for a in ('BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'HYPE', 'DOGE', 'GOLD', 'SILVER', 'WTI')]}
     assert all(r.url.params['limit'] == '5' for r in calls[1:])
 
 
@@ -159,7 +159,7 @@ def owner_app(monkeypatch, tmp_path):
     original = httpx.AsyncClient
     monkeypatch.setattr(public.httpx, 'AsyncClient', lambda **kwargs: original(
         **kwargs, transport=httpx.MockTransport(handler)))
-    snapshot = dict(assets=[dict(asset=a, markets=[dict(ticker=a+'-market', fresh=True)], live_policy=dict(enabled=False, contracts=10, revision=1)) for a in ('BTC','ETH','SOL','XRP','GOLD','SILVER','WTI')], live_available=True, updated_at=public.time.time())
+    snapshot = dict(assets=[dict(asset=a, markets=[dict(ticker=a+'-market', fresh=True)], live_policy=dict(enabled=False, contracts=10, revision=1)) for a in ('BTC','ETH','SOL','XRP','BNB','HYPE','DOGE','GOLD','SILVER','WTI')], live_available=True, updated_at=public.time.time())
 
     async def read(client):
         return snapshot
@@ -222,7 +222,7 @@ def test_invalid_live_settings_and_stale_data_are_blocked(owner_app):
         headers = unlock(client, code)
         for change in ({'contracts': 0}, {'contracts': 21}, {'contracts': 1.5}, {'contracts': True}, {'enabled': 'yes'}, {'confirm': ''}, {'revision': -1}, {'extra': 'field'}):
             assert client.post('/api/control', headers=headers, json={**live_payload(), **change}).status_code == 422
-        assert client.post('/api/control', headers=headers, json=live_payload('DOGE')).status_code == 409
+        assert client.post('/api/control', headers=headers, json=live_payload('ADA')).status_code == 409
         assert not requests
         snapshot['updated_at'] -= 30
         assert client.post('/api/control', headers=headers, json=live_payload()).status_code == 409
@@ -231,15 +231,15 @@ def test_invalid_live_settings_and_stale_data_are_blocked(owner_app):
         assert client.post('/api/control', headers=headers, json=live_payload()).status_code == 409
 
 
-def test_live_disable_and_all_seven_assets(owner_app):
+def test_live_disable_and_all_ten_assets(owner_app):
     app, code, requests, _, _, _ = owner_app
     with TestClient(app) as client:
         headers = unlock(client, code)
-        for asset in ('BTC', 'ETH', 'SOL', 'XRP', 'GOLD', 'SILVER', 'WTI'):
+        for asset in ('BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'HYPE', 'DOGE', 'GOLD', 'SILVER', 'WTI'):
             response = client.post('/api/control', headers=headers, json={**live_payload(asset), 'enabled': False, 'contracts': 1, 'confirm': ''})
             assert response.status_code == 200
             assert response.json()['enabled'] is False
-        assert len(requests) == 7
+        assert len(requests) == 10
 
 
 def test_wrong_passcodes_rate_limited_even_with_spoofed_ip(owner_app):
@@ -295,7 +295,7 @@ def test_origin_body_limit_and_no_passcode_configuration(owner_app, monkeypatch)
         assert client.post('/api/unlock', json={'passcode': code}).status_code == 503
 
 
-@pytest.mark.parametrize('asset', ['BTC', 'ETH', 'SOL', 'XRP', 'GOLD', 'SILVER', 'WTI'])
+@pytest.mark.parametrize('asset', ['BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'HYPE', 'DOGE', 'GOLD', 'SILVER', 'WTI'])
 def test_individual_shutdown_is_scoped_and_all_stop_remains_available(owner_app, asset):
     import json
 
@@ -327,7 +327,7 @@ def test_individual_stop_validation_and_exchange_guard(owner_app):
     app, code, requests, replies, _, _ = owner_app
     with TestClient(app) as client:
         headers = unlock(client, code)
-        for asset in ('DOGE', '../shutdown', None, [], 1):
+        for asset in ('ADA', '../shutdown', None, [], 1):
             assert client.post('/api/stop', headers=headers, json=dict(asset=asset, confirm=True)).status_code == 422
         assert client.post('/api/stop', headers=headers, json=dict(asset='GOLD', confirm=False)).status_code == 422
         assert not requests
@@ -390,7 +390,7 @@ def test_history_pages_are_bounded_and_sanitized(monkeypatch):
         before = len(requests)
         for query in ('limit=101', 'limit=0', 'offset=-1'):
             assert client.get('/api/history/BTC?'+query).status_code == 422
-        assert client.get('/api/history/DOGE').status_code == 404
+        assert client.get('/api/history/ADA').status_code == 404
         assert len(requests) == before
         assert all(r.method == 'GET' for r in requests)
         assert requests[1].url.params['run_id'] == 'BTC-signals'

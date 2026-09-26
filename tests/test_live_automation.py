@@ -92,7 +92,7 @@ def test_cap_snaps_in_yes_and_no_price_space():
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_buy_full_quantity_once_and_restart(live):
     worker, state, manual, control, data, clock = live
     await worker.step_market(control)
@@ -111,7 +111,7 @@ async def test_buy_full_quantity_once_and_restart(live):
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_disabled_buys_keep_stop_exits_and_sell_only_held(live):
     worker, state, manual, control, data, clock = live
     await worker.step_market(control)
@@ -126,7 +126,7 @@ async def test_disabled_buys_keep_stop_exits_and_sell_only_held(live):
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_take_profit_floor_and_hard_stop_override_after_no_fill(live):
     worker, state, manual, control, data, clock = live
     state["price_ranges"] = [dict(start=".001", end=".999", step=".001")]
@@ -155,7 +155,7 @@ async def test_manual_takeover_blocks_all_automation(live):
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_unknown_ack_never_creates_replacement(live):
     worker, state, manual, control, data, clock = live
     state["post_error"] = "timeout"
@@ -170,7 +170,7 @@ async def test_unknown_ack_never_creates_replacement(live):
 
 @pytest.mark.parametrize("block", ["stale", "health", "probability", "price"])
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_entry_gates_block_real_post(live, block):
     worker, state, manual, control, data, clock = live
     if block == "stale":
@@ -535,7 +535,7 @@ def test_uncertain_or_exchange_attempts_still_consume_allowance(extra):
 @pytest.mark.anyio
 @pytest.mark.parametrize("side", ["yes", "no"])
 @pytest.mark.parametrize("bid,exits", [(0.989, False), (0.99, True), (0.999, True)])
-@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
     worker, state, manual, control, data, clock = live
     data["side"] = side
@@ -557,7 +557,7 @@ async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
 
 @pytest.mark.anyio
 @pytest.mark.parametrize("side", ["yes", "no"])
-@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_live_buy_limit_matches_96_cent_entry_filter(live, side):
     worker, state, manual, control, data, clock = live
     data.update(side=side, bid=0.95, ask=0.961)
@@ -648,7 +648,7 @@ def test_entry_rechecks_cutoff_after_book_read(live, monkeypatch):
 
 
 @pytest.mark.anyio
-@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 @pytest.mark.parametrize("side", ["yes", "no"])
 async def test_disabled_take_profit_holds_at_99_but_keeps_stop(live, side):
     from dataclasses import replace

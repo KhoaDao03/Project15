@@ -30,6 +30,7 @@ def test_public_site_has_no_control_or_private_routes(tmp_path):
         assert client.get("/viewer.js").status_code == 200
         assert client.get("/viewer.css").status_code == 200
         assert client.get("/logo.svg").status_code == 200
+        assert client.get("/section-logo.svg").status_code == 200
 
 
 def test_snapshot_missing_stale_and_atomic_refresh(tmp_path):

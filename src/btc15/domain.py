@@ -134,6 +134,22 @@ def parse_market(raw, series):
         raise ValueError("Invalid market identity")
     if raw.get("floor_strike") is None:
         raise ValueError("Strike not yet published")
+    strike = D(raw["floor_strike"])
+    if asset.symbol == "DOGE":
+        custom = raw.get("custom_strike") or {}
+        precise = custom.get("floor_strike")
+        if (
+            not isinstance(precise, str)
+            or not re.fullmatch(r"[0-9]+(?:\.[0-9]{1,7})?", precise)
+            or custom.get("strike_type") != raw.get("strike_type")
+        ):
+            raise ValueError("DOGE requires a precise verified custom strike")
+        exact = D(precise)
+        # Captured DOGE metadata truncates the legacy top-level strike to six
+        # decimals. Settlement and the target subtitle retain all seven.
+        if exact <= 0 or strike not in (exact, exact.quantize(D(".000001"), rounding=ROUND_FLOOR)):
+            raise ValueError("DOGE custom/legacy strike conflict")
+        strike = exact
     primary, secondary = raw.get("rules_primary", ""), raw.get("rules_secondary", "")
     # Deliberately narrow grammar. Changed/additional conditions require a parser review.
     pattern = (
@@ -152,7 +168,7 @@ def parse_market(raw, series):
         )
         if match:
             numeric_strike = True
-            if D(match[3]) <= 0 or D(match[3]) != D(raw["floor_strike"]):
+            if D(match[3]) <= 0 or D(match[3]) != strike:
                 raise ValueError("Rule/metadata strike conflict")
     if asset.commodity:
         name = {"GOLD": "Gold", "SILVER": "Silver", "WTI": "WTI Oil"}[asset.symbol]
@@ -218,7 +234,7 @@ def parse_market(raw, series):
         raise ValueError("Unexpected payout")
     if str(raw.get("custom_strike", {}).get("round_digits")) != str(asset.round_digits):
         raise ValueError("Unknown rounding precision")
-    strike = float(raw["floor_strike"])
+    strike = float(strike)
     spec = SettlementSpecification(
         asset.reference_source,
         asset.index,

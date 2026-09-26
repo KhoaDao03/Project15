@@ -1,9 +1,9 @@
 # Active crypto presets
 
-BTC, ETH, SOL and XRP use the same Bleep strategy settings except `asset`; fixed volatility multipliers and market-cap premiums depend on asset identity.
-The tracked files are `config/settlement-edge-{active,eth,sol,xrp}-paper.json`.
+BTC, ETH, SOL, XRP, BNB, HYPE and DOGE use the same Bleep strategy settings except `asset`; fixed volatility multipliers and market-cap premiums depend on asset identity.
+The tracked files are `config/settlement-edge-{active,eth,sol,xrp,bnb,hype,doge}-paper.json`.
 Despite their filenames, these are also the source for fresh cloud signal configs.
-`prepare_cloud.py` freezes them into `data/cloud/{BTC,ETH,SOL,XRP}.json`.
+`prepare_cloud.py` freezes them into `data/cloud/{BTC,ETH,SOL,XRP,BNB,HYPE,DOGE}.json`.
 
 | Setting | Shared value |
 | --- | --- |
@@ -11,8 +11,8 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 0.75; ETH 1.00; SOL 0.95; XRP 0.85 |
-| Market-respect cap | Selected-side mid +6pp BTC/ETH; +10pp SOL/XRP; maximum 98% |
+| ATR sigma multiplier | BTC 0.80; ETH 0.80; SOL 1.00; XRP 1.25; BNB 1.15; HYPE 0.85; DOGE 1.10 |
+| Market-respect cap | Selected-side mid +6pp BTC/ETH/BNB/HYPE/DOGE; +10pp SOL/XRP; maximum 98% |
 | Purchase range | 80–96¢ |
 | Same-side confirmations | 1 standard; 1 late |
 | Normalized lead minimum | Disabled; fresh side confirmation remains |
@@ -32,7 +32,7 @@ Live automation shares the probability/entry strategy and the 55¢ stop threshol
 with separate resting-order handling and user-selected quantity; see
 [live automation](LIVE_AUTOMATION.md).
 
-All four presets have a regression test comparing every strategy field except
+All seven presets have a regression test comparing every strategy field except
 asset identity. Exchange identifiers, official feeds and settlement precision are
 necessarily asset-specific. Read [the probability model](PROBABILITY_MODEL.md) for
 its inputs and assumptions and [cloud deployment](CLOUD.md) for preparation.
@@ -40,3 +40,38 @@ its inputs and assumptions and [cloud deployment](CLOUD.md) for preparation.
 Frozen runtime configs do not change when presets change. This version rejects
 removed probability-mode fields and uses new configuration hashes. Existing
 histories and portfolios must not be reset or relabeled to claim they ran Bleep.
+
+## BNB and HYPE
+
+Added presets use ETH's settings, including its +6pp market-respect cap.
+ATR sigma multipliers are BNB **1.15** and HYPE **0.85**.
+Kalshi public metadata captured on September 26, 2026 confirms the same
+60-second CF Benchmarks settlement average, with BNB rounded to two decimal
+places and HYPE to four. HYPE uses `HYPEUSD_RTI`, not the retired
+`U_HYPEUSD_RTI` stream.
+
+Sources: [BNB series](https://api.elections.kalshi.com/trade-api/v2/series/KXBNB15M),
+[HYPE series](https://api.elections.kalshi.com/trade-api/v2/series/KXHYPE15M),
+[BNB index](https://www.cfbenchmarks.com/data/indices/BNBUSD_RTI),
+[HYPE index](https://www.cfbenchmarks.com/data/indices/HYPEUSD_RTI).
+Captured contracts are in `tests/fixtures/{bnb,hype}15-20260926.json`.
+
+For an existing fleet, add separate BNB and HYPE configuration files, data
+directories, run IDs and manifest entries through the normal deployment process.
+Do not rerun fresh cloud preparation over an existing directory or change existing
+checkpoint hashes. Repository changes alone do not start collectors or enable
+live buying; use the existing per-asset controls after deployment and feed warmup.
+
+## DOGE
+
+DOGE uses the same settings as BNB and HYPE, with an ATR sigma multiplier of
+**1.10** and a +6pp market-respect cap. Its official reference is `DOGEUSD_RTI`.
+DOGE settlement uses seven decimal places. The captured Kalshi metadata exposes
+its full strike in `custom_strike.floor_strike`, while the legacy top-level
+`floor_strike` is truncated to six decimal places. The parser requires the precise
+strike, validates its operator and consistency with the legacy value, and uses all
+seven decimals for settlement and probability calculations. Dashboard reference
+prices and strikes preserve that precision.
+
+Public contract fixture: `tests/fixtures/doge15-20260926.json`.
+Source: [DOGE series](https://api.elections.kalshi.com/trade-api/v2/series/KXDOGE15M).

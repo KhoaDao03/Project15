@@ -12,7 +12,7 @@ from .domain import dumps
 
 def generate(path, start=1788901200.0, asset="BTC"):
     selected = asset_spec(asset)
-    scale = {"BTC": 1, "ETH": 0.04, "SOL": 0.002, "XRP": 0.00002}[asset]
+    scale = {"BTC": 1, "ETH": 0.04, "SOL": 0.002, "XRP": 0.00002, "BNB": 0.01, "HYPE": 0.001, "DOGE": 0.0000012}[asset]
     start = float(start)  # Fixed reproducible timestamp, unrelated to a recorded market.
     close = start + 900
 
@@ -57,6 +57,10 @@ def generate(path, start=1788901200.0, asset="BTC"):
             dict(start="0.90", end="1.00", step="0.001"),
         ],
     )
+    if asset == "DOGE":
+        market["custom_strike"].update(
+            floor_strike=f"{market['floor_strike']:.7f}", strike_type=market["strike_type"]
+        )
     rows = []
 
     def add(payload, now):

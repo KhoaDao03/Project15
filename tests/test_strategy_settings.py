@@ -76,7 +76,7 @@ def test_cli_uses_saved_settings_unless_explicit_config(tmp_path, monkeypatch, c
     assert json.loads(capsys.readouterr().out)["enabled"] is True
 
 
-@pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+@pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "bnb", "hype", "doge"])
 def test_crypto_preset_entry_policy(asset):
     c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
     assert c.entry_window_start == 420
@@ -87,4 +87,14 @@ def test_crypto_preset_entry_policy(asset):
     assert c.min_lead_sigma == c.late_min_lead_sigma == 0
     assert c.late_entry_enabled
     assert c.min_probability == c.late_min_probability == 0.83
-    assert (c.min_entry_price, c.max_entry_price, c.fixed_stop_price) == (0.80, 0.97, 0.55)
+    assert (c.min_entry_price, c.max_entry_price, c.fixed_stop_price) == (0.80, 0.96, 0.55)
+
+
+@pytest.mark.parametrize("asset", ["BNB", "HYPE", "DOGE"])
+def test_new_crypto_presets_match_eth_except_identity(asset):
+    from btc15.strategies.settlement_edge.bleep import capped_confidence
+
+    baseline = Strategy.load("config/settlement-edge-eth-paper.json")
+    added = Strategy.load(f"config/settlement-edge-{asset.lower()}-paper.json")
+    assert asdict(added) == {**asdict(baseline), "asset": asset}
+    assert capped_confidence(.99, .80, .82, asset) == .87

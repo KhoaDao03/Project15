@@ -6,13 +6,13 @@ Research logging v2 was deployed on 2026-09-20. See
 For a walkthrough from a fresh Ubuntu VPS through domain/HTTPS and passcode setup,
 see [Step-by-step IONOS VPS setup](IONOS_VPS_SETUP.md).
 
-This profile runs four signal collectors, one real-order executor and one shared
+This profile runs seven signal collectors, one real-order executor and one shared
 dashboard on a Linux server with systemd. It starts no paper simulation workers,
 records no raw feed tapes, and needs neither PostgreSQL nor PyArrow. SQLite files
 and the real-order journal live on persistent local disk. Tests and research tools
 remain in the repository for development; they are not running cloud services.
 
-The four crypto presets use only Bleep ATR finish probability. See
+The seven crypto presets use only Bleep ATR finish probability. See
 [the model](PROBABILITY_MODEL.md) and [current settings](ACTIVE_PAPER_SETTINGS.md).
 Old probability-mode configuration files are not accepted; prepare fresh configs.
 Real-order exit rules are preserved. A new deployment starts
@@ -34,7 +34,7 @@ uv sync --locked --no-default-groups
 .venv/bin/python scripts/prepare_cloud.py
 ```
 
-The preparation command freezes the four current presets and creates
+The preparation command freezes the seven current presets and creates
 `data/cloud/manifest.json`. It refuses an existing output directory. Future preset
 edits do not change those frozen files. The collectors refuse a paper portfolio or
 an incompatible configuration in their signal database.
@@ -59,7 +59,7 @@ mkdir -p ~/.config/systemd/user
 cp deploy/cloud/*.service ~/.config/systemd/user/
 systemctl --user daemon-reload
 sudo loginctl enable-linger "$USER"
-systemctl --user enable --now project15-signal@BTC project15-signal@ETH project15-signal@SOL project15-signal@XRP project15-execution project15-dashboard
+systemctl --user enable --now project15-signal@BTC project15-signal@ETH project15-signal@SOL project15-signal@XRP project15-signal@BNB project15-signal@HYPE project15-signal@DOGE project15-execution project15-dashboard
 ```
 
 These services restart after failures with a 15-second delay. Explicit stops and

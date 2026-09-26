@@ -1,0 +1,53 @@
+{
+  "verified_at": 1790452943.6205816,
+  "private_assets": [
+    "BTC",
+    "ETH",
+    "SOL",
+    "XRP",
+    "GOLD",
+    "SILVER",
+    "WTI",
+    "BNB",
+    "HYPE",
+    "DOGE"
+  ],
+  "reference_index": "DOGEUSD_RTI",
+  "reference_digits": 7,
+  "price": 0.096998,
+  "sigma_multiplier": 1.1,
+  "doge_live_policy": {
+    "asset": "DOGE",
+    "enabled": true,
+    "contracts": 10,
+    "revision": 2,
+    "config_version": "0e86f765eabfa491",
+    "stop_price": 0.55
+  },
+  "existing_policies_unchanged": true,
+  "public": {
+    "asset_count": 10,
+    "price": 0.097004,
+    "stale": false,
+    "history_total": 0
+  },
+  "public_reference_text": "$0.0970050",
+  "private_reference_text": "$0.0970040",
+  "javascript_errors": [],
+  "services": [
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active"
+  ],
+  "public_service": "active"
+}

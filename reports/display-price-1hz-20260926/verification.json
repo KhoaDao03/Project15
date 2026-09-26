@@ -1,0 +1,25 @@
+{
+  "verified_at": 1790387132.7295325,
+  "private_prices": {
+    "BNB": 776.619,
+    "HYPE": 92.2525
+  },
+  "public_prices": {
+    "BNB": 776.653,
+    "HYPE": 92.2594
+  },
+  "policies_unchanged": true,
+  "private_stream_intervals": [
+    1.0035467147827148,
+    1.0041732788085938,
+    1.002687931060791
+  ],
+  "public_poll_intervals": [
+    1.1199192360509187,
+    1.0187881860183552,
+    1.0193821369903162
+  ],
+  "BNB_private_reference": "$776.64",
+  "HYPE_private_reference": "$92.2624",
+  "javascript_errors": []
+}

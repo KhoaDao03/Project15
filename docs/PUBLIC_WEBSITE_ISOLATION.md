@@ -47,7 +47,7 @@ clients see exactly the same read-only API as internet visitors.
 The trusted publisher uses fixed localhost GET routes. It reuses the existing
 explicit public field projection; it never exports private run IDs, order IDs,
 raw records, credentials, or arbitrary private errors. It refreshes the dashboard
-every five seconds after each completed cycle and histories every sixty seconds
+every second after each completed cycle and histories every sixty seconds
 after each completed cycle. Visitor requests never trigger upstream work.
 
 Each complete file is published using an atomic rename. Failed refreshes preserve
@@ -138,7 +138,7 @@ curl --unix-socket /run/project15-public/http.sock http://localhost/api/history/
 runuser -u caddy -- curl --unix-socket /run/project15-public/http.sock http://localhost/
 ```
 
-Require seven expected assets, fresh exports, working static files, no control
+Require all configured assets, fresh exports, working static files, no control
 routes, and confirmed filesystem/network isolation before switching traffic.
 The dashboard service itself need not restart; neither do collectors or execution.
 

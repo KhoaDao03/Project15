@@ -1,0 +1,30 @@
+{
+  "verified_at": 1790453226.077505,
+  "assets": {
+    "BNB": {
+      "sigma_multiplier": 1.15,
+      "reference_age": 0.29923582077026367
+    },
+    "HYPE": {
+      "sigma_multiplier": 0.85,
+      "reference_age": 0.01810741424560547
+    },
+    "SOL": {
+      "sigma_multiplier": 1.0,
+      "reference_age": 0.08212065696716309
+    },
+    "ETH": {
+      "sigma_multiplier": 0.8,
+      "reference_age": 0.015613079071044922
+    },
+    "BTC": {
+      "sigma_multiplier": 0.8,
+      "reference_age": 0.009923219680786133
+    },
+    "XRP": {
+      "sigma_multiplier": 1.25,
+      "reference_age": 0.06636881828308105
+    }
+  },
+  "existing_policies_unchanged": true
+}

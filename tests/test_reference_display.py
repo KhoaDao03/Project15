@@ -47,6 +47,11 @@ assert.equal($('live-reference').writes,1,'Identical prices should not be redraw
 const changed=fresh();changed.reference.reference_5hz.value='79201';send(changed);
 assert.equal($('live-reference').textContent,'$79,201.00');
 
+// The official 1 Hz fallback is labeled accurately and retains precision.
+const oneHz=fresh();oneHz.reference.reference_5hz.source_channel='cfbenchmarks_value';
+send(oneHz);assert.equal($('reference-status').textContent,'Live · 1 Hz reference');
+assert.equal($('live-reference').textContent,'$79,200.00');
+
 // SOL/XRP retain sub-cent reference precision.
 referenceDigits=4;const precise=fresh();precise.reference.reference_5hz.value='1.2345';send(precise);
 assert.equal($('live-reference').textContent,'$1.2345');

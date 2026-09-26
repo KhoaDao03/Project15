@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, HTMLResponse
 
 STATIC = Path(__file__).resolve().parents[1] / "src/btc15/public_static"
-ASSETS = ("BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI")
+ASSETS = ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI")
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 
@@ -24,16 +24,16 @@ def sample_trades(asset, total=38):
 def sample_view():
     assets = []
     for i, asset in enumerate(ASSETS):
-        completed = [260, 170, 280, 300, 8, 30, 42][i]
-        wins = [230, 152, 245, 265, 7, 22, 37][i]
+        completed = [260, 170, 280, 300, 20, 20, 10, 8, 30, 42][i]
+        wins = [230, 152, 245, 265, 15, 15, 8, 7, 22, 37][i]
         assets.append(dict(
-            asset=asset, healthy=i < 4, price=[84320.25, 2685.4, 115.07, 1.4989, None, None, None][i],
-            state="EVALUATING", realized_pnl=[36.5, -14.25, -12.15, 21.35, 1.85, -13.25, .65][i],
+            asset=asset, healthy=i < 7, price=[84320.25, 2685.4, 115.07, 1.4989, 775.93, 91.7362, 0.0971464, None, None, None][i],
+            state="EVALUATING", realized_pnl=[36.5, -14.25, -12.15, 21.35, 2.5, 3.5, 1.0, 1.85, -13.25, .65][i],
             completed_trades=completed, wins=wins, losses=completed-wins-1, breakeven_trades=1,
-            win_rate=wins/completed, current_streak=[12, -2, 4, 7, 3, -1, 6][i],
+            win_rate=wins/completed, current_streak=[12, -2, 4, 7, 1, 2, 1, 3, -1, 6][i],
             longest_win_streak=24-i, longest_loss_streak=3, open_positions=0,
-            markets=[dict(ticker=f"DEMO-{asset}-15M", fresh=i < 4)],
-            live_policy=dict(enabled=i < 4, contracts=10, revision=1),
+            markets=[dict(ticker=f"DEMO-{asset}-15M", fresh=i < 7)],
+            live_policy=dict(enabled=i < 7, contracts=10, revision=1),
             trades=sample_trades(asset, 5), trades_stale=False,
         ))
     return dict(assets=assets, realized_pnl=sum(a['realized_pnl'] for a in assets),

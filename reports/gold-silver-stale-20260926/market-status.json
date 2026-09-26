@@ -1,0 +1,123 @@
+{
+  "checked_at": "2026-09-26T01:56:37.532693+00:00",
+  "assets": {
+    "GOLD": {
+      "open": {
+        "count_returned": 0,
+        "cursor": false,
+        "markets": []
+      },
+      "unopened": {
+        "count_returned": 24,
+        "cursor": false,
+        "markets": [
+          {
+            "ticker": "KXGOLD15M-26SEP271815-15",
+            "status": "initialized",
+            "open_time": "2026-09-27T22:00:00Z",
+            "close_time": "2026-09-27T22:15:00Z",
+            "result": ""
+          },
+          {
+            "ticker": "KXGOLD15M-26SEP271830-30",
+            "status": "initialized",
+            "open_time": "2026-09-27T22:15:00Z",
+            "close_time": "2026-09-27T22:30:00Z",
+            "result": ""
+          }
+        ]
+      },
+      "settled": {
+        "count_returned": 1,
+        "cursor": true,
+        "markets": [
+          {
+            "ticker": "KXGOLD15M-26SEP251700-00",
+            "status": "finalized",
+            "open_time": "2026-09-25T20:45:00Z",
+            "close_time": "2026-09-25T21:00:00Z",
+            "result": "yes"
+          }
+        ]
+      },
+      "collector": {
+        "connected": true,
+        "reference_age": 0.6836948394775391,
+        "processing_lag": 0.003094306,
+        "queue_depth": 0,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "REFERENCE_STREAM_STALLED",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790370112.4460845,
+          "state": "RECOVERING",
+          "warning": false
+        }
+      }
+    },
+    "SILVER": {
+      "open": {
+        "count_returned": 0,
+        "cursor": false,
+        "markets": []
+      },
+      "unopened": {
+        "count_returned": 24,
+        "cursor": false,
+        "markets": [
+          {
+            "ticker": "KXSILVER15M-26SEP271815-15",
+            "status": "initialized",
+            "open_time": "2026-09-27T22:00:00Z",
+            "close_time": "2026-09-27T22:15:00Z",
+            "result": ""
+          },
+          {
+            "ticker": "KXSILVER15M-26SEP271830-30",
+            "status": "initialized",
+            "open_time": "2026-09-27T22:15:00Z",
+            "close_time": "2026-09-27T22:30:00Z",
+            "result": ""
+          }
+        ]
+      },
+      "settled": {
+        "count_returned": 1,
+        "cursor": true,
+        "markets": [
+          {
+            "ticker": "KXSILVER15M-26SEP251700-00",
+            "status": "finalized",
+            "open_time": "2026-09-25T20:45:00Z",
+            "close_time": "2026-09-25T21:00:00Z",
+            "result": "yes"
+          }
+        ]
+      },
+      "collector": {
+        "connected": true,
+        "reference_age": 0.5101056098937988,
+        "processing_lag": 0.002196405,
+        "queue_depth": 0,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "BOOK_STREAM_STALLED:KXSILVER15M-26SEP251715-15",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790370891.2202992,
+          "state": "RECOVERING",
+          "warning": false
+        }
+      }
+    }
+  }
+}

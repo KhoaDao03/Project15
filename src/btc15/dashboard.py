@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from .analytics import lifetime_performance, metrics
 from .api import KalshiClient
 from .config import Settings, Strategy
-from .domain import dumps
+from .domain import dumps, parse_market
 from .models import history_models, identity, run_model, select_history
 from .operational_state import operational_state
 from .storage import Store
@@ -202,7 +202,7 @@ def create_app(
                     )
                     previous = key
                     last_send = time.monotonic()
-                await asyncio.sleep(0.05)
+                await asyncio.sleep(1)
 
         return StreamingResponse(
             events(),
@@ -219,11 +219,15 @@ def create_app(
                 client = KalshiClient(Settings(asset=session_config.asset))
                 try:
                     async with asyncio.timeout(8):
-                        _, markets = await client.discover()
+                        series, markets = await client.discover()
                     official.update(
                         markets=[
                             {
-                                k: m.get(k)
+                                k: (
+                                    parse_market(m, series).spec.strike
+                                    if k == "floor_strike" and session_config.asset == "DOGE" and m.get(k) is not None
+                                    else m.get(k)
+                                )
                                 for k in (
                                     "ticker",
                                     "title",

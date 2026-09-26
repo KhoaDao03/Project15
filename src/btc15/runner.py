@@ -1,5 +1,6 @@
 import asyncio
 import json
+import math
 import shutil
 import time
 import uuid
@@ -22,6 +23,33 @@ from .research_log import start_research_log
 from .storage import CompactRecorder, RawRecorder
 
 QUEUE_CAPACITY = 20000
+
+
+def display_reference_tick(payload, index, received, previous=None):
+    """Display projection only: use official 1 Hz ticks when 5 Hz is unavailable."""
+    kind = payload.get("type")
+    if kind not in ("cfbenchmarks_value", "cfbenchmarks_value_5hz", "pyth_value"):
+        return previous
+    msg = payload.get("msg", {})
+    if msg.get("index_id", msg.get("underlying_ticker")) != index:
+        return previous
+    try:
+        if kind == "cfbenchmarks_value":
+            raw = json.loads(msg["data"])
+            if not isinstance(raw, dict) or raw.get("id") != index or raw.get("type") != "value":
+                return previous
+            value, source = raw["value"], raw["time"]
+        else:
+            value, source = msg["value_usd"], msg["source_ts_ms"]
+        if not math.isfinite(float(value)) or float(value) <= 0 or not math.isfinite(float(source)):
+            return previous
+        if not -2 <= received - float(source) / 1000 < 2:
+            return previous
+        if previous and float(source) <= float(previous["source_ts_ms"]):
+            return previous
+        return dict(value=value, received=received, source_ts_ms=source, source_channel=kind)
+    except (KeyError, TypeError, ValueError):
+        return previous
 
 
 def stop_entries(engine, now):
@@ -336,14 +364,9 @@ async def collect(
                 raise RuntimeError("Recorder queue capacity exceeded; capture stopped") from e
             maximum_queue = max(maximum_queue, queue.qsize())
             check_pressure()
-            if payload.get("type") in ("cfbenchmarks_value_5hz", "pyth_value"):
-                msg = payload.get("msg", {})
-                if msg.get("index_id", msg.get("underlying_ticker")) == config.asset_spec.index:
-                    receipt_reference = dict(
-                        value=msg.get("value_usd"),
-                        received=row["received"],
-                        source_ts_ms=msg.get("source_ts_ms"),
-                    )
+            receipt_reference = display_reference_tick(
+                payload, config.asset_spec.index, row["received"], receipt_reference
+            )
 
         def process_batch(rows):
             nonlocal last_status, last_display, display_reference, entries_stopped
@@ -385,20 +408,10 @@ async def collect(
                     ticker = payload["msg"]["market_ticker"]
                     if store.state(engine.run_id, ticker) == "CLOSED":
                         loop.call_soon_threadsafe(settled_tickers.add, ticker)
-                if (
-                    payload.get("type") in ("cfbenchmarks_value_5hz", "pyth_value")
-                    and payload.get("msg", {}).get(
-                        "index_id", payload.get("msg", {}).get("underlying_ticker")
-                    )
-                    == config.asset_spec.index
-                ):
-                    msg = payload.get("msg", {})
-                    display_reference = dict(
-                        value=msg.get("value_usd"),
-                        received=row["received"],
-                        source_ts_ms=msg.get("source_ts_ms"),
-                    )
-                elif payload.get("type") == "ticker":
+                display_reference = display_reference_tick(
+                    payload, config.asset_spec.index, row["received"], display_reference
+                )
+                if payload.get("type") == "ticker":
                     msg = payload.get("msg", {})
                     display_tickers[msg.get("market_ticker")] = msg
                 # Retire each applied frame immediately. Leaving the entire batch

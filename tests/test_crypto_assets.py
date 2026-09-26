@@ -26,10 +26,11 @@ from btc15.strategies.settlement_edge.bleep import probability
 from btc15.strategies.settlement_edge.model import Tick, lead_evidence
 
 
-@pytest.fixture(params=["ETH", "SOL", "XRP"])
+@pytest.fixture(params=["ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE"])
 def contract(request):
     asset = request.param
-    fixture = json.loads((Path(__file__).parent / f"fixtures/{asset.lower()}15-20260912.json").read_text())
+    date = "20260926" if asset in ("BNB", "HYPE", "DOGE") else "20260912"
+    fixture = json.loads((Path(__file__).parent / f"fixtures/{asset.lower()}15-{date}.json").read_text())
     return ASSETS[asset], fixture["series"], fixture["markets"][0]
 
 
@@ -101,7 +102,7 @@ def test_asset_hash_is_frozen_and_btc_compatible():
     assert c.version == Strategy().version
     assert replace(c, asset="BTC").version == c.version
     assert len({replace(c, asset=a).version for a in ASSETS}) == len(ASSETS)
-    for invalid in ["DOGE", "eth", None, []]:
+    for invalid in ["ADA", "eth", None, []]:
         with pytest.raises(ValueError):
             replace(c, asset=invalid)
 
@@ -232,7 +233,8 @@ def test_active_bleep_preset_replays_through_ioc_fill(contract, store, tmp_path)
     assert opportunity["settlement_spec"]["index_name"] == asset.index
 
 
-def test_collector_uses_selected_feed_fees_and_display(contract, config, store, tmp_path, monkeypatch):
+@pytest.mark.parametrize("five_hz", [False, True])
+def test_collector_uses_selected_feed_fees_and_display(contract, config, store, tmp_path, monkeypatch, five_hz):
     import time
 
     from btc15 import runner
@@ -241,12 +243,15 @@ def test_collector_uses_selected_feed_fees_and_display(contract, config, store, 
     sent, reads = [], []
     now = time.time()
     payloads = [
-        reference_row(asset.index, now)["payload"],
+        reference_row(asset.index, now, value="1.2345")["payload"],
         dict(
             type="cfbenchmarks_value_5hz",
             msg=dict(index_id=asset.index, value_usd="1.2345", source_ts_ms=now * 1000),
         ),
     ]
+
+    if not five_hz:
+        payloads.pop()
 
     class Client:
         last_clock_skew = 0

@@ -5,3 +5,9 @@
 .probability{font-size:12px;line-height:1.5}.probability-market+.probability-market{margin-top:6px}.probability-market>span{white-space:nowrap}.probability small{display:block;white-space:normal;overflow-wrap:anywhere}.reference-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}.reference-row>div{min-width:0}.probability-detail{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 16px}.probability-detail>div{min-width:0}.probability-values>small{margin-bottom:3px}.probability-detail .probability-market>span{white-space:normal}.probability-note{grid-column:1/-1;font-size:11px!important}
 
 #market-status tr,#comparison tr:not(.group-row){cursor:pointer}#market-status tr:hover td,#market-status tr:focus-within td,#comparison tr:not(.group-row):hover td,#comparison tr:not(.group-row):focus-within td{background:#183c2b}
+
+.page-title .strategy-credit{font-size:13px}.strategy-credit a{color:var(--accent);text-underline-offset:3px}
+
+.section-logo{width:46px;height:32px;object-fit:contain;flex-shrink:0}.summary .section-logo{width:36px;height:25px}
+
+.coin.bnb{color:#F0B90B}.coin.hype{color:#97FCE4}

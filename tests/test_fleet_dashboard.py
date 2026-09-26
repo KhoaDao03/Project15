@@ -393,26 +393,26 @@ def test_fleet_rejects_stale_and_future_snapshots(portfolios, offset):
             assert row["markets"][0]["book"] == {}
 
 
-def test_seven_asset_manifest_and_commodity_dashboard(portfolios):
+def test_ten_asset_manifest_and_dashboard(portfolios):
     manifest, _ = portfolios
     rows = json.loads(manifest.read_text())
-    for asset in ("GOLD", "SILVER", "WTI"):
+    for asset in ("BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"):
         directory = manifest.parent / asset
         directory.mkdir()
         config = directory / "config.json"
         config.write_text(json.dumps(asdict(Strategy(asset=asset))))
         rows.append(dict(asset=asset, data_dir=asset, config=str(config), run_id=asset.lower() + "-paper"))
     manifest.write_text(json.dumps(rows))
-    assert len(fleet.load_members(manifest)) == 7
+    assert len(fleet.load_members(manifest)) == 10
     with TestClient(fleet.create_fleet_app(manifest), base_url="http://127.0.0.1:8000") as client:
         response = client.get("/api/fleet").json()
-        assert len(response["assets"]) == 7
-        for asset in ("GOLD", "SILVER", "WTI"):
+        assert len(response["assets"]) == 10
+        for asset in ("BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"):
             assert client.get("/assets/" + asset + "/api/health").json()["asset"] == asset
             assert not next(r for r in response["assets"] if r["asset"] == asset)["paper_only"]
 
 
-@pytest.mark.parametrize("asset", ["BTC", "ETH", "SOL", "XRP", "GOLD", "SILVER", "WTI"])
+@pytest.mark.parametrize("asset", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"])
 def test_overview_probability_all_assets_outside_entry_window(asset):
     config = Strategy(asset=asset)
     member = dict(run_id="current", config=config)

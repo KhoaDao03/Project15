@@ -1,0 +1,87 @@
+{
+  "verified_at": 1790385581.3724298,
+  "existing_policies_unchanged": true,
+  "private_assets": [
+    "BTC",
+    "ETH",
+    "SOL",
+    "XRP",
+    "GOLD",
+    "SILVER",
+    "WTI",
+    "BNB",
+    "HYPE"
+  ],
+  "new_assets": {
+    "BNB": {
+      "connected": true,
+      "reference_age": 0.24965143203735352,
+      "sigma_multiplier": 1.05,
+      "model": "bleep-reference-atr-finish-v5",
+      "live_buying": false,
+      "contracts": 10,
+      "entry_reasons": [
+        "ENTRY_WINDOW",
+        "WARMUP",
+        "MODEL_QUALITY",
+        "MIN_PRICE",
+        "MIN_PROBABILITY"
+      ]
+    },
+    "HYPE": {
+      "connected": true,
+      "reference_age": 0.14994549751281738,
+      "sigma_multiplier": 1.1,
+      "model": "bleep-reference-atr-finish-v5",
+      "live_buying": false,
+      "contracts": 10,
+      "entry_reasons": [
+        "ENTRY_WINDOW",
+        "WARMUP",
+        "MODEL_QUALITY",
+        "MIN_PRICE",
+        "MIN_PROBABILITY"
+      ]
+    }
+  },
+  "public": {
+    "assets": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE"
+    ],
+    "stale": false,
+    "histories": {
+      "BNB": {
+        "total": 0,
+        "stale": false
+      },
+      "HYPE": {
+        "total": 0,
+        "stale": false
+      }
+    },
+    "frontend_matches": true
+  },
+  "services": [
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active"
+  ],
+  "public_service": "active"
+}

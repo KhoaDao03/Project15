@@ -23,7 +23,7 @@ from .api import KalshiClient, read_timings, stop_reads
 from .config import Settings
 from .domain import timestamp
 
-TICKER = re.compile(r"KX(?:BTC|ETH|SOL|XRP|GOLD|SILVER|WTI)15M-[A-Z0-9-]{1,60}\Z")
+TICKER = re.compile(r"KX(?:BTC|ETH|SOL|XRP|BNB|HYPE|DOGE|GOLD|SILVER|WTI)15M-[A-Z0-9-]{1,60}\Z")
 UNRESOLVED = ("submitting", "accepted", "unknown")
 
 

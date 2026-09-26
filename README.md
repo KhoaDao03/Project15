@@ -1,6 +1,6 @@
 # Project15 — Bleep settlement trading
 
-Kalshi 15-minute trading for BTC, ETH, SOL, XRP, gold, silver and WTI. Signal
+Kalshi 15-minute trading for BTC, ETH, SOL, XRP, BNB, HYPE, DOGE, gold, silver and WTI. Signal
 collectors calculate an ATR-based finish probability; a separate executor manages
 real orders. Paper execution is available for local testing.
 

@@ -10,7 +10,7 @@ from pathlib import Path
 from .assets import ASSETS
 
 GROUPS = {
-    "crypto": ("BTC", "ETH", "SOL", "XRP"),
+    "crypto": ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE"),
     "commodities": ("GOLD", "SILVER", "WTI"),
     "all": tuple(ASSETS),
 }
@@ -54,7 +54,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("start", "stop", "status"))
     parser.add_argument(
-        "markets", nargs="*", help="BTC ETH SOL XRP GOLD SILVER WTI, crypto, commodities, all"
+        "markets", nargs="*", help="BTC ETH SOL XRP BNB HYPE DOGE GOLD SILVER WTI, crypto, commodities, all"
     )
     parser.add_argument(
         "--root", type=Path, default=Path(os.environ.get("BTC15_RESEARCH_LOG_DIR", "research-logs"))

@@ -1,6 +1,6 @@
 'use strict';
 const $=id=>document.getElementById(id);
-const assetBase=window.location.pathname.match(/^\/assets\/(BTC|ETH|SOL|XRP|GOLD|SILVER|WTI)(?:\/|$)/)?.[0].replace(/\/$/,'')||'';
+const assetBase=window.location.pathname.match(/^\/assets\/(BTC|ETH|SOL|XRP|BNB|HYPE|DOGE|GOLD|SILVER|WTI)(?:\/|$)/)?.[0].replace(/\/$/,'')||'';
 let fleetMode=false;
 const apiPath=path=>fleetMode&&path.startsWith('/api/shutdown')?path:assetBase+path;
 const fmt=(v,d=2)=>v===null||v===undefined?'—':Number(v).toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d});
@@ -136,7 +136,7 @@ async function poll(){
       if(active==='monitor')await refresh();
     }
   } catch(e){$('error').textContent=e.message;}
-  finally{setTimeout(poll,active==='monitor'?1000:5000);}
+  finally{setTimeout(poll,1000);}
 }
 poll();
 
@@ -246,7 +246,7 @@ marketStream.onmessage=event=>{
   updateLiveReference(freshReference?Number(ref.value):null);
   const referenceText=freshReference?referenceMoney(ref.value):'—';
   if($('live-reference').textContent!==referenceText)$('live-reference').textContent=referenceText;
-  $('reference-status').textContent=freshReference?'Live · 5 Hz reference':ref?'Reference stale · '+fmt(Math.max(0,data.server_time-ref.received),1)+' s old':'Awaiting first reference';
+  $('reference-status').textContent=freshReference?(ref.source_channel==='cfbenchmarks_value'?'Live · 1 Hz reference':ref.source_channel==='pyth_value'?'Live · Pyth reference':'Live · 5 Hz reference'):ref?'Reference stale · '+fmt(Math.max(0,data.server_time-ref.received),1)+' s old':'Awaiting first reference';
   const recovery=receipt?.recovery||s?.recovery;
   const recoveryText=recovery?.entries_blocked?'Entries blocked · '+recovery.state+' · '+recovery.reasons.join(', '):recovery?.warning?'Backlog warning · ':'';
   if(!livePrices){$('official-status').textContent=recoveryText||'Processed quotes unavailable or stale · reference display is separate from strategy readiness';return;}
@@ -736,6 +736,6 @@ async function refreshFleet(){
     }));
 
   }catch(error){if(fleetMode){$('fleet-status').textContent='Overview unavailable · saved P&L and trades may be stale.';for(const card of fleetCards.values()){markTradesDelayed(card);card.updateLive('',null);card.bought.replaceChildren(text('p','Purchase totals unavailable','muted'));card.tradeButton.disabled=true;for(const button of card.quickBuys)button.disabled=true;card.quickSell.disabled=true;card.tradeButton.dataset.ticker='';card.price.textContent='—';card.contract.replaceChildren(text('p','Live contract unavailable','muted'));}}}
-  finally{if(!shuttingDown)setTimeout(refreshFleet,2000);}
+  finally{if(!shuttingDown)setTimeout(refreshFleet,1000);}
 }
 refreshFleet();

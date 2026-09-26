@@ -78,7 +78,7 @@ async def run(directory, admin_port):
                     publish(directory, "view.json", await read_snapshot(client))
                 except (httpx.HTTPError, OSError, ValueError, KeyError, TypeError):
                     LOG.warning("Public snapshot refresh failed; retaining previous data")
-                await asyncio.sleep(5)
+                await asyncio.sleep(1)
 
         async def histories():
             while True:
