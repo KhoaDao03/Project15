@@ -16,6 +16,8 @@ class Strategy:
     min_entry_price: float = 0.85
     max_entry_price: float = 0.99
     min_probability: float = 0.90
+    # Zero retains the standard floor; otherwise applies only with 7–8 minutes left.
+    early_min_probability: float = 0
     min_quality: float = 85
     entry_value_filters_enabled: bool = True
     min_edge: float = 0.03
@@ -127,7 +129,7 @@ class Strategy:
             raise ValueError("Invalid entry prices")
         if self.warmup_seconds < 30 or not 0 < self.ewma_decay < 1:
             raise ValueError("Insufficient model settings")
-        for name in ("min_probability", "exit_probability", "bankroll_fraction"):
+        for name in ("min_probability", "early_min_probability", "exit_probability", "bankroll_fraction"):
             if not 0 <= getattr(self, name) <= 1:
                 raise ValueError(name)
         if self.min_quality > 100 or self.queue_multiplier < 1 or self.evaluation_interval <= 0:
@@ -150,6 +152,8 @@ class Strategy:
         from .bleep import model_name
 
         values = {"probability_model": model_name(self.asset), **asdict(self)}
+        if not self.early_min_probability:
+            values.pop("early_min_probability")
         return hashlib.sha256(json.dumps(values, sort_keys=True).encode()).hexdigest()[:16]
 
     @classmethod
@@ -163,7 +167,9 @@ class Strategy:
     def entry_cutoff(self):
         return self.late_no_new_entry if self.late_entry_enabled else self.no_new_entry
 
-    def probability_floor(self, late=False):
+    def probability_floor(self, late=False, *, remaining=None):
+        if remaining is not None and 420 < remaining <= 480 and self.early_min_probability:
+            return self.early_min_probability
         return (self.late_min_probability or self.min_probability) if late else self.min_probability
 
     def confirmation_count(self, late=False):

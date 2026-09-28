@@ -1,0 +1,15 @@
+{
+  "reset_at": 1790554047.2092083,
+  "corrected_realized_pnl": 164.0263,
+  "guard": {
+    "limit": -50.0,
+    "check_interval_seconds": 900,
+    "basis": "all_time_dashboard_realized",
+    "pnl": 164.0263,
+    "updated_at": 1790554041.9106789,
+    "triggered": false,
+    "error": null
+  },
+  "buying_remains_disabled": true,
+  "quantities_unchanged": true
+}

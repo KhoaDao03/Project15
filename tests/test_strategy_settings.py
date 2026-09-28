@@ -79,7 +79,7 @@ def test_cli_uses_saved_settings_unless_explicit_config(tmp_path, monkeypatch, c
 @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "bnb", "hype", "doge"])
 def test_crypto_preset_entry_policy(asset):
     c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
-    assert c.entry_window_start == 420
+    assert c.entry_window_start == 480
     assert c.confirmation_count() == c.confirmation_count(True) == 1
     assert c.entry_retry_cooldown == 0
     assert c.max_entry_retries == 2
@@ -96,5 +96,5 @@ def test_new_crypto_presets_match_eth_except_identity(asset):
 
     baseline = Strategy.load("config/settlement-edge-eth-paper.json")
     added = Strategy.load(f"config/settlement-edge-{asset.lower()}-paper.json")
-    assert asdict(added) == {**asdict(baseline), "asset": asset}
+    assert asdict(added) == {**asdict(baseline), "asset": asset, "early_min_probability": added.early_min_probability}
     assert capped_confidence(.99, .80, .82, asset) == .87

@@ -11,3 +11,14 @@
 .section-logo{width:46px;height:32px;object-fit:contain;flex-shrink:0}.summary .section-logo{width:36px;height:25px}
 
 .coin.bnb{color:#F0B90B}.coin.hype{color:#97FCE4}
+
+.coin.doge{background:#BA9F33;color:#fff}
+
+
+#comparison tr.has-open-trade td,#comparison tr.has-open-trade:hover td,#comparison tr.has-open-trade:focus-within td,#market-status tr.has-open-trade td{background:rgb(34 211 238 / 6%);box-shadow:none}
+
+#comparison tr.has-open-trade.selected td,#market-status tr.has-open-trade.selected td{background:linear-gradient(rgb(34 211 238 / 6%),rgb(34 211 238 / 6%)),#183c2b}
+
+
+#market-tabs button.has-open-trade{color:#22d3ee;background:rgb(34 211 238 / 6%)}
+#market-tabs button.has-open-trade[aria-pressed=true]{background:linear-gradient(rgb(34 211 238 / 6%),rgb(34 211 238 / 6%)),#183c2b}

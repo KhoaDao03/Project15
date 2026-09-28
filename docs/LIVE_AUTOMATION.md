@@ -43,7 +43,7 @@ executor, not this separate real-order path.
 | --- | --- |
 | Apply **Allow new buys**, quantity and confirmation | Enables that asset's current and future markets; persists across restarts |
 | Disable new buys | Stops entries; existing exits continue |
-| Change quantity | Changes future buys only; integer 1–20, default 10 |
+| Change quantity | Changes future buys only; whole number 1–100,000 (order-system ceiling), default 10 |
 | Take manual control | Pauses the selected market, disables future asset buys and requests cancellation of its resting offer |
 | Confirm a manual ticket | Pauses automation before preflight |
 | Shut down safely | Disables future buys and waits for managed exposure/orders to be resolved or taken over; does not liquidate |

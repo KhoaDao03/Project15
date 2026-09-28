@@ -1,4 +1,8 @@
 const $=id=>document.getElementById(id);
+const tabTheme=window.matchMedia('(prefers-color-scheme: dark)');
+function updateTabIcon(){$('tab-icon').href=tabTheme.matches?'/logo.svg':'/section-logo.svg';}
+tabTheme.addEventListener('change',updateTabIcon);
+updateTabIcon();
 const el=(tag,value,cls)=>{const node=document.createElement(tag);node.textContent=value??'—';if(cls)node.className=cls;return node;};
 const numeric=value=>typeof value==='number'&&Number.isFinite(value);
 const money=value=>numeric(value)?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:4}).format(value):'—';
@@ -10,6 +14,7 @@ const count=value=>numeric(value)?value.toLocaleString('en-US'):'—';
 const symbols=['BTC','ETH','SOL','XRP','BNB','HYPE','DOGE','GOLD','SILVER','WTI'];
 const names=asset=>asset==='WTI'?'OIL / WTI':asset;
 const coinPaths={
+ DOGE:'M8 5h4a7 7 0 0 1 0 14H8V5Zm-3 7h9',
  BNB:'M12 2 6.5 7.5 8.6 9.6 12 6.2 15.4 9.6 17.5 7.5ZM2 12l3-3 3 3-3 3Zm10-3 3 3-3 3-3-3Zm7-0 3 3-3 3-3-3ZM6.5 16.5 12 22l5.5-5.5-2.1-2.1-3.4 3.4-3.4-3.4Z',
  HYPE:'M144 71.6991C144 119.306 114.866 134.582 99.5156 120.98C86.8804 109.889 83.1211 86.4521 64.116 84.0456C39.9942 81.0113 37.9057 113.133 22.0334 113.133C3.5504 113.133 0 86.2428 0 72.4315C0 58.3063 3.96809 39.0542 19.736 39.0542C38.1146 39.0542 39.1588 66.5722 62.132 65.1073C85.0007 63.5379 85.4184 34.8689 100.247 22.6271C113.195 12.0593 144 23.4641 144 71.6991Z',
  BTC:'M10 5v14M13 5v14M7 7h7a3 3 0 0 1 0 6H8m1 0h6a3 3 0 0 1 0 6H7',
@@ -26,7 +31,7 @@ function coin(asset){
   if(!coinPaths[asset])return el('span',asset[0],'coin '+asset.toLowerCase());
   const node=el('span','','coin '+asset.toLowerCase()),svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS('http://www.w3.org/2000/svg','path');
   svg.setAttribute('viewBox',asset==='HYPE'?'0 0 144 144':'0 0 24 24');svg.setAttribute('aria-hidden','true');path.setAttribute('d',coinPaths[asset]);
-  const outline=['BTC','XRP'].includes(asset);path.setAttribute('fill',outline?'none':'currentColor');path.setAttribute('stroke',outline?'currentColor':'none');path.setAttribute('stroke-width','1.7');svg.append(path);node.append(svg);return node;
+  const outline=['BTC','XRP','DOGE'].includes(asset);path.setAttribute('fill',outline?'none':'currentColor');path.setAttribute('stroke',outline?'currentColor':'none');path.setAttribute('stroke-width','1.7');svg.append(path);node.append(svg);return node;
 }
 function marketButton(asset){const button=el('button','','market-button');button.type='button';button.setAttribute('aria-pressed',String(selected===asset));button.append(coin(asset),el('span',names(asset)));button.addEventListener('click',()=>selectMarket(asset));return button;}
 function summarize(assets){
@@ -79,17 +84,17 @@ function render(data){
   for(const [label,group] of [['Digital assets',assets.slice(0,7)],['Commodities',assets.slice(7)]]){
     const heading=el('tr','','group-row'),cell=el('td',label.toUpperCase());cell.colSpan=9;heading.append(cell);rows.push(heading);
     group.sort((a,b)=>(numeric(b.realized_pnl)?b.realized_pnl:-Infinity)-(numeric(a.realized_pnl)?a.realized_pnl:-Infinity));
-    for(const a of group){const row=el('tr','',selected===a.asset?'selected':''),market=el('td','');market.append(marketButton(a.asset));if(top.some(t=>t.asset===a.asset))market.firstChild.append(el('span',top.length>1?'Joint top':'Top crypto','top-badge'));const rank=numeric(a.realized_pnl)?1+group.filter(b=>numeric(b.realized_pnl)&&b.realized_pnl>a.realized_pnl).length:'—';row.append(el('td',rank),market);performanceCells(row,a);row.addEventListener('click',event=>{if(!event.target.closest('button'))selectMarket(a.asset);});rows.push(row);}
+    for(const a of group){const row=el('tr','',[selected===a.asset?'selected':'',numeric(a.open_positions)&&a.open_positions>0?'has-open-trade':''].filter(Boolean).join(' ')),market=el('td','');market.append(marketButton(a.asset));if(top.some(t=>t.asset===a.asset))market.firstChild.append(el('span',top.length>1?'Joint top':'Top crypto','top-badge'));const rank=numeric(a.realized_pnl)?1+group.filter(b=>numeric(b.realized_pnl)&&b.realized_pnl>a.realized_pnl).length:'—';row.append(el('td',rank),market);performanceCells(row,a);row.addEventListener('click',event=>{if(!event.target.closest('button'))selectMarket(a.asset);});rows.push(row);}
   }
   $('comparison').replaceChildren(...rows);
   const totals=el('tr',''),label=el('td',partial?'TOTAL · partial':'TOTAL ('+symbols.length+' markets)');label.colSpan=2;totals.append(label);performanceCells(totals,total);$('totals').replaceChildren(totals);
   $('insight').textContent=(top.length?(top.map(a=>a.asset).join(' and ')+(top.length>1?' share the crypto lead':' leads crypto')+' by recorded realized P&L. '):'Crypto ranking requires available completed history for all seven markets. ')+(partial?'Some totals are unavailable or partial. ':'')+'These are recorded trade results, not underlying market-price returns.';
-  $('market-status').replaceChildren(...assets.map(a=>{const row=el('tr','',selected===a.asset?'selected':''),market=el('td',''),price=el('td',referenceMoney(a.price,a.asset)),status=el('td',''),buying=el('td','');market.append(marketButton(a.asset));if(!a.markets?.length||a.markets.some(m=>!m.fresh))price.append(el('small','⚠ Stale market data','stale'));status.append(statusBadge(data,a));buying.append(buyingBadge(data,a));const probability=el('td','');probability.append(entryConfidenceView(data,a));row.append(market,price,probability,status,buying);row.addEventListener('click',event=>{if(!event.target.closest('button'))selectMarket(a.asset);});return row;}));
+  $('market-status').replaceChildren(...assets.map(a=>{const row=el('tr','',[selected===a.asset?'selected':'',numeric(a.open_positions)&&a.open_positions>0?'has-open-trade':''].filter(Boolean).join(' ')),market=el('td',''),price=el('td',referenceMoney(a.price,a.asset)),status=el('td',''),buying=el('td','');market.append(marketButton(a.asset));if(!a.markets?.length||a.markets.some(m=>!m.fresh))price.append(el('small','⚠ Stale market data','stale'));status.append(statusBadge(data,a));buying.append(buyingBadge(data,a));const probability=el('td','');probability.append(entryConfidenceView(data,a));row.append(market,price,probability,status,buying);row.addEventListener('click',event=>{if(!event.target.closest('button'))selectMarket(a.asset);});return row;}));
   const asset=assets.find(a=>a.asset===selected);$('detail-title').textContent=names(selected)+' / Market detail';$('detail-icon').replaceWith(Object.assign(coin(selected),{id:'detail-icon'}));
   const reference=el('div','','reference-row'),price=el('div',''),status=el('div','');price.append(el('small','Reference price'),el('strong',referenceMoney(asset.price,asset.asset)));status.append(el('small','Operational status'),el('br',''),statusBadge(data,asset));reference.append(price,status,entryConfidenceView(data,asset,true));
   const source=el('div','','source');source.append(el('small','Source market identifier(s)'),el('span',asset.markets?.map(m=>m.ticker+(m.fresh?'':' · stale')).join(', ')||'Unavailable'));
   const streaks=el('div','','streaks');streaks.append(el('strong','Performance (recorded)'));for(const [name,value] of [['Current win streak',numeric(asset.current_streak)?Math.max(0,asset.current_streak):null],['Current loss streak',numeric(asset.current_streak)?Math.max(0,-asset.current_streak):null],['Longest win streak',asset.longest_win_streak],['Longest loss streak',asset.longest_loss_streak]]){const line=el('div','','streak-row');line.append(el('span',name),el('span',count(value)));streaks.append(line);}$('detail').replaceChildren(reference,source,streaks);
-  for(const button of $('market-tabs').children)button.setAttribute('aria-pressed',String(button.dataset.asset===selected));
+  for(const button of $('market-tabs').children){button.setAttribute('aria-pressed',String(button.dataset.asset===selected));const count=assets.find(a=>a.asset===button.dataset.asset)?.open_positions;button.classList.toggle('has-open-trade',numeric(count)&&count>0);}
   $('trades-icon').replaceWith(Object.assign(coin(selected),{id:'trades-icon'}));
   $('trades-title').textContent=names(selected)+(historyMode?' · Trade records':' · Latest 5 trades');
   $('trade-scope').textContent=asset.trades_stale?'Trade updates delayed · displayed records may be stale.':'Recent rows shown; all-time totals above cover recorded history.';

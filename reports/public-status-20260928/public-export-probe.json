@@ -1,0 +1,371 @@
+[
+  {
+    "at": 1790563272.9394634,
+    "age": 0.94,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563273.940181,
+    "age": 0.37,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563274.9410837,
+    "age": 1.37,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563275.9419496,
+    "age": 2.37,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563276.9430652,
+    "age": 0.27,
+    "live_available": false,
+    "missing_policy": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE",
+      "DOGE"
+    ]
+  },
+  {
+    "at": 1790563277.9437408,
+    "age": 0.03,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563278.9447458,
+    "age": 1.03,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563279.9455392,
+    "age": 2.03,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563280.9461608,
+    "age": 0.73,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563281.9470937,
+    "age": 1.74,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563282.9477782,
+    "age": 2.74,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563283.948889,
+    "age": 0.62,
+    "live_available": false,
+    "missing_policy": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE",
+      "DOGE"
+    ]
+  },
+  {
+    "at": 1790563284.9494789,
+    "age": 1.62,
+    "live_available": false,
+    "missing_policy": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE",
+      "DOGE"
+    ]
+  },
+  {
+    "at": 1790563285.9503036,
+    "age": 2.62,
+    "live_available": false,
+    "missing_policy": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE",
+      "DOGE"
+    ]
+  },
+  {
+    "at": 1790563286.951288,
+    "age": 0.41,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563287.9522812,
+    "age": 1.41,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563288.9529135,
+    "age": 2.41,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563289.9537718,
+    "age": 0.58,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563290.9543886,
+    "age": 0.38,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563291.9552162,
+    "age": 1.38,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563292.9561775,
+    "age": 2.38,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563293.957088,
+    "age": 0.2,
+    "live_available": false,
+    "missing_policy": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE",
+      "DOGE"
+    ]
+  },
+  {
+    "at": 1790563294.9583058,
+    "age": 1.2,
+    "live_available": false,
+    "missing_policy": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE",
+      "DOGE"
+    ]
+  },
+  {
+    "at": 1790563295.9593644,
+    "age": 2.2,
+    "live_available": false,
+    "missing_policy": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE",
+      "DOGE"
+    ]
+  },
+  {
+    "at": 1790563296.9602773,
+    "age": 0.75,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563297.9611225,
+    "age": 1.75,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563298.962137,
+    "age": 2.75,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563299.9628701,
+    "age": 0.63,
+    "live_available": false,
+    "missing_policy": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE",
+      "DOGE"
+    ]
+  },
+  {
+    "at": 1790563300.9647675,
+    "age": 1.63,
+    "live_available": false,
+    "missing_policy": [
+      "BTC",
+      "ETH",
+      "SOL",
+      "XRP",
+      "GOLD",
+      "SILVER",
+      "WTI",
+      "BNB",
+      "HYPE",
+      "DOGE"
+    ]
+  },
+  {
+    "at": 1790563301.9658527,
+    "age": 0.62,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563302.966631,
+    "age": 0.21,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563303.9676476,
+    "age": 1.21,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563304.9683783,
+    "age": 0.75,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563305.969237,
+    "age": 0.43,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563306.969961,
+    "age": 0.23,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563307.9705346,
+    "age": 1.23,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563308.9714804,
+    "age": 0.77,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563309.9720285,
+    "age": 0.6,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563310.9728742,
+    "age": 0.44,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563311.9738479,
+    "age": 0.03,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563312.9744828,
+    "age": 1.03,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563313.9754236,
+    "age": 0.77,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563314.9760716,
+    "age": 1.77,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563315.976669,
+    "age": 0.53,
+    "live_available": true,
+    "missing_policy": []
+  },
+  {
+    "at": 1790563316.9774492,
+    "age": 0.32,
+    "live_available": true,
+    "missing_policy": []
+  }
+]

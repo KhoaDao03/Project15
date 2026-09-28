@@ -18,7 +18,7 @@ indicator_up = clip(0.5 + 0.12 * indicator_lean, 0.05, 0.95)
 p_up = clip((1 - weight) * base_up + weight * indicator_up, 0.02, 0.98)
 ```
 
-Multipliers are **BTC 0.80, ETH 0.80, SOL 1.00, XRP 1.25, BNB 1.15, HYPE 0.85, DOGE 1.10**. GOLD uses **1.35**; SILVER and WTI use **1.20**. The existing
+Multipliers are **BTC 0.80, ETH 0.80, SOL 1.00, XRP 1.25, BNB 1.00, HYPE 1.00, DOGE 1.10**. GOLD uses **1.35**; SILVER and WTI use **1.20**. The existing
 indicator lean uses Wilder RSI/Stochastic RSI and Bollinger Bands. Project15's
 causal candle construction is retained. ATR averages the 14 true ranges from the
 last 15 contiguous official-reference candles, including the causal current minute,
@@ -94,3 +94,7 @@ rates or evidence of profitability. Normal price increments can miss jumps.
 
 Commodity presets require **confidence ≥85%** for both standard and late entries,
 after the same safety and market-respect caps. Their ATR multipliers are gold 1.35, silver 1.20, and WTI 1.20.
+
+## Timed crypto entry thresholds
+
+Crypto presets begin considering entries at 480 seconds remaining. For `420 < remaining <= 480`, capped confidence must meet BTC 87%, ETH 86%, SOL 83%, XRP 85%, DOGE 83%, BNB 86%, or HYPE 84%. At `remaining <= 420`, the active presets return to the standard/late 83% floor. Existing entry cutoffs and all other filters still apply. The `early_min_probability` setting defaults to zero, preserving older configuration behavior and identity.

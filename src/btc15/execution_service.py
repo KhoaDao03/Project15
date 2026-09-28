@@ -137,7 +137,7 @@ class ExecutionClient:
 
         async def read(path):
             try:
-                response = await self.request("GET", path, query=query, timeout=2)
+                response = await self.request("GET", path, query=query, timeout=2.5)
                 response.raise_for_status()
                 result = response.json()
                 return result if isinstance(result, dict) else None

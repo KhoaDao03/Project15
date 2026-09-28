@@ -1,6 +1,6 @@
 # Active crypto presets
 
-BTC, ETH, SOL, XRP, BNB, HYPE and DOGE use the same Bleep strategy settings except `asset`; fixed volatility multipliers and market-cap premiums depend on asset identity.
+BTC, ETH, SOL, XRP, BNB, HYPE and DOGE use the same Bleep strategy settings except `asset` and `early_min_probability`; fixed volatility multipliers and market-cap premiums depend on asset identity.
 The tracked files are `config/settlement-edge-{active,eth,sol,xrp,bnb,hype,doge}-paper.json`.
 Despite their filenames, these are also the source for fresh cloud signal configs.
 `prepare_cloud.py` freezes them into `data/cloud/{BTC,ETH,SOL,XRP,BNB,HYPE,DOGE}.json`.
@@ -8,10 +8,12 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Setting | Shared value |
 | --- | --- |
 | Model | Bleep ATR finish estimate |
+| Early window | `420 < seconds_remaining <= 480` |
+| Early probability floor | BTC 87%; ETH 86%; SOL 83%; XRP 85%; DOGE 83%; BNB 86%; HYPE 84% |
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 0.80; ETH 0.80; SOL 1.00; XRP 1.25; BNB 1.15; HYPE 0.85; DOGE 1.10 |
+| ATR sigma multiplier | BTC 0.80; ETH 0.80; SOL 1.00; XRP 1.25; BNB 1.00; HYPE 1.00; DOGE 1.10 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH/BNB/HYPE/DOGE; +10pp SOL/XRP; maximum 98% |
 | Purchase range | 80–96¢ |
 | Same-side confirmations | 1 standard; 1 late |
@@ -32,8 +34,8 @@ Live automation shares the probability/entry strategy and the 55¢ stop threshol
 with separate resting-order handling and user-selected quantity; see
 [live automation](LIVE_AUTOMATION.md).
 
-All seven presets have a regression test comparing every strategy field except
-asset identity. Exchange identifiers, official feeds and settlement precision are
+All seven presets have a regression test comparing shared strategy fields except
+asset identity and early probability threshold. Exchange identifiers, official feeds and settlement precision are
 necessarily asset-specific. Read [the probability model](PROBABILITY_MODEL.md) for
 its inputs and assumptions and [cloud deployment](CLOUD.md) for preparation.
 
@@ -43,8 +45,8 @@ histories and portfolios must not be reset or relabeled to claim they ran Bleep.
 
 ## BNB and HYPE
 
-Added presets use ETH's settings, including its +6pp market-respect cap.
-ATR sigma multipliers are BNB **1.15** and HYPE **0.85**.
+Added presets use ETH's settings, including its +6pp market-respect cap, with the early probability thresholds listed above.
+ATR sigma multipliers are BNB **1.00** and HYPE **1.00**.
 Kalshi public metadata captured on September 26, 2026 confirms the same
 60-second CF Benchmarks settlement average, with BNB rounded to two decimal
 places and HYPE to four. HYPE uses `HYPEUSD_RTI`, not the retired
@@ -64,7 +66,7 @@ live buying; use the existing per-asset controls after deployment and feed warmu
 
 ## DOGE
 
-DOGE uses the same settings as BNB and HYPE, with an ATR sigma multiplier of
+DOGE uses the shared settings with an early probability threshold of 83% and an ATR sigma multiplier of
 **1.10** and a +6pp market-respect cap. Its official reference is `DOGEUSD_RTI`.
 DOGE settlement uses seven decimal places. The captured Kalshi metadata exposes
 its full strike in `custom_strike.floor_strike`, while the legacy top-level
@@ -75,3 +77,5 @@ prices and strikes preserve that precision.
 
 Public contract fixture: `tests/fixtures/doge15-20260926.json`.
 Source: [DOGE series](https://api.elections.kalshi.com/trade-api/v2/series/KXDOGE15M).
+
+At exactly 480 seconds remaining, the early threshold applies. At exactly 420 seconds remaining, the floor becomes 83%, including the existing late window; the final one-second entry cutoff remains in force. These thresholds apply after the market-respect cap.

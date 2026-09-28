@@ -140,6 +140,35 @@ def test_public_ui_selection_history_and_layout():
             assert abs(page.evaluate('scrollY - readerY')) < 2
         page.wait_for_timeout(1500)
         assert page.evaluate('scrollContainers.every((wrap, i) => Math.abs(wrap.scrollLeft - scrollOffsets[i]) < 1)')
+        for open_count in (1, 2, 0, None):
+            for asset in snapshot['assets']:
+                asset['open_positions'] = open_count if asset['asset'] == 'ETH' else 0
+            page.evaluate("""count => {
+                const data = structuredClone(latest);
+                for (const asset of data.assets) asset.open_positions = asset.asset === 'ETH' ? count : 0;
+                render(data);
+            }""", open_count)
+            for table in ('comparison', 'market-status'):
+                highlighted = page.locator('#' + table + ' .has-open-trade')
+                expect(highlighted).to_have_count(1 if open_count else 0)
+                if open_count:
+                    expect(highlighted).to_contain_text('ETH')
+                    assert highlighted.locator('td').first.evaluate('(cell) => getComputedStyle(cell).backgroundColor') == 'rgba(34, 211, 238, 0.06)'
+                    assert highlighted.locator('td').first.evaluate('(cell) => getComputedStyle(cell).boxShadow') == 'none'
+        for asset in snapshot['assets']:
+            asset['open_positions'] = 1 if asset['asset'] == 'ETH' else 0
+        page.evaluate("""() => {
+            const data = structuredClone(latest);
+            data.assets.find(a => a.asset === 'ETH').open_positions = 1;
+            render(data);
+        }""")
+        page.locator('#market-status .has-open-trade td').last.click()
+        expect(page.locator('#detail-title')).to_have_text('ETH / Market detail')
+        for table in ('comparison', 'market-status'):
+            expect(page.locator('#' + table + ' .has-open-trade.selected')).to_have_count(1)
+            cell = page.locator('#' + table + ' .has-open-trade.selected td').first
+            assert cell.evaluate('(cell) => getComputedStyle(cell).backgroundColor') == 'rgb(24, 60, 43)'
+            assert 'rgba(34, 211, 238, 0.06)' in cell.evaluate('(cell) => getComputedStyle(cell).backgroundImage')
         assert all(method == 'GET' for method, _ in requests)
         assert not any(path.startswith(('/api/stop', '/api/unlock', '/api/control')) for _, path in requests)
         assert not errors

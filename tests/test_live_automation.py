@@ -47,7 +47,7 @@ def live(venue, monkeypatch, request):  # noqa: F811
                         reasons=data["reasons"],
                         decision="TRADE_CANDIDATE",
                         side=data["side"],
-                        probability={"p_yes": 0.95, "p_no": 0.95},
+                        probability={"p_yes": data.get("probability", 0.95), "p_no": data.get("probability", 0.95)},
                     ),
                 )
             return dict(
@@ -79,10 +79,16 @@ def live(venue, monkeypatch, request):  # noqa: F811
     return worker, state, manual, control, data, clock
 
 
-@pytest.mark.parametrize("quantity", [0, 21, 1.5, True, "10"])
+@pytest.mark.parametrize("quantity", [0, -1, 100001, 1.5, True, "10"])
 def test_hard_contract_limit(quantity):
     with pytest.raises(ValidationError):
         LiveControl(ticker=TICKER, enabled=True, contracts=quantity, revision=0)
+
+
+@pytest.mark.parametrize("quantity", [21, 100000])
+def test_contract_quantity_above_old_dashboard_cap(quantity):
+    control = LiveControl(ticker=TICKER, enabled=False, contracts=quantity, revision=0)
+    assert control.contracts == quantity
 
 
 def test_cap_snaps_in_yes_and_no_price_space():
@@ -197,16 +203,16 @@ def test_revision_and_explicit_enable_confirmation(live):
 
 
 @pytest.mark.anyio
-async def test_count_20_and_no_side_stop_payload(live):
+async def test_count_above_20_and_no_side_stop_payload(live):
     worker, state, manual, control, data, clock = live
     data["side"] = "no"
-    state["fill_count"] = "20.00"
+    state["fill_count"] = "35.00"
     control = worker.configure(
-        LiveControl(ticker=TICKER, enabled=True, contracts=20, revision=1, confirm="ENABLE_REAL_TRADING")
+        LiveControl(ticker=TICKER, enabled=True, contracts=35, revision=1, confirm="ENABLE_REAL_TRADING")
     )
     await worker.step_market(control)
-    assert state["posts"][0]["count"] == "20.00" and state["posts"][0]["price"] == "0.0400"
-    state["position"] = "-20"
+    assert state["posts"][0]["count"] == "35.00" and state["posts"][0]["price"] == "0.0400"
+    state["position"] = "-35"
     data["bid"] = 0.50
     await worker.step_market(control)
     assert state["posts"][-1]["side"] == "bid" and state["posts"][-1]["price"] == "0.9900"
@@ -668,3 +674,36 @@ async def test_disabled_take_profit_holds_at_99_but_keeps_stop(live, side):
     assert len(state["posts"]) == 2
     assert worker.controls()[TICKER]["exit_reason"] == "HARD_STOP"
     assert state["posts"][-1]["reduce_only"]
+
+
+@pytest.mark.parametrize("live,early", [("BTC", .87), ("ETH", .86), ("SOL", .83), ("XRP", .85), ("DOGE", .83), ("BNB", .86), ("HYPE", .84)], indirect=["live"])
+@pytest.mark.parametrize("remaining", [480.001, 480, 420.001, 420, 419.999, 120, 1])
+@pytest.mark.parametrize("delta", [0, -.001])
+def test_live_entry_uses_current_time_probability_schedule(live, early, remaining, delta):
+    worker, state, manual, control, data, clock = live
+    clock[0] = control["close_time"] - remaining
+    floor = early if 420 < remaining <= 480 else .83
+    data["probability"] = floor + delta
+    if remaining > 480 or remaining <= 1 or delta < 0:
+        with pytest.raises(HTTPException):
+            worker.entry(control, clock[0])
+    else:
+        assert worker.entry(control, clock[0])[0] == "yes"
+
+
+@pytest.mark.parametrize("live", ["BTC"], indirect=True)
+def test_early_live_floor_uses_capped_confidence_and_rechecks_time_after_book(live, monkeypatch):
+    worker, state, manual, control, data, clock = live
+    data.update(bid=.79, ask=.80, probability=.95)
+    clock[0] = control["close_time"] - 450
+    with pytest.raises(HTTPException, match="Confidence floor"):
+        worker.entry(control, clock[0])
+    original = worker.book
+
+    def crossing_book(*args, **kwargs):
+        result = original(*args, **kwargs)
+        clock[0] = control["close_time"] - 420
+        return result
+
+    monkeypatch.setattr(worker, "book", crossing_book)
+    assert worker.entry(control, clock[0])[0] == "yes"

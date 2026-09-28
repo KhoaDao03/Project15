@@ -50,7 +50,7 @@ class LiveControl(BaseModel):
     model_config = ConfigDict(extra="forbid")
     ticker: str
     enabled: StrictBool
-    contracts: StrictInt = Field(ge=1, le=20)
+    contracts: StrictInt = Field(ge=1, le=100000)
     revision: StrictInt = Field(ge=0)
     confirm: str = ""
 
@@ -534,7 +534,7 @@ class LiveAutomation:
         return dict(
             running=self.running,
             last_cycle=self.last_cycle,
-            max_contracts=20,
+            max_contracts=100000,
             daily_loss_guard_enabled=LIVE_DAILY_LOSS_GUARD_ENABLED,
             global_loss_guard=self.global_loss_guard.state() if self.global_loss_guard else None,
             controls=self.controls(tickers),
@@ -672,7 +672,7 @@ class LiveAutomation:
             side not in ("yes", "no")
             or not isinstance(p, (int, float))
             or not math.isfinite(p)
-            or p < config.probability_floor(remaining <= config.no_new_entry)
+            or p < config.probability_floor(remaining <= config.no_new_entry, remaining=remaining)
         ):
             raise HTTPException(409, "Probability floor not met")
         book = self.book(control, now, trace, backlog_bypass=bypass)
@@ -683,7 +683,7 @@ class LiveAutomation:
             raise HTTPException(409, "Outside entry window")
         ask, bid = book.get(side + "_ask"), book.get(side + "_bid")
         confidence = capped_confidence(p, bid, ask, asset)
-        if confidence is None or confidence < config.probability_floor(remaining <= config.no_new_entry):
+        if confidence is None or confidence < config.probability_floor(remaining <= config.no_new_entry, remaining=remaining):
             raise HTTPException(409, "Confidence floor not met after market-respect cap")
         if (
             ask is None
@@ -1040,7 +1040,7 @@ class LiveAutomation:
                         entry_check_id=latest.get("execution_check_id"),
                         collector_decision_id=latest.get("decision_id"),
                     )
-                if latest_side != side or latest_limit < limit or not 1 <= count <= 20:
+                if latest_side != side or latest_limit < limit or not 1 <= count <= 100000:
                     raise HTTPException(409, "Entry changed before submission")
             elif current.get("exit_reason") != reason:
                 if not resting or current.get("exit_reason") or current.get("resting_disabled"):

@@ -536,7 +536,7 @@ class PaperExecutor:
                 actual=str(conservative),
             )
         conservative = capped_confidence(conservative, bid, ask, c.asset)
-        minimum = c.probability_floor(c.late_entry_enabled and remaining <= c.no_new_entry)
+        minimum = c.probability_floor(c.late_entry_enabled and remaining <= c.no_new_entry, remaining=remaining)
         if conservative is None or conservative < minimum:
             return reject(
                 "MIN_PROBABILITY_RECHECK",
@@ -671,7 +671,7 @@ class PaperExecutor:
                     lead=decision.get("lead", {}),
                     conservative_probability=conservative,
                     entry_probability_basis=decision.get("entry_probability_basis", "bleep"),
-                    min_probability=c.probability_floor(c.late_entry_enabled and remaining <= c.no_new_entry),
+                    min_probability=c.probability_floor(c.late_entry_enabled and remaining <= c.no_new_entry, remaining=remaining),
                     entry_value_filters_enabled=c.entry_value_filters_enabled,
                     min_edge=c.min_edge,
                     min_ev=c.min_ev,

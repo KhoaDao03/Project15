@@ -72,3 +72,8 @@
 .fleet-manual-bought{padding:10px;border:1px solid var(--border);border-radius:7px;background:#101c20}.fleet-manual-bought small{display:block;font-size:10px}.fleet-bought-counts{display:flex;justify-content:space-between;gap:12px;margin:7px 0;font-variant-numeric:tabular-nums}.bought-yes{color:#9ae5c5}.bought-no{color:#ffb7c4}
 
 .fleet-live-panel{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;border:1px solid #c59658;background:#241e16;border-radius:8px}.fleet-live-panel>strong,.fleet-live-panel>p{grid-column:1/-1}.fleet-live-panel label{font-size:11px;display:flex;gap:6px;align-items:center}.fleet-live-panel input[type=number]{width:65px;min-width:0}.fleet-live-panel button{font-size:11px}.fleet-live-panel p{font-size:11px;margin:0;overflow-wrap:anywhere}
+
+/* Give fleet controls more space and keep full contract quantities readable. */
+@media(min-width:801px){aside{width:150px;padding-inline:12px}aside .brand{font-size:22px}main{margin-left:150px}.aside-bottom{max-width:125px}}
+.fleet-live-panel label:has(input[type=number]){display:grid;gap:4px;min-width:0}
+.fleet-live-panel input[type=number]{width:100%;padding:6px;min-width:0}

@@ -36,9 +36,9 @@ def fee_bound(price, config):
     )
 
 
-def effective_entry_ceiling(market, conservative, config, *, late=False):
+def effective_entry_ceiling(market, conservative, config, *, late=False, remaining=None):
     """Largest supported ask passing probability and entry-value filters only."""
-    if conservative < config.probability_floor(late):
+    if conservative < config.probability_floor(late, remaining=remaining):
         return None
     required = D(max(config.min_edge, config.min_ev))
 
@@ -81,7 +81,7 @@ def evaluate(
     side = market.spec.favored(tick.price)
     path = "late_settlement" if config.late_entry_enabled and remaining <= config.no_new_entry else "standard"
     late = path == "late_settlement"
-    minimum_probability = config.probability_floor(late)
+    minimum_probability = config.probability_floor(late, remaining=remaining)
     lead = probability.get("lead", {})
     if path == "late_settlement":
         side = lead.get("side")
@@ -186,7 +186,7 @@ def evaluate(
         market_cap_applied=valid_probability and conservative != raw_probability,
         entry_probability_basis="bleep",
         expected_fill_price=price,
-        effective_max_entry_price=effective_entry_ceiling(market, conservative, config, late=late)
+        effective_max_entry_price=effective_entry_ceiling(market, conservative, config, late=late, remaining=remaining)
         if valid_probability
         else None,
         estimated_fees=fee,

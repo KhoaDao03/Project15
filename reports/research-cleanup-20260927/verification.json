@@ -1,0 +1,189 @@
+{
+  "at": 1790478242.737737,
+  "deleted_bytes": 30014081523,
+  "deleted_gib": 27.952791678719223,
+  "recorders": [
+    {
+      "asset": "SILVER",
+      "producer": "collector",
+      "process_id": 663439,
+      "session": "20260925T051749Z-5c32e5fdbdab4d6d80466f276e5cd0df",
+      "paused": true,
+      "new_segments": 0,
+      "status_fresh": true
+    },
+    {
+      "asset": "SILVER",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-d54b156f51ed41a8bf3f18c2ba2c6f2b",
+      "paused": true,
+      "new_segments": 0,
+      "status_fresh": true
+    },
+    {
+      "asset": "DOGE",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-45f2c7c2467343a3b51fc2e394007f20",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "DOGE",
+      "producer": "collector",
+      "process_id": 749461,
+      "session": "20260926T195518Z-ac68a57f5d3645ecaf60f62fce9a0b68",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "ETH",
+      "producer": "collector",
+      "process_id": 752681,
+      "session": "20260926T200636Z-d04d607b9fe046cfb3b2d7561704e88e",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "ETH",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-b19ed96582c74a01b04bcac86e56a2a5",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "SOL",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-91b557ee5eb74343a14c0ab22cd6acf4",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "SOL",
+      "producer": "collector",
+      "process_id": 752678,
+      "session": "20260926T200636Z-6dae2f16629d411b838c6d34d551b576",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "WTI",
+      "producer": "collector",
+      "process_id": 663440,
+      "session": "20260925T051749Z-1c148628cc5341cf90e1b567bac5d44c",
+      "paused": true,
+      "new_segments": 0,
+      "status_fresh": true
+    },
+    {
+      "asset": "WTI",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-019ec0ca783e4d3f8e523c5faf4d085e",
+      "paused": true,
+      "new_segments": 0,
+      "status_fresh": true
+    },
+    {
+      "asset": "BNB",
+      "producer": "collector",
+      "process_id": 752685,
+      "session": "20260926T200635Z-ffc57af6d57a432f8a0b7add9fad8a16",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "BNB",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-f40396c10d63451099f032815596aac7",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "GOLD",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-d11ecb5c7864431ab337e062b93d99c3",
+      "paused": true,
+      "new_segments": 0,
+      "status_fresh": true
+    },
+    {
+      "asset": "GOLD",
+      "producer": "collector",
+      "process_id": 663438,
+      "session": "20260925T051750Z-e1555cf5e24b44419da44852ba9d52fe",
+      "paused": true,
+      "new_segments": 0,
+      "status_fresh": true
+    },
+    {
+      "asset": "BTC",
+      "producer": "collector",
+      "process_id": 752703,
+      "session": "20260926T200636Z-0bfd622f6cfe43109edf8f250ef0dc80",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "BTC",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-03f17a17ea7049109fd8712714dfcf87",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "XRP",
+      "producer": "collector",
+      "process_id": 752676,
+      "session": "20260926T200636Z-ece005a7010e4d948f67240af338ed22",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "XRP",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-3b4239a4e3c241799540a03ad5d775dc",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "HYPE",
+      "producer": "collector",
+      "process_id": 752683,
+      "session": "20260926T200635Z-b2708e8ce55b4ecdadfd2c9dc543c93d",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    },
+    {
+      "asset": "HYPE",
+      "producer": "live_executor",
+      "process_id": 750300,
+      "session": "20260926T200022Z-1390f248c5fa452399477f789e35f0ad",
+      "paused": false,
+      "new_segments": 1,
+      "status_fresh": true
+    }
+  ],
+  "unchanged_processes": true,
+  "note": "Trading databases and backups preserved; small live recorder metadata and coverage index retained. Missing old prefixes are intentional deletion, not replayable history."
+}
