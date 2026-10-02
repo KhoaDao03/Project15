@@ -1,0 +1,27 @@
+{
+  "ETH": {
+    "atr": 0.95,
+    "early": 0.83,
+    "window": 600
+  },
+  "XRP": {
+    "atr": 1.25,
+    "early": 0.85,
+    "window": 600
+  },
+  "DOGE": {
+    "atr": 1.1,
+    "early": 0.83,
+    "window": 600
+  },
+  "BNB": {
+    "atr": 1.25,
+    "early": 0.91,
+    "window": 600
+  },
+  "HYPE": {
+    "atr": 1.15,
+    "early": 0.87,
+    "window": 600
+  }
+}

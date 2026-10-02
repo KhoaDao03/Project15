@@ -1,0 +1,89 @@
+{
+  "verified_at": 1790721094.3013208,
+  "assets": {
+    "BTC": {
+      "run_id": "BTC-parameters-20260929-signals",
+      "config_version": "6ccce8eb5a839984",
+      "early_floor": 0.83,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.7957487106323242,
+      "atr_multiplier": 0.95
+    },
+    "ETH": {
+      "run_id": "ETH-parameters-20260929-signals",
+      "config_version": "eed4e301dbe01ddb",
+      "early_floor": 0.83,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.2593567371368408,
+      "atr_multiplier": 0.95
+    },
+    "SOL": {
+      "run_id": "SOL-parameters-20260929-signals",
+      "config_version": "1aed49bdb77dd381",
+      "early_floor": 0.86,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.7611985206604004,
+      "atr_multiplier": 1.0
+    },
+    "XRP": {
+      "run_id": "XRP-parameters-20260929-signals",
+      "config_version": "6bdb5476d7bd4861",
+      "early_floor": 0.85,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.6224675178527832,
+      "atr_multiplier": 1.25
+    },
+    "BNB": {
+      "run_id": "BNB-parameters-20260929-signals",
+      "config_version": "4ae2398a2967a73d",
+      "early_floor": 0.91,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.5672800540924072,
+      "atr_multiplier": 1.25
+    },
+    "HYPE": {
+      "run_id": "HYPE-parameters-20260929-signals",
+      "config_version": "c148c147389a9628",
+      "early_floor": 0.87,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.7046763896942139,
+      "atr_multiplier": 1.0
+    }
+  },
+  "quantities_preserved": true,
+  "enable_states_preserved": true,
+  "global_loss_guard": {
+    "limit": -50.0,
+    "check_interval_seconds": 900,
+    "basis": "all_time_dashboard_realized",
+    "pnl": 219.9132,
+    "updated_at": 1790721078.2114315,
+    "triggered": false,
+    "error": null
+  },
+  "corrected_dashboard_realized_pnl": 219.91320000000002,
+  "private_assets": 10,
+  "public_assets": 10,
+  "public_stale": false,
+  "services": [
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active"
+  ]
+}

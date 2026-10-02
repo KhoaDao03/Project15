@@ -22,6 +22,7 @@ class Strategy:
     entry_value_filters_enabled: bool = True
     min_edge: float = 0.03
     min_ev: float = 0.03
+    # Legacy field retained for saved configs and identities; spread filtering is disabled.
     max_spread: float = 0.04
     min_liquidity: float = 5
     warmup_seconds: int = 300
@@ -168,7 +169,7 @@ class Strategy:
         return self.late_no_new_entry if self.late_entry_enabled else self.no_new_entry
 
     def probability_floor(self, late=False, *, remaining=None):
-        if remaining is not None and 420 < remaining <= 480 and self.early_min_probability:
+        if remaining is not None and 420 < remaining <= self.entry_window_start and self.early_min_probability:
             return self.early_min_probability
         return (self.late_min_probability or self.min_probability) if late else self.min_probability
 

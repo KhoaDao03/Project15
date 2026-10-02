@@ -535,6 +535,7 @@ class LiveAutomation:
             running=self.running,
             last_cycle=self.last_cycle,
             max_contracts=100000,
+            spread_filter_enabled=False,
             daily_loss_guard_enabled=LIVE_DAILY_LOSS_GUARD_ENABLED,
             global_loss_guard=self.global_loss_guard.state() if self.global_loss_guard else None,
             controls=self.controls(tickers),
@@ -689,9 +690,8 @@ class LiveAutomation:
             ask is None
             or bid is None
             or not config.min_entry_price <= ask <= config.max_entry_price
-            or not 0 < Decimal(str(ask)) - Decimal(str(bid)) <= Decimal(str(config.max_spread))
         ):
-            raise HTTPException(409, "Current entry price/spread outside strategy limits")
+            raise HTTPException(409, "Current entry price outside strategy limits")
         # The tick grid is validated again against venue metadata before submission.
         # Use the same maximum for signal eligibility and real buy orders.
         limit = Decimal(str(config.max_entry_price))

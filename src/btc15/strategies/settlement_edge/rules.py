@@ -152,7 +152,6 @@ def evaluate(
             float(ev) if ev is not None else None,
             config.min_ev,
         )
-    check("SPREAD", spread is not None and spread <= config.max_spread, spread, config.max_spread)
     check("LIQUIDITY", liquidity >= config.min_liquidity, liquidity, config.min_liquidity)
     check("REGIME", features["regime"] != "EXTREME", features["regime"], "not EXTREME")
     for r in extra_reasons:
@@ -177,6 +176,7 @@ def evaluate(
         decision="NO_TRADE" if reasons else "TRADE_CANDIDATE",
         side=side,
         entry_path=path,
+        spread_filter_enabled=False,
         lead=lead,
         bollinger_entry_filter=bollinger_filter,
         reasons=reasons,

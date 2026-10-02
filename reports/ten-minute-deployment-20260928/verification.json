@@ -1,0 +1,98 @@
+{
+  "verified_at": 1790625827.1631677,
+  "assets": {
+    "BTC": {
+      "run_id": "BTC-ten-minute-20260928-signals",
+      "config_version": "b5203aeb52ff3bd1",
+      "early_floor": 0.85,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.9473345279693604,
+      "atr_multiplier": 0.8
+    },
+    "ETH": {
+      "run_id": "ETH-ten-minute-20260928-signals",
+      "config_version": "e68973580c27c84b",
+      "early_floor": 0.9,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 1.0441737174987793,
+      "atr_multiplier": 0.8
+    },
+    "SOL": {
+      "run_id": "SOL-ten-minute-20260928-signals",
+      "config_version": "7d16250cf17843a6",
+      "early_floor": 0.88,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.11504721641540527,
+      "atr_multiplier": 1.0
+    },
+    "XRP": {
+      "run_id": "XRP-ten-minute-20260928-signals",
+      "config_version": "6bdb5476d7bd4861",
+      "early_floor": 0.85,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.662224531173706,
+      "atr_multiplier": 1.1
+    },
+    "BNB": {
+      "run_id": "BNB-ten-minute-20260928-signals",
+      "config_version": "7021b6d4cad6e1b2",
+      "early_floor": 0.86,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.8189847469329834,
+      "atr_multiplier": 1.0
+    },
+    "HYPE": {
+      "run_id": "HYPE-ten-minute-20260928-signals",
+      "config_version": "83c5734ca5c4adc9",
+      "early_floor": 0.84,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.24748730659484863,
+      "atr_multiplier": 1.0
+    },
+    "DOGE": {
+      "run_id": "DOGE-ten-minute-20260928-signals",
+      "config_version": "448b087908e0b8d3",
+      "early_floor": 0.83,
+      "standard_floor": 0.83,
+      "late_floor": 0.83,
+      "reference_age": 0.48181748390197754,
+      "atr_multiplier": 1.1
+    }
+  },
+  "quantities_preserved": true,
+  "enable_states_preserved": true,
+  "global_loss_guard": {
+    "limit": -50.0,
+    "check_interval_seconds": 900,
+    "basis": "all_time_dashboard_realized",
+    "pnl": 150.4627,
+    "updated_at": 1790625801.5835433,
+    "triggered": false,
+    "error": null
+  },
+  "corrected_dashboard_realized_pnl": 150.4627,
+  "private_assets": 10,
+  "public_assets": 10,
+  "public_stale": false,
+  "services": [
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active"
+  ]
+}

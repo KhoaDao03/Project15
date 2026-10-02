@@ -310,9 +310,9 @@ class Book:
         self.validate_spread()
 
     def validate_spread(self):
-        if self.yes and self.no and max(self.yes) + max(self.no) >= 1:
+        if self.yes and self.no and max(self.yes) + max(self.no) > 1:
             self.valid = False
-            raise ValueError("Crossed or locked book")
+            raise ValueError("Crossed book")
 
     def bid(self, side):
         values = self.yes if side == "yes" else self.no

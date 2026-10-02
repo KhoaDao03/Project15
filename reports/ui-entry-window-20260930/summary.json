@@ -1,0 +1,83 @@
+{
+  "filter": "420 <= market close time - UI opened time <= 600 seconds (inclusive)",
+  "data_source": "Frozen public UI trade history exports",
+  "timestamp_range_utc": [
+    "2026-09-24T18:53:00.770226+00:00",
+    "2026-09-30T18:38:25.911978+00:00"
+  ],
+  "snapshot_range_utc": [
+    "2026-09-30T18:39:20.782072+00:00",
+    "2026-09-30T18:39:22.844491+00:00"
+  ],
+  "official_close_times_checked": 997,
+  "ticker_close_mismatches": 0,
+  "ticker_derived_missing_closes": 744,
+  "assets": [
+    {
+      "asset": "BTC",
+      "eligible": 70,
+      "closed": 70,
+      "pending": 0,
+      "net_pnl": "40.5117",
+      "wins": 61,
+      "losses": 9
+    },
+    {
+      "asset": "ETH",
+      "eligible": 37,
+      "closed": 36,
+      "pending": 1,
+      "net_pnl": "-3.0212",
+      "wins": 31,
+      "losses": 5
+    },
+    {
+      "asset": "SOL",
+      "eligible": 26,
+      "closed": 26,
+      "pending": 0,
+      "net_pnl": "-8.1477",
+      "wins": 21,
+      "losses": 5
+    },
+    {
+      "asset": "XRP",
+      "eligible": 22,
+      "closed": 22,
+      "pending": 0,
+      "net_pnl": "1.2355",
+      "wins": 19,
+      "losses": 3
+    },
+    {
+      "asset": "BNB",
+      "eligible": 21,
+      "closed": 21,
+      "pending": 0,
+      "net_pnl": "-10.6081",
+      "wins": 16,
+      "losses": 5
+    },
+    {
+      "asset": "HYPE",
+      "eligible": 34,
+      "closed": 34,
+      "pending": 0,
+      "net_pnl": "1.6501",
+      "wins": 30,
+      "losses": 4
+    },
+    {
+      "asset": "DOGE",
+      "eligible": 41,
+      "closed": 41,
+      "pending": 0,
+      "net_pnl": "6.6475",
+      "wins": 37,
+      "losses": 4
+    }
+  ],
+  "total_closed": 250,
+  "total_pending": 1,
+  "total_net_pnl": "28.2678"
+}

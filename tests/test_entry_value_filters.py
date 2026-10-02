@@ -79,7 +79,8 @@ def test_disabled_filters_keep_probability_price_and_spread_gates(market, config
         c,
     )
     codes = {r["code"] for r in d["reasons"]}
-    assert {"MIN_PRICE", "MIN_PROBABILITY", "SPREAD"} <= codes
+    assert {"MIN_PRICE", "MIN_PROBABILITY"} <= codes
+    assert "SPREAD" not in codes
     assert not {"MIN_EDGE", "MIN_EV"} & codes
     assert d["decision"] == "NO_TRADE"
 

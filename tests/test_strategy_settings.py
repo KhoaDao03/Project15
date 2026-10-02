@@ -79,7 +79,7 @@ def test_cli_uses_saved_settings_unless_explicit_config(tmp_path, monkeypatch, c
 @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "bnb", "hype", "doge"])
 def test_crypto_preset_entry_policy(asset):
     c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
-    assert c.entry_window_start == 480
+    assert c.entry_window_start == 600
     assert c.confirmation_count() == c.confirmation_count(True) == 1
     assert c.entry_retry_cooldown == 0
     assert c.max_entry_retries == 2

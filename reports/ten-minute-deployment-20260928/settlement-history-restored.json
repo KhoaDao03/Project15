@@ -1,0 +1,51 @@
+{
+  "BTC": {
+    "settlements_copied": 1017,
+    "history": {
+      "trades": 289,
+      "pnl": 41.5105
+    }
+  },
+  "ETH": {
+    "settlements_copied": 1019,
+    "history": {
+      "trades": 224,
+      "pnl": -1.2713
+    }
+  },
+  "SOL": {
+    "settlements_copied": 1018,
+    "history": {
+      "trades": 190,
+      "pnl": 74.0257
+    }
+  },
+  "XRP": {
+    "settlements_copied": 1019,
+    "history": {
+      "trades": 182,
+      "pnl": 30.8604
+    }
+  },
+  "BNB": {
+    "settlements_copied": 267,
+    "history": {
+      "trades": 116,
+      "pnl": 7.7388
+    }
+  },
+  "HYPE": {
+    "settlements_copied": 266,
+    "history": {
+      "trades": 119,
+      "pnl": -12.1364
+    }
+  },
+  "DOGE": {
+    "settlements_copied": 192,
+    "history": {
+      "trades": 58,
+      "pnl": 9.735
+    }
+  }
+}

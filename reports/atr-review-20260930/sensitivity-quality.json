@@ -1,0 +1,42 @@
+{
+  "ETH": {
+    "snapshots": 18598,
+    "validated": 18598,
+    "floor_atr": 140,
+    "cap_blocked": 6,
+    "eligible_markets": 148,
+    "cap_blocked_markets": 6
+  },
+  "XRP": {
+    "snapshots": 17210,
+    "validated": 17210,
+    "floor_atr": 97,
+    "eligible_markets": 141,
+    "cap_blocked_markets": 0
+  },
+  "DOGE": {
+    "snapshots": 20077,
+    "validated": 20077,
+    "cap_blocked": 13,
+    "floor_atr": 297,
+    "eligible_markets": 153,
+    "cap_blocked_markets": 7
+  },
+  "BNB": {
+    "snapshots": 18588,
+    "validated": 18588,
+    "cap_blocked": 2257,
+    "floor_atr": 965,
+    "eligible_markets": 142,
+    "cap_blocked_markets": 94
+  },
+  "HYPE": {
+    "snapshots": 17883,
+    "validated": 17883,
+    "cap_blocked": 776,
+    "floor_atr": 286,
+    "eligible_markets": 142,
+    "cap_blocked_markets": 77
+  },
+  "reconstruction_errors": []
+}

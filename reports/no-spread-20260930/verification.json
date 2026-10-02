@@ -1,0 +1,64 @@
+{
+  "verified_at": 1790753653.582178,
+  "assets": {
+    "BTC": {
+      "spread_filter_enabled": false,
+      "reference_age": 0.10158920288085938
+    },
+    "ETH": {
+      "spread_filter_enabled": false,
+      "reference_age": 0.9512262344360352
+    },
+    "SOL": {
+      "spread_filter_enabled": false,
+      "reference_age": 0.9610013961791992
+    },
+    "XRP": {
+      "spread_filter_enabled": false,
+      "reference_age": 0.6517860889434814
+    },
+    "GOLD": {
+      "evaluation": "MODEL_UNAVAILABLE: indicator history warming up",
+      "reference_age": 0.6730527877807617,
+      "verification": "collector restarted with shared spread filter removal"
+    },
+    "SILVER": {
+      "evaluation": "MODEL_UNAVAILABLE: indicator history warming up",
+      "reference_age": 0.3980598449707031,
+      "verification": "collector restarted with shared spread filter removal"
+    },
+    "WTI": {
+      "evaluation": "MODEL_UNAVAILABLE: indicator history warming up",
+      "reference_age": 0.26837921142578125,
+      "verification": "collector restarted with shared spread filter removal"
+    },
+    "BNB": {
+      "spread_filter_enabled": false,
+      "reference_age": 0.9012541770935059
+    },
+    "HYPE": {
+      "spread_filter_enabled": false,
+      "reference_age": 0.26883816719055176
+    },
+    "DOGE": {
+      "spread_filter_enabled": false,
+      "reference_age": 0.45140886306762695
+    }
+  },
+  "live_spread_filter_enabled": false,
+  "policies_unchanged": true,
+  "services": [
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active",
+    "active"
+  ]
+}

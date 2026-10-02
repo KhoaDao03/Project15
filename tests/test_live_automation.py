@@ -567,7 +567,7 @@ async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
 async def test_live_buy_limit_matches_96_cent_entry_filter(live, side):
     worker, state, manual, control, data, clock = live
     data.update(side=side, bid=0.95, ask=0.961)
-    with pytest.raises(HTTPException, match="entry price/spread"):
+    with pytest.raises(HTTPException, match="entry price"):
         await worker.step_market(control)
     assert not state["posts"]
     data["ask"] = 0.96
@@ -676,25 +676,25 @@ async def test_disabled_take_profit_holds_at_99_but_keeps_stop(live, side):
     assert state["posts"][-1]["reduce_only"]
 
 
-@pytest.mark.parametrize("live,early", [("BTC", .87), ("ETH", .86), ("SOL", .83), ("XRP", .85), ("DOGE", .83), ("BNB", .86), ("HYPE", .84)], indirect=["live"])
-@pytest.mark.parametrize("remaining", [480.001, 480, 420.001, 420, 419.999, 120, 1])
+@pytest.mark.parametrize("live,early", [("BTC", .85), ("ETH", .83), ("SOL", .86), ("XRP", .85), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
+@pytest.mark.parametrize("remaining", [600.001, 600, 599.999, 480, 420.001, 420, 419.999, 120, 1])
 @pytest.mark.parametrize("delta", [0, -.001])
 def test_live_entry_uses_current_time_probability_schedule(live, early, remaining, delta):
     worker, state, manual, control, data, clock = live
     clock[0] = control["close_time"] - remaining
-    floor = early if 420 < remaining <= 480 else .83
+    floor = early if 420 < remaining <= 600 else .83
     data["probability"] = floor + delta
-    if remaining > 480 or remaining <= 1 or delta < 0:
+    if remaining > 600 or remaining <= 1 or delta < 0:
         with pytest.raises(HTTPException):
             worker.entry(control, clock[0])
     else:
         assert worker.entry(control, clock[0])[0] == "yes"
 
 
-@pytest.mark.parametrize("live", ["BTC"], indirect=True)
+@pytest.mark.parametrize("live", ["HYPE"], indirect=True)
 def test_early_live_floor_uses_capped_confidence_and_rechecks_time_after_book(live, monkeypatch):
     worker, state, manual, control, data, clock = live
-    data.update(bid=.79, ask=.80, probability=.95)
+    data.update(bid=.77, ask=.80, probability=.95)
     clock[0] = control["close_time"] - 450
     with pytest.raises(HTTPException, match="Confidence floor"):
         worker.entry(control, clock[0])
@@ -707,3 +707,13 @@ def test_early_live_floor_uses_capped_confidence_and_rechecks_time_after_book(li
 
     monkeypatch.setattr(worker, "book", crossing_book)
     assert worker.entry(control, clock[0])[0] == "yes"
+
+
+@pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
+@pytest.mark.parametrize("side", ["yes", "no"])
+@pytest.mark.parametrize("bid,ask", [(.90, .90), (.70, .95)])
+def test_live_entry_has_no_spread_filter(live, side, bid, ask):
+    worker, state, manual, control, data, clock = live
+    data.update(side=side, bid=bid, ask=ask)
+    assert worker.entry(control, clock[0])[0] == side
+    assert worker.state()["spread_filter_enabled"] is False

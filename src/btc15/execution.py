@@ -516,14 +516,6 @@ class PaperExecutor:
         bid = book.bid(side)
         if bid is None:
             return reject("NO_BID", "Entry validation requires a bid as well as an ask", side=side)
-        spread = D(ask) - D(bid)
-        if not 0 < spread <= D(c.max_spread):
-            return reject(
-                "SPREAD_RECHECK",
-                "Current spread is outside the allowed range",
-                actual=float(spread),
-                required=c.max_spread,
-            )
         conservative = decision["conservative_probability"]
         if (
             type(conservative) not in (int, float)
@@ -677,7 +669,7 @@ class PaperExecutor:
                     min_ev=c.min_ev,
                     min_quality=c.min_quality,
                     expected_net_ev=decision.get("net_ev"),
-                    max_spread=c.max_spread,
+                    spread_filter_enabled=False,
                 ),
             ),
             now,

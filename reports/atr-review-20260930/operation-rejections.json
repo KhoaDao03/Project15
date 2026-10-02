@@ -1,0 +1,360 @@
+{
+  "ETH": {
+    "MIN_PROBABILITY": {
+      "evaluations": 121479,
+      "markets": 46
+    },
+    "MIN_PRICE": {
+      "evaluations": 65131,
+      "markets": 46
+    },
+    "MAX_PRICE": {
+      "evaluations": 36896,
+      "markets": 46
+    },
+    "ENTRY_WINDOW": {
+      "evaluations": 36492,
+      "markets": 46
+    },
+    "MODEL_QUALITY": {
+      "evaluations": 2654,
+      "markets": 16
+    },
+    "REFERENCE_GAP": {
+      "evaluations": 2634,
+      "markets": 3
+    },
+    "COLLECTOR_RECOVERING": {
+      "evaluations": 758,
+      "markets": 46
+    },
+    "MODEL_UNAVAILABLE": {
+      "evaluations": 522,
+      "markets": 45
+    },
+    "FAVORED_SIDE": {
+      "evaluations": 41,
+      "markets": 16
+    },
+    "STALE_BOOK": {
+      "evaluations": 20,
+      "markets": 15
+    },
+    "LEAD_CONFIRMATION": {
+      "evaluations": 5,
+      "markets": 1
+    },
+    "STALE_REFERENCE": {
+      "evaluations": 5,
+      "markets": 1
+    },
+    "FEED_UNHEALTHY": {
+      "evaluations": 5,
+      "markets": 1
+    },
+    "PROCESSING_LAG": {
+      "evaluations": 3,
+      "markets": 1
+    },
+    "CLOCK_SKEW": {
+      "evaluations": 2,
+      "markets": 1
+    },
+    "EXCHANGE_PAUSED": {
+      "evaluations": 2,
+      "markets": 1
+    },
+    "UNVERIFIED_FEES": {
+      "evaluations": 2,
+      "markets": 1
+    }
+  },
+  "XRP": {
+    "MIN_PROBABILITY": {
+      "evaluations": 142220,
+      "markets": 46
+    },
+    "MIN_PRICE": {
+      "evaluations": 74729,
+      "markets": 46
+    },
+    "ENTRY_WINDOW": {
+      "evaluations": 36171,
+      "markets": 46
+    },
+    "MAX_PRICE": {
+      "evaluations": 33777,
+      "markets": 46
+    },
+    "MODEL_QUALITY": {
+      "evaluations": 3117,
+      "markets": 23
+    },
+    "REFERENCE_GAP": {
+      "evaluations": 3091,
+      "markets": 3
+    },
+    "REGIME": {
+      "evaluations": 520,
+      "markets": 3
+    },
+    "MODEL_UNAVAILABLE": {
+      "evaluations": 469,
+      "markets": 45
+    },
+    "COLLECTOR_RECOVERING": {
+      "evaluations": 173,
+      "markets": 46
+    },
+    "FAVORED_SIDE": {
+      "evaluations": 35,
+      "markets": 17
+    },
+    "STALE_BOOK": {
+      "evaluations": 26,
+      "markets": 22
+    },
+    "LEAD_CONFIRMATION": {
+      "evaluations": 4,
+      "markets": 1
+    },
+    "STALE_REFERENCE": {
+      "evaluations": 4,
+      "markets": 1
+    },
+    "FEED_UNHEALTHY": {
+      "evaluations": 4,
+      "markets": 1
+    },
+    "PROCESSING_LAG": {
+      "evaluations": 2,
+      "markets": 1
+    },
+    "CLOCK_SKEW": {
+      "evaluations": 1,
+      "markets": 1
+    },
+    "EXCHANGE_PAUSED": {
+      "evaluations": 1,
+      "markets": 1
+    },
+    "UNVERIFIED_FEES": {
+      "evaluations": 1,
+      "markets": 1
+    }
+  },
+  "BNB": {
+    "MIN_PROBABILITY": {
+      "evaluations": 126213,
+      "markets": 46
+    },
+    "MIN_PRICE": {
+      "evaluations": 56843,
+      "markets": 46
+    },
+    "MAX_PRICE": {
+      "evaluations": 33089,
+      "markets": 45
+    },
+    "ENTRY_WINDOW": {
+      "evaluations": 31735,
+      "markets": 46
+    },
+    "MODEL_QUALITY": {
+      "evaluations": 2563,
+      "markets": 18
+    },
+    "REFERENCE_GAP": {
+      "evaluations": 2532,
+      "markets": 2
+    },
+    "MODEL_UNAVAILABLE": {
+      "evaluations": 485,
+      "markets": 45
+    },
+    "COLLECTOR_RECOVERING": {
+      "evaluations": 89,
+      "markets": 46
+    },
+    "STALE_BOOK": {
+      "evaluations": 29,
+      "markets": 17
+    },
+    "FAVORED_SIDE": {
+      "evaluations": 24,
+      "markets": 13
+    },
+    "LEAD_CONFIRMATION": {
+      "evaluations": 4,
+      "markets": 1
+    },
+    "STALE_REFERENCE": {
+      "evaluations": 4,
+      "markets": 1
+    },
+    "FEED_UNHEALTHY": {
+      "evaluations": 4,
+      "markets": 1
+    },
+    "CLOCK_SKEW": {
+      "evaluations": 1,
+      "markets": 1
+    },
+    "EXCHANGE_PAUSED": {
+      "evaluations": 1,
+      "markets": 1
+    },
+    "UNVERIFIED_FEES": {
+      "evaluations": 1,
+      "markets": 1
+    }
+  },
+  "HYPE": {
+    "MIN_PROBABILITY": {
+      "evaluations": 139211,
+      "markets": 46
+    },
+    "MIN_PRICE": {
+      "evaluations": 65986,
+      "markets": 46
+    },
+    "ENTRY_WINDOW": {
+      "evaluations": 42966,
+      "markets": 46
+    },
+    "MAX_PRICE": {
+      "evaluations": 34298,
+      "markets": 45
+    },
+    "MODEL_QUALITY": {
+      "evaluations": 785,
+      "markets": 19
+    },
+    "REFERENCE_GAP": {
+      "evaluations": 750,
+      "markets": 1
+    },
+    "MODEL_UNAVAILABLE": {
+      "evaluations": 519,
+      "markets": 45
+    },
+    "REGIME": {
+      "evaluations": 314,
+      "markets": 2
+    },
+    "COLLECTOR_RECOVERING": {
+      "evaluations": 103,
+      "markets": 46
+    },
+    "STALE_BOOK": {
+      "evaluations": 34,
+      "markets": 19
+    },
+    "FAVORED_SIDE": {
+      "evaluations": 14,
+      "markets": 8
+    },
+    "PROCESSING_LAG": {
+      "evaluations": 4,
+      "markets": 1
+    },
+    "LEAD_CONFIRMATION": {
+      "evaluations": 3,
+      "markets": 1
+    },
+    "STALE_REFERENCE": {
+      "evaluations": 3,
+      "markets": 1
+    },
+    "FEED_UNHEALTHY": {
+      "evaluations": 3,
+      "markets": 1
+    },
+    "CLOCK_SKEW": {
+      "evaluations": 1,
+      "markets": 1
+    },
+    "EXCHANGE_PAUSED": {
+      "evaluations": 1,
+      "markets": 1
+    },
+    "UNVERIFIED_FEES": {
+      "evaluations": 1,
+      "markets": 1
+    }
+  },
+  "DOGE": {
+    "MIN_PROBABILITY": {
+      "evaluations": 121125,
+      "markets": 46
+    },
+    "MIN_PRICE": {
+      "evaluations": 61711,
+      "markets": 46
+    },
+    "MAX_PRICE": {
+      "evaluations": 34499,
+      "markets": 45
+    },
+    "ENTRY_WINDOW": {
+      "evaluations": 34411,
+      "markets": 46
+    },
+    "COLLECTOR_RECOVERING": {
+      "evaluations": 13175,
+      "markets": 46
+    },
+    "REGIME": {
+      "evaluations": 4000,
+      "markets": 7
+    },
+    "MODEL_QUALITY": {
+      "evaluations": 1541,
+      "markets": 17
+    },
+    "REFERENCE_GAP": {
+      "evaluations": 1521,
+      "markets": 2
+    },
+    "MODEL_UNAVAILABLE": {
+      "evaluations": 478,
+      "markets": 45
+    },
+    "STALE_BOOK": {
+      "evaluations": 21,
+      "markets": 17
+    },
+    "FAVORED_SIDE": {
+      "evaluations": 17,
+      "markets": 4
+    },
+    "PROCESSING_LAG": {
+      "evaluations": 9,
+      "markets": 3
+    },
+    "LEAD_CONFIRMATION": {
+      "evaluations": 2,
+      "markets": 1
+    },
+    "STALE_REFERENCE": {
+      "evaluations": 2,
+      "markets": 1
+    },
+    "FEED_UNHEALTHY": {
+      "evaluations": 2,
+      "markets": 1
+    },
+    "CLOCK_SKEW": {
+      "evaluations": 2,
+      "markets": 1
+    },
+    "EXCHANGE_PAUSED": {
+      "evaluations": 2,
+      "markets": 1
+    },
+    "UNVERIFIED_FEES": {
+      "evaluations": 2,
+      "markets": 1
+    }
+  }
+}

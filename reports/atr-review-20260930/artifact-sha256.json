@@ -1,0 +1,23 @@
+{
+  "report.py": "080a37b21011404e6fe4088af664bca34acac0d9baa9ee54157a662ec154831d",
+  "first-observed-opportunities.csv": "0b2410f7151d547d811722dae61e21911017923698717c7bb97cf3ca529afd6a",
+  "HYPE-ui-history.json": "837cdf17e81c7005a5f02ca0b1a8d017bcaaf83b7f8c46609270e84bab637d0f",
+  "DOGE-ui-history.json": "17bdbfa1496d78ccb0aab6968cfc6ce02f312d3930a1f3e183b8837264748801",
+  "sensitivity.csv": "0e3861570489eca3058a6f3deb2c61d451cbb6ae3fc164586d52efeaf098dd4a",
+  "trades.csv": "2e2ef4047ec319fc5a85493fc9c1e27d309f2c493341995485c21e515f27fde5",
+  "sensitivity.py": "462ca15d35907b7b050f55b21a5b10c62242db2e42976f17d4974156b002272d",
+  "active-parameters.json": "b2d31002b90a10d8f164fb1ee2bf4b2df6420109acdc06973926da124fd32a16",
+  "sensitivity-quality.json": "e5bfc36986f51840f4ed71e6c7714513fbd25f77c6cfb7f60c057ad909cdd2b0",
+  "ETH-ui-history.json": "4fe5e1e9c1e56aad90f0982a5b19a81949be4186aaa4d584e54bb4817023b77e",
+  "operation-rejections.json": "18337e0ad71e4a79cda299cb06e8e796f79346ed3d5112d0690f6eaa137252d9",
+  "XRP-ui-history.json": "6cb98b4ab3d62dd7c523539001549e171d7ed33a202969955e0b1408200b711e",
+  "REPORT.md": "7a53c0c730a0f3cad7b2b52b72ac77df3e887ff73c3295978d5bf58371603aa5",
+  "historical-regimes.json": "929ed782d1e771cf315d9a05aa6a14925438364c8c7527b419cce5cffaba6546",
+  "trade-summary.json": "79602457add63151f18bb940e7f5fdef9609877df9a0e167bac2313b2198a3c5",
+  "trades.py": "386105d853e5148f73e2b6190bc6b0631fcf6b25584a2c822b29306075654cbf",
+  "all-capture-summary.json": "024812ab7c77b79d2b9deb100db9c350bcfad82dc159473c34e7c421e12e5dd4",
+  "BNB-ui-history.json": "3d6bc38e5eac2cb7b3cdc28392d4d1b5f0e56a8a8b68c5f7e59d242a0274c961",
+  "eligible.jsonl.gz": "3609f988e1d1da895b0a6390026c361d0191049f79a3e2872bf11d3c751c4d5d",
+  "current-evaluations.json": "7197434ccfcc450cfce16deed445e684d310eee7e2c47f6959a9ec046349b9ec",
+  "extract_eligible.py": "efbd16191d68d315cb226656cb0471b9a97a1f9e5be7a34c79b4844e9c179b60"
+}

@@ -1,0 +1,662 @@
+{
+  "ETH": {
+    "all": {
+      "n": 347,
+      "wins": 295,
+      "losses": 52,
+      "win_rate": 0.8501440922190202,
+      "win_rate_95": [
+        0.808764455830638,
+        0.8838558035684755
+      ],
+      "net_pnl": -10.033999999999999,
+      "mean_entry": 0.9224825590778097,
+      "mean_winning_net": 0.0703833220338983,
+      "mean_losing_net": -0.41858615384615383,
+      "mean_net_per_contract": -0.0028916426512968297,
+      "break_even_win_rate": 0.8560578410191726,
+      "loss_erases_wins": 5.947234966325583,
+      "fees": 25.80652,
+      "contracts": 3470.0,
+      "stop_count": 52,
+      "entry_94_plus": 127
+    },
+    "since_no_spread": {
+      "n": 22,
+      "wins": 18,
+      "losses": 4,
+      "win_rate": 0.8181818181818182,
+      "win_rate_95": [
+        0.6148297802336213,
+        0.9269323397589488
+      ],
+      "net_pnl": -5.634599999999999,
+      "mean_entry": 0.915416,
+      "mean_winning_net": 0.07499444444444445,
+      "mean_losing_net": -0.47834,
+      "mean_net_per_contract": -0.025611818181818177,
+      "break_even_win_rate": 0.8644681436382657,
+      "loss_erases_wins": 6.378339136232313,
+      "fees": 1.84308,
+      "contracts": 220.0,
+      "stop_count": 4,
+      "entry_94_plus": 7
+    },
+    "entry_bins": {
+      "80-85": {
+        "n": 11,
+        "wins": 7,
+        "losses": 4,
+        "win_rate": 0.6363636363636364,
+        "win_rate_95": [
+          0.35379677689163724,
+          0.8483377638586862
+        ],
+        "net_pnl": -2.0374,
+        "mean_entry": 0.8134445454545455,
+        "mean_winning_net": 0.1725142857142857,
+        "mean_losing_net": -0.352835,
+        "mean_net_per_contract": -0.018521818181818184,
+        "break_even_win_rate": 0.6716198338792286,
+        "loss_erases_wins": 2.045250910897648,
+        "fees": 1.8585,
+        "contracts": 110.0,
+        "stop_count": 4,
+        "entry_94_plus": 0
+      },
+      "85-90": {
+        "n": 42,
+        "wins": 32,
+        "losses": 10,
+        "win_rate": 0.7619047619047619,
+        "win_rate_95": [
+          0.6147216491768113,
+          0.8651917918898182
+        ],
+        "net_pnl": 0.49640000000000095,
+        "mean_entry": 0.877547619047619,
+        "mean_winning_net": 0.11458,
+        "mean_losing_net": -0.361692,
+        "mean_net_per_contract": 0.0011819047619047666,
+        "break_even_win_rate": 0.7594231867504283,
+        "loss_erases_wins": 3.1566765578635017,
+        "fees": 4.8446,
+        "contracts": 420.0,
+        "stop_count": 10,
+        "entry_94_plus": 0
+      },
+      "90-94": {
+        "n": 166,
+        "wins": 141,
+        "losses": 25,
+        "win_rate": 0.8493975903614458,
+        "win_rate_95": [
+          0.7871267207953296,
+          0.8958626057300916
+        ],
+        "net_pnl": -3.917000000000001,
+        "mean_entry": 0.9199939397590361,
+        "mean_winning_net": 0.07493581560283688,
+        "mean_losing_net": -0.43830600000000003,
+        "mean_net_per_contract": -0.002359638554216868,
+        "break_even_win_rate": 0.8539951084951648,
+        "loss_erases_wins": 5.849085600442932,
+        "fees": 12.66306,
+        "contracts": 1660.0,
+        "stop_count": 25,
+        "entry_94_plus": 0
+      },
+      "94-97": {
+        "n": 127,
+        "wins": 114,
+        "losses": 13,
+        "win_rate": 0.8976377952755905,
+        "win_rate_95": [
+          0.8327267299026505,
+          0.9391990184831839
+        ],
+        "net_pnl": -6.9544,
+        "mean_entry": 0.9514060157480315,
+        "mean_winning_net": 0.04460640350877193,
+        "mean_losing_net": -0.44465923076923075,
+        "mean_net_per_contract": -0.005475905511811023,
+        "break_even_win_rate": 0.9088298862956183,
+        "loss_erases_wins": 9.968506667025682,
+        "fees": 6.30876,
+        "contracts": 1270.0,
+        "stop_count": 13,
+        "entry_94_plus": 127
+      }
+    },
+    "journal_reconciled": 347,
+    "journal_mismatch": 0
+  },
+  "XRP": {
+    "all": {
+      "n": 233,
+      "wins": 206,
+      "losses": 27,
+      "win_rate": 0.8841201716738197,
+      "win_rate_95": [
+        0.8366513880697635,
+        0.9191280020373798
+      ],
+      "net_pnl": 38.2196,
+      "mean_entry": 0.9213331330472103,
+      "mean_winning_net": 0.0704389644012945,
+      "mean_losing_net": -0.40019549382716046,
+      "mean_net_per_contract": 0.01590192417739628,
+      "break_even_win_rate": 0.8503319016069536,
+      "loss_erases_wins": 5.681450561186924,
+      "fees": 18.56007,
+      "contracts": 2690.0,
+      "stop_count": 27,
+      "entry_94_plus": 109
+    },
+    "since_no_spread": {
+      "n": 9,
+      "wins": 8,
+      "losses": 1,
+      "win_rate": 0.8888888888888888,
+      "win_rate_95": [
+        0.5649937852319399,
+        0.9801096286728695
+      ],
+      "net_pnl": 1.9198000000000004,
+      "mean_entry": 0.9212782222222222,
+      "mean_winning_net": 0.05948208333333333,
+      "mean_losing_net": -0.321195,
+      "mean_net_per_contract": 0.01718462962962963,
+      "break_even_win_rate": 0.8437466137638528,
+      "loss_erases_wins": 5.399861302773244,
+      "fees": 1.15012,
+      "contracts": 170.0,
+      "stop_count": 1,
+      "entry_94_plus": 6
+    },
+    "entry_bins": {
+      "80-85": {
+        "n": 18,
+        "wins": 13,
+        "losses": 5,
+        "win_rate": 0.7222222222222222,
+        "win_rate_95": [
+          0.49126922453805477,
+          0.8750043085364452
+        ],
+        "net_pnl": -1.081800000000001,
+        "mean_entry": 0.8204962962962963,
+        "mean_winning_net": 0.16054487179487179,
+        "mean_losing_net": -0.32992166666666667,
+        "mean_net_per_contract": 0.024304166666666658,
+        "break_even_win_rate": 0.6726690626062731,
+        "loss_erases_wins": 2.055012178079457,
+        "fees": 3.3563,
+        "contracts": 205.0,
+        "stop_count": 5,
+        "entry_94_plus": 0
+      },
+      "85-90": {
+        "n": 25,
+        "wins": 20,
+        "losses": 5,
+        "win_rate": 0.8,
+        "win_rate_95": [
+          0.6086866446346177,
+          0.9113954589934752
+        ],
+        "net_pnl": 7.2023,
+        "mean_entry": 0.8735124,
+        "mean_winning_net": 0.117878,
+        "mean_losing_net": -0.37251,
+        "mean_net_per_contract": 0.019800400000000003,
+        "break_even_win_rate": 0.7596229924060133,
+        "loss_erases_wins": 3.1601316615483808,
+        "fees": 2.9196,
+        "contracts": 270.0,
+        "stop_count": 5,
+        "entry_94_plus": 0
+      },
+      "90-94": {
+        "n": 81,
+        "wins": 74,
+        "losses": 7,
+        "win_rate": 0.9135802469135802,
+        "win_rate_95": [
+          0.8321989792572,
+          0.9575079569627674
+        ],
+        "net_pnl": 32.7016,
+        "mean_entry": 0.9177940658436214,
+        "mean_winning_net": 0.07591594594594595,
+        "mean_losing_net": -0.41979285714285713,
+        "mean_net_per_contract": 0.03307691358024691,
+        "break_even_win_rate": 0.8468537466494295,
+        "loss_erases_wins": 5.52970593874652,
+        "fees": 5.90004,
+        "contracts": 890.0,
+        "stop_count": 7,
+        "entry_94_plus": 0
+      },
+      "94-97": {
+        "n": 109,
+        "wins": 99,
+        "losses": 10,
+        "win_rate": 0.908256880733945,
+        "win_rate_95": [
+          0.8393131069442974,
+          0.9494031111880226
+        ],
+        "net_pnl": -0.602499999999998,
+        "mean_entry": 0.9515830948012233,
+        "mean_winning_net": 0.0449293265993266,
+        "mean_losing_net": -0.435457,
+        "mean_net_per_contract": 0.0008571865443425098,
+        "break_even_win_rate": 0.90647251157754,
+        "loss_erases_wins": 9.692043770950411,
+        "fees": 6.38413,
+        "contracts": 1325.0,
+        "stop_count": 10,
+        "entry_94_plus": 109
+      }
+    },
+    "journal_reconciled": 233,
+    "journal_mismatch": 0
+  },
+  "DOGE": {
+    "all": {
+      "n": 115,
+      "wins": 105,
+      "losses": 10,
+      "win_rate": 0.9130434782608695,
+      "win_rate_95": [
+        0.8473013610685256,
+        0.952082019835131
+      ],
+      "net_pnl": 24.122,
+      "mean_entry": 0.9309914347826087,
+      "mean_winning_net": 0.06329371428571429,
+      "mean_losing_net": -0.423364,
+      "mean_net_per_contract": 0.020975652173913045,
+      "break_even_win_rate": 0.8699420302447833,
+      "loss_erases_wins": 6.688879058177747,
+      "fees": 6.78785,
+      "contracts": 1150.0,
+      "stop_count": 10,
+      "entry_94_plus": 68
+    },
+    "since_no_spread": {
+      "n": 10,
+      "wins": 10,
+      "losses": 0,
+      "win_rate": 1.0,
+      "win_rate_95": [
+        0.7224598312333834,
+        1.0
+      ],
+      "net_pnl": 9.3368,
+      "mean_entry": 0.90061,
+      "mean_winning_net": 0.093368,
+      "mean_losing_net": null,
+      "mean_net_per_contract": 0.093368,
+      "break_even_win_rate": null,
+      "loss_erases_wins": null,
+      "fees": 0.6022,
+      "contracts": 100.0,
+      "stop_count": 0,
+      "entry_94_plus": 3
+    },
+    "entry_bins": {
+      "80-85": {
+        "n": 9,
+        "wins": 7,
+        "losses": 2,
+        "win_rate": 0.7777777777777778,
+        "win_rate_95": [
+          0.4525833436728054,
+          0.9367762376877727
+        ],
+        "net_pnl": 4.454,
+        "mean_entry": 0.8173533333333334,
+        "mean_winning_net": 0.16884857142857143,
+        "mean_losing_net": -0.36827,
+        "mean_net_per_contract": 0.04948888888888888,
+        "break_even_win_rate": 0.6856400422359521,
+        "loss_erases_wins": 2.1810667208149312,
+        "fees": 1.2842,
+        "contracts": 90.0,
+        "stop_count": 2,
+        "entry_94_plus": 0
+      },
+      "85-90": {
+        "n": 5,
+        "wins": 5,
+        "losses": 0,
+        "win_rate": 1.0,
+        "win_rate_95": [
+          0.5655085052479191,
+          1.0000000000000002
+        ],
+        "net_pnl": 6.171,
+        "mean_entry": 0.8686,
+        "mean_winning_net": 0.12342,
+        "mean_losing_net": null,
+        "mean_net_per_contract": 0.12342,
+        "break_even_win_rate": null,
+        "loss_erases_wins": null,
+        "fees": 0.399,
+        "contracts": 50.0,
+        "stop_count": 0,
+        "entry_94_plus": 0
+      },
+      "90-94": {
+        "n": 33,
+        "wins": 30,
+        "losses": 3,
+        "win_rate": 0.9090909090909091,
+        "win_rate_95": [
+          0.7642705646564897,
+          0.968596628950737
+        ],
+        "net_pnl": 7.746700000000001,
+        "mean_entry": 0.9265431212121212,
+        "mean_winning_net": 0.06852066666666666,
+        "mean_losing_net": -0.4269833333333333,
+        "mean_net_per_contract": 0.023474848484848487,
+        "break_even_win_rate": 0.8617152098334894,
+        "loss_erases_wins": 6.231453284167308,
+        "fees": 2.09407,
+        "contracts": 330.0,
+        "stop_count": 3,
+        "entry_94_plus": 0
+      },
+      "94-97": {
+        "n": 68,
+        "wins": 63,
+        "losses": 5,
+        "win_rate": 0.9264705882352942,
+        "win_rate_95": [
+          0.839146060418006,
+          0.9681856248451285
+        ],
+        "net_pnl": 5.750299999999999,
+        "mean_entry": 0.9527781176470588,
+        "mean_winning_net": 0.044304444444444445,
+        "mean_losing_net": -0.44323,
+        "mean_net_per_contract": 0.008456323529411764,
+        "break_even_win_rate": 0.9091255090808399,
+        "loss_erases_wins": 10.004188192807343,
+        "fees": 3.01058,
+        "contracts": 680.0,
+        "stop_count": 5,
+        "entry_94_plus": 68
+      }
+    },
+    "journal_reconciled": 115,
+    "journal_mismatch": 0
+  },
+  "BNB": {
+    "all": {
+      "n": 176,
+      "wins": 151,
+      "losses": 25,
+      "win_rate": 0.8579545454545454,
+      "win_rate_95": [
+        0.7987165869518574,
+        0.901899955605593
+      ],
+      "net_pnl": -3.5802999999999976,
+      "mean_entry": 0.9266474204545454,
+      "mean_winning_net": 0.06494013245033113,
+      "mean_losing_net": -0.4065596,
+      "mean_net_per_contract": -0.0020342613636363627,
+      "break_even_win_rate": 0.8622689940610474,
+      "loss_erases_wins": 6.260529269954191,
+      "fees": 12.41224,
+      "contracts": 1760.0,
+      "stop_count": 25,
+      "entry_94_plus": 91
+    },
+    "since_no_spread": {
+      "n": 5,
+      "wins": 5,
+      "losses": 0,
+      "win_rate": 1.0,
+      "win_rate_95": [
+        0.5655085052479191,
+        1.0000000000000002
+      ],
+      "net_pnl": 2.8803,
+      "mean_entry": 0.93842,
+      "mean_winning_net": 0.057606,
+      "mean_losing_net": null,
+      "mean_net_per_contract": 0.057606,
+      "break_even_win_rate": null,
+      "loss_erases_wins": null,
+      "fees": 0.1987,
+      "contracts": 50.0,
+      "stop_count": 0,
+      "entry_94_plus": 4
+    },
+    "entry_bins": {
+      "80-85": {
+        "n": 9,
+        "wins": 3,
+        "losses": 6,
+        "win_rate": 0.3333333333333333,
+        "win_rate_95": [
+          0.12058159868274293,
+          0.6458026525009102
+        ],
+        "net_pnl": -15.7645,
+        "mean_entry": 0.8289177777777778,
+        "mean_winning_net": 0.16959,
+        "mean_losing_net": -0.34753666666666666,
+        "mean_net_per_contract": -0.17516111111111113,
+        "break_even_win_rate": 0.6720532687027034,
+        "loss_erases_wins": 2.0492757041492227,
+        "fees": 1.8419,
+        "contracts": 90.0,
+        "stop_count": 6,
+        "entry_94_plus": 0
+      },
+      "85-90": {
+        "n": 20,
+        "wins": 15,
+        "losses": 5,
+        "win_rate": 0.75,
+        "win_rate_95": [
+          0.5312949900419365,
+          0.888139947210597
+        ],
+        "net_pnl": 1.4358000000000009,
+        "mean_entry": 0.879915,
+        "mean_winning_net": 0.110998,
+        "mean_losing_net": -0.304278,
+        "mean_net_per_contract": 0.007179000000000004,
+        "break_even_win_rate": 0.7327127019139079,
+        "loss_erases_wins": 2.7412926359033496,
+        "fees": 2.3026,
+        "contracts": 200.0,
+        "stop_count": 5,
+        "entry_94_plus": 0
+      },
+      "90-94": {
+        "n": 56,
+        "wins": 52,
+        "losses": 4,
+        "win_rate": 0.9285714285714286,
+        "win_rate_95": [
+          0.830243171685138,
+          0.9718744187536204
+        ],
+        "net_pnl": 22.1295,
+        "mean_entry": 0.920385125,
+        "mean_winning_net": 0.07484192307692308,
+        "mean_losing_net": -0.4197075,
+        "mean_net_per_contract": 0.03951696428571429,
+        "break_even_win_rate": 0.8486664434642723,
+        "loss_erases_wins": 5.607919769360035,
+        "fees": 3.56483,
+        "contracts": 560.0,
+        "stop_count": 4,
+        "entry_94_plus": 0
+      },
+      "94-97": {
+        "n": 91,
+        "wins": 81,
+        "losses": 10,
+        "win_rate": 0.8901098901098901,
+        "win_rate_95": [
+          0.8094107161611684,
+          0.9392059246378058
+        ],
+        "net_pnl": -11.381099999999996,
+        "mean_entry": 0.9504375714285714,
+        "mean_winning_net": 0.04617827160493827,
+        "mean_losing_net": -0.487855,
+        "mean_net_per_contract": -0.012506703296703295,
+        "break_even_win_rate": 0.9135292236265391,
+        "loss_erases_wins": 10.56460068868903,
+        "fees": 4.70291,
+        "contracts": 910.0,
+        "stop_count": 10,
+        "entry_94_plus": 91
+      }
+    },
+    "journal_reconciled": 176,
+    "journal_mismatch": 0
+  },
+  "HYPE": {
+    "all": {
+      "n": 177,
+      "wins": 147,
+      "losses": 30,
+      "win_rate": 0.8305084745762712,
+      "win_rate_95": [
+        0.7683555602355276,
+        0.878619472057927
+      ],
+      "net_pnl": -21.6798,
+      "mean_entry": 0.9311134802259887,
+      "mean_winning_net": 0.06342809523809524,
+      "mean_losing_net": -0.3830636666666667,
+      "mean_net_per_contract": -0.012248474576271188,
+      "break_even_win_rate": 0.8579411746198699,
+      "loss_erases_wins": 6.039337382412781,
+      "fees": 12.87434,
+      "contracts": 1770.0,
+      "stop_count": 30,
+      "entry_94_plus": 85
+    },
+    "since_no_spread": {
+      "n": 3,
+      "wins": 2,
+      "losses": 1,
+      "win_rate": 0.6666666666666666,
+      "win_rate_95": [
+        0.2076549551264879,
+        0.9385096847238394
+      ],
+      "net_pnl": -3.8299,
+      "mean_entry": 0.9413333333333332,
+      "mean_winning_net": 0.056545,
+      "mean_losing_net": -0.49607999999999997,
+      "mean_net_per_contract": -0.12766333333333332,
+      "break_even_win_rate": 0.8976792580864058,
+      "loss_erases_wins": 8.773189495092405,
+      "fees": 0.2899,
+      "contracts": 30.0,
+      "stop_count": 1,
+      "entry_94_plus": 2
+    },
+    "entry_bins": {
+      "80-85": {
+        "n": 7,
+        "wins": 5,
+        "losses": 2,
+        "win_rate": 0.7142857142857143,
+        "win_rate_95": [
+          0.35892909014821267,
+          0.9177828342909844
+        ],
+        "net_pnl": 2.3687,
+        "mean_entry": 0.8134285714285715,
+        "mean_winning_net": 0.179236,
+        "mean_losing_net": -0.329655,
+        "mean_net_per_contract": 0.03383857142857143,
+        "break_even_win_rate": 0.647790980779774,
+        "loss_erases_wins": 1.83922314713562,
+        "fees": 1.0913,
+        "contracts": 70.0,
+        "stop_count": 2,
+        "entry_94_plus": 0
+      },
+      "85-90": {
+        "n": 6,
+        "wins": 4,
+        "losses": 2,
+        "win_rate": 0.6666666666666666,
+        "win_rate_95": [
+          0.29998832134152864,
+          0.9032306674407831
+        ],
+        "net_pnl": -2.3817000000000004,
+        "mean_entry": 0.879,
+        "mean_winning_net": 0.1095275,
+        "mean_losing_net": -0.33814,
+        "mean_net_per_contract": -0.03969500000000001,
+        "break_even_win_rate": 0.7553373876817058,
+        "loss_erases_wins": 3.087261190112072,
+        "fees": 0.7917,
+        "contracts": 60.0,
+        "stop_count": 2,
+        "entry_94_plus": 0
+      },
+      "90-94": {
+        "n": 79,
+        "wins": 68,
+        "losses": 11,
+        "win_rate": 0.8607594936708861,
+        "win_rate_95": [
+          0.7676246947656393,
+          0.920435410302346
+        ],
+        "net_pnl": 9.802299999999999,
+        "mean_entry": 0.9229374050632911,
+        "mean_winning_net": 0.0716885294117647,
+        "mean_losing_net": -0.35405363636363635,
+        "mean_net_per_contract": 0.012407974683544303,
+        "break_even_win_rate": 0.8316151530793318,
+        "loss_erases_wins": 4.938776667185101,
+        "fees": 5.7250499999999995,
+        "contracts": 790.0,
+        "stop_count": 11,
+        "entry_94_plus": 0
+      },
+      "94-97": {
+        "n": 85,
+        "wins": 70,
+        "losses": 15,
+        "win_rate": 0.8235294117647058,
+        "win_rate_95": [
+          0.7290420197764076,
+          0.8900373304379063
+        ],
+        "net_pnl": -31.4691,
+        "mean_entry": 0.9520827176470589,
+        "mean_winning_net": 0.04449742857142857,
+        "mean_losing_net": -0.4174486666666667,
+        "mean_net_per_contract": -0.037022470588235296,
+        "break_even_win_rate": 0.9036739805139087,
+        "loss_erases_wins": 9.381411017865132,
+        "fees": 5.26629,
+        "contracts": 850.0,
+        "stop_count": 15,
+        "entry_94_plus": 85
+      }
+    },
+    "journal_reconciled": 177,
+    "journal_mismatch": 0
+  }
+}

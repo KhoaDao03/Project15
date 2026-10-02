@@ -8,13 +8,14 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Setting | Shared value |
 | --- | --- |
 | Model | Bleep ATR finish estimate |
-| Early window | `420 < seconds_remaining <= 480` |
-| Early probability floor | BTC 87%; ETH 86%; SOL 83%; XRP 85%; DOGE 83%; BNB 86%; HYPE 84% |
+| Early window | `420 < seconds_remaining <= 600` |
+| Early probability floor | BTC 83%; ETH 83%; SOL 86%; XRP 85%; DOGE 83%; BNB 91%; HYPE 87% |
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 0.80; ETH 0.80; SOL 1.00; XRP 1.25; BNB 1.00; HYPE 1.00; DOGE 1.10 |
+| ATR sigma multiplier | BTC 0.95; ETH 0.95; SOL 1.00; XRP 1.25; BNB 1.25; HYPE 1.15; DOGE 1.10 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH/BNB/HYPE/DOGE; +10pp SOL/XRP; maximum 98% |
+| Spread filter | Disabled for all bots; zero spreads allowed. Missing/invalid/crossed quotes still fail validation. Legacy `max_spread` is ignored. |
 | Purchase range | 80–96¢ |
 | Same-side confirmations | 1 standard; 1 late |
 | Normalized lead minimum | Disabled; fresh side confirmation remains |
@@ -46,7 +47,7 @@ histories and portfolios must not be reset or relabeled to claim they ran Bleep.
 ## BNB and HYPE
 
 Added presets use ETH's settings, including its +6pp market-respect cap, with the early probability thresholds listed above.
-ATR sigma multipliers are BNB **1.00** and HYPE **1.00**.
+ATR sigma multipliers are BNB **1.25** and HYPE **1.15**.
 Kalshi public metadata captured on September 26, 2026 confirms the same
 60-second CF Benchmarks settlement average, with BNB rounded to two decimal
 places and HYPE to four. HYPE uses `HYPEUSD_RTI`, not the retired
@@ -78,4 +79,4 @@ prices and strikes preserve that precision.
 Public contract fixture: `tests/fixtures/doge15-20260926.json`.
 Source: [DOGE series](https://api.elections.kalshi.com/trade-api/v2/series/KXDOGE15M).
 
-At exactly 480 seconds remaining, the early threshold applies. At exactly 420 seconds remaining, the floor becomes 83%, including the existing late window; the final one-second entry cutoff remains in force. These thresholds apply after the market-respect cap.
+At exactly 600 seconds remaining, the early threshold applies. At exactly 420 seconds remaining, the floor becomes 83%, including the existing late window; the final one-second entry cutoff remains in force. These thresholds apply after the market-respect cap.

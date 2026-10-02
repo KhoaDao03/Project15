@@ -18,7 +18,7 @@ def candidate(side="yes"):
 
 
 @pytest.mark.parametrize("side", ["yes", "no"])
-@pytest.mark.parametrize("spread,allowed", [(".04", True), (".041", False)])
+@pytest.mark.parametrize("spread,allowed", [("0", True), (".04", True), (".041", True)])
 def test_spread_boundary(side, spread, allowed, market, config, now):
     ask = D(".85") + D(spread)
     book = make_book(side, ".85", str(ask), now)

@@ -70,7 +70,8 @@ async def export_history(client, directory):
 
 
 async def run(directory, admin_port):
-    async with httpx.AsyncClient(base_url=f"http://127.0.0.1:{admin_port}", timeout=3,
+    # Allow the fleet endpoint its five-second executor read plus response overhead.
+    async with httpx.AsyncClient(base_url=f"http://127.0.0.1:{admin_port}", timeout=6,
                                  follow_redirects=False, trust_env=False) as client:
         async def snapshots():
             while True:
