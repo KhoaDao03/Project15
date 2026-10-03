@@ -12,6 +12,7 @@ from pathlib import Path
 import httpx
 
 from .public_dashboard import public_trade, read_snapshot
+from .public_performance import build_performance
 from .public_site import ASSETS
 
 LOG = logging.getLogger(__name__)
@@ -85,6 +86,16 @@ async def run(directory, admin_port):
             while True:
                 try:
                     await export_history(client, directory)
+                    histories = {}
+                    for asset in ASSETS:
+                        try:
+                            data = json.loads((directory / f"history-{asset}.json").read_text())
+                            if not isinstance(data["rows"], list) or data["total"] != len(data["rows"]):
+                                raise ValueError("Incomplete history")
+                            histories[asset] = data
+                        except (OSError, ValueError, KeyError, TypeError):
+                            LOG.warning("Public daily performance missing history for %s", asset)
+                    publish(directory, "performance.json", build_performance(histories, ASSETS, time.time()))
                 except (httpx.HTTPError, OSError, ValueError, KeyError, TypeError):
                     LOG.warning("Public histories unavailable; retaining previous data")
                 await asyncio.sleep(60)

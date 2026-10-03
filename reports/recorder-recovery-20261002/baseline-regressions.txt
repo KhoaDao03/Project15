@@ -1,0 +1,153 @@
+FFFF.                                                                    [100%]
+=================================== FAILURES ===================================
+________________ test_slow_maintenance_still_drains_all_events _________________
+
+research_recorder = <function research_recorder.<locals>.create at 0x7d5ea4360400>
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-244/test_slow_maintenance_still_dr0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d5ea432f9e0>
+
+    def test_slow_maintenance_still_drains_all_events(research_recorder, tmp_path, monkeypatch):
+        clock = [100.0]
+        entered, release = threading.Event(), threading.Event()
+        calls = []
+        fake_time = SimpleNamespace(**{k: getattr(time, k) for k in dir(time) if not k.startswith("_")})
+        fake_time.monotonic = lambda: clock[0]
+        monkeypatch.setattr("btc15.research_log.time", fake_time)
+    
+        def slow_retention(self):
+            calls.append(clock[0])
+            entered.set()
+            assert release.wait(5)
+            clock[0] += 6  # Each pass takes longer than its five-second interval.
+            return True
+    
+        monkeypatch.setattr(ResearchLog, "_retention", slow_retention)
+        log = research_recorder(tmp_path)
+        try:
+            assert entered.wait(5)
+            for i in range(500):
+                assert log.emit("evidence", {"index": i})
+        finally:
+            release.set()
+        deadline = time.monotonic() + 5
+        while log.status()["written"] < 500 and time.monotonic() < deadline:
+            time.sleep(0.01)
+        log.close()
+>       assert len(calls) == 1
+E       assert 501 == 1
+E        +  where 501 = len([100.0, 106.0, 112.0, 118.0, 124.0, 130.0, ...])
+
+tests/test_recorder_recovery_pressure.py:44: AssertionError
+_______ test_retention_shared_scan_and_busy_lock_never_skip_disk_reserve _______
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-244/test_retention_shared_scan_and0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d5ea432efc0>
+
+    def test_retention_shared_scan_and_busy_lock_never_skip_disk_reserve(tmp_path, monkeypatch):
+        # Only retention's filesystem behavior; no background writer races this test.
+        first = ResearchLog.__new__(ResearchLog)
+        first.root = tmp_path
+        first.archive_dir = tmp_path.parent / "archive"
+        first.max_disk_bytes = 1000000
+        first.retention_seconds = 86400
+        first.min_free_bytes = 10
+        second = ResearchLog.__new__(ResearchLog)
+        second.__dict__.update(first.__dict__)
+        scans = []
+        original = Path.glob
+    
+        def glob(path, pattern):
+            if pattern == "*/*/events-*.jsonl.gz":
+                scans.append(pattern)
+            return original(path, pattern)
+    
+        monkeypatch.setattr(Path, "glob", glob)
+        monkeypatch.setattr("btc15.research_log.shutil.disk_usage", lambda _: SimpleNamespace(free=100))
+        assert first._retention() and second._retention()
+>       assert len(scans) == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = len(['*/*/events-*.jsonl.gz', '*/*/events-*.jsonl.gz'])
+
+tests/test_recorder_recovery_pressure.py:71: AssertionError
+_ test_backlog_does_not_trigger_stall_reconnect_but_real_stall_still_does[reference] _
+
+store = <btc15.storage.Store object at 0x7d5ea436b320>
+config = Strategy(asset='BTC', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.85, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001')
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d5ea436b110>
+stream = 'reference'
+
+    @pytest.mark.parametrize("stream", ["reference", "book"])
+    def test_backlog_does_not_trigger_stall_reconnect_but_real_stall_still_does(
+        store, config, market, now, monkeypatch, stream
+    ):
+        engine, recovery = ready_inputs(store, config, market, now)
+        if stream == "reference":
+            engine.ticks = [Tick(now - 20, now - 20, market.spec.strike)]
+        else:
+            engine.books[market.ticker].received = now - 20
+        clock = [100.0]
+        monkeypatch.setattr("btc15.collector_recovery.time", SimpleNamespace(monotonic=lambda: clock[0]))
+        # A partial timer before the backlog must not carry through the catch-up.
+        recovery.check(engine, now, 0, 0, 100, True)
+        clock[0] += 5
+        recovery.pressure(2.1, 20, 100, now)
+        for _ in range(3):
+            clock[0] += 11
+            recovery.check(engine, now, 2.1, 20, 100, True)
+            assert recovery.paused.is_set()
+>           assert not recovery.drain.is_set()
+E           assert not True
+E            +  where True = is_set()
+E            +    where is_set = <threading.Event at 0x7d5ea2f15040: set>.is_set
+E            +      where <threading.Event at 0x7d5ea2f15040: set> = <btc15.collector_recovery.CollectorRecovery object at 0x7d5ea440a090>.drain
+
+tests/test_recorder_recovery_pressure.py:103: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  btc15.collector_recovery:collector_recovery.py:52 Collector backlog rising: 2.100s, 20/100 events
+WARNING  btc15.collector_recovery:collector_recovery.py:46 Collector recovery requested: REFERENCE_STREAM_STALLED; entries blocked
+_ test_backlog_does_not_trigger_stall_reconnect_but_real_stall_still_does[book] _
+
+store = <btc15.storage.Store object at 0x7d5ea43bfc50>
+config = Strategy(asset='BTC', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.85, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001')
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7d5ea43bea20>
+stream = 'book'
+
+    @pytest.mark.parametrize("stream", ["reference", "book"])
+    def test_backlog_does_not_trigger_stall_reconnect_but_real_stall_still_does(
+        store, config, market, now, monkeypatch, stream
+    ):
+        engine, recovery = ready_inputs(store, config, market, now)
+        if stream == "reference":
+            engine.ticks = [Tick(now - 20, now - 20, market.spec.strike)]
+        else:
+            engine.books[market.ticker].received = now - 20
+        clock = [100.0]
+        monkeypatch.setattr("btc15.collector_recovery.time", SimpleNamespace(monotonic=lambda: clock[0]))
+        # A partial timer before the backlog must not carry through the catch-up.
+        recovery.check(engine, now, 0, 0, 100, True)
+        clock[0] += 5
+        recovery.pressure(2.1, 20, 100, now)
+        for _ in range(3):
+            clock[0] += 11
+            recovery.check(engine, now, 2.1, 20, 100, True)
+            assert recovery.paused.is_set()
+>           assert not recovery.drain.is_set()
+E           assert not True
+E            +  where True = is_set()
+E            +    where is_set = <threading.Event at 0x7d5ea437cb90: set>.is_set
+E            +      where <threading.Event at 0x7d5ea437cb90: set> = <btc15.collector_recovery.CollectorRecovery object at 0x7d5ea47d2c90>.drain
+
+tests/test_recorder_recovery_pressure.py:103: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  btc15.collector_recovery:collector_recovery.py:52 Collector backlog rising: 2.100s, 20/100 events
+WARNING  btc15.collector_recovery:collector_recovery.py:46 Collector recovery requested: BOOK_STREAM_STALLED:KXBTC15M-26SEP081800-00; entries blocked
+=========================== short test summary info ============================
+FAILED tests/test_recorder_recovery_pressure.py::test_slow_maintenance_still_drains_all_events
+FAILED tests/test_recorder_recovery_pressure.py::test_retention_shared_scan_and_busy_lock_never_skip_disk_reserve
+FAILED tests/test_recorder_recovery_pressure.py::test_backlog_does_not_trigger_stall_reconnect_but_real_stall_still_does[reference]
+FAILED tests/test_recorder_recovery_pressure.py::test_backlog_does_not_trigger_stall_reconnect_but_real_stall_still_does[book]
+4 failed, 1 passed in 2.28s

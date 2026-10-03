@@ -9,11 +9,11 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | --- | --- |
 | Model | Bleep ATR finish estimate |
 | Early window | `420 < seconds_remaining <= 600` |
-| Early probability floor | BTC 83%; ETH 83%; SOL 86%; XRP 85%; DOGE 83%; BNB 91%; HYPE 87% |
+| Early probability floor | BTC 83%; ETH 83%; SOL 86%; XRP 86%; DOGE 83%; BNB 91%; HYPE 87% |
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 0.95; ETH 0.95; SOL 1.00; XRP 1.25; BNB 1.25; HYPE 1.15; DOGE 1.10 |
+| ATR sigma multiplier | BTC 0.95; ETH 0.95; SOL 1.00; XRP 1.10; BNB 1.25; HYPE 1.15; DOGE 1.10 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH/BNB/HYPE/DOGE; +10pp SOL/XRP; maximum 98% |
 | Spread filter | Disabled for all bots; zero spreads allowed. Missing/invalid/crossed quotes still fail validation. Legacy `max_spread` is ignored. |
 | Purchase range | 80–96¢ |

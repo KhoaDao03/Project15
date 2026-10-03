@@ -1,0 +1,4422 @@
+[
+  {
+    "asset": "BNB",
+    "session": "20260926T200022Z-f40396c10d63451099f032815596aac7",
+    "started_at": 1790452822.3214648,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.7003596,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 36486
+      },
+      "dropped": 36486,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544727.4484985,
+      "last_capture_seq": 248995,
+      "last_written_seq": 248995,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 2,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-f40396c10d63451099f032815596aac7",
+      "suppressed_records": 578,
+      "written": 212507
+    }
+  },
+  {
+    "asset": "BNB",
+    "session": "20260927T213210Z-a002389ad9be47b6883c2a246d5f63a2",
+    "started_at": 1790544730.0386271,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.3062127,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553610.0539615,
+      "last_capture_seq": 28946,
+      "last_written_seq": 28946,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213210Z-a002389ad9be47b6883c2a246d5f63a2",
+      "suppressed_records": 0,
+      "written": 28946
+    }
+  },
+  {
+    "asset": "BNB",
+    "session": "20260928T000031Z-41ac67f608a949a4837122a3214b2c62",
+    "started_at": 1790553631.0170422,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.850275,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554023.5952632,
+      "last_capture_seq": 2843,
+      "last_written_seq": 2843,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000031Z-41ac67f608a949a4837122a3214b2c62",
+      "suppressed_records": 0,
+      "written": 2843
+    }
+  },
+  {
+    "asset": "BNB",
+    "session": "20260928T000707Z-32195b71a44e4245adf02cae8ef8e4a9",
+    "started_at": 1790554027.0345066,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 37845
+      },
+      "dropped": 37845,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625753.354187,
+      "last_capture_seq": 169029,
+      "last_written_seq": 163112,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8383239,
+      "sampled_out": {},
+      "session": "20260928T000707Z-32195b71a44e4245adf02cae8ef8e4a9",
+      "suppressed_records": 0,
+      "written": 130741
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BNB/20260928T000707Z-32195b71a44e4245adf02cae8ef8e4a9/events-1790625304787930537.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BNB",
+    "session": "20260928T200257Z-9e976ec3ab1349adac8aa0dc6c046c7c",
+    "started_at": 1790625777.8249753,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 132876
+      },
+      "dropped": 132876,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790721020.9144425,
+      "last_capture_seq": 151389,
+      "last_written_seq": 140566,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8380932,
+      "sampled_out": {},
+      "session": "20260928T200257Z-9e976ec3ab1349adac8aa0dc6c046c7c",
+      "suppressed_records": 0,
+      "written": 18049
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BNB/20260928T200257Z-9e976ec3ab1349adac8aa0dc6c046c7c/events-1790720713540207512.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BNB",
+    "session": "20260929T223054Z-a9a72c190f77428e94fc1e4437525810",
+    "started_at": 1790721054.062808,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "legacy_journal_read": {
+          "at": 1790736494.3262613,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 28452
+      },
+      "dropped": 28452,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790736521.3428292,
+      "last_capture_seq": 33481,
+      "last_written_seq": 1125,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388514,
+      "sampled_out": {},
+      "session": "20260929T223054Z-a9a72c190f77428e94fc1e4437525810",
+      "suppressed_records": 0,
+      "written": 1125
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BNB/20260929T223054Z-a9a72c190f77428e94fc1e4437525810/events-1790735965939876386.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BNB",
+    "session": "20260930T024919Z-6b109c8951cc4009b7b652d11392c7b9",
+    "started_at": 1790736559.913189,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 2883
+      },
+      "dropped": 2883,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738185.5233283,
+      "last_capture_seq": 6952,
+      "last_written_seq": 118,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388121,
+      "sampled_out": {},
+      "session": "20260930T024919Z-6b109c8951cc4009b7b652d11392c7b9",
+      "suppressed_records": 0,
+      "written": 118
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BNB/20260930T024919Z-6b109c8951cc4009b7b652d11392c7b9/events-1790737809535017982.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BNB",
+    "session": "20260930T031636Z-57ebb94ea01443e1979a0a3fc02392fc",
+    "started_at": 1790738196.6710334,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 26771
+      },
+      "dropped": 26771,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753567.9591143,
+      "last_capture_seq": 31638,
+      "last_written_seq": 1102,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387340,
+      "sampled_out": {},
+      "session": "20260930T031636Z-57ebb94ea01443e1979a0a3fc02392fc",
+      "suppressed_records": 0,
+      "written": 1102
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BNB/20260930T031636Z-57ebb94ea01443e1979a0a3fc02392fc/events-1790753120264671272.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BNB",
+    "session": "20260930T073255Z-b1756f231a364c2d9f6dda45daa62337",
+    "started_at": 1790753575.0098627,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 89698
+      },
+      "dropped": 89698,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802899.965862,
+      "last_capture_seq": 96767,
+      "last_written_seq": 3033,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387879,
+      "sampled_out": {},
+      "session": "20260930T073255Z-b1756f231a364c2d9f6dda45daa62337",
+      "suppressed_records": 0,
+      "written": 3033
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BNB/20260930T073255Z-b1756f231a364c2d9f6dda45daa62337/events-1790802296536859457.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BNB",
+    "session": "20260930T211524Z-c79f40f6a87f48efb9802fc6019d93c6",
+    "started_at": 1790802924.7896044,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790956628.1647499,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 239287
+      },
+      "dropped": 239287,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790956647.1750455,
+      "last_capture_seq": 253146,
+      "last_written_seq": 223148,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388397,
+      "sampled_out": {},
+      "session": "20260930T211524Z-c79f40f6a87f48efb9802fc6019d93c6",
+      "suppressed_records": 0,
+      "written": 11928
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BNB/20260930T211524Z-c79f40f6a87f48efb9802fc6019d93c6/events-1790956274021985611.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BNB",
+    "session": "20261002T155816Z-8b66b194eccf4bda81557521d0d4a192",
+    "started_at": 1790956696.9733834,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957837.2403085,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790957836.9853265,
+      "last_capture_seq": 19328,
+      "last_written_seq": 19328,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-8b66b194eccf4bda81557521d0d4a192",
+      "suppressed_records": 0,
+      "written": 19328
+    }
+  },
+  {
+    "asset": "BNB",
+    "session": "20261002T161731Z-1c50276722c54774ae0d01e804c73ba7",
+    "started_at": 1790957851.2393663,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790974118.8267045,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790973772.4143624,
+      "last_capture_seq": 55873,
+      "last_written_seq": 55873,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-1c50276722c54774ae0d01e804c73ba7",
+      "suppressed_records": 0,
+      "written": 55873
+    }
+  },
+  {
+    "asset": "BNB",
+    "session": "20261002T205032Z-d6636d3b44d84669bc74b06c47f5e798",
+    "started_at": 1790974232.0375564,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790981653.077836,
+      "last_capture_seq": 36630,
+      "last_written_seq": 36630,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-d6636d3b44d84669bc74b06c47f5e798",
+      "suppressed_records": 0,
+      "written": 36630
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BNB/20261002T205032Z-d6636d3b44d84669bc74b06c47f5e798/events-1790981439841540219.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BTC",
+    "session": "20260926T200022Z-03f17a17ea7049109fd8712714dfcf87",
+    "started_at": 1790452822.284731,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.4521105,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544727.4481702,
+      "last_capture_seq": 282257,
+      "last_written_seq": 282257,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-03f17a17ea7049109fd8712714dfcf87",
+      "suppressed_records": 45444,
+      "written": 282256
+    }
+  },
+  {
+    "asset": "BTC",
+    "session": "20260927T213209Z-148fad892849464b8ca2f68c5f7d6c3c",
+    "started_at": 1790544729.9778779,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.0600562,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553610.0535018,
+      "last_capture_seq": 141807,
+      "last_written_seq": 141807,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213209Z-148fad892849464b8ca2f68c5f7d6c3c",
+      "suppressed_records": 0,
+      "written": 141807
+    }
+  },
+  {
+    "asset": "BTC",
+    "session": "20260928T000030Z-d9d7487f712148889bc7bc503ac8c5d3",
+    "started_at": 1790553630.980882,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.6101797,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554023.5949776,
+      "last_capture_seq": 38079,
+      "last_written_seq": 38079,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000030Z-d9d7487f712148889bc7bc503ac8c5d3",
+      "suppressed_records": 0,
+      "written": 38079
+    }
+  },
+  {
+    "asset": "BTC",
+    "session": "20260928T000706Z-dd281176519448e38d45e271136af8e8",
+    "started_at": 1790554026.9908552,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 30762
+      },
+      "dropped": 30762,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625756.4942396,
+      "last_capture_seq": 264389,
+      "last_written_seq": 259771,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8373134,
+      "sampled_out": {},
+      "session": "20260928T000706Z-dd281176519448e38d45e271136af8e8",
+      "suppressed_records": 0,
+      "written": 233211
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BTC/20260928T000706Z-dd281176519448e38d45e271136af8e8/events-1790625299438772001.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BTC",
+    "session": "20260928T200257Z-b690bb761c0942b7b24231380b1f4f01",
+    "started_at": 1790625777.7358053,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 127208
+      },
+      "dropped": 127208,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790721028.9088802,
+      "last_capture_seq": 175314,
+      "last_written_seq": 171955,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388080,
+      "sampled_out": {},
+      "session": "20260928T200257Z-b690bb761c0942b7b24231380b1f4f01",
+      "suppressed_records": 0,
+      "written": 45979
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BTC/20260928T200257Z-b690bb761c0942b7b24231380b1f4f01/events-1790720668336340194.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BTC",
+    "session": "20260929T223053Z-8ac4d159862742768aaa3d565ac9a108",
+    "started_at": 1790721053.963149,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "legacy_journal_read": {
+          "at": 1790736496.283433,
+          "count": 2,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 22114
+      },
+      "dropped": 22114,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790736523.6689556,
+      "last_capture_seq": 32868,
+      "last_written_seq": 6393,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387594,
+      "sampled_out": {},
+      "session": "20260929T223053Z-8ac4d159862742768aaa3d565ac9a108",
+      "suppressed_records": 0,
+      "written": 5445
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BTC/20260929T223053Z-8ac4d159862742768aaa3d565ac9a108/events-1790735983833253391.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BTC",
+    "session": "20260930T024919Z-b2326c554ca34c64af7b0522c3fc303d",
+    "started_at": 1790736559.8064163,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 4511
+      },
+      "dropped": 4511,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738184.4346356,
+      "last_capture_seq": 8441,
+      "last_written_seq": 118,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388540,
+      "sampled_out": {},
+      "session": "20260930T024919Z-b2326c554ca34c64af7b0522c3fc303d",
+      "suppressed_records": 0,
+      "written": 118
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BTC/20260930T024919Z-b2326c554ca34c64af7b0522c3fc303d/events-1790737806771075939.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BTC",
+    "session": "20260930T031636Z-730b74fa8a5b4878a04092093016df89",
+    "started_at": 1790738196.5843341,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 18866
+      },
+      "dropped": 18866,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753571.3447986,
+      "last_capture_seq": 23724,
+      "last_written_seq": 1602,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387264,
+      "sampled_out": {},
+      "session": "20260930T031636Z-730b74fa8a5b4878a04092093016df89",
+      "suppressed_records": 0,
+      "written": 1602
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BTC/20260930T031636Z-730b74fa8a5b4878a04092093016df89/events-1790753111616299760.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BTC",
+    "session": "20260930T073254Z-0d9a174ace654e368d85a71feafb412f",
+    "started_at": 1790753574.9978843,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 62242
+      },
+      "dropped": 62242,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802885.7752182,
+      "last_capture_seq": 71311,
+      "last_written_seq": 3532,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8385278,
+      "sampled_out": {},
+      "session": "20260930T073254Z-0d9a174ace654e368d85a71feafb412f",
+      "suppressed_records": 0,
+      "written": 3532
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BTC/20260930T073254Z-0d9a174ace654e368d85a71feafb412f/events-1790802905047177350.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BTC",
+    "session": "20260930T211524Z-8107abe56bbd48509856cebbf23ae10b",
+    "started_at": 1790802924.7176192,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790956631.2177832,
+          "count": 2,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        },
+        "legacy_journal_read": {
+          "at": 1790956612.7302523,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 193569
+      },
+      "dropped": 193569,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790956650.0935721,
+      "last_capture_seq": 205841,
+      "last_written_seq": 57650,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388446,
+      "sampled_out": {},
+      "session": "20260930T211524Z-8107abe56bbd48509856cebbf23ae10b",
+      "suppressed_records": 0,
+      "written": 7588
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BTC/20260930T211524Z-8107abe56bbd48509856cebbf23ae10b/events-1790956243073730207.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BTC",
+    "session": "20261002T155816Z-5d0c6e66cc674e9db22898ecca765438",
+    "started_at": 1790956696.961607,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957837.243232,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790957836.9849222,
+      "last_capture_seq": 102031,
+      "last_written_seq": 102031,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-5d0c6e66cc674e9db22898ecca765438",
+      "suppressed_records": 0,
+      "written": 102031
+    }
+  },
+  {
+    "asset": "BTC",
+    "session": "20261002T161731Z-96c112b61a124710aa6c5b35800f5611",
+    "started_at": 1790957851.190474,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790974118.9138186,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790973772.388235,
+      "last_capture_seq": 199830,
+      "last_written_seq": 199830,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-96c112b61a124710aa6c5b35800f5611",
+      "suppressed_records": 0,
+      "written": 199830
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BTC/20261002T161731Z-96c112b61a124710aa6c5b35800f5611/events-1790973587178708954.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "BTC",
+    "session": "20261002T205032Z-197cff7462f84354851b75e908b00233",
+    "started_at": 1790974232.0269704,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790981678.029835,
+      "last_capture_seq": 190064,
+      "last_written_seq": 190064,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-197cff7462f84354851b75e908b00233",
+      "suppressed_records": 0,
+      "written": 190064
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/BTC/20261002T205032Z-197cff7462f84354851b75e908b00233/events-1790981134211572348.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260926T200022Z-45f2c7c2467343a3b51fc2e394007f20",
+    "started_at": 1790452822.3567276,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.7006438,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 35560
+      },
+      "dropped": 35560,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544727.44869,
+      "last_capture_seq": 258238,
+      "last_written_seq": 258238,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 2,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-45f2c7c2467343a3b51fc2e394007f20",
+      "suppressed_records": 436,
+      "written": 222676
+    }
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260927T213210Z-00bed11f2ad245a88799ebdd55798547",
+    "started_at": 1790544730.10393,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.3097398,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553610.0540833,
+      "last_capture_seq": 27718,
+      "last_written_seq": 27718,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213210Z-00bed11f2ad245a88799ebdd55798547",
+      "suppressed_records": 0,
+      "written": 27718
+    }
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260928T000031Z-a7a39252393649f7a555285606fe5268",
+    "started_at": 1790553631.0341785,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.6682284,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554023.5953734,
+      "last_capture_seq": 1376,
+      "last_written_seq": 1376,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000031Z-a7a39252393649f7a555285606fe5268",
+      "suppressed_records": 0,
+      "written": 1376
+    }
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260928T000707Z-0e46526dd6584a18b8b5b6e2542a3867",
+    "started_at": 1790554027.0639215,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 36631
+      },
+      "dropped": 36631,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625753.3336945,
+      "last_capture_seq": 175692,
+      "last_written_seq": 171281,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387599,
+      "sampled_out": {},
+      "session": "20260928T000707Z-0e46526dd6584a18b8b5b6e2542a3867",
+      "suppressed_records": 0,
+      "written": 138600
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/DOGE/20260928T000707Z-0e46526dd6584a18b8b5b6e2542a3867/events-1790625303290275637.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260928T200257Z-247d3094a9474de2a97205374cfec873",
+    "started_at": 1790625777.8705146,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 137694
+      },
+      "dropped": 137694,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790721026.5460756,
+      "last_capture_seq": 155519,
+      "last_written_seq": 148127,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8380745,
+      "sampled_out": {},
+      "session": "20260928T200257Z-247d3094a9474de2a97205374cfec873",
+      "suppressed_records": 0,
+      "written": 17353
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/DOGE/20260928T200257Z-247d3094a9474de2a97205374cfec873/events-1790720676042381279.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260929T223054Z-ed232bb75b1e4f7c84355d112f7353e6",
+    "started_at": 1790721054.1148384,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 22242
+      },
+      "dropped": 22242,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790736525.399499,
+      "last_capture_seq": 27776,
+      "last_written_seq": 13550,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387762,
+      "sampled_out": {},
+      "session": "20260929T223054Z-ed232bb75b1e4f7c84355d112f7353e6",
+      "suppressed_records": 0,
+      "written": 4782
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/DOGE/20260929T223054Z-ed232bb75b1e4f7c84355d112f7353e6/events-1790735955232119483.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260930T024919Z-1f4cb2d7f6c74d8ca6806dd87f562c85",
+    "started_at": 1790736559.9901521,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 2899
+      },
+      "dropped": 2899,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738185.5233786,
+      "last_capture_seq": 7186,
+      "last_written_seq": 118,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388210,
+      "sampled_out": {},
+      "session": "20260930T024919Z-1f4cb2d7f6c74d8ca6806dd87f562c85",
+      "suppressed_records": 0,
+      "written": 118
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/DOGE/20260930T024919Z-1f4cb2d7f6c74d8ca6806dd87f562c85/events-1790737812719693552.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260930T031636Z-753d2fb9bb244b549740ff4aaa997cd3",
+    "started_at": 1790738196.7264364,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 26608
+      },
+      "dropped": 26608,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753568.965275,
+      "last_capture_seq": 31168,
+      "last_written_seq": 1102,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388327,
+      "sampled_out": {},
+      "session": "20260930T031636Z-753d2fb9bb244b549740ff4aaa997cd3",
+      "suppressed_records": 0,
+      "written": 1102
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/DOGE/20260930T031636Z-753d2fb9bb244b549740ff4aaa997cd3/events-1790753134708059914.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260930T073255Z-76a9863633a84f789cdd2bf99f03091d",
+    "started_at": 1790753575.0248723,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 82451
+      },
+      "dropped": 82451,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802899.953825,
+      "last_capture_seq": 90379,
+      "last_written_seq": 3033,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387605,
+      "sampled_out": {},
+      "session": "20260930T073255Z-76a9863633a84f789cdd2bf99f03091d",
+      "suppressed_records": 0,
+      "written": 3033
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/DOGE/20260930T073255Z-76a9863633a84f789cdd2bf99f03091d/events-1790802297957866816.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "DOGE",
+    "session": "20260930T211524Z-935bb11e92aa410fa81e3e7198c28c92",
+    "started_at": 1790802924.8130624,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790956648.216764,
+          "count": 2,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        },
+        "legacy_journal_read": {
+          "at": 1790956648.2162893,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 219693
+      },
+      "dropped": 219693,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790956667.940875,
+      "last_capture_seq": 230419,
+      "last_written_seq": 70570,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387897,
+      "sampled_out": {},
+      "session": "20260930T211524Z-935bb11e92aa410fa81e3e7198c28c92",
+      "suppressed_records": 0,
+      "written": 7090
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/DOGE/20260930T211524Z-935bb11e92aa410fa81e3e7198c28c92/events-1790956144608916969.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "DOGE",
+    "session": "20261002T155816Z-cc40111f452d4ab1a74eb4f0de329f9a",
+    "started_at": 1790956696.9814615,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957837.2415173,
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790957836.2241647,
+          "count": 20,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790957836.9854736,
+      "last_capture_seq": 15978,
+      "last_written_seq": 15978,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-cc40111f452d4ab1a74eb4f0de329f9a",
+      "suppressed_records": 0,
+      "written": 15978
+    }
+  },
+  {
+    "asset": "DOGE",
+    "session": "20261002T161731Z-cbda9fbdbdd543c88c54c6e583907e9c",
+    "started_at": 1790957851.3228157,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790974118.809221,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790973772.3640013,
+      "last_capture_seq": 49977,
+      "last_written_seq": 49977,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-cbda9fbdbdd543c88c54c6e583907e9c",
+      "suppressed_records": 0,
+      "written": 49977
+    }
+  },
+  {
+    "asset": "DOGE",
+    "session": "20261002T205032Z-41a2a300f4c047cca5c2f9d5b870b58d",
+    "started_at": 1790974232.0394914,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790981703.1279948,
+      "last_capture_seq": 31483,
+      "last_written_seq": 31483,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-41a2a300f4c047cca5c2f9d5b870b58d",
+      "suppressed_records": 0,
+      "written": 31483
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/DOGE/20261002T205032Z-41a2a300f4c047cca5c2f9d5b870b58d/events-1790981430234173966.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "ETH",
+    "session": "20260926T200022Z-b19ed96582c74a01b04bcac86e56a2a5",
+    "started_at": 1790452822.285975,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.7021234,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544727.4482775,
+      "last_capture_seq": 265439,
+      "last_written_seq": 265439,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-b19ed96582c74a01b04bcac86e56a2a5",
+      "suppressed_records": 47586,
+      "written": 265438
+    }
+  },
+  {
+    "asset": "ETH",
+    "session": "20260927T213209Z-c5b36f5c692b42feb5a85a373bddf03b",
+    "started_at": 1790544729.979477,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.0649323,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553610.0536613,
+      "last_capture_seq": 107323,
+      "last_written_seq": 107323,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213209Z-c5b36f5c692b42feb5a85a373bddf03b",
+      "suppressed_records": 0,
+      "written": 107323
+    }
+  },
+  {
+    "asset": "ETH",
+    "session": "20260928T000030Z-33c21d5ea47c49c89c25eeb9de9e81ae",
+    "started_at": 1790553630.9827485,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.599678,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554023.5950675,
+      "last_capture_seq": 35877,
+      "last_written_seq": 35877,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000030Z-33c21d5ea47c49c89c25eeb9de9e81ae",
+      "suppressed_records": 0,
+      "written": 35877
+    }
+  },
+  {
+    "asset": "ETH",
+    "session": "20260928T000706Z-a2de181fa9b4436d906d678a249a2a5a",
+    "started_at": 1790554026.9919944,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 29640
+      },
+      "dropped": 29640,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625756.4943283,
+      "last_capture_seq": 232935,
+      "last_written_seq": 228950,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8382012,
+      "sampled_out": {},
+      "session": "20260928T000706Z-a2de181fa9b4436d906d678a249a2a5a",
+      "suppressed_records": 0,
+      "written": 202878
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/ETH/20260928T000706Z-a2de181fa9b4436d906d678a249a2a5a/events-1790625306264668649.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "ETH",
+    "session": "20260928T200257Z-b27ea2b217bc4b808c1b8745fdc1770d",
+    "started_at": 1790625777.7391715,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 140906
+      },
+      "dropped": 140906,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790721028.9089785,
+      "last_capture_seq": 189140,
+      "last_written_seq": 127473,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388031,
+      "sampled_out": {},
+      "session": "20260928T200257Z-b27ea2b217bc4b808c1b8745fdc1770d",
+      "suppressed_records": 0,
+      "written": 44517
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/ETH/20260928T200257Z-b27ea2b217bc4b808c1b8745fdc1770d/events-1790720627078487413.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "ETH",
+    "session": "20260929T223053Z-0ef4916ebddd4de4ac7cb30656767899",
+    "started_at": 1790721053.9652436,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 23752
+      },
+      "dropped": 23752,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790736542.3676534,
+      "last_capture_seq": 28990,
+      "last_written_seq": 1625,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388383,
+      "sampled_out": {},
+      "session": "20260929T223053Z-0ef4916ebddd4de4ac7cb30656767899",
+      "suppressed_records": 0,
+      "written": 1625
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/ETH/20260929T223053Z-0ef4916ebddd4de4ac7cb30656767899/events-1790735990297868531.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "ETH",
+    "session": "20260930T024919Z-ed767c6238d345839192a2e586b37f4f",
+    "started_at": 1790736559.8107328,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 3161
+      },
+      "dropped": 3161,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738181.7252629,
+      "last_capture_seq": 7417,
+      "last_written_seq": 118,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8386467,
+      "sampled_out": {},
+      "session": "20260930T024919Z-ed767c6238d345839192a2e586b37f4f",
+      "suppressed_records": 0,
+      "written": 118
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/ETH/20260930T024919Z-ed767c6238d345839192a2e586b37f4f/events-1790737804347071383.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "ETH",
+    "session": "20260930T031636Z-15e91cc77c1a494882e9f81d9230a13c",
+    "started_at": 1790738196.5861084,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 22801
+      },
+      "dropped": 22801,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753571.3448834,
+      "last_capture_seq": 27683,
+      "last_written_seq": 1103,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388159,
+      "sampled_out": {},
+      "session": "20260930T031636Z-15e91cc77c1a494882e9f81d9230a13c",
+      "suppressed_records": 0,
+      "written": 1103
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/ETH/20260930T031636Z-15e91cc77c1a494882e9f81d9230a13c/events-1790753142131262758.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "ETH",
+    "session": "20260930T073254Z-d942d80ab9e54f1b9f3bc2387502a2db",
+    "started_at": 1790753574.9996035,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 71954
+      },
+      "dropped": 71954,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802911.282167,
+      "last_capture_seq": 79995,
+      "last_written_seq": 3034,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8386893,
+      "sampled_out": {},
+      "session": "20260930T073254Z-d942d80ab9e54f1b9f3bc2387502a2db",
+      "suppressed_records": 0,
+      "written": 3034
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/ETH/20260930T073254Z-d942d80ab9e54f1b9f3bc2387502a2db/events-1790802395131384927.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "ETH",
+    "session": "20260930T211524Z-a4fbf40897e94ba3b5042fd4bab0a889",
+    "started_at": 1790802924.7212417,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790956629.7295222,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 197510
+      },
+      "dropped": 197510,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790956647.1615355,
+      "last_capture_seq": 210333,
+      "last_written_seq": 56661,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388449,
+      "sampled_out": {},
+      "session": "20260930T211524Z-a4fbf40897e94ba3b5042fd4bab0a889",
+      "suppressed_records": 0,
+      "written": 7588
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/ETH/20260930T211524Z-a4fbf40897e94ba3b5042fd4bab0a889/events-1790956205776760804.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "ETH",
+    "session": "20261002T155816Z-e46e33b96d694b42a35b4f7077dd2974",
+    "started_at": 1790956696.9643462,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957837.2386045,
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790957836.4296873,
+          "count": 9,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790957836.9850602,
+      "last_capture_seq": 98609,
+      "last_written_seq": 98609,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-e46e33b96d694b42a35b4f7077dd2974",
+      "suppressed_records": 0,
+      "written": 98609
+    }
+  },
+  {
+    "asset": "ETH",
+    "session": "20261002T161731Z-992be6950f0144c7b9b692fb51199ff1",
+    "started_at": 1790957851.1950157,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790974118.8260338,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790973772.3324761,
+      "last_capture_seq": 165758,
+      "last_written_seq": 165758,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-992be6950f0144c7b9b692fb51199ff1",
+      "suppressed_records": 0,
+      "written": 165758
+    }
+  },
+  {
+    "asset": "ETH",
+    "session": "20261002T205032Z-7f6038064d4c4f1ba8d491aae0cffecc",
+    "started_at": 1790974232.0287085,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790981549.0918834,
+      "last_capture_seq": 152102,
+      "last_written_seq": 152102,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-7f6038064d4c4f1ba8d491aae0cffecc",
+      "suppressed_records": 0,
+      "written": 152102
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/ETH/20261002T205032Z-7f6038064d4c4f1ba8d491aae0cffecc/events-1790981458224252031.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260926T200022Z-d11ecb5c7864431ab337e062b93d99c3",
+    "started_at": 1790452822.2938952,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.5691626,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 56
+      },
+      "dropped": 56,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790477949.6055036,
+      "last_capture_seq": 12152,
+      "last_written_seq": 12152,
+      "pause_started_at": 1790477949.6055036,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-d11ecb5c7864431ab337e062b93d99c3",
+      "suppressed_records": 1,
+      "written": 12095
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260927T213209Z-5f2e412a2c634e25949bb3a047e6654b",
+    "started_at": 1790544729.9963086,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.1544344,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544729.997189,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790544729.997189,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213209Z-5f2e412a2c634e25949bb3a047e6654b",
+      "suppressed_records": 565,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260928T000030Z-5d65d07b1aaa41c9aa5a715b962b7957",
+    "started_at": 1790553630.9954522,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.6735172,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553630.9958842,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790553630.9958842,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000030Z-5d65d07b1aaa41c9aa5a715b962b7957",
+      "suppressed_records": 572,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260928T000706Z-67dbed78d94e490a88770034f50747b2",
+    "started_at": 1790554026.9999926,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790625758.0347302,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554027.0023987,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790554027.0023987,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000706Z-67dbed78d94e490a88770034f50747b2",
+      "suppressed_records": 573,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260928T200257Z-c3f3fbeacb824288b3a4282114a40ab1",
+    "started_at": 1790625777.7652142,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790721030.1983938,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625777.7677464,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790625777.7677464,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T200257Z-c3f3fbeacb824288b3a4282114a40ab1",
+      "suppressed_records": 653,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260929T223053Z-e156c70456d14598ae570de3b76a9dec",
+    "started_at": 1790721053.9831257,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790721053.9859414,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790721053.9859414,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260929T223053Z-e156c70456d14598ae570de3b76a9dec",
+      "suppressed_records": 822,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260930T024919Z-0c7cb9c40f824d12bdca5629fb02824a",
+    "started_at": 1790736559.8347068,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790736559.834966,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790736559.834966,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T024919Z-0c7cb9c40f824d12bdca5629fb02824a",
+      "suppressed_records": 775,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260930T031636Z-cb4c69caf9de47d5a753080352688d94",
+    "started_at": 1790738196.6014645,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738196.601737,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790738196.601737,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T031636Z-cb4c69caf9de47d5a753080352688d94",
+      "suppressed_records": 777,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260930T073255Z-c620e47660664e09902df5faf8c7ea54",
+    "started_at": 1790753575.0044034,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753575.0047255,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790753575.0047255,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T073255Z-c620e47660664e09902df5faf8c7ea54",
+      "suppressed_records": 794,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20260930T211524Z-fc9ba6da6061411897024fa80a547840",
+    "started_at": 1790802924.7369094,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802924.7386487,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790802924.7386487,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T211524Z-fc9ba6da6061411897024fa80a547840",
+      "suppressed_records": 984,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20261002T155816Z-1c52e3e73b304c928b856be1d7070ef6",
+    "started_at": 1790956696.9676192,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957837.1201627,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790956696.9678316,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790956696.9678316,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-1c52e3e73b304c928b856be1d7070ef6",
+      "suppressed_records": 1071,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20261002T161731Z-89c84dbd057a4f7087766e3c942677c4",
+    "started_at": 1790957851.204656,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790957851.204977,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790957851.204977,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-89c84dbd057a4f7087766e3c942677c4",
+      "suppressed_records": 1008,
+      "written": 1
+    }
+  },
+  {
+    "asset": "GOLD",
+    "session": "20261002T205032Z-58e6d9a5a5434dc6820cfd9a42a874d9",
+    "started_at": 1790974232.0342147,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790974232.0345657,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790974232.0345657,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-58e6d9a5a5434dc6820cfd9a42a874d9",
+      "suppressed_records": 1025,
+      "written": 1
+    }
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260926T200022Z-1390f248c5fa452399477f789e35f0ad",
+    "started_at": 1790452822.3303304,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.7012472,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 33531
+      },
+      "dropped": 33531,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544727.448608,
+      "last_capture_seq": 250149,
+      "last_written_seq": 250149,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 2,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-1390f248c5fa452399477f789e35f0ad",
+      "suppressed_records": 609,
+      "written": 216616
+    }
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260927T213210Z-55722b5115a94b34b2871ca649cde7ab",
+    "started_at": 1790544730.0509896,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.308262,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553610.0540278,
+      "last_capture_seq": 26483,
+      "last_written_seq": 26483,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213210Z-55722b5115a94b34b2871ca649cde7ab",
+      "suppressed_records": 0,
+      "written": 26483
+    }
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260928T000031Z-46f745da4cd044fe8a06dc297c6b6774",
+    "started_at": 1790553631.0223234,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.8486104,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554023.5953212,
+      "last_capture_seq": 3243,
+      "last_written_seq": 3243,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000031Z-46f745da4cd044fe8a06dc297c6b6774",
+      "suppressed_records": 0,
+      "written": 3243
+    }
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260928T000707Z-bf77cfa11b494503ad83c7256f2c46fa",
+    "started_at": 1790554027.0496578,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 32808
+      },
+      "dropped": 32808,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625756.494621,
+      "last_capture_seq": 167219,
+      "last_written_seq": 164249,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8381868,
+      "sampled_out": {},
+      "session": "20260928T000707Z-bf77cfa11b494503ad83c7256f2c46fa",
+      "suppressed_records": 0,
+      "written": 133916
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/HYPE/20260928T000707Z-bf77cfa11b494503ad83c7256f2c46fa/events-1790625281297854097.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260928T200257Z-7b4b45dd56a84f2f89d3b30b64e89294",
+    "started_at": 1790625777.833433,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 125870
+      },
+      "dropped": 125870,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790720998.6751268,
+      "last_capture_seq": 145525,
+      "last_written_seq": 137827,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8342752,
+      "sampled_out": {},
+      "session": "20260928T200257Z-7b4b45dd56a84f2f89d3b30b64e89294",
+      "suppressed_records": 0,
+      "written": 19162
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/HYPE/20260928T200257Z-7b4b45dd56a84f2f89d3b30b64e89294/events-1790720791958465840.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260929T223054Z-dfa28417788a40f0bd3f3c5566c23ea1",
+    "started_at": 1790721054.102022,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790736519.8301735,
+          "count": 9,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        },
+        "legacy_journal_read": {
+          "at": 1790736499.3901088,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 21932
+      },
+      "dropped": 21932,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790736521.277799,
+      "last_capture_seq": 26865,
+      "last_written_seq": 1125,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388555,
+      "sampled_out": {},
+      "session": "20260929T223054Z-dfa28417788a40f0bd3f3c5566c23ea1",
+      "suppressed_records": 0,
+      "written": 1125
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/HYPE/20260929T223054Z-dfa28417788a40f0bd3f3c5566c23ea1/events-1790735979588537341.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260930T024919Z-b16f039e4ad540d28cf3f081ff7e72ef",
+    "started_at": 1790736559.9353106,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 2831
+      },
+      "dropped": 2831,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738185.5233533,
+      "last_capture_seq": 6970,
+      "last_written_seq": 118,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387969,
+      "sampled_out": {},
+      "session": "20260930T024919Z-b16f039e4ad540d28cf3f081ff7e72ef",
+      "suppressed_records": 0,
+      "written": 118
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/HYPE/20260930T024919Z-b16f039e4ad540d28cf3f081ff7e72ef/events-1790737811402274906.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260930T031636Z-cc2f8ffab55b4935b4322b4f210c0973",
+    "started_at": 1790738196.70545,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 26868
+      },
+      "dropped": 26868,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753570.645807,
+      "last_capture_seq": 31423,
+      "last_written_seq": 1102,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388589,
+      "sampled_out": {},
+      "session": "20260930T031636Z-cc2f8ffab55b4935b4322b4f210c0973",
+      "suppressed_records": 0,
+      "written": 1102
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/HYPE/20260930T031636Z-cc2f8ffab55b4935b4322b4f210c0973/events-1790753137991155182.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260930T073255Z-935a91a9800141b98dc73a2c3ea5992d",
+    "started_at": 1790753575.0113661,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 88887
+      },
+      "dropped": 88887,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802890.8326678,
+      "last_capture_seq": 96201,
+      "last_written_seq": 3034,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388528,
+      "sampled_out": {},
+      "session": "20260930T073255Z-935a91a9800141b98dc73a2c3ea5992d",
+      "suppressed_records": 0,
+      "written": 3034
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/HYPE/20260930T073255Z-935a91a9800141b98dc73a2c3ea5992d/events-1790802909902422756.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "HYPE",
+    "session": "20260930T211524Z-d262d90406414a9ea3908799abf3b561",
+    "started_at": 1790802924.8003423,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790956635.097861,
+          "count": 5,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        },
+        "legacy_journal_read": {
+          "at": 1790956635.0973978,
+          "count": 3,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 230611
+      },
+      "dropped": 230611,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790956650.0736308,
+      "last_capture_seq": 242511,
+      "last_written_seq": 81087,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388253,
+      "sampled_out": {},
+      "session": "20260930T211524Z-d262d90406414a9ea3908799abf3b561",
+      "suppressed_records": 0,
+      "written": 7090
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/HYPE/20260930T211524Z-d262d90406414a9ea3908799abf3b561/events-1790956256045450403.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "HYPE",
+    "session": "20261002T155816Z-383fbc5bd42a4167a370269a754e0f5c",
+    "started_at": 1790956696.9748123,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957837.2424922,
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "legacy_journal_read": {
+          "at": 1790957812.5003834,
+          "count": 2,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790957836.985402,
+      "last_capture_seq": 21842,
+      "last_written_seq": 21842,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-383fbc5bd42a4167a370269a754e0f5c",
+      "suppressed_records": 0,
+      "written": 21842
+    }
+  },
+  {
+    "asset": "HYPE",
+    "session": "20261002T161731Z-f5bfa873ed5340e99b30a330823e1b3c",
+    "started_at": 1790957851.2474003,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790974119.0507996,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790973772.3102973,
+      "last_capture_seq": 55329,
+      "last_written_seq": 55329,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-f5bfa873ed5340e99b30a330823e1b3c",
+      "suppressed_records": 0,
+      "written": 55329
+    }
+  },
+  {
+    "asset": "HYPE",
+    "session": "20261002T205032Z-44b7c70aaeb546f88913fe5b252e0781",
+    "started_at": 1790974232.0385437,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790981736.4268875,
+      "last_capture_seq": 40054,
+      "last_written_seq": 40054,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-44b7c70aaeb546f88913fe5b252e0781",
+      "suppressed_records": 0,
+      "written": 40054
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/HYPE/20261002T205032Z-44b7c70aaeb546f88913fe5b252e0781/events-1790981416307914433.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260926T200022Z-d54b156f51ed41a8bf3f18c2ba2c6f2b",
+    "started_at": 1790452822.303238,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.6821022,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 287
+      },
+      "dropped": 287,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790477954.6106968,
+      "last_capture_seq": 18201,
+      "last_written_seq": 18201,
+      "pause_started_at": 1790477954.6106968,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-d54b156f51ed41a8bf3f18c2ba2c6f2b",
+      "suppressed_records": 1,
+      "written": 17913
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260927T213210Z-486c3b15fba349bd85c0e7e5fa04dd0c",
+    "started_at": 1790544730.003278,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.1009321,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544730.0108898,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790544730.0108898,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213210Z-486c3b15fba349bd85c0e7e5fa04dd0c",
+      "suppressed_records": 694,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260928T000030Z-9720628e30244a09a61bd30fa268a505",
+    "started_at": 1790553630.9984207,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.9798315,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553630.9994757,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790553630.9994757,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000030Z-9720628e30244a09a61bd30fa268a505",
+      "suppressed_records": 701,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260928T000707Z-55074f0532be4487a7b047bd3b14f996",
+    "started_at": 1790554027.0082395,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554027.0173316,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790554027.0173316,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000707Z-55074f0532be4487a7b047bd3b14f996",
+      "suppressed_records": 701,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260928T200257Z-c3422f1f85dc4f009e2ea64f59838ca2",
+    "started_at": 1790625777.774666,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625777.7788131,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790625777.7788131,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T200257Z-c3422f1f85dc4f009e2ea64f59838ca2",
+      "suppressed_records": 781,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260929T223054Z-b70fb307768244378821a34ac9328838",
+    "started_at": 1790721054.0148237,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790736543.1031866,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790721054.0150375,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790721054.0150375,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260929T223054Z-b70fb307768244378821a34ac9328838",
+      "suppressed_records": 1013,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260930T024919Z-6971f60a508549688b392e56a1f24899",
+    "started_at": 1790736559.864578,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790736559.8676815,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790736559.8676815,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T024919Z-6971f60a508549688b392e56a1f24899",
+      "suppressed_records": 905,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260930T031636Z-d48b6b3199af4691bad8d23b872e14d3",
+    "started_at": 1790738196.6238565,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738196.6240911,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790738196.6240911,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T031636Z-d48b6b3199af4691bad8d23b872e14d3",
+      "suppressed_records": 907,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260930T073255Z-a2f14251b22944408d6e38b5b6bcc47a",
+    "started_at": 1790753575.00636,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753575.006651,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790753575.006651,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T073255Z-a2f14251b22944408d6e38b5b6bcc47a",
+      "suppressed_records": 924,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20260930T211524Z-31a39759a7f74e4ba62fa483dac61ab6",
+    "started_at": 1790802924.7475646,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802924.7483065,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790802924.7483065,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T211524Z-31a39759a7f74e4ba62fa483dac61ab6",
+      "suppressed_records": 1234,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20261002T155816Z-93cd68f951ed448e8a7a17aafd85df81",
+    "started_at": 1790956696.9693763,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957837.184104,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790956696.9698882,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790956696.9698882,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-93cd68f951ed448e8a7a17aafd85df81",
+      "suppressed_records": 1261,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20261002T161731Z-6b31482e648945928ae333d533ca5803",
+    "started_at": 1790957851.2060356,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790957851.210808,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790957851.210808,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-6b31482e648945928ae333d533ca5803",
+      "suppressed_records": 1138,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SILVER",
+    "session": "20261002T205032Z-98b23e93fca4412c8e2c708dba5185ed",
+    "started_at": 1790974232.035083,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790974232.0357876,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790974232.0357876,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-98b23e93fca4412c8e2c708dba5185ed",
+      "suppressed_records": 1155,
+      "written": 1
+    }
+  },
+  {
+    "asset": "SOL",
+    "session": "20260926T200022Z-91b557ee5eb74343a14c0ab22cd6acf4",
+    "started_at": 1790452822.2879295,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.7099996,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544727.448349,
+      "last_capture_seq": 307848,
+      "last_written_seq": 307848,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-91b557ee5eb74343a14c0ab22cd6acf4",
+      "suppressed_records": 50324,
+      "written": 307847
+    }
+  },
+  {
+    "asset": "SOL",
+    "session": "20260927T213209Z-3ec28b83322c4596a290ab527ebe1361",
+    "started_at": 1790544729.984753,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.0617976,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553610.0537593,
+      "last_capture_seq": 136249,
+      "last_written_seq": 136249,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213209Z-3ec28b83322c4596a290ab527ebe1361",
+      "suppressed_records": 0,
+      "written": 136249
+    }
+  },
+  {
+    "asset": "SOL",
+    "session": "20260928T000030Z-79a3ce0c3e954a01b63a7f30364daf47",
+    "started_at": 1790553630.9848888,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.817544,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554023.5951295,
+      "last_capture_seq": 35266,
+      "last_written_seq": 35266,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000030Z-79a3ce0c3e954a01b63a7f30364daf47",
+      "suppressed_records": 0,
+      "written": 35266
+    }
+  },
+  {
+    "asset": "SOL",
+    "session": "20260928T000706Z-096196ff8eb8430fb5547904dc91ee2a",
+    "started_at": 1790554026.9938073,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 37508
+      },
+      "dropped": 37508,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625756.494367,
+      "last_capture_seq": 280071,
+      "last_written_seq": 276041,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8378209,
+      "sampled_out": {},
+      "session": "20260928T000706Z-096196ff8eb8430fb5547904dc91ee2a",
+      "suppressed_records": 0,
+      "written": 242109
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/SOL/20260928T000706Z-096196ff8eb8430fb5547904dc91ee2a/events-1790625453703800878.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "SOL",
+    "session": "20260928T200257Z-cacf6870851e4c498be13703daf8229b",
+    "started_at": 1790625777.7410438,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 164614
+      },
+      "dropped": 164614,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790721010.8119922,
+      "last_capture_seq": 204750,
+      "last_written_seq": 182562,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388278,
+      "sampled_out": {},
+      "session": "20260928T200257Z-cacf6870851e4c498be13703daf8229b",
+      "suppressed_records": 0,
+      "written": 36461
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/SOL/20260928T200257Z-cacf6870851e4c498be13703daf8229b/events-1790720771173314288.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "SOL",
+    "session": "20260929T223053Z-cb948ac7f9c74da3b745eef9b879e497",
+    "started_at": 1790721053.9677343,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790736519.511081,
+          "count": 5,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        },
+        "legacy_journal_read": {
+          "at": 1790736499.1622417,
+          "count": 2,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 24684
+      },
+      "dropped": 24684,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790736521.3470316,
+      "last_capture_seq": 30107,
+      "last_written_seq": 1624,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388568,
+      "sampled_out": {},
+      "session": "20260929T223053Z-cb948ac7f9c74da3b745eef9b879e497",
+      "suppressed_records": 0,
+      "written": 1624
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/SOL/20260929T223053Z-cb948ac7f9c74da3b745eef9b879e497/events-1790735991916812235.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "SOL",
+    "session": "20260930T024919Z-a84b7a7111874bf2b72f0d0023422759",
+    "started_at": 1790736559.8120148,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 5000
+      },
+      "dropped": 5000,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738178.8233101,
+      "last_capture_seq": 9035,
+      "last_written_seq": 616,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388350,
+      "sampled_out": {},
+      "session": "20260930T024919Z-a84b7a7111874bf2b72f0d0023422759",
+      "suppressed_records": 0,
+      "written": 616
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/SOL/20260930T024919Z-a84b7a7111874bf2b72f0d0023422759/events-1790737814571316814.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "SOL",
+    "session": "20260930T031636Z-e40c25909dc84b54ba281e26e4e4cff7",
+    "started_at": 1790738196.5909011,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 25792
+      },
+      "dropped": 25792,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753571.3449244,
+      "last_capture_seq": 30444,
+      "last_written_seq": 1103,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8386203,
+      "sampled_out": {},
+      "session": "20260930T031636Z-e40c25909dc84b54ba281e26e4e4cff7",
+      "suppressed_records": 0,
+      "written": 1103
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/SOL/20260930T031636Z-e40c25909dc84b54ba281e26e4e4cff7/events-1790753131210676290.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "SOL",
+    "session": "20260930T073255Z-1e5ac8c8b7fc4457be9cf923ccfdab8e",
+    "started_at": 1790753575.0014207,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 75529
+      },
+      "dropped": 75529,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802911.2822263,
+      "last_capture_seq": 83663,
+      "last_written_seq": 3532,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388389,
+      "sampled_out": {},
+      "session": "20260930T073255Z-1e5ac8c8b7fc4457be9cf923ccfdab8e",
+      "suppressed_records": 0,
+      "written": 3532
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/SOL/20260930T073255Z-1e5ac8c8b7fc4457be9cf923ccfdab8e/events-1790802391685519676.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "SOL",
+    "session": "20260930T211524Z-f3c2eb903eef4ce881eb6ab100c9c61c",
+    "started_at": 1790802924.7230365,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790956633.4632833,
+          "count": 5,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        },
+        "legacy_journal_read": {
+          "at": 1790956614.6869776,
+          "count": 2,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 216915
+      },
+      "dropped": 216915,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790956650.107797,
+      "last_capture_seq": 229177,
+      "last_written_seq": 64805,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387759,
+      "sampled_out": {},
+      "session": "20260930T211524Z-f3c2eb903eef4ce881eb6ab100c9c61c",
+      "suppressed_records": 0,
+      "written": 7589
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/SOL/20260930T211524Z-f3c2eb903eef4ce881eb6ab100c9c61c/events-1790956159923384663.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "SOL",
+    "session": "20261002T155816Z-9eca206bb829438ab0aefff697ef7783",
+    "started_at": 1790956696.965501,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957836.98793,
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790957836.1606586,
+          "count": 4,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790957836.9851372,
+      "last_capture_seq": 101893,
+      "last_written_seq": 101893,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-9eca206bb829438ab0aefff697ef7783",
+      "suppressed_records": 0,
+      "written": 101893
+    }
+  },
+  {
+    "asset": "SOL",
+    "session": "20261002T161731Z-8773fadb6d7a4cc2a6e4a57a1ead020b",
+    "started_at": 1790957851.1988804,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790974118.8337607,
+          "count": 2,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790973772.2900646,
+      "last_capture_seq": 195467,
+      "last_written_seq": 195467,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-8773fadb6d7a4cc2a6e4a57a1ead020b",
+      "suppressed_records": 0,
+      "written": 195467
+    }
+  },
+  {
+    "asset": "SOL",
+    "session": "20261002T205032Z-d40c7e3700a74559bec9516633eea1a5",
+    "started_at": 1790974232.031264,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790981764.6054685,
+      "last_capture_seq": 179527,
+      "last_written_seq": 179527,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-d40c7e3700a74559bec9516633eea1a5",
+      "suppressed_records": 0,
+      "written": 179527
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/SOL/20261002T205032Z-d40c7e3700a74559bec9516633eea1a5/events-1790981718034043124.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "WTI",
+    "session": "20260926T200022Z-019ec0ca783e4d3f8e523c5faf4d085e",
+    "started_at": 1790452822.3133605,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.5669632,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 200
+      },
+      "dropped": 200,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790477953.852166,
+      "last_capture_seq": 19376,
+      "last_written_seq": 19376,
+      "pause_started_at": 1790477953.852166,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-019ec0ca783e4d3f8e523c5faf4d085e",
+      "suppressed_records": 1,
+      "written": 19175
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20260927T213210Z-d3b45d34ab9d4d6399ff641ba601e8ff",
+    "started_at": 1790544730.0157676,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.0946171,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544730.0235925,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790544730.0235925,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213210Z-d3b45d34ab9d4d6399ff641ba601e8ff",
+      "suppressed_records": 722,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20260928T000031Z-6173de6aaa5c442db64aab1dfb40ab2f",
+    "started_at": 1790553631.0039618,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.6798635,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553631.0046504,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790553631.0046504,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000031Z-6173de6aaa5c442db64aab1dfb40ab2f",
+      "suppressed_records": 729,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20260928T000707Z-43b34a6945ea454f82cf6bb8e742886d",
+    "started_at": 1790554027.0240166,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790625756.8856418,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554027.0252185,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790554027.0252185,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000707Z-43b34a6945ea454f82cf6bb8e742886d",
+      "suppressed_records": 730,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20260928T200257Z-bdcbfb061ae84a5fb48251ea2a547deb",
+    "started_at": 1790625777.792535,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625777.7927952,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790625777.7927952,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T200257Z-bdcbfb061ae84a5fb48251ea2a547deb",
+      "suppressed_records": 809,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20260929T223054Z-17f83dcfa3bc4c93ac4e1c25a2532ddd",
+    "started_at": 1790721054.0181437,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790721054.0252051,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790721054.0252051,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260929T223054Z-17f83dcfa3bc4c93ac4e1c25a2532ddd",
+      "suppressed_records": 1045,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20260930T024919Z-a8e77b22e70141f2bd45b930204a4c50",
+    "started_at": 1790736559.8832347,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790738185.795444,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790736559.8860085,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790736559.8860085,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T024919Z-a8e77b22e70141f2bd45b930204a4c50",
+      "suppressed_records": 933,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20260930T031636Z-fd5fb37dfb274fe4b2c69e8c27b16e74",
+    "started_at": 1790738196.6403892,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790753572.2266667,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738196.6406891,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790738196.6406891,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T031636Z-fd5fb37dfb274fe4b2c69e8c27b16e74",
+      "suppressed_records": 935,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20260930T073255Z-5a404779969b448586ec2b681348016f",
+    "started_at": 1790753575.0083516,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790802912.5227482,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753575.0086253,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790753575.0086253,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T073255Z-5a404779969b448586ec2b681348016f",
+      "suppressed_records": 952,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20260930T211524Z-7c6c67f8d5cd4a88813c599ff9cdc311",
+    "started_at": 1790802924.7511952,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802924.7522523,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790802924.7522523,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260930T211524Z-7c6c67f8d5cd4a88813c599ff9cdc311",
+      "suppressed_records": 1274,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20261002T155816Z-bec9025e4da04677a9d68f27d33d8d97",
+    "started_at": 1790956696.9719102,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957837.181201,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790956696.9724543,
+      "last_capture_seq": 2,
+      "last_written_seq": 2,
+      "pause_started_at": 1790956696.9724543,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-bec9025e4da04677a9d68f27d33d8d97",
+      "suppressed_records": 1299,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20261002T161731Z-5b07252524174ed8a3251038e73a64f0",
+    "started_at": 1790957851.2168896,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790957851.223986,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790957851.223986,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-5b07252524174ed8a3251038e73a64f0",
+      "suppressed_records": 1170,
+      "written": 1
+    }
+  },
+  {
+    "asset": "WTI",
+    "session": "20261002T205032Z-d27b6ff18c8246aeb893e1e60e51bade",
+    "started_at": 1790974232.0362525,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790974232.036651,
+      "last_capture_seq": 2,
+      "last_written_seq": 1,
+      "pause_started_at": 1790974232.036651,
+      "paused": true,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-d27b6ff18c8246aeb893e1e60e51bade",
+      "suppressed_records": 1187,
+      "written": 1
+    }
+  },
+  {
+    "asset": "XRP",
+    "session": "20260926T200022Z-3b4239a4e3c241799540a03ad5d775dc",
+    "started_at": 1790452822.291671,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790544727.7038753,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790544727.4484134,
+      "last_capture_seq": 345970,
+      "last_written_seq": 345970,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 1,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260926T200022Z-3b4239a4e3c241799540a03ad5d775dc",
+      "suppressed_records": 58051,
+      "written": 345969
+    }
+  },
+  {
+    "asset": "XRP",
+    "session": "20260927T213209Z-e3ba5f3a14c542ce9d603c5d85171727",
+    "started_at": 1790544729.991751,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790553610.0621977,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790553610.053856,
+      "last_capture_seq": 151134,
+      "last_written_seq": 151134,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260927T213209Z-e3ba5f3a14c542ce9d603c5d85171727",
+      "suppressed_records": 0,
+      "written": 151134
+    }
+  },
+  {
+    "asset": "XRP",
+    "session": "20260928T000030Z-e4e7c7357fbe42d9be1d0837844b019f",
+    "started_at": 1790553630.9919617,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790554023.895058,
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790554023.5951834,
+      "last_capture_seq": 34932,
+      "last_written_seq": 34932,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20260928T000030Z-e4e7c7357fbe42d9be1d0837844b019f",
+      "suppressed_records": 0,
+      "written": 34932
+    }
+  },
+  {
+    "asset": "XRP",
+    "session": "20260928T000706Z-e4aa7377a17147ff81ba5564f1fd81d4",
+    "started_at": 1790554026.9962654,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 39551
+      },
+      "dropped": 39551,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790625753.3045862,
+      "last_capture_seq": 310676,
+      "last_written_seq": 306403,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388197,
+      "sampled_out": {},
+      "session": "20260928T000706Z-e4aa7377a17147ff81ba5564f1fd81d4",
+      "suppressed_records": 0,
+      "written": 270571
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/XRP/20260928T000706Z-e4aa7377a17147ff81ba5564f1fd81d4/events-1790625267141087825.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "XRP",
+    "session": "20260928T200257Z-cefd36bd6ef04312bbb0aad92e76815e",
+    "started_at": 1790625777.754957,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 163335
+      },
+      "dropped": 163335,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790721010.1684022,
+      "last_capture_seq": 210619,
+      "last_written_seq": 153864,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388259,
+      "sampled_out": {},
+      "session": "20260928T200257Z-cefd36bd6ef04312bbb0aad92e76815e",
+      "suppressed_records": 0,
+      "written": 43048
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/XRP/20260928T200257Z-cefd36bd6ef04312bbb0aad92e76815e/events-1790720631093957106.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "XRP",
+    "session": "20260929T223053Z-9182d83ee6ce428d8b13e938bcfa4aac",
+    "started_at": 1790721053.9742205,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 26625
+      },
+      "dropped": 26625,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790736542.3677554,
+      "last_capture_seq": 31473,
+      "last_written_seq": 1625,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8387628,
+      "sampled_out": {},
+      "session": "20260929T223053Z-9182d83ee6ce428d8b13e938bcfa4aac",
+      "suppressed_records": 0,
+      "written": 1625
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/XRP/20260929T223053Z-9182d83ee6ce428d8b13e938bcfa4aac/events-1790735987946964508.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "XRP",
+    "session": "20260930T024919Z-f13f467806594b0890829b49c7626f8f",
+    "started_at": 1790736559.818894,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 4505
+      },
+      "dropped": 4505,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790738180.1012006,
+      "last_capture_seq": 8492,
+      "last_written_seq": 118,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8386701,
+      "sampled_out": {},
+      "session": "20260930T024919Z-f13f467806594b0890829b49c7626f8f",
+      "suppressed_records": 0,
+      "written": 118
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/XRP/20260930T024919Z-f13f467806594b0890829b49c7626f8f/events-1790737816735816665.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "XRP",
+    "session": "20260930T031636Z-3dd2e98011114c4f85e8e2d3508aa8da",
+    "started_at": 1790738196.5961251,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 29640
+      },
+      "dropped": 29640,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790753571.3449585,
+      "last_capture_seq": 34041,
+      "last_written_seq": 1103,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8385490,
+      "sampled_out": {},
+      "session": "20260930T031636Z-3dd2e98011114c4f85e8e2d3508aa8da",
+      "suppressed_records": 0,
+      "written": 1103
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/XRP/20260930T031636Z-3dd2e98011114c4f85e8e2d3508aa8da/events-1790753143165532175.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "XRP",
+    "session": "20260930T073255Z-742f6a9fb2ab442d9212c569a094c58a",
+    "started_at": 1790753575.0031674,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {
+        "queue_bytes": 86580
+      },
+      "dropped": 86580,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790802899.9190388,
+      "last_capture_seq": 94480,
+      "last_written_seq": 3532,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388190,
+      "sampled_out": {},
+      "session": "20260930T073255Z-742f6a9fb2ab442d9212c569a094c58a",
+      "suppressed_records": 0,
+      "written": 3532
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/XRP/20260930T073255Z-742f6a9fb2ab442d9212c569a094c58a/events-1790802906339820988.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "XRP",
+    "session": "20260930T211524Z-be23cce2dab04527ae65d7bfa59e34a5",
+    "started_at": 1790802924.731902,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "legacy_journal_read": {
+          "at": 1790956634.2100847,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 234243
+      },
+      "dropped": 234243,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790956650.0444,
+      "last_capture_seq": 245835,
+      "last_written_seq": 71462,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 8388416,
+      "sampled_out": {},
+      "session": "20260930T211524Z-be23cce2dab04527ae65d7bfa59e34a5",
+      "suppressed_records": 0,
+      "written": 7589
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/XRP/20260930T211524Z-be23cce2dab04527ae65d7bfa59e34a5/events-1790956286432391421.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "XRP",
+    "session": "20261002T155816Z-623749ac10ce4659b8f20f6f777b8fab",
+    "started_at": 1790956696.9667456,
+    "status": {
+      "capture_complete": false,
+      "capture_mode": "full",
+      "clean_shutdown": true,
+      "closed_at": 1790957837.239253,
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790957836.6631963,
+          "count": 7,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {
+        "queue_bytes": 381
+      },
+      "dropped": 381,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790957836.9852123,
+      "last_capture_seq": 98136,
+      "last_written_seq": 98136,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T155816Z-623749ac10ce4659b8f20f6f777b8fab",
+      "suppressed_records": 0,
+      "written": 97755
+    }
+  },
+  {
+    "asset": "XRP",
+    "session": "20261002T161731Z-cf49fca3c38b411188cb75ac3a5e65ad",
+    "started_at": 1790957851.202758,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {
+        "execution_journal_read": {
+          "at": 1790974118.8179226,
+          "count": 1,
+          "error": "OperationalError",
+          "message": "database is locked",
+          "sqlite_errorname": "SQLITE_BUSY"
+        }
+      },
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": false,
+      "last_capture_at": 1790974111.9928358,
+      "last_capture_seq": 212146,
+      "last_written_seq": 212146,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T161731Z-cf49fca3c38b411188cb75ac3a5e65ad",
+      "suppressed_records": 0,
+      "written": 212146
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/XRP/20261002T161731Z-cf49fca3c38b411188cb75ac3a5e65ad/events-1790974111275268202.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  },
+  {
+    "asset": "XRP",
+    "session": "20261002T205032Z-0f45402f4f824885977929d5f6fe6b40",
+    "started_at": 1790974232.0335002,
+    "status": {
+      "capture_complete": true,
+      "capture_mode": "full",
+      "coverage_index_healthy": true,
+      "diagnostics": {},
+      "drop_reasons": {},
+      "dropped": 0,
+      "enabled": true,
+      "error": null,
+      "exact_replay": true,
+      "journal_reads_healthy": true,
+      "last_capture_at": 1790981782.3817525,
+      "last_capture_seq": 199345,
+      "last_written_seq": 199345,
+      "pause_started_at": null,
+      "paused": false,
+      "paused_intervals": 0,
+      "queued_bytes": 0,
+      "sampled_out": {},
+      "session": "20261002T205032Z-0f45402f4f824885977929d5f6fe6b40",
+      "suppressed_records": 0,
+      "written": 199345
+    },
+    "read_errors": [
+      {
+        "file": "research-logs/XRP/20261002T205032Z-0f45402f4f824885977929d5f6fe6b40/events-1790981433289205304.jsonl.gz.part",
+        "error": "EOFError"
+      }
+    ]
+  }
+]

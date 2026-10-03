@@ -89,6 +89,19 @@ need safe data, fees, a signal, latency and available volume. See
 [paper matching and diagnostic details](PAPER_TRADING.md#observed-exit-liquidity-and-submission-diagnostics).
 
 
+## Collector backlog and recording pressure
+
+Collector processing lag and research recording drops are separate measurements.
+While received feed messages are still being processed, stale applied book/reference
+timestamps block entries but do not by themselves trigger a stalled-stream reconnect.
+The stall timer starts again after the backlog drains. Integrity failures and queue
+capacity protection still request recovery immediately.
+
+Research writers schedule maintenance from its completion time and share a retention
+index. Completed files are indexed at rotation; full reconciliation runs hourly. A slow maintenance pass must not cause another pass before queued events can
+drain. Check changes in written/drop counters, rather than treating historical
+cumulative drops as evidence of continuing overload. Existing gaps remain gaps.
+
 ## Persistent venue pause
 
 A fresh quote cannot undo an exchange deactivation. Venue restrictions are saved

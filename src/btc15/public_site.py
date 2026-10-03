@@ -6,8 +6,12 @@ import os
 import threading
 import time
 from collections import OrderedDict
+from datetime import date, datetime, timedelta
+from datetime import time as day_time
 from pathlib import Path
 from time import monotonic
+from typing import Literal
+from zoneinfo import ZoneInfo
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, JSONResponse
@@ -59,7 +63,7 @@ def create_app(data_dir=None):
     def view():
         return read("view.json", 20)
 
-    def history_page(asset, offset, limit):
+    def history_page(asset, offset, limit, bounds=None, basis="closed"):
         # Fixed asset keys and two cached files bound memory; one loader prevents
         # concurrent misses from repeatedly decoding the same complete export.
         try:
@@ -84,17 +88,30 @@ def create_app(data_dir=None):
                 else:
                     data = cached[1]
                 history_cache.move_to_end(asset)
-                return dict(rows=data["rows"][offset:offset + limit], total=data["total"],
+                rows = data["rows"]
+                if bounds:
+                    field = "exit_timestamp" if basis == "closed" else "opened"
+                    rows = [row for row in rows if (basis != "closed" or row.get("status") == "CLOSED")
+                            and type(row.get(field)) in (int, float) and bounds[0] <= row[field] < bounds[1]]
+                return dict(rows=rows[offset:offset + limit], total=len(rows),
                             offset=offset, limit=limit,
                             stale=bool(data.get("stale")) or not 0 <= time.time() - data["updated_at"] <= 120)
         except (OSError, ValueError, KeyError, TypeError):
             raise HTTPException(503, "Public history unavailable; try again later") from None
 
     @app.get("/api/history/{asset}")
-    async def history(asset: str, offset: int = Query(0, ge=0), limit: int = Query(25, ge=1, le=100)):
+    async def history(asset: str, offset: int = Query(0, ge=0), limit: int = Query(25, ge=1, le=100),
+                      day: date | None = None, basis: Literal["closed", "opened"] = "closed"):
         nonlocal history_tokens, history_checked, history_active
         if asset not in ASSETS:
             raise HTTPException(404, "Unknown market")
+        bounds = None
+        if day:
+            if not 2000 <= day.year <= 2100:
+                raise HTTPException(422, "Date out of range")
+            zone = ZoneInfo("America/New_York")
+            bounds = (datetime.combine(day, day_time.min, zone).timestamp(),
+                      datetime.combine(day + timedelta(days=1), day_time.min, zone).timestamp())
         now = monotonic()
         history_tokens = min(HISTORY_BURST, history_tokens + max(0, now - history_checked) * HISTORY_RATE)
         history_checked = now
@@ -103,7 +120,7 @@ def create_app(data_dir=None):
             raise HTTPException(429, "History is busy; retry shortly", headers={"Retry-After": "1"})
         history_tokens -= 1
         history_active += 1
-        task = asyncio.create_task(asyncio.to_thread(history_page, asset, offset, limit))
+        task = asyncio.create_task(asyncio.to_thread(history_page, asset, offset, limit, bounds, basis))
 
         def finished(done):
             nonlocal history_active
@@ -115,6 +132,18 @@ def create_app(data_dir=None):
         task.add_done_callback(finished)
         # Cancellation must not release capacity while the filesystem thread still runs.
         return await asyncio.shield(task)
+
+    @app.get("/api/performance")
+    def performance():
+        return read("performance.json", 180)
+
+    @app.get("/performance")
+    def performance_page():
+        return FileResponse(static / "performance.html")
+
+    @app.get("/performance.js")
+    def performance_script():
+        return FileResponse(static / "performance.js", media_type="text/javascript")
 
     @app.get("/")
     def index():

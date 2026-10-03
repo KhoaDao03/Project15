@@ -1,0 +1,530 @@
+{
+  "all_11_services_running": true,
+  "all_20_recorders_loaded_new_code": true,
+  "policies_and_frozen_configs_preserved": true,
+  "collectors": {
+    "BTC": {
+      "connected": true,
+      "processing_lag": 0.000722191,
+      "queue_depth": 0,
+      "reference_age": 0.3569314479827881,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "PROCESSING_BACKLOG",
+        "reasons": [
+          "NO_ACTIVE_MARKET"
+        ],
+        "since": 1790956711.926285,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956841.4455833,
+        "last_capture_seq": 23652,
+        "last_written_seq": 23652,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 107206,
+          "orderbook_delta": 96985
+        },
+        "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+        "suppressed_records": 0,
+        "written": 23652
+      }
+    },
+    "ETH": {
+      "connected": true,
+      "processing_lag": 0.000814375,
+      "queue_depth": 0,
+      "reference_age": 0.20778918266296387,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790956702.3619413,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956841.2984755,
+        "last_capture_seq": 22825,
+        "last_written_seq": 22825,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 44499,
+          "orderbook_delta": 40813
+        },
+        "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+        "suppressed_records": 0,
+        "written": 22825
+      }
+    },
+    "SOL": {
+      "connected": true,
+      "processing_lag": 0.003866908,
+      "queue_depth": 0,
+      "reference_age": 0.6434288024902344,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [
+          "NO_ACTIVE_MARKET"
+        ],
+        "since": 1790956702.5780869,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956841.7572398,
+        "last_capture_seq": 19016,
+        "last_written_seq": 19016,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 25985,
+          "orderbook_delta": 23351
+        },
+        "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+        "suppressed_records": 0,
+        "written": 19016
+      }
+    },
+    "XRP": {
+      "connected": true,
+      "processing_lag": 0.002431952,
+      "queue_depth": 0,
+      "reference_age": 0.9329495429992676,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [
+          "NO_ACTIVE_MARKET"
+        ],
+        "since": 1790956700.3940625,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956842.0229738,
+        "last_capture_seq": 19550,
+        "last_written_seq": 19550,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 30536,
+          "orderbook_delta": 27528
+        },
+        "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+        "suppressed_records": 0,
+        "written": 19550
+      }
+    },
+    "GOLD": {
+      "connected": true,
+      "processing_lag": 0.001080391,
+      "queue_depth": 0,
+      "reference_age": 0.9900660514831543,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [
+          "NO_ACTIVE_MARKET"
+        ],
+        "since": 1790956708.860445,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": false,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956708.4016352,
+        "last_capture_seq": 2,
+        "last_written_seq": 1,
+        "pause_started_at": 1790956708.4016352,
+        "paused": true,
+        "paused_intervals": 1,
+        "queued_bytes": 0,
+        "sampled_out": {},
+        "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+        "suppressed_records": 28080,
+        "written": 1
+      }
+    },
+    "SILVER": {
+      "connected": true,
+      "processing_lag": 0.002361431,
+      "queue_depth": 0,
+      "reference_age": 0.709486722946167,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [
+          "NO_ACTIVE_MARKET"
+        ],
+        "since": 1790956709.9657955,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": false,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956709.6893675,
+        "last_capture_seq": 2,
+        "last_written_seq": 1,
+        "pause_started_at": 1790956709.6893675,
+        "paused": true,
+        "paused_intervals": 1,
+        "queued_bytes": 0,
+        "sampled_out": {},
+        "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+        "suppressed_records": 18385,
+        "written": 1
+      }
+    },
+    "WTI": {
+      "connected": true,
+      "processing_lag": 0.00330724,
+      "queue_depth": 0,
+      "reference_age": 0.015358924865722656,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [
+          "NO_ACTIVE_MARKET"
+        ],
+        "since": 1790956710.4311998,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": false,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956710.12325,
+        "last_capture_seq": 2,
+        "last_written_seq": 1,
+        "pause_started_at": 1790956710.12325,
+        "paused": true,
+        "paused_intervals": 1,
+        "queued_bytes": 0,
+        "sampled_out": {},
+        "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+        "suppressed_records": 13297,
+        "written": 1
+      }
+    },
+    "BNB": {
+      "connected": true,
+      "processing_lag": 0.006206547,
+      "queue_depth": 1,
+      "reference_age": 1.0180444717407227,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [
+          "NO_ACTIVE_MARKET"
+        ],
+        "since": 1790956702.8076649,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956842.1137545,
+        "last_capture_seq": 15056,
+        "last_written_seq": 15055,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 575,
+        "sampled_out": {
+          "input_processed": 14729,
+          "orderbook_delta": 13578
+        },
+        "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+        "suppressed_records": 0,
+        "written": 15055
+      }
+    },
+    "HYPE": {
+      "connected": true,
+      "processing_lag": 0.002338828,
+      "queue_depth": 0,
+      "reference_age": 0.3773167133331299,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [
+          "NO_ACTIVE_MARKET"
+        ],
+        "since": 1790956703.1829157,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956841.4575338,
+        "last_capture_seq": 12969,
+        "last_written_seq": 12969,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 7479,
+          "orderbook_delta": 6521
+        },
+        "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+        "suppressed_records": 0,
+        "written": 12969
+      }
+    },
+    "DOGE": {
+      "connected": true,
+      "processing_lag": 0.005063959,
+      "queue_depth": 1,
+      "reference_age": 0.7525558471679688,
+      "recovery": {
+        "catching_up": true,
+        "entries_blocked": true,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "PROCESSING_BACKLOG",
+        "reasons": [
+          "NO_ACTIVE_MARKET"
+        ],
+        "since": 1790956804.934407,
+        "state": "RECOVERING",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956841.833314,
+        "last_capture_seq": 14321,
+        "last_written_seq": 14321,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 20626,
+          "orderbook_delta": 18585
+        },
+        "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+        "suppressed_records": 0,
+        "written": 14321
+      }
+    }
+  },
+  "executor_recorders": {
+    "BTC": {
+      "written": 15626,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "ETH": {
+      "written": 15654,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "SOL": {
+      "written": 15956,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "XRP": {
+      "written": 14370,
+      "dropped": 381,
+      "drop_reasons": {
+        "queue_bytes": 381
+      },
+      "queued_bytes": 445498,
+      "diagnostics": {},
+      "paused": false
+    },
+    "GOLD": {
+      "written": 1,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": true
+    },
+    "SILVER": {
+      "written": 1,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": true
+    },
+    "WTI": {
+      "written": 1,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": true
+    },
+    "BNB": {
+      "written": 13193,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "HYPE": {
+      "written": 13300,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "DOGE": {
+      "written": 12970,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    }
+  }
+}

@@ -15,7 +15,7 @@ from btc15.strategies.settlement_edge.rules import evaluate
 
 @pytest.mark.parametrize(
     "asset,multiplier",
-    [("BTC", 0.95), ("ETH", 0.95), ("SOL", 1.00), ("XRP", 1.25), ("BNB", 1.25), ("HYPE", 1.15), ("DOGE", 1.10), ("GOLD", 1.35), ("SILVER", 1.20), ("WTI", 1.20)],
+    [("BTC", 0.95), ("ETH", 0.95), ("SOL", 1.00), ("XRP", 1.10), ("BNB", 1.25), ("HYPE", 1.15), ("DOGE", 1.10), ("GOLD", 1.35), ("SILVER", 1.20), ("WTI", 1.20)],
 )
 @pytest.mark.parametrize("remaining", [480, 120, 10, 1])
 @pytest.mark.parametrize("offset", [-20, 20])
@@ -44,7 +44,7 @@ def test_xrp_floor_is_relative_not_one_cent(market):
     f = inputs(0.501)
     p = probability(spec, [Tick(now, now, 0.501)], now, f, Strategy(asset="XRP"))
     assert p["atr"] == pytest.approx(0.501 * 0.00015)
-    assert p["sigma_t"] == pytest.approx(p["atr"] * 1.25 * math.sqrt(2))
+    assert p["sigma_t"] == pytest.approx(p["atr"] * 1.10 * math.sqrt(2))
 
 
 @pytest.mark.parametrize("p,expected", [(0.95, 0.78), (0.05, 0.22)])

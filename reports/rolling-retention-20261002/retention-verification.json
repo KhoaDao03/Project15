@@ -1,0 +1,11 @@
+{
+  "at": 1790957897.1280046,
+  "completed_files": 10000,
+  "indexed_files": 10000,
+  "removed_from_previous_inventory": 820,
+  "removed_bytes": 5041912990,
+  "oldest_first": true,
+  "index_integrity": "ok",
+  "reconciliation_age": 31.819367953110486,
+  "unfinished_files": 91
+}

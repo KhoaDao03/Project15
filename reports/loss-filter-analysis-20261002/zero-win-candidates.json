@@ -1,0 +1,1283 @@
+[
+  {
+    "rule": "ALL: remaining < 180 AND ask < 0.85",
+    "n": 4,
+    "wins": 0,
+    "losses": 4,
+    "pnl": -17.8071,
+    "pnl_improvement": 17.8071,
+    "loss_saved": 17.8071,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.9628
+    },
+    "validation": {
+      "n": 3,
+      "wins": 0,
+      "losses": 3,
+      "pnl": -14.8443
+    },
+    "tickers": [
+      "KXBNB15M-26OCT021230-30",
+      "KXBTC15M-26OCT021230-30",
+      "KXBTC15M-26SEP280100-00",
+      "KXBTC15M-26OCT021815-15"
+    ]
+  },
+  {
+    "rule": "BTC: ask < 0.88 AND stoch < 70",
+    "n": 3,
+    "wins": 0,
+    "losses": 3,
+    "pnl": -24.1817,
+    "pnl_improvement": 24.1817,
+    "loss_saved": 24.1817,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 3,
+      "wins": 0,
+      "losses": 3,
+      "pnl": -24.1817
+    },
+    "tickers": [
+      "KXBTC15M-26OCT021230-30",
+      "KXBTC15M-26OCT021815-15",
+      "KXBTC15M-26OCT021630-30"
+    ]
+  },
+  {
+    "rule": "ALL: remaining < 180 AND ask < 0.82",
+    "n": 3,
+    "wins": 0,
+    "losses": 3,
+    "pnl": -10.3789,
+    "pnl_improvement": 10.3789,
+    "loss_saved": 10.3789,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.9628
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -7.4161
+    },
+    "tickers": [
+      "KXBNB15M-26OCT021230-30",
+      "KXBTC15M-26SEP280100-00",
+      "KXBTC15M-26OCT021815-15"
+    ]
+  },
+  {
+    "rule": "BTC: remaining < 180 AND ask < 0.85",
+    "n": 3,
+    "wins": 0,
+    "losses": 3,
+    "pnl": -14.5301,
+    "pnl_improvement": 14.5301,
+    "loss_saved": 14.5301,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.9628
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -11.5673
+    },
+    "tickers": [
+      "KXBTC15M-26OCT021230-30",
+      "KXBTC15M-26SEP280100-00",
+      "KXBTC15M-26OCT021815-15"
+    ]
+  },
+  {
+    "rule": "XRP: remaining > 180 AND bid5_cover < 5",
+    "n": 3,
+    "wins": 0,
+    "losses": 3,
+    "pnl": -21.2543,
+    "pnl_improvement": 21.2543,
+    "loss_saved": 21.2543,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -14.3659
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -6.8884
+    },
+    "tickers": [
+      "KXXRP15M-26SEP280145-45",
+      "KXXRP15M-26SEP280800-00",
+      "KXXRP15M-26SEP290145-45"
+    ]
+  },
+  {
+    "rule": "ETH: signed_imbalance < 0.5 AND stoch_delta > 20",
+    "n": 3,
+    "wins": 0,
+    "losses": 3,
+    "pnl": -9.8133,
+    "pnl_improvement": 9.8133,
+    "loss_saved": 9.8133,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.5694
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -6.2439
+    },
+    "tickers": [
+      "KXETH15M-26SEP280445-45",
+      "KXETH15M-26OCT021445-45",
+      "KXETH15M-26OCT021230-30"
+    ]
+  },
+  {
+    "rule": "XRP: remaining > 480",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -11.9558,
+    "pnl_improvement": 11.9558,
+    "loss_saved": 11.9558,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -11.9558
+    },
+    "tickers": [
+      "KXXRP15M-26OCT021215-15",
+      "KXXRP15M-26SEP290145-45"
+    ]
+  },
+  {
+    "rule": "XRP: remaining > 540",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -11.9558,
+    "pnl_improvement": 11.9558,
+    "loss_saved": 11.9558,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -11.9558
+    },
+    "tickers": [
+      "KXXRP15M-26OCT021215-15",
+      "KXXRP15M-26SEP290145-45"
+    ]
+  },
+  {
+    "rule": "ETH: safety_ratio > 3",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.5234,
+    "pnl_improvement": 6.5234,
+    "loss_saved": 6.5234,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -6.5234
+    },
+    "tickers": [
+      "KXETH15M-26OCT021230-30",
+      "KXETH15M-26OCT021215-15"
+    ]
+  },
+  {
+    "rule": "ETH: safety_ratio > 4",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.5234,
+    "pnl_improvement": 6.5234,
+    "loss_saved": 6.5234,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -6.5234
+    },
+    "tickers": [
+      "KXETH15M-26OCT021230-30",
+      "KXETH15M-26OCT021215-15"
+    ]
+  },
+  {
+    "rule": "HYPE: momentum_z_60 < -1",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -5.811,
+    "pnl_improvement": 5.811,
+    "loss_saved": 5.811,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.3945
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.4165
+    },
+    "tickers": [
+      "KXHYPE15M-26SEP280615-15",
+      "KXHYPE15M-26OCT021230-30"
+    ]
+  },
+  {
+    "rule": "HYPE: momentum_z_180 < 0",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -5.811,
+    "pnl_improvement": 5.811,
+    "loss_saved": 5.811,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.3945
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.4165
+    },
+    "tickers": [
+      "KXHYPE15M-26SEP280615-15",
+      "KXHYPE15M-26OCT021230-30"
+    ]
+  },
+  {
+    "rule": "HYPE: momentum_z_60 < -0.5",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -5.811,
+    "pnl_improvement": 5.811,
+    "loss_saved": 5.811,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.3945
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.4165
+    },
+    "tickers": [
+      "KXHYPE15M-26SEP280615-15",
+      "KXHYPE15M-26OCT021230-30"
+    ]
+  },
+  {
+    "rule": "HYPE: momentum_z_180 < -0.5",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -5.811,
+    "pnl_improvement": 5.811,
+    "loss_saved": 5.811,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.3945
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.4165
+    },
+    "tickers": [
+      "KXHYPE15M-26SEP280615-15",
+      "KXHYPE15M-26OCT021230-30"
+    ]
+  },
+  {
+    "rule": "BTC: ask < 0.88 AND stoch < 50",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -20.0426,
+    "pnl_improvement": 20.0426,
+    "loss_saved": 20.0426,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -20.0426
+    },
+    "tickers": [
+      "KXBTC15M-26OCT021230-30",
+      "KXBTC15M-26OCT021630-30"
+    ]
+  },
+  {
+    "rule": "BTC: remaining < 180 AND ask < 0.82",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -7.1019,
+    "pnl_improvement": 7.1019,
+    "loss_saved": 7.1019,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.9628
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -4.1391
+    },
+    "tickers": [
+      "KXBTC15M-26SEP280100-00",
+      "KXBTC15M-26OCT021815-15"
+    ]
+  },
+  {
+    "rule": "ETH: remaining > 420 AND stoch < 70",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -8.5292,
+    "pnl_improvement": 8.5292,
+    "loss_saved": 8.5292,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -5.0603
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.4689
+    },
+    "tickers": [
+      "KXETH15M-26OCT021445-45",
+      "KXETH15M-26SEP280145-45"
+    ]
+  },
+  {
+    "rule": "ALL: ask < 0.85 AND distance_atr < 2",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -11.5673,
+    "pnl_improvement": 11.5673,
+    "loss_saved": 11.5673,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -11.5673
+    },
+    "tickers": [
+      "KXBTC15M-26OCT021230-30",
+      "KXBTC15M-26OCT021815-15"
+    ]
+  },
+  {
+    "rule": "ALL: ask < 0.85 AND stoch_delta > 20",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.2439,
+    "pnl_improvement": 6.2439,
+    "loss_saved": 6.2439,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -6.2439
+    },
+    "tickers": [
+      "KXETH15M-26OCT021230-30",
+      "KXETH15M-26OCT021445-45"
+    ]
+  },
+  {
+    "rule": "BTC: ask < 0.85 AND distance_atr < 2",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -11.5673,
+    "pnl_improvement": 11.5673,
+    "loss_saved": 11.5673,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -11.5673
+    },
+    "tickers": [
+      "KXBTC15M-26OCT021230-30",
+      "KXBTC15M-26OCT021815-15"
+    ]
+  },
+  {
+    "rule": "ETH: ask < 0.85 AND lead_sigma < 0.5",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.2439,
+    "pnl_improvement": 6.2439,
+    "loss_saved": 6.2439,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -6.2439
+    },
+    "tickers": [
+      "KXETH15M-26OCT021230-30",
+      "KXETH15M-26OCT021445-45"
+    ]
+  },
+  {
+    "rule": "ALL: ask < 0.82 AND momentum_z_300 < 0",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -7.4161,
+    "pnl_improvement": 7.4161,
+    "loss_saved": 7.4161,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -7.4161
+    },
+    "tickers": [
+      "KXBNB15M-26OCT021230-30",
+      "KXBTC15M-26OCT021815-15"
+    ]
+  },
+  {
+    "rule": "ALL: ask > 0.95 AND momentum_z_30 < -2",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -8.9537,
+    "pnl_improvement": 8.9537,
+    "loss_saved": 8.9537,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -8.9537
+    },
+    "validation": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "tickers": [
+      "KXHYPE15M-26SEP280615-15",
+      "KXBTC15M-26SEP272100-00"
+    ]
+  },
+  {
+    "rule": "BTC: remaining < 180 AND net_ev > 0.03",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -10.391,
+    "pnl_improvement": 10.391,
+    "loss_saved": 10.391,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.9628
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -7.4282
+    },
+    "tickers": [
+      "KXBTC15M-26OCT021230-30",
+      "KXBTC15M-26SEP280100-00"
+    ]
+  },
+  {
+    "rule": "ALL: ask > 0.95 AND momentum_z_300 < -1",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -9.169,
+    "pnl_improvement": 9.169,
+    "loss_saved": 9.169,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -9.169
+    },
+    "validation": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "tickers": [
+      "KXBNB15M-26SEP272100-00",
+      "KXHYPE15M-26SEP280615-15"
+    ]
+  },
+  {
+    "rule": "HYPE: stoch < 70 AND momentum_z_5 < 0.5",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.4743,
+    "pnl_improvement": 6.4743,
+    "loss_saved": 6.4743,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -6.4743
+    },
+    "validation": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "tickers": [
+      "KXHYPE15M-26SEP280615-15",
+      "KXHYPE15M-26SEP280330-30"
+    ]
+  },
+  {
+    "rule": "XRP: confidence > 0.84 AND quality > 99",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -14.4603,
+    "pnl_improvement": 14.4603,
+    "loss_saved": 14.4603,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -7.5719
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -6.8884
+    },
+    "tickers": [
+      "KXXRP15M-26SEP280145-45",
+      "KXXRP15M-26SEP290145-45"
+    ]
+  },
+  {
+    "rule": "XRP: bid5_cover < 5 AND stoch_delta > 0",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -14.3659,
+    "pnl_improvement": 14.3659,
+    "loss_saved": 14.3659,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -14.3659
+    },
+    "validation": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "tickers": [
+      "KXXRP15M-26SEP280145-45",
+      "KXXRP15M-26SEP280800-00"
+    ]
+  },
+  {
+    "rule": "BTC: ask > 0.95 AND momentum_z_15 < -0.5",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -14.3971,
+    "pnl_improvement": 14.3971,
+    "loss_saved": 14.3971,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -14.3971
+    },
+    "validation": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "tickers": [
+      "KXBTC15M-26SEP280145-45",
+      "KXBTC15M-26SEP272100-00"
+    ]
+  },
+  {
+    "rule": "XRP: bid5_cover < 5 AND momentum_z_30 > 0",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -13.6824,
+    "pnl_improvement": 13.6824,
+    "loss_saved": 13.6824,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -6.794
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -6.8884
+    },
+    "tickers": [
+      "KXXRP15M-26SEP280800-00",
+      "KXXRP15M-26SEP290145-45"
+    ]
+  },
+  {
+    "rule": "ALL: distance_atr < 2 AND stoch_delta > 20",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -7.356,
+    "pnl_improvement": 7.356,
+    "loss_saved": 7.356,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -5.5742
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -1.7818
+    },
+    "tickers": [
+      "KXBTC15M-26OCT021830-30",
+      "KXSOL15M-26SEP280400-00"
+    ]
+  },
+  {
+    "rule": "BNB: remaining < 180 AND bid_top_cover > 1",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -7.7332,
+    "pnl_improvement": 7.7332,
+    "loss_saved": 7.7332,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -4.4562
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.277
+    },
+    "tickers": [
+      "KXBNB15M-26OCT021230-30",
+      "KXBNB15M-26SEP271600-00"
+    ]
+  },
+  {
+    "rule": "XRP: remaining > 420 AND confidence > 0.86",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -11.9558,
+    "pnl_improvement": 11.9558,
+    "loss_saved": 11.9558,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -11.9558
+    },
+    "tickers": [
+      "KXXRP15M-26OCT021215-15",
+      "KXXRP15M-26SEP290145-45"
+    ]
+  },
+  {
+    "rule": "ALL: stoch_delta > 20 AND momentum_z_15 > 2",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -7.0383,
+    "pnl_improvement": 7.0383,
+    "loss_saved": 7.0383,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.5694
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.4689
+    },
+    "tickers": [
+      "KXETH15M-26SEP280445-45",
+      "KXETH15M-26OCT021445-45"
+    ]
+  },
+  {
+    "rule": "ALL: confidence > 0.92 AND stoch_delta < -10",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -5.2981,
+    "pnl_improvement": 5.2981,
+    "loss_saved": 5.2981,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -5.2981
+    },
+    "tickers": [
+      "KXDOGE15M-26OCT021230-30",
+      "KXBNB15M-26OCT021215-15"
+    ]
+  },
+  {
+    "rule": "ETH: stoch_delta > 10 AND momentum_z_180 > 2",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.3444,
+    "pnl_improvement": 6.3444,
+    "loss_saved": 6.3444,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.5694
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.775
+    },
+    "tickers": [
+      "KXETH15M-26SEP280445-45",
+      "KXETH15M-26OCT021230-30"
+    ]
+  },
+  {
+    "rule": "XRP: distance_atr > 4 AND momentum_z_180 < 0",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -12.6393,
+    "pnl_improvement": 12.6393,
+    "loss_saved": 12.6393,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -7.5719
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -5.0674
+    },
+    "tickers": [
+      "KXXRP15M-26SEP280145-45",
+      "KXXRP15M-26OCT021215-15"
+    ]
+  },
+  {
+    "rule": "ALL: ask < 0.82 AND consecutive_direction < 0",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.2398,
+    "pnl_improvement": 6.2398,
+    "loss_saved": 6.2398,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.9628
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.277
+    },
+    "tickers": [
+      "KXBNB15M-26OCT021230-30",
+      "KXBTC15M-26SEP280100-00"
+    ]
+  },
+  {
+    "rule": "ALL: stoch < 80 AND consecutive_direction > 5",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.8854,
+    "pnl_improvement": 6.8854,
+    "loss_saved": 6.8854,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -6.8854
+    },
+    "tickers": [
+      "KXETH15M-26OCT021445-45",
+      "KXHYPE15M-26OCT021230-30"
+    ]
+  },
+  {
+    "rule": "BNB: remaining > 420 AND momentum_z_180 < 0.5",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -8.3143,
+    "pnl_improvement": 8.3143,
+    "loss_saved": 8.3143,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -8.3143
+    },
+    "tickers": [
+      "KXBNB15M-26OCT021215-15",
+      "KXBNB15M-26SEP282030-30"
+    ]
+  },
+  {
+    "rule": "DOGE: confidence > 0.86 AND momentum_z_300 < 1",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.3654,
+    "pnl_improvement": 6.3654,
+    "loss_saved": 6.3654,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -6.3654
+    },
+    "tickers": [
+      "KXDOGE15M-26OCT021230-30",
+      "KXDOGE15M-26OCT021215-15"
+    ]
+  },
+  {
+    "rule": "HYPE: confidence > 0.85 AND momentum_z_60 < -1",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -5.811,
+    "pnl_improvement": 5.811,
+    "loss_saved": 5.811,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.3945
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.4165
+    },
+    "tickers": [
+      "KXHYPE15M-26SEP280615-15",
+      "KXHYPE15M-26OCT021230-30"
+    ]
+  },
+  {
+    "rule": "ALL: confidence > 0.9 AND momentum_z_300 < -0.5",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.3946,
+    "pnl_improvement": 6.3946,
+    "loss_saved": 6.3946,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -2.3945
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -4.0001
+    },
+    "tickers": [
+      "KXHYPE15M-26SEP280615-15",
+      "KXBNB15M-26OCT021215-15"
+    ]
+  },
+  {
+    "rule": "ETH: raw_probability > 0.9 AND safety_ratio > 3",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -6.5234,
+    "pnl_improvement": 6.5234,
+    "loss_saved": 6.5234,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -6.5234
+    },
+    "tickers": [
+      "KXETH15M-26OCT021230-30",
+      "KXETH15M-26OCT021215-15"
+    ]
+  },
+  {
+    "rule": "ETH: signed_imbalance < 0.5 AND momentum_z_15 > 2",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -7.0383,
+    "pnl_improvement": 7.0383,
+    "loss_saved": 7.0383,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.5694
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.4689
+    },
+    "tickers": [
+      "KXETH15M-26SEP280445-45",
+      "KXETH15M-26OCT021445-45"
+    ]
+  },
+  {
+    "rule": "BNB: net_ev > -0.05 AND consecutive_direction < -1",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -7.2771,
+    "pnl_improvement": 7.2771,
+    "loss_saved": 7.2771,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 0,
+      "wins": 0,
+      "losses": 0,
+      "pnl": 0
+    },
+    "validation": {
+      "n": 2,
+      "wins": 0,
+      "losses": 2,
+      "pnl": -7.2771
+    },
+    "tickers": [
+      "KXBNB15M-26OCT021230-30",
+      "KXBNB15M-26OCT021215-15"
+    ]
+  },
+  {
+    "rule": "ALL: remaining > 420 AND consecutive_direction < -3",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -8.4009,
+    "pnl_improvement": 8.4009,
+    "loss_saved": 8.4009,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -4.4008
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -4.0001
+    },
+    "tickers": [
+      "KXBNB15M-26OCT021215-15",
+      "KXETH15M-26SEP272100-00"
+    ]
+  },
+  {
+    "rule": "BNB: bid_top_cover > 1 AND consecutive_direction < -1",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -7.3929,
+    "pnl_improvement": 7.3929,
+    "loss_saved": 7.3929,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -4.1159
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.277
+    },
+    "tickers": [
+      "KXBNB15M-26OCT021230-30",
+      "KXBNB15M-26SEP272230-30"
+    ]
+  },
+  {
+    "rule": "HYPE: consecutive_direction > 1 AND momentum_z_300 < 0.5",
+    "n": 2,
+    "wins": 0,
+    "losses": 2,
+    "pnl": -7.772,
+    "pnl_improvement": 7.772,
+    "loss_saved": 7.772,
+    "win_forgone": 0,
+    "discovery": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -4.3555
+    },
+    "validation": {
+      "n": 1,
+      "wins": 0,
+      "losses": 1,
+      "pnl": -3.4165
+    },
+    "tickers": [
+      "KXHYPE15M-26SEP280100-00",
+      "KXHYPE15M-26OCT021230-30"
+    ]
+  }
+]

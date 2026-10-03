@@ -1,6 +1,5 @@
 """Opt-in, bounded research capture. Never supplies inputs to trading decisions."""
 
-import fcntl
 import gzip
 import hashlib
 import json
@@ -21,6 +20,7 @@ from pathlib import Path
 from .domain import dumps, jsonable
 from .research_control import read_control
 from .research_coverage import Coverage, atomic_json
+from .research_retention import MAX_COMPLETED_FILES, retain_completed
 from .strategies.settlement_edge.bleep import SIGMA_MULTIPLIERS, capped_confidence
 
 LOG = logging.getLogger(__name__)
@@ -53,15 +53,12 @@ class ResearchLog:
         config,
         *,
         max_queue_bytes=8 * 1024**2,
-        max_disk_bytes=20 * 1024**3,
         min_free_bytes=30 * 1024**3,
-        retention_seconds=7 * 86400,
         rotation_seconds=600,
         settlement_db=None,
         order_db=None,
         producer="collector",
         capture_mode="full",
-        archive_dir=None,
     ):
         if capture_mode not in ("full", "sampled"):
             raise ValueError("Research capture_mode must be full or sampled")
@@ -70,15 +67,6 @@ class ResearchLog:
         self.order_cursor = 0.0
         self.execution_cursor = 0
         self.root = Path(root)
-        self.archive_dir = (
-            Path(archive_dir) if archive_dir else self.root.with_name(self.root.name + "-archive")
-        )
-        if (
-            self.root.resolve() == self.archive_dir.resolve()
-            or self.root.resolve() in self.archive_dir.resolve().parents
-            or self.archive_dir.resolve() in self.root.resolve().parents
-        ):
-            raise ValueError("Research archive must be separate from the capture directory")
         self.capture_mode = capture_mode
         self.sampled_out = {}
         self.paused = False
@@ -90,8 +78,9 @@ class ResearchLog:
         self.session = f"{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}-{uuid.uuid4().hex}"
         self.directory = self.root / asset / self.session
         self.max_queue_bytes = max_queue_bytes
-        self.max_disk_bytes, self.min_free_bytes = max_disk_bytes, min_free_bytes
-        self.retention_seconds, self.rotation_seconds = retention_seconds, rotation_seconds
+        self.min_free_bytes = min_free_bytes
+        self.rotation_seconds = rotation_seconds
+        self.completed_segments = []
         self.queue = queue.Queue(maxsize=8192)
         self.lock = threading.Lock()
         self.queued_bytes = self.dropped = self.written = 0
@@ -125,6 +114,9 @@ class ResearchLog:
             execution_accuracy="complete received inputs; hypothetical fills remain estimates",
             sequence_scope="session; gap records occupy the first missing sequence",
             max_queue_bytes=max_queue_bytes,
+            retention=dict(
+                max_completed_files=MAX_COMPLETED_FILES, scope="capture_root", action="delete_oldest"
+            ),
         )
         if capture_mode == "sampled":
             self.metadata.update(
@@ -496,60 +488,15 @@ class ResearchLog:
             self.order_cursor = cutoff
 
     def _retention(self):
-        # Shared cap across assets; lock only the background writers, never trading.
-        with (self.root / ".retention.lock").open("a") as lock:
-            fcntl.flock(lock, fcntl.LOCK_EX)
-            files = sorted(self.root.glob("*/*/events-*.jsonl.gz"), key=lambda p: p.stat().st_mtime)
-            extras = list(self.root.glob("*/*/source.json.gz")) + list(self.root.glob("*/*/manifest.json"))
-            total = sum(p.stat().st_size for p in files + extras)
-            cutoff = time.time() - self.retention_seconds
-            for p in files:
-                size = p.stat().st_size
-                if p.stat().st_mtime < cutoff or total > self.max_disk_bytes:
-                    # Preserve retired segments and their reconstruction context.
-                    # A same-filesystem rename is cheap and cannot expose a partial
-                    # segment. Failure leaves the original intact for the next pass.
-                    self._archive_segment(p)
-                    total -= size
-            # Keep session context in the hot directory: a running session can
-            # later update coverage or receive settlement evidence for old markets.
-            # Open segments may temporarily exceed the cap until rotation; never delete live files.
+        if retain_completed(self.root, self.completed_segments):
+            self.completed_segments.clear()
         return shutil.disk_usage(self.root).free >= self.min_free_bytes
 
-    def _archive_segment(self, path):
-        from .research_archive import digest
-
-        destination = self.archive_dir / path.parent.relative_to(self.root)
-        destination.mkdir(parents=True, exist_ok=True, mode=0o700)
-        segment_target = destination / path.name
-        if segment_target.exists() and digest(path) != digest(segment_target):
-            raise ValueError("Archive segment conflict: " + path.name)
-        # Validate immutable context before changing any archived file.
-        for name in ("manifest.json", "source.json.gz"):
-            source, target = path.parent / name, destination / name
-            if not source.is_file():
-                raise ValueError("Missing archive context: " + name)
-            if target.exists() and digest(source) != digest(target):
-                raise ValueError("Archive context conflict: " + name)
-        for name in ("manifest.json", "source.json.gz", "coverage.json", "status.json"):
-            source, target = path.parent / name, destination / name
-            if name in ("manifest.json", "source.json.gz") and target.exists():
-                continue
-            if source.is_file():
-                if name in ("coverage.json", "status.json"):
-                    try:
-                        body = json.loads(source.read_text())
-                    except ValueError:
-                        continue  # Older writers may be updating advisory summaries.
-                    atomic_json(target, body)
-                    continue
-                temporary = target.with_suffix(target.suffix + ".tmp")
-                shutil.copyfile(source, temporary)
-                os.replace(temporary, target)
-        if segment_target.exists():
-            path.unlink()  # A verified identical archived copy already exists.
-        else:
-            path.rename(segment_target)
+    def _complete_segment(self, part):
+        completed = part.with_suffix("")
+        part.rename(completed)
+        self.completed_segments.append(completed)
+        self._poll("retention_cleanup", self._retention)
 
     def _writer(self):
         stream = part = inflight = None
@@ -632,19 +579,18 @@ class ResearchLog:
                     control_at = now
                 if not self.stopping.is_set() and not self.paused and now - audit_at >= 30:
                     self._poll("legacy_journal_read", self._audit_records)
-                    audit_at = now
+                    audit_at = time.monotonic()
                 if now - maintenance >= 5:
                     if not self.stopping.is_set() and not self.paused:
                         self._poll("execution_journal_read", self._execution_records)
                     try:
                         allowed = self._retention()
                     except Exception as exc:
-                        self.diagnostic("retention_archive", exc)
+                        self.diagnostic("retention_cleanup", exc)
                         allowed = shutil.disk_usage(self.root).free >= self.min_free_bytes
                     else:
                         with self.lock:
-                            self.diagnostics.pop("retention_archive", None)
-                    maintenance = now
+                            self.diagnostics.pop("retention_cleanup", None)
                     if not allowed:
                         self.error = "LOW_DISK"
                     elif self.error == "LOW_DISK":
@@ -657,9 +603,13 @@ class ResearchLog:
                             self.directory / "coverage.json", coverage.summary(self.status())
                         ),
                     )
+                    # Schedule from completion, not a stale timestamp taken before
+                    # slow I/O. Otherwise maintenance can starve the event queue.
+                    maintenance = time.monotonic()
+                now = time.monotonic()
                 if stream and (now - opened >= self.rotation_seconds or (self.paused and self.queue.empty())):
                     stream.close()
-                    part.rename(part.with_suffix(""))
+                    self._complete_segment(part)
                     stream = None
                 try:
                     inflight = self.queue.get(timeout=0.25)
@@ -726,7 +676,7 @@ class ResearchLog:
                 if stream:
                     stream.close()
                     if not failed and drained:
-                        part.rename(part.with_suffix(""))
+                        self._complete_segment(part)
                 (self.directory / "status.json").write_text(
                     dumps(
                         dict(
@@ -778,7 +728,6 @@ def start_research_log(config, run_id, *, settlement_db=None, producer="collecto
             config,
             producer=producer,
             capture_mode=os.environ.get("BTC15_RESEARCH_LOG_MODE", "full"),
-            archive_dir=os.environ.get("BTC15_RESEARCH_ARCHIVE_DIR"),
             settlement_db=settlement_db,
             order_db=order_db
             or (Path(settlement_db).parent.parent / "manual-orders.sqlite" if settlement_db else None),

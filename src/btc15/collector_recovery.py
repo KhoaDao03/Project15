@@ -166,7 +166,12 @@ class CollectorRecovery:
             or self.connection != engine.connection
             or not engine.clock_ok
             or not engine.exchange_open
+            or lag > self.WARNING_LAG
+            or depth > capacity * self.RESUME_QUEUE_FRACTION
         ):
+            # Applied reference/book age cannot diagnose a transport stall while
+            # earlier received frames are still being processed. Keep entries
+            # blocked, then start a fresh stall timer once the backlog drains.
             stalled = []
         # A live socket (or the 5 Hz display feed) does not prove that required
         # streams are progressing. Block immediately; retry only after a sustained

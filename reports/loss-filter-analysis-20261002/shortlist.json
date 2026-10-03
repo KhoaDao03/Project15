@@ -1,0 +1,387 @@
+{
+  "method": "Exploratory fixed-trade exclusion study. Rules selected after searching 20,912 combinations; chronological counts are not an untouched holdout. Missing features are not imputed. No later replacement buys, fill changes, sizing or portfolio feedback simulated. Money is realized net P&L including fees, not a forecast. Historical source logs retained only in part; no commodity entry snapshots matched. Order journal includes dashboard-cleared history.",
+  "sample": {
+    "trades": 284,
+    "wins": 241,
+    "losses": 43,
+    "pnl": 1.9211
+  },
+  "matched_fraction": 0.07581420181526963,
+  "missing_features": {
+    "ask": 0,
+    "bid": 0,
+    "momentum_180": 0,
+    "bid5_cover": 0
+  },
+  "shortlist": [
+    {
+      "rule": "HYPE: skip if the preceding 180-second reference return opposes the purchased side",
+      "excluded": {
+        "trades": 2,
+        "wins": 0,
+        "losses": 2,
+        "pnl": -5.811
+      },
+      "historical_pnl_improvement": 5.811,
+      "earlier": {
+        "trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "pnl": -2.3945
+      },
+      "later": {
+        "trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "pnl": -3.4165
+      },
+      "examples": [
+        {
+          "ticker": "KXHYPE15M-26SEP280615-15",
+          "entry_et": "2026-09-28T06:08:28.327773-04:00",
+          "side": "yes",
+          "remaining": 393.6217727661133,
+          "ask": 0.958,
+          "planned_qty": 10,
+          "bid5_cover": 30.7,
+          "momentum_180": -0.002106145731013087,
+          "pnl": -2.3945,
+          "source": "research-logs/HYPE/20260928T000707Z-bf77cfa11b494503ad83c7256f2c46fa/events-1790589666211803236.jsonl.gz",
+          "config_hash": "5fbc0fa4753752cc",
+          "sigma_multiplier": 1.0
+        },
+        {
+          "ticker": "KXHYPE15M-26OCT021230-30",
+          "entry_et": "2026-10-02T12:22:53.533623-04:00",
+          "side": "yes",
+          "remaining": 426.7677721977234,
+          "ask": 0.82,
+          "planned_qty": 10,
+          "bid5_cover": 19.4,
+          "momentum_180": -0.0006047709959863257,
+          "pnl": -3.4165,
+          "source": "research-logs/HYPE/20261002T161731Z-f5bfa873ed5340e99b30a330823e1b3c/events-1790957855963069246.jsonl.gz",
+          "config_hash": "c148c147389a9628",
+          "sigma_multiplier": 1.15
+        }
+      ]
+    },
+    {
+      "rule": "XRP: skip if >180 seconds remain and the held-side best five bid levels total <5 times planned quantity",
+      "excluded": {
+        "trades": 3,
+        "wins": 0,
+        "losses": 3,
+        "pnl": -21.2543
+      },
+      "historical_pnl_improvement": 21.2543,
+      "earlier": {
+        "trades": 2,
+        "wins": 0,
+        "losses": 2,
+        "pnl": -14.3659
+      },
+      "later": {
+        "trades": 1,
+        "wins": 0,
+        "losses": 1,
+        "pnl": -6.8884
+      },
+      "examples": [
+        {
+          "ticker": "KXXRP15M-26SEP280145-45",
+          "entry_et": "2026-09-28T01:38:01.394975-04:00",
+          "side": "no",
+          "remaining": 419.6664550304413,
+          "ask": 0.956,
+          "planned_qty": 15,
+          "bid5_cover": 2.5133333333333336,
+          "momentum_180": -0.0002985905170365122,
+          "pnl": -7.5719,
+          "source": "research-logs/XRP/20260928T000706Z-e4aa7377a17147ff81ba5564f1fd81d4/events-1790573423460777101.jsonl.gz",
+          "config_hash": "2bd02930725ec686",
+          "sigma_multiplier": 1.25
+        },
+        {
+          "ticker": "KXXRP15M-26SEP280800-00",
+          "entry_et": "2026-09-28T07:54:07.493450-04:00",
+          "side": "no",
+          "remaining": 352.7051088809967,
+          "ask": 0.948,
+          "planned_qty": 15,
+          "bid5_cover": 2.1333333333333333,
+          "momentum_180": 0.0010791897363022773,
+          "pnl": -6.794,
+          "source": "research-logs/XRP/20260928T000706Z-e4aa7377a17147ff81ba5564f1fd81d4/events-1790596576726930862.jsonl.gz",
+          "config_hash": "2bd02930725ec686",
+          "sigma_multiplier": 1.25
+        },
+        {
+          "ticker": "KXXRP15M-26SEP290145-45",
+          "entry_et": "2026-09-29T01:35:12.749188-04:00",
+          "side": "no",
+          "remaining": 587.5785279273987,
+          "ask": 0.959,
+          "planned_qty": 15,
+          "bid5_cover": 1.4,
+          "momentum_180": 0.004272208408299116,
+          "pnl": -6.8884,
+          "source": "research-logs/XRP/20260928T200257Z-cefd36bd6ef04312bbb0aad92e76815e/events-1790664395453223787.jsonl.gz",
+          "config_hash": "6bdb5476d7bd4861",
+          "sigma_multiplier": 1.1
+        }
+      ]
+    }
+  ],
+  "union_excluded": {
+    "trades": 5,
+    "wins": 0,
+    "losses": 5,
+    "pnl": -27.0653
+  },
+  "union_remaining": {
+    "trades": 279,
+    "wins": 241,
+    "losses": 38,
+    "pnl": 28.9864
+  },
+  "xrp_liquidity_only_winners": [
+    {
+      "ticker": "KXXRP15M-26OCT021730-30",
+      "entry_et": "2026-10-02T17:28:51.618123-04:00",
+      "remaining": 69.64170336723328,
+      "bid5_cover": 3.634,
+      "pnl": 0.5877
+    }
+  ],
+  "coverage_by_date": {
+    "2026-09-17": {
+      "all": {
+        "trades": 47,
+        "wins": 38,
+        "losses": 9,
+        "pnl": -0.955
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-18": {
+      "all": {
+        "trades": 121,
+        "wins": 99,
+        "losses": 22,
+        "pnl": -10.4713
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-19": {
+      "all": {
+        "trades": 194,
+        "wins": 182,
+        "losses": 12,
+        "pnl": 52.522
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-20": {
+      "all": {
+        "trades": 249,
+        "wins": 221,
+        "losses": 28,
+        "pnl": -3.453
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-21": {
+      "all": {
+        "trades": 260,
+        "wins": 234,
+        "losses": 26,
+        "pnl": 16.9721
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-22": {
+      "all": {
+        "trades": 314,
+        "wins": 268,
+        "losses": 46,
+        "pnl": -34.0991
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-23": {
+      "all": {
+        "trades": 261,
+        "wins": 238,
+        "losses": 23,
+        "pnl": 35.5043
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-24": {
+      "all": {
+        "trades": 204,
+        "wins": 180,
+        "losses": 24,
+        "pnl": 20.7944
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-25": {
+      "all": {
+        "trades": 247,
+        "wins": 212,
+        "losses": 35,
+        "pnl": 24.2719
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-26": {
+      "all": {
+        "trades": 403,
+        "wins": 351,
+        "losses": 52,
+        "pnl": 79.772
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-09-27": {
+      "all": {
+        "trades": 250,
+        "wins": 224,
+        "losses": 26,
+        "pnl": 43.3811
+      },
+      "with_entry_snapshot": {
+        "trades": 71,
+        "wins": 65,
+        "losses": 6,
+        "pnl": 21.1446
+      }
+    },
+    "2026-09-28": {
+      "all": {
+        "trades": 296,
+        "wins": 254,
+        "losses": 42,
+        "pnl": -0.1343
+      },
+      "with_entry_snapshot": {
+        "trades": 131,
+        "wins": 112,
+        "losses": 19,
+        "pnl": -5.05
+      }
+    },
+    "2026-09-29": {
+      "all": {
+        "trades": 312,
+        "wins": 267,
+        "losses": 45,
+        "pnl": 26.1481
+      },
+      "with_entry_snapshot": {
+        "trades": 6,
+        "wins": 5,
+        "losses": 1,
+        "pnl": -0.9658
+      }
+    },
+    "2026-09-30": {
+      "all": {
+        "trades": 233,
+        "wins": 209,
+        "losses": 24,
+        "pnl": 89.8807
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-10-01": {
+      "all": {
+        "trades": 193,
+        "wins": 167,
+        "losses": 26,
+        "pnl": -19.5468
+      },
+      "with_entry_snapshot": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "pnl": 0
+      }
+    },
+    "2026-10-02": {
+      "all": {
+        "trades": 162,
+        "wins": 131,
+        "losses": 31,
+        "pnl": -46.7663
+      },
+      "with_entry_snapshot": {
+        "trades": 76,
+        "wins": 59,
+        "losses": 17,
+        "pnl": -13.2077
+      }
+    }
+  },
+  "snapshot_link_audit": {
+    "checked": 284,
+    "all_linked_and_pre_submit": true
+  }
+}

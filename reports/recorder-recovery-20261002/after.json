@@ -1,0 +1,4034 @@
+[
+  {
+    "at": 1790956716.3020756,
+    "assets": {
+      "BTC": {
+        "status_age": 0.10002899169921875,
+        "connected": true,
+        "processing_lag": 2.096765866,
+        "queue_depth": 2764,
+        "reference_age": 2.0934560298919678,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 2.088930098,
+          "outstanding_events": 2762,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 2260,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956712.6712797,
+              "count": 3,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "ETH": {
+        "status_age": 0.03169393539428711,
+        "connected": false,
+        "processing_lag": 0.050150502,
+        "queue_depth": 0,
+        "reference_age": 49.16143298149109,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "WAITING_FOR_CONNECTION",
+            "WAITING_FOR_FRESH_REFERENCE",
+            "WAITING_FOR_SEQUENCED_SNAPSHOT:KXETH15M-26OCT021200-00"
+          ],
+          "since": 1790956702.3619413,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 311,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956712.332899,
+              "count": 3,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.210105,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "SOL": {
+        "status_age": 0.08202767372131348,
+        "connected": false,
+        "processing_lag": 0.010562932,
+        "queue_depth": 0,
+        "reference_age": 49.160173416137695,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "WAITING_FOR_CONNECTION",
+            "WAITING_FOR_FRESH_REFERENCE",
+            "WAITING_FOR_SEQUENCED_SNAPSHOT:KXSOL15M-26OCT021200-00"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 309,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956712.6898127,
+              "count": 3,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.3959281,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "XRP": {
+        "status_age": 0.9786984920501709,
+        "connected": true,
+        "processing_lag": 0.031811356,
+        "queue_depth": 0,
+        "reference_age": 0.21585440635681152,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 1193,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956710.5813956,
+              "count": 2,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "GOLD": {
+        "status_age": 48.92634868621826,
+        "connected": false,
+        "processing_lag": 0.102564767,
+        "queue_depth": 0,
+        "reference_age": 0.7207129001617432,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STOPPING",
+          "reasons": [
+            "STOPPING"
+          ],
+          "since": 1790956667.2677915,
+          "state": "DRAINING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20260930T073302Z-63f4c4e9b20b4d8caa7c7eda67b8aa4c",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 48.96255922317505,
+        "connected": false,
+        "processing_lag": 0.07407391,
+        "queue_depth": 0,
+        "reference_age": 0.689448356628418,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STOPPING",
+          "reasons": [
+            "STOPPING"
+          ],
+          "since": 1790956667.2708516,
+          "state": "DRAINING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20260930T073301Z-145ab628464a48c5bae77c120e5ba443",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 48.9483437538147,
+        "connected": false,
+        "processing_lag": 0.084906326,
+        "queue_depth": 0,
+        "reference_age": 0.7447211742401123,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STOPPING",
+          "reasons": [
+            "STOPPING"
+          ],
+          "since": 1790956667.2709656,
+          "state": "DRAINING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20260930T073303Z-9a65288c9c43453ea6e893a929c73aac",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 1.0379185676574707,
+        "connected": true,
+        "processing_lag": 0.018567384,
+        "queue_depth": 4,
+        "reference_age": 0.20227813720703125,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 330,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956712.8296354,
+              "count": 3,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.7320032,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "HYPE": {
+        "status_age": 0.9984276294708252,
+        "connected": true,
+        "processing_lag": 0.028188734,
+        "queue_depth": 0,
+        "reference_age": 0.20493316650390625,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 308,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956713.3184032,
+              "count": 3,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956703.1027458,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "DOGE": {
+        "status_age": 3.4747836589813232,
+        "connected": false,
+        "processing_lag": 0.033188462,
+        "queue_depth": 0,
+        "reference_age": 92.78961825370789,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "WAITING_FOR_CONNECTION",
+            "WAITING_FOR_FRESH_REFERENCE",
+            "WAITING_FOR_SEQUENCED_SNAPSHOT:KXDOGE15M-26OCT021200-00"
+          ],
+          "since": 1790956704.5016465,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 228,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956709.585629,
+              "count": 2,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956704.4688673,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956721.3605342,
+    "assets": {
+      "BTC": {
+        "status_age": 0.2793295383453369,
+        "connected": true,
+        "processing_lag": 2.384793383,
+        "queue_depth": 3663,
+        "reference_age": 2.9389967918395996,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 2.360531578,
+          "outstanding_events": 3615,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "REFERENCE_SOURCE_AGE:KXBTC15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 3038,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956717.7202585,
+              "count": 4,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "ETH": {
+        "status_age": 1.0324857234954834,
+        "connected": true,
+        "processing_lag": 0.015380148,
+        "queue_depth": 5,
+        "reference_age": 0.25432395935058594,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.000672469,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 468,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956717.3976574,
+              "count": 4,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.210105,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "SOL": {
+        "status_age": 0.9267640113830566,
+        "connected": true,
+        "processing_lag": 0.022773337,
+        "queue_depth": 0,
+        "reference_age": 0.3713350296020508,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 531,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956717.7134907,
+              "count": 4,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.3959281,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "XRP": {
+        "status_age": 0.8190722465515137,
+        "connected": true,
+        "processing_lag": 0.01764041,
+        "queue_depth": 5,
+        "reference_age": 0.4505958557128906,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.010544538,
+          "outstanding_events": 5,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 1520,
+          "queued_bytes": 4466,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956715.6341615,
+              "count": 3,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "GOLD": {
+        "status_age": 53.97899270057678,
+        "connected": false,
+        "processing_lag": 0.102564767,
+        "queue_depth": 0,
+        "reference_age": 0.7207129001617432,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STOPPING",
+          "reasons": [
+            "STOPPING"
+          ],
+          "since": 1790956667.2677915,
+          "state": "DRAINING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20260930T073302Z-63f4c4e9b20b4d8caa7c7eda67b8aa4c",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 54.01014542579651,
+        "connected": false,
+        "processing_lag": 0.07407391,
+        "queue_depth": 0,
+        "reference_age": 0.689448356628418,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STOPPING",
+          "reasons": [
+            "STOPPING"
+          ],
+          "since": 1790956667.2708516,
+          "state": "DRAINING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20260930T073301Z-145ab628464a48c5bae77c120e5ba443",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 53.9905526638031,
+        "connected": false,
+        "processing_lag": 0.084906326,
+        "queue_depth": 0,
+        "reference_age": 0.7447211742401123,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STOPPING",
+          "reasons": [
+            "STOPPING"
+          ],
+          "since": 1790956667.2709656,
+          "state": "DRAINING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20260930T073303Z-9a65288c9c43453ea6e893a929c73aac",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.691753625869751,
+        "connected": true,
+        "processing_lag": 0.019623512,
+        "queue_depth": 14,
+        "reference_age": 0.5786187648773193,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.013246506,
+          "outstanding_events": 10,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 507,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956717.9032772,
+              "count": 4,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.7320032,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "HYPE": {
+        "status_age": 0.9580187797546387,
+        "connected": true,
+        "processing_lag": 0.00341909,
+        "queue_depth": 0,
+        "reference_age": 0.3143033981323242,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 357,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956718.3930228,
+              "count": 4,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956703.1027458,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "DOGE": {
+        "status_age": 4.970336437225342,
+        "connected": false,
+        "processing_lag": 3.513650499,
+        "queue_depth": 38,
+        "reference_age": 96.30948543548584,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 3.437895891,
+          "outstanding_events": 38,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "WAITING_FOR_CONNECTION",
+            "WAITING_FOR_FRESH_REFERENCE",
+            "WAITING_FOR_SEQUENCED_SNAPSHOT:KXDOGE15M-26OCT021200-00"
+          ],
+          "since": 1790956714.9947438,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 267,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956714.6324224,
+              "count": 3,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956704.4688673,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956726.3759384,
+    "assets": {
+      "BTC": {
+        "status_age": 0.37770962715148926,
+        "connected": true,
+        "processing_lag": 3.613628409,
+        "queue_depth": 6167,
+        "reference_age": 3.708381414413452,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 3.610452634,
+          "outstanding_events": 6167,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "REFERENCE_RECEIVE_AGE:KXBTC15M-26OCT021200-00",
+            "REFERENCE_SOURCE_AGE:KXBTC15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 3930,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956722.7669556,
+              "count": 5,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "ETH": {
+        "status_age": 0.48436665534973145,
+        "connected": true,
+        "processing_lag": 0.489640322,
+        "queue_depth": 240,
+        "reference_age": 0.7768535614013672,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.471397004,
+          "outstanding_events": 240,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 788,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956722.4216247,
+              "count": 5,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.210105,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "SOL": {
+        "status_age": 0.45477890968322754,
+        "connected": true,
+        "processing_lag": 0.23503534,
+        "queue_depth": 70,
+        "reference_age": 0.8401658535003662,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.205815085,
+          "outstanding_events": 66,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 933,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956722.77791,
+              "count": 5,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.3959281,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "XRP": {
+        "status_age": 0.5041663646697998,
+        "connected": true,
+        "processing_lag": 0.190545143,
+        "queue_depth": 89,
+        "reference_age": 0.7827699184417725,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.16811085,
+          "outstanding_events": 46,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 1814,
+          "queued_bytes": 19799,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956720.6442008,
+              "count": 4,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "GOLD": {
+        "status_age": 0.6091866493225098,
+        "connected": true,
+        "processing_lag": 0.003288205,
+        "queue_depth": 0,
+        "reference_age": 0.11441612243652344,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.054088592529296875,
+        "connected": true,
+        "processing_lag": 0.090616166,
+        "queue_depth": 14,
+        "reference_age": 59.65997934341431,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.037106856,
+          "outstanding_events": 9,
+          "reason": "STARTUP",
+          "reasons": [
+            "REFERENCE_RECEIVE_AGE:KXSILVER15M-26OCT021200-00",
+            "REFERENCE_SOURCE_AGE:KXSILVER15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 59.00475811958313,
+        "connected": false,
+        "processing_lag": 0.084906326,
+        "queue_depth": 0,
+        "reference_age": 0.7447211742401123,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STOPPING",
+          "reasons": [
+            "STOPPING"
+          ],
+          "since": 1790956667.2709656,
+          "state": "DRAINING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20260930T073303Z-9a65288c9c43453ea6e893a929c73aac",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.47321057319641113,
+        "connected": true,
+        "processing_lag": 0.001282251,
+        "queue_depth": 0,
+        "reference_age": 0.8196165561676025,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 654,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956722.991916,
+              "count": 5,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.7320032,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "HYPE": {
+        "status_age": 0.9037559032440186,
+        "connected": true,
+        "processing_lag": 0.031702861,
+        "queue_depth": 0,
+        "reference_age": 0.41855692863464355,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 410,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956723.441282,
+              "count": 5,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956703.1027458,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "DOGE": {
+        "status_age": 9.98350739479065,
+        "connected": false,
+        "processing_lag": 3.513650499,
+        "queue_depth": 38,
+        "reference_age": 96.30948543548584,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 3.437895891,
+          "outstanding_events": 38,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "WAITING_FOR_CONNECTION",
+            "WAITING_FOR_FRESH_REFERENCE",
+            "WAITING_FOR_SEQUENCED_SNAPSHOT:KXDOGE15M-26OCT021200-00"
+          ],
+          "since": 1790956714.9947438,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 267,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956714.6324224,
+              "count": 3,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956704.4688673,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956731.3891761,
+    "assets": {
+      "BTC": {
+        "status_age": 1.1641261577606201,
+        "connected": true,
+        "processing_lag": 5.851372671,
+        "queue_depth": 8521,
+        "reference_age": 6.1289191246032715,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 5.839655098,
+          "outstanding_events": 8503,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "BOOK_RECEIVE_AGE:KXBTC15M-26OCT021200-00",
+            "BOOK_SOURCE_AGE:KXBTC15M-26OCT021200-00",
+            "REFERENCE_RECEIVE_AGE:KXBTC15M-26OCT021200-00",
+            "REFERENCE_SOURCE_AGE:KXBTC15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 5233,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.4818735122680664,
+        "connected": true,
+        "processing_lag": 0.168492356,
+        "queue_depth": 31,
+        "reference_age": 0.8131434917449951,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.116057526,
+          "outstanding_events": 13,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 1672,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "legacy_journal_read": {
+              "at": 1790956702.210105,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "SOL": {
+        "status_age": 1.1066241264343262,
+        "connected": true,
+        "processing_lag": 0.08438844,
+        "queue_depth": 41,
+        "reference_age": 0.16932249069213867,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.068637345,
+          "outstanding_events": 41,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 1697,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "legacy_journal_read": {
+              "at": 1790956702.3959281,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "XRP": {
+        "status_age": 1.0843276977539062,
+        "connected": true,
+        "processing_lag": 0.130605208,
+        "queue_depth": 46,
+        "reference_age": 0.1915416717529297,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.095911778,
+          "outstanding_events": 36,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 2579,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.5685262680053711,
+        "connected": true,
+        "processing_lag": 0.00370803,
+        "queue_depth": 0,
+        "reference_age": 0.16904067993164062,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.41980576515197754,
+        "connected": true,
+        "processing_lag": 0.11703618,
+        "queue_depth": 9,
+        "reference_age": 0.3001859188079834,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.065623846,
+          "outstanding_events": 9,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.4960918426513672,
+        "connected": true,
+        "processing_lag": 0.005346528,
+        "queue_depth": 0,
+        "reference_age": 0.2660846710205078,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.27865099906921387,
+        "connected": true,
+        "processing_lag": 0.296215519,
+        "queue_depth": 53,
+        "reference_age": 1.0117402076721191,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.135244502,
+          "outstanding_events": 25,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 710,
+          "queued_bytes": 330683,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956722.991916,
+              "count": 5,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956702.7320032,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "HYPE": {
+        "status_age": 0.8139162063598633,
+        "connected": true,
+        "processing_lag": 0.005334425,
+        "queue_depth": 1,
+        "reference_age": 0.48555684089660645,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.001617597,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 454,
+          "queued_bytes": 74150,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956723.441282,
+              "count": 5,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956703.1027458,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      },
+      "DOGE": {
+        "status_age": 3.1719133853912354,
+        "connected": true,
+        "processing_lag": 12.041252625,
+        "queue_depth": 2248,
+        "reference_age": 108.13893055915833,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 11.805848284,
+          "outstanding_events": 2246,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "WAITING_FOR_CONNECTION",
+            "WAITING_FOR_FRESH_REFERENCE",
+            "WAITING_FOR_SEQUENCED_SNAPSHOT:KXDOGE15M-26OCT021200-00"
+          ],
+          "since": 1790956714.9947438,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 390,
+          "queued_bytes": 34489,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956719.6897852,
+              "count": 4,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956704.4688673,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956736.4069664,
+    "assets": {
+      "BTC": {
+        "status_age": 0.7751142978668213,
+        "connected": true,
+        "processing_lag": 6.527111094,
+        "queue_depth": 7922,
+        "reference_age": 7.201079368591309,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 6.523812979,
+          "outstanding_events": 7922,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "BOOK_RECEIVE_AGE:KXBTC15M-26OCT021200-00",
+            "BOOK_SOURCE_AGE:KXBTC15M-26OCT021200-00",
+            "REFERENCE_RECEIVE_AGE:KXBTC15M-26OCT021200-00",
+            "REFERENCE_SOURCE_AGE:KXBTC15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 6412,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.665738582611084,
+        "connected": true,
+        "processing_lag": 0.014169714,
+        "queue_depth": 3,
+        "reference_age": 0.6128358840942383,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.002878618,
+          "outstanding_events": 2,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 2684,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.8109471797943115,
+        "connected": true,
+        "processing_lag": 0.949841656,
+        "queue_depth": 182,
+        "reference_age": 1.4953107833862305,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.934358896,
+          "outstanding_events": 158,
+          "reason": "STARTUP",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 2742,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.4863088130950928,
+        "connected": true,
+        "processing_lag": 0.004809803,
+        "queue_depth": 4,
+        "reference_age": 0.8228769302368164,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 3595,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.21287107467651367,
+        "connected": true,
+        "processing_lag": 0.028820547,
+        "queue_depth": 0,
+        "reference_age": 0.5326485633850098,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.17852401733398438,
+        "connected": true,
+        "processing_lag": 0.137454118,
+        "queue_depth": 73,
+        "reference_age": 0.5494072437286377,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.119546328,
+          "outstanding_events": 72,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.4795801639556885,
+        "connected": true,
+        "processing_lag": 0.028616334,
+        "queue_depth": 0,
+        "reference_age": 0.2989382743835449,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.10806131362915039,
+        "connected": true,
+        "processing_lag": 0.131619938,
+        "queue_depth": 69,
+        "reference_age": 0.18761181831359863,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.106059152,
+          "outstanding_events": 68,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 1754,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.7164402008056641,
+        "connected": true,
+        "processing_lag": 0.016314709,
+        "queue_depth": 0,
+        "reference_age": 0.5877180099487305,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 1226,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 8.184269428253174,
+        "connected": true,
+        "processing_lag": 12.041252625,
+        "queue_depth": 2248,
+        "reference_age": 108.13893055915833,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 11.805848284,
+          "outstanding_events": 2246,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "WAITING_FOR_CONNECTION",
+            "WAITING_FOR_FRESH_REFERENCE",
+            "WAITING_FOR_SEQUENCED_SNAPSHOT:KXDOGE15M-26OCT021200-00"
+          ],
+          "since": 1790956714.9947438,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 390,
+          "queued_bytes": 34489,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {
+            "execution_journal_read": {
+              "at": 1790956719.6897852,
+              "count": 4,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            },
+            "legacy_journal_read": {
+              "at": 1790956704.4688673,
+              "count": 1,
+              "error": "OperationalError",
+              "message": "database is locked",
+              "sqlite_errorname": "SQLITE_BUSY"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956741.4193523,
+    "assets": {
+      "BTC": {
+        "status_age": 0.15054750442504883,
+        "connected": true,
+        "processing_lag": 2.864647287,
+        "queue_depth": 3382,
+        "reference_age": 3.1228814125061035,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 2.854826035,
+          "outstanding_events": 3365,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "REFERENCE_RECEIVE_AGE:KXBTC15M-26OCT021200-00",
+            "REFERENCE_SOURCE_AGE:KXBTC15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 7615,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.11815834045410156,
+        "connected": true,
+        "processing_lag": 0.208840692,
+        "queue_depth": 56,
+        "reference_age": 0.20934367179870605,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.203429122,
+          "outstanding_events": 54,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 3940,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.5350501537322998,
+        "connected": true,
+        "processing_lag": 0.003500432,
+        "queue_depth": 0,
+        "reference_age": 0.7968666553497314,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 3773,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.0931558609008789,
+        "connected": true,
+        "processing_lag": 0.231444221,
+        "queue_depth": 105,
+        "reference_age": 0.20140385627746582,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.170093664,
+          "outstanding_events": 88,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 4689,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.9300329685211182,
+        "connected": true,
+        "processing_lag": 0.009602865,
+        "queue_depth": 0,
+        "reference_age": 0.8347346782684326,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 1.014106035232544,
+        "connected": true,
+        "processing_lag": 0.005413694,
+        "queue_depth": 1,
+        "reference_age": 0.7364339828491211,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.4257819652557373,
+        "connected": true,
+        "processing_lag": 0.010181097,
+        "queue_depth": 0,
+        "reference_age": 0.3682219982147217,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.7000443935394287,
+        "connected": true,
+        "processing_lag": 0.004793141,
+        "queue_depth": 0,
+        "reference_age": 0.6267592906951904,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 2487,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.31442928314208984,
+        "connected": true,
+        "processing_lag": 0.054565147,
+        "queue_depth": 0,
+        "reference_age": 0.05177497863769531,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 1776,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.09923124313354492,
+        "connected": true,
+        "processing_lag": 6.42364646,
+        "queue_depth": 2712,
+        "reference_age": 7.252562046051025,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 6.419115558,
+          "outstanding_events": 2709,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "BOOK_RECEIVE_AGE:KXDOGE15M-26OCT021200-00",
+            "BOOK_SOURCE_AGE:KXDOGE15M-26OCT021200-00",
+            "REFERENCE_RECEIVE_AGE:KXDOGE15M-26OCT021200-00",
+            "REFERENCE_SOURCE_AGE:KXDOGE15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956714.9947438,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 1920,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956746.4336197,
+    "assets": {
+      "BTC": {
+        "status_age": 0.18706393241882324,
+        "connected": true,
+        "processing_lag": 0.009193689,
+        "queue_depth": 7,
+        "reference_age": 0.17857575416564941,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.006043723,
+          "outstanding_events": 7,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 8768,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.9597554206848145,
+        "connected": true,
+        "processing_lag": 0.010079287,
+        "queue_depth": 7,
+        "reference_age": 0.39899420738220215,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.001564358,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 4854,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.37262964248657227,
+        "connected": true,
+        "processing_lag": 0.005063969,
+        "queue_depth": 2,
+        "reference_age": 0.9742422103881836,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 4732,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.8543562889099121,
+        "connected": true,
+        "processing_lag": 0.112508736,
+        "queue_depth": 88,
+        "reference_age": 0.49364376068115234,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.097627521,
+          "outstanding_events": 83,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 5582,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.708594560623169,
+        "connected": true,
+        "processing_lag": 0.004619838,
+        "queue_depth": 4,
+        "reference_age": 0.07016587257385254,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.002022526,
+          "outstanding_events": 4,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.7781715393066406,
+        "connected": true,
+        "processing_lag": 0.020214989,
+        "queue_depth": 1,
+        "reference_age": 1.0001349449157715,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.001163578,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.33603930473327637,
+        "connected": true,
+        "processing_lag": 0.005083125,
+        "queue_depth": 0,
+        "reference_age": 0.4750370979309082,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.522857666015625,
+        "connected": true,
+        "processing_lag": 0.000891389,
+        "queue_depth": 0,
+        "reference_age": 0.8172180652618408,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 3489,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.1745162010192871,
+        "connected": true,
+        "processing_lag": 0.014174211,
+        "queue_depth": 0,
+        "reference_age": 0.19327712059020996,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 2330,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.7670309543609619,
+        "connected": true,
+        "processing_lag": 9.465492194,
+        "queue_depth": 3346,
+        "reference_age": 9.568060398101807,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 9.461229875,
+          "outstanding_events": 3346,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "BOOK_RECEIVE_AGE:KXDOGE15M-26OCT021200-00",
+            "BOOK_SOURCE_AGE:KXDOGE15M-26OCT021200-00",
+            "REFERENCE_RECEIVE_AGE:KXDOGE15M-26OCT021200-00",
+            "REFERENCE_SOURCE_AGE:KXDOGE15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956714.9947438,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 2486,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956751.451687,
+    "assets": {
+      "BTC": {
+        "status_age": 0.06627964973449707,
+        "connected": true,
+        "processing_lag": 0.001235693,
+        "queue_depth": 0,
+        "reference_age": 0.31285738945007324,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 9986,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.9475202560424805,
+        "connected": true,
+        "processing_lag": 0.005824323,
+        "queue_depth": 7,
+        "reference_age": 0.41865992546081543,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 5942,
+          "queued_bytes": 2982,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.30846357345581055,
+        "connected": true,
+        "processing_lag": 0.00267129,
+        "queue_depth": 0,
+        "reference_age": 0.10029435157775879,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 5562,
+          "queued_bytes": 11492,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.8112194538116455,
+        "connected": true,
+        "processing_lag": 0.003758415,
+        "queue_depth": 0,
+        "reference_age": 0.5447216033935547,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 6468,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.3705296516418457,
+        "connected": true,
+        "processing_lag": 0.007723377,
+        "queue_depth": 0,
+        "reference_age": 0.4279005527496338,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.7346072196960449,
+        "connected": true,
+        "processing_lag": 0.003053095,
+        "queue_depth": 0,
+        "reference_age": 0.06319761276245117,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.3196983337402344,
+        "connected": true,
+        "processing_lag": 0.003850337,
+        "queue_depth": 0,
+        "reference_age": 0.5075376033782959,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.4245750904083252,
+        "connected": true,
+        "processing_lag": 0.00074786,
+        "queue_depth": 0,
+        "reference_age": 0.9135136604309082,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 4411,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.08854532241821289,
+        "connected": true,
+        "processing_lag": 0.003264129,
+        "queue_depth": 1,
+        "reference_age": 0.28629302978515625,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 2893,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 1.4748694896697998,
+        "connected": true,
+        "processing_lag": 9.188010253,
+        "queue_depth": 3201,
+        "reference_age": 9.881950616836548,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 9.147239989,
+          "outstanding_events": 3196,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "BOOK_RECEIVE_AGE:KXDOGE15M-26OCT021200-00",
+            "BOOK_SOURCE_AGE:KXDOGE15M-26OCT021200-00",
+            "REFERENCE_RECEIVE_AGE:KXDOGE15M-26OCT021200-00",
+            "REFERENCE_SOURCE_AGE:KXDOGE15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956714.9947438,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 2582,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956756.4689121,
+    "assets": {
+      "BTC": {
+        "status_age": 0.023732662200927734,
+        "connected": true,
+        "processing_lag": 0.004483693,
+        "queue_depth": 1,
+        "reference_age": 0.3333306312561035,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 10756,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.8961622714996338,
+        "connected": true,
+        "processing_lag": 0.045483478,
+        "queue_depth": 19,
+        "reference_age": 0.46321845054626465,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.016037429,
+          "outstanding_events": 19,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 6763,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.174088716506958,
+        "connected": true,
+        "processing_lag": 0.003571715,
+        "queue_depth": 0,
+        "reference_age": 0.1980149745941162,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 6513,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.6436929702758789,
+        "connected": true,
+        "processing_lag": 0.129225357,
+        "queue_depth": 54,
+        "reference_age": 0.725374698638916,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.111129655,
+          "outstanding_events": 53,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 7329,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.9117488861083984,
+        "connected": true,
+        "processing_lag": 0.002401575,
+        "queue_depth": 0,
+        "reference_age": 0.8993220329284668,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.60247802734375,
+        "connected": true,
+        "processing_lag": 0.004977446,
+        "queue_depth": 0,
+        "reference_age": 0.20365548133850098,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.8010106086730957,
+        "connected": true,
+        "processing_lag": 0.053532814,
+        "queue_depth": 1,
+        "reference_age": 0.04413414001464844,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.009924967,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.3768186569213867,
+        "connected": true,
+        "processing_lag": 0.03390292,
+        "queue_depth": 3,
+        "reference_age": 0.03218388557434082,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.02448429,
+          "outstanding_events": 3,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 5077,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.06573891639709473,
+        "connected": true,
+        "processing_lag": 0.003817846,
+        "queue_depth": 0,
+        "reference_age": 0.34142327308654785,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 3438,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.6709392070770264,
+        "connected": true,
+        "processing_lag": 0.197795668,
+        "queue_depth": 100,
+        "reference_age": 0.7089931964874268,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.152234065,
+          "outstanding_events": 95,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956714.9947438,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 3767,
+          "queued_bytes": 262458,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956761.484347,
+    "assets": {
+      "BTC": {
+        "status_age": 0.9842827320098877,
+        "connected": true,
+        "processing_lag": 0.002960582,
+        "queue_depth": 1,
+        "reference_age": 0.4223203659057617,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.000690011,
+          "outstanding_events": 1,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 11612,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.8047301769256592,
+        "connected": true,
+        "processing_lag": 0.07665822,
+        "queue_depth": 82,
+        "reference_age": 0.5690267086029053,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.069828396,
+          "outstanding_events": 79,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 8068,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.04008007049560547,
+        "connected": true,
+        "processing_lag": 0.005012042,
+        "queue_depth": 3,
+        "reference_age": 0.37721896171569824,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.002121762,
+          "outstanding_events": 3,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 7653,
+          "queued_bytes": 2531,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.5814852714538574,
+        "connected": true,
+        "processing_lag": 0.003272836,
+        "queue_depth": 0,
+        "reference_age": 0.7889342308044434,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 8436,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.8310387134552002,
+        "connected": true,
+        "processing_lag": 0.099396303,
+        "queue_depth": 286,
+        "reference_age": 1.001070499420166,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.09358247,
+          "outstanding_events": 265,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.5748605728149414,
+        "connected": true,
+        "processing_lag": 0.002289096,
+        "queue_depth": 0,
+        "reference_age": 0.2526540756225586,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.28534889221191406,
+        "connected": true,
+        "processing_lag": 0.00076375,
+        "queue_depth": 0,
+        "reference_age": 0.5711879730224609,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.3584592342376709,
+        "connected": true,
+        "processing_lag": 0.00166658,
+        "queue_depth": 0,
+        "reference_age": 0.07503199577331543,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 5720,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.043698787689208984,
+        "connected": true,
+        "processing_lag": 0.00654453,
+        "queue_depth": 1,
+        "reference_age": 0.34981632232666016,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.00371305,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 3985,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.49515366554260254,
+        "connected": true,
+        "processing_lag": 0.064212173,
+        "queue_depth": 6,
+        "reference_age": 0.8942112922668457,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.036985961,
+          "outstanding_events": 6,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956714.9947438,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 4684,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956766.496929,
+    "assets": {
+      "BTC": {
+        "status_age": 0.9049563407897949,
+        "connected": true,
+        "processing_lag": 0.000851984,
+        "queue_depth": 0,
+        "reference_age": 0.5007264614105225,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 12247,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.7855665683746338,
+        "connected": true,
+        "processing_lag": 0.012410751,
+        "queue_depth": 8,
+        "reference_age": 0.5862507820129395,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.002945073,
+          "outstanding_events": 7,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 9267,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.9659924507141113,
+        "connected": true,
+        "processing_lag": 0.003312129,
+        "queue_depth": 7,
+        "reference_age": 0.4501521587371826,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.002606589,
+          "outstanding_events": 7,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 8621,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.5170745849609375,
+        "connected": true,
+        "processing_lag": 0.003136,
+        "queue_depth": 0,
+        "reference_age": 0.8643300533294678,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 9277,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.3133280277252197,
+        "connected": true,
+        "processing_lag": 0.003066821,
+        "queue_depth": 0,
+        "reference_age": 0.5319418907165527,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.5607867240905762,
+        "connected": true,
+        "processing_lag": 0.002416994,
+        "queue_depth": 0,
+        "reference_age": 0.2799804210662842,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.26702356338500977,
+        "connected": true,
+        "processing_lag": 0.002401285,
+        "queue_depth": 0,
+        "reference_age": 0.6022417545318604,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.2847750186920166,
+        "connected": true,
+        "processing_lag": 0.001278063,
+        "queue_depth": 0,
+        "reference_age": 0.11766219139099121,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 6501,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.5178477764129639,
+        "connected": true,
+        "processing_lag": 0.003052914,
+        "queue_depth": 0,
+        "reference_age": 0.8791279792785645,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 4729,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 1.2674839496612549,
+        "connected": true,
+        "processing_lag": 2.655551948,
+        "queue_depth": 476,
+        "reference_age": 3.143651008605957,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 2.650239634,
+          "outstanding_events": 475,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "REFERENCE_RECEIVE_AGE:KXDOGE15M-26OCT021200-00",
+            "REFERENCE_SOURCE_AGE:KXDOGE15M-26OCT021200-00",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956764.3347414,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 5055,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956771.509137,
+    "assets": {
+      "BTC": {
+        "status_age": 0.8671691417694092,
+        "connected": true,
+        "processing_lag": 0.003580994,
+        "queue_depth": 3,
+        "reference_age": 0.5598881244659424,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 12894,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.6996395587921143,
+        "connected": true,
+        "processing_lag": 0.003610468,
+        "queue_depth": 0,
+        "reference_age": 0.7320466041564941,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 10392,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.8851909637451172,
+        "connected": true,
+        "processing_lag": 0.002885982,
+        "queue_depth": 2,
+        "reference_age": 0.5598514080047607,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 9633,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.48135828971862793,
+        "connected": true,
+        "processing_lag": 0.000882833,
+        "queue_depth": 0,
+        "reference_age": 0.9296181201934814,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 10270,
+          "queued_bytes": 2585,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.29416990280151367,
+        "connected": true,
+        "processing_lag": 0.002484992,
+        "queue_depth": 0,
+        "reference_age": 0.5546045303344727,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.540635347366333,
+        "connected": true,
+        "processing_lag": 0.000664313,
+        "queue_depth": 0,
+        "reference_age": 0.30471253395080566,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.23084497451782227,
+        "connected": true,
+        "processing_lag": 0.004151862,
+        "queue_depth": 0,
+        "reference_age": 0.6495354175567627,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.24786782264709473,
+        "connected": true,
+        "processing_lag": 0.057044699,
+        "queue_depth": 9,
+        "reference_age": 0.1636209487915039,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.03519524,
+          "outstanding_events": 9,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 7323,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.49660491943359375,
+        "connected": true,
+        "processing_lag": 0.004457614,
+        "queue_depth": 6,
+        "reference_age": 0.9205489158630371,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.003387191,
+          "outstanding_events": 6,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 5292,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.19693422317504883,
+        "connected": true,
+        "processing_lag": 0.048396269,
+        "queue_depth": 4,
+        "reference_age": 0.18448591232299805,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.016378046,
+          "outstanding_events": 1,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956764.3347414,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 5905,
+          "queued_bytes": 332985,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956776.520308,
+    "assets": {
+      "BTC": {
+        "status_age": 0.8504762649536133,
+        "connected": true,
+        "processing_lag": 0.00119685,
+        "queue_depth": 0,
+        "reference_age": 0.5776524543762207,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 13524,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.6755826473236084,
+        "connected": true,
+        "processing_lag": 0.004966817,
+        "queue_depth": 1,
+        "reference_age": 0.7760953903198242,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.002463521,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 11387,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.8720459938049316,
+        "connected": true,
+        "processing_lag": 0.008029369,
+        "queue_depth": 1,
+        "reference_age": 0.5759766101837158,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.001114797,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 10586,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.46050453186035156,
+        "connected": true,
+        "processing_lag": 0.002755037,
+        "queue_depth": 0,
+        "reference_age": 0.953779935836792,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 11329,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.2873973846435547,
+        "connected": true,
+        "processing_lag": 0.002791175,
+        "queue_depth": 0,
+        "reference_age": 0.5843160152435303,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.24264907836914062,
+        "connected": true,
+        "processing_lag": 0.001109557,
+        "queue_depth": 0,
+        "reference_age": 0.6261022090911865,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.22169017791748047,
+        "connected": true,
+        "processing_lag": 0.002410482,
+        "queue_depth": 0,
+        "reference_age": 0.6721343994140625,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.15134572982788086,
+        "connected": true,
+        "processing_lag": 0.001162586,
+        "queue_depth": 0,
+        "reference_age": 0.3043935298919678,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 7911,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.42948293685913086,
+        "connected": true,
+        "processing_lag": 0.024923733,
+        "queue_depth": 1,
+        "reference_age": 0.02477121353149414,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.009559203,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 5337,
+          "queued_bytes": 20663,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.08746552467346191,
+        "connected": true,
+        "processing_lag": 0.001203183,
+        "queue_depth": 0,
+        "reference_age": 0.37238335609436035,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956764.3347414,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 6835,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  }
+]

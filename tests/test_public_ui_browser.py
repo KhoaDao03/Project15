@@ -113,6 +113,7 @@ def test_public_ui_selection_history_and_layout():
         for width, height, name in [(1440, 1000, 'desktop'), (768, 1024, 'tablet'), (390, 844, 'mobile')]:
             page.set_viewport_size({'width': width, 'height': height})
             assert page.evaluate('document.documentElement.scrollWidth') <= width
+            assert page.locator('table th, table td').evaluate_all("cells => cells.every(cell => getComputedStyle(cell).textAlign === 'center')")
             if os.environ.get('PROJECT15_UI_SCREENSHOTS') and name != 'tablet':
                 folder = ROOT / 'reports/public-ui'
                 folder.mkdir(exist_ok=True)

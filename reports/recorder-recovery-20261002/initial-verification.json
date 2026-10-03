@@ -1,0 +1,512 @@
+{
+  "all_11_services_running": true,
+  "all_20_recorders_loaded_new_code": true,
+  "policies_and_frozen_configs_preserved": true,
+  "collectors": {
+    "BTC": {
+      "connected": true,
+      "processing_lag": 0.009350782,
+      "queue_depth": 4,
+      "reference_age": 0.3770289421081543,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "PROCESSING_BACKLOG",
+        "reasons": [],
+        "since": 1790956711.926285,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956757.4680407,
+        "last_capture_seq": 10795,
+        "last_written_seq": 10795,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 62339,
+          "orderbook_delta": 56107
+        },
+        "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+        "suppressed_records": 0,
+        "written": 10795
+      }
+    },
+    "ETH": {
+      "connected": true,
+      "processing_lag": 0.003372122,
+      "queue_depth": 1,
+      "reference_age": 0.513300895690918,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0.002234492,
+        "outstanding_events": 1,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790956702.3619413,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956757.5821855,
+        "last_capture_seq": 7168,
+        "last_written_seq": 7168,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 16984,
+          "orderbook_delta": 15901
+        },
+        "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+        "suppressed_records": 0,
+        "written": 7168
+      }
+    },
+    "SOL": {
+      "connected": true,
+      "processing_lag": 0.089386066,
+      "queue_depth": 44,
+      "reference_age": 0.2700505256652832,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0.079118006,
+        "outstanding_events": 39,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790956702.5780869,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956757.3601873,
+        "last_capture_seq": 6748,
+        "last_written_seq": 6748,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 14683,
+          "orderbook_delta": 13769
+        },
+        "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+        "suppressed_records": 0,
+        "written": 6748
+      }
+    },
+    "XRP": {
+      "connected": true,
+      "processing_lag": 0.007491072,
+      "queue_depth": 1,
+      "reference_age": 0.7215096950531006,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0.003276824,
+        "outstanding_events": 1,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790956700.3940625,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956757.816076,
+        "last_capture_seq": 8027,
+        "last_written_seq": 8027,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 18829,
+          "orderbook_delta": 17520
+        },
+        "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+        "suppressed_records": 0,
+        "written": 8027
+      }
+    },
+    "GOLD": {
+      "connected": true,
+      "processing_lag": 0.0108773,
+      "queue_depth": 0,
+      "reference_age": 0.9657413959503174,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790956708.860445,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": false,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956708.4016352,
+        "last_capture_seq": 2,
+        "last_written_seq": 1,
+        "pause_started_at": 1790956708.4016352,
+        "paused": true,
+        "paused_intervals": 1,
+        "queued_bytes": 0,
+        "sampled_out": {},
+        "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+        "suppressed_records": 3163,
+        "written": 1
+      }
+    },
+    "SILVER": {
+      "connected": true,
+      "processing_lag": 0.009336246,
+      "queue_depth": 0,
+      "reference_age": 0.23593473434448242,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790956709.9657955,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": false,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956709.6893675,
+        "last_capture_seq": 2,
+        "last_written_seq": 1,
+        "pause_started_at": 1790956709.6893675,
+        "paused": true,
+        "paused_intervals": 1,
+        "queued_bytes": 0,
+        "sampled_out": {},
+        "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+        "suppressed_records": 9543,
+        "written": 1
+      }
+    },
+    "WTI": {
+      "connected": true,
+      "processing_lag": 0.004937732,
+      "queue_depth": 0,
+      "reference_age": 0.35822534561157227,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790956710.4311998,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": false,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956710.12325,
+        "last_capture_seq": 2,
+        "last_written_seq": 1,
+        "pause_started_at": 1790956710.12325,
+        "paused": true,
+        "paused_intervals": 1,
+        "queued_bytes": 0,
+        "sampled_out": {},
+        "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+        "suppressed_records": 719,
+        "written": 1
+      }
+    },
+    "BNB": {
+      "connected": true,
+      "processing_lag": 0.007108455,
+      "queue_depth": 0,
+      "reference_age": 0.03600025177001953,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790956702.8076649,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956758.099003,
+        "last_capture_seq": 5170,
+        "last_written_seq": 5170,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 8913,
+          "orderbook_delta": 8508
+        },
+        "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+        "suppressed_records": 0,
+        "written": 5170
+      }
+    },
+    "HYPE": {
+      "connected": true,
+      "processing_lag": 0.00108934,
+      "queue_depth": 0,
+      "reference_age": 0.3213167190551758,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "STARTUP",
+        "reasons": [],
+        "since": 1790956703.1829157,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956757.4211931,
+        "last_capture_seq": 3447,
+        "last_written_seq": 3447,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 1840,
+          "orderbook_delta": 1548
+        },
+        "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+        "suppressed_records": 0,
+        "written": 3447
+      }
+    },
+    "DOGE": {
+      "connected": true,
+      "processing_lag": 0.000855121,
+      "queue_depth": 0,
+      "reference_age": 0.7319991588592529,
+      "recovery": {
+        "catching_up": false,
+        "entries_blocked": false,
+        "oldest_event_lag": 0,
+        "outstanding_events": 0,
+        "reason": "PROCESSING_BACKLOG",
+        "reasons": [],
+        "since": 1790956714.9947438,
+        "state": "READY",
+        "warning": false
+      },
+      "research_logging": {
+        "capture_complete": true,
+        "capture_mode": "sampled",
+        "coverage_index_healthy": true,
+        "diagnostics": {},
+        "drop_reasons": {},
+        "dropped": 0,
+        "enabled": true,
+        "error": null,
+        "exact_replay": false,
+        "journal_reads_healthy": true,
+        "last_capture_at": 1790956757.7833607,
+        "last_capture_seq": 4034,
+        "last_written_seq": 4034,
+        "pause_started_at": null,
+        "paused": false,
+        "paused_intervals": 0,
+        "queued_bytes": 0,
+        "sampled_out": {
+          "input_processed": 12719,
+          "orderbook_delta": 12004
+        },
+        "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+        "suppressed_records": 0,
+        "written": 4034
+      }
+    }
+  },
+  "executor_recorders": {
+    "BTC": {
+      "written": 7543,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "ETH": {
+      "written": 7569,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "SOL": {
+      "written": 7873,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "XRP": {
+      "written": 6787,
+      "dropped": 381,
+      "drop_reasons": {
+        "queue_bytes": 381
+      },
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "GOLD": {
+      "written": 1,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": true
+    },
+    "SILVER": {
+      "written": 1,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": true
+    },
+    "WTI": {
+      "written": 1,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": true
+    },
+    "BNB": {
+      "written": 5110,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "HYPE": {
+      "written": 5217,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    },
+    "DOGE": {
+      "written": 4887,
+      "dropped": 0,
+      "drop_reasons": {},
+      "queued_bytes": 0,
+      "diagnostics": {},
+      "paused": false
+    }
+  }
+}

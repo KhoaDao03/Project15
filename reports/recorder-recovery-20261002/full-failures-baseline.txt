@@ -1,0 +1,1923 @@
+Rechecking 86 failed cases against original modules
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 83%]
+FFFFFFFFFFFFFF                                                           [100%]
+=================================== FAILURES ===================================
+_________ test_cloud_configs_share_single_model_and_probability_floor __________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-246/test_cloud_configs_share_singl0')
+
+    def test_cloud_configs_share_single_model_and_probability_floor(tmp_path):
+        import runpy
+    
+        from btc15.fleet import load_members
+    
+        path = runpy.run_path("scripts/prepare_cloud.py")["prepare"](tmp_path / "cloud")
+        members = load_members(path)
+>       assert set(members) == {"BTC", "ETH", "SOL", "XRP"}
+E       AssertionError: assert {'BNB', 'BTC'...', 'SOL', ...} == {'BTC', 'ETH', 'SOL', 'XRP'}
+E         
+E         Extra items in the left set:
+E         'DOGE'
+E         'BNB'
+E         'HYPE'
+E         Use -v to get more diff
+
+tests/test_bleep_probability.py:82: AssertionError
+_________________ test_deployed_entry_window[540-False-active] _________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'active', remaining = 540, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[540-False-eth] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'eth', remaining = 540, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[540-False-sol] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'sol', remaining = 540, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[540-False-xrp] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'xrp', remaining = 540, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+_______________ test_deployed_entry_window[420.01-False-active] ________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'active', remaining = 420.01, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+_________________ test_deployed_entry_window[420.01-False-eth] _________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'eth', remaining = 420.01, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+_________________ test_deployed_entry_window[420.01-False-sol] _________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'sol', remaining = 420.01, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+_________________ test_deployed_entry_window[420.01-False-xrp] _________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'xrp', remaining = 420.01, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+_________________ test_deployed_entry_window[420-True-active] __________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'active', remaining = 420, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[420-True-eth] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'eth', remaining = 420, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[420-True-sol] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'sol', remaining = 420, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[420-True-xrp] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'xrp', remaining = 420, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+_________________ test_deployed_entry_window[435-False-active] _________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'active', remaining = 435, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[435-False-eth] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'eth', remaining = 435, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[435-False-sol] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'sol', remaining = 435, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[435-False-xrp] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'xrp', remaining = 435, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+_________________ test_deployed_entry_window[120-True-active] __________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'active', remaining = 120, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[120-True-eth] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'eth', remaining = 120, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[120-True-sol] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'sol', remaining = 120, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[120-True-xrp] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'xrp', remaining = 120, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[15-True-active] __________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'active', remaining = 15, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[15-True-eth] ____________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'eth', remaining = 15, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[15-True-sol] ____________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'sol', remaining = 15, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[15-True-xrp] ____________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'xrp', remaining = 15, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+_________________ test_deployed_entry_window[1.01-True-active] _________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'active', remaining = 1.01, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[1.01-True-eth] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'eth', remaining = 1.01, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[1.01-True-sol] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'sol', remaining = 1.01, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[1.01-True-xrp] ___________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'xrp', remaining = 1.01, allowed = True
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[1-False-active] __________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'active', remaining = 1, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[1-False-eth] ____________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'eth', remaining = 1, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[1-False-sol] ____________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'sol', remaining = 1, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[1-False-xrp] ____________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'xrp', remaining = 1, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+__________________ test_deployed_entry_window[0-False-active] __________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'active', remaining = 0, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[0-False-eth] ____________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'eth', remaining = 0, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[0-False-sol] ____________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'sol', remaining = 0, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+___________________ test_deployed_entry_window[0-False-xrp] ____________________
+
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+asset = 'xrp', remaining = 0, allowed = False
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp"])
+    @pytest.mark.parametrize(
+        "remaining,allowed",
+        [(540, False), (420.01, False), (420, True), (435, False), (120, True), (15, True), (1.01, True), (1, False), (0, False)],
+    )
+    def test_deployed_entry_window(market, asset, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.entry_window_start == 420
+E       AssertionError: assert 600 == 420
+E        +  where 600 = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').entry_window_start
+
+tests/test_bleep_settlement_v2.py:170: AssertionError
+________ test_commodity_new_window_and_capped_threshold[GOLD-540-False] ________
+
+commodity = ('GOLD', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-17T08:03:54.4386Z', ...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 540, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='GOLD', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+______ test_commodity_new_window_and_capped_threshold[GOLD-420.01-False] _______
+
+commodity = ('GOLD', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-17T08:03:54.4386Z', ...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 420.01, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='GOLD', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+________ test_commodity_new_window_and_capped_threshold[GOLD-420-True] _________
+
+commodity = ('GOLD', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-17T08:03:54.4386Z', ...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 420, allowed = True
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='GOLD', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+________ test_commodity_new_window_and_capped_threshold[GOLD-435-False] ________
+
+commodity = ('GOLD', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-17T08:03:54.4386Z', ...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 435, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='GOLD', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+________ test_commodity_new_window_and_capped_threshold[GOLD-120-True] _________
+
+commodity = ('GOLD', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-17T08:03:54.4386Z', ...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 120, allowed = True
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='GOLD', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+________ test_commodity_new_window_and_capped_threshold[GOLD-1.01-True] ________
+
+commodity = ('GOLD', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-17T08:03:54.4386Z', ...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 1.01, allowed = True
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='GOLD', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_________ test_commodity_new_window_and_capped_threshold[GOLD-1-False] _________
+
+commodity = ('GOLD', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-17T08:03:54.4386Z', ...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 1, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='GOLD', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_______ test_commodity_new_window_and_capped_threshold[SILVER-540-False] _______
+
+commodity = ('SILVER', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:01:30.442069...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 540, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='SILVER', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_____ test_commodity_new_window_and_capped_threshold[SILVER-420.01-False] ______
+
+commodity = ('SILVER', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:01:30.442069...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 420.01, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='SILVER', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_______ test_commodity_new_window_and_capped_threshold[SILVER-420-True] ________
+
+commodity = ('SILVER', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:01:30.442069...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 420, allowed = True
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='SILVER', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_______ test_commodity_new_window_and_capped_threshold[SILVER-435-False] _______
+
+commodity = ('SILVER', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:01:30.442069...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 435, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='SILVER', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_______ test_commodity_new_window_and_capped_threshold[SILVER-120-True] ________
+
+commodity = ('SILVER', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:01:30.442069...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 120, allowed = True
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='SILVER', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_______ test_commodity_new_window_and_capped_threshold[SILVER-1.01-True] _______
+
+commodity = ('SILVER', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:01:30.442069...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 1.01, allowed = True
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='SILVER', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+________ test_commodity_new_window_and_capped_threshold[SILVER-1-False] ________
+
+commodity = ('SILVER', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:01:30.442069...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 1, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='SILVER', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+________ test_commodity_new_window_and_capped_threshold[WTI-540-False] _________
+
+commodity = ('WTI', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:02:11.493748Z',...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 540, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='WTI', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_______ test_commodity_new_window_and_capped_threshold[WTI-420.01-False] _______
+
+commodity = ('WTI', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:02:11.493748Z',...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 420.01, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='WTI', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_________ test_commodity_new_window_and_capped_threshold[WTI-420-True] _________
+
+commodity = ('WTI', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:02:11.493748Z',...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 420, allowed = True
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='WTI', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+________ test_commodity_new_window_and_capped_threshold[WTI-435-False] _________
+
+commodity = ('WTI', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:02:11.493748Z',...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 435, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='WTI', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_________ test_commodity_new_window_and_capped_threshold[WTI-120-True] _________
+
+commodity = ('WTI', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:02:11.493748Z',...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 120, allowed = True
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='WTI', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+________ test_commodity_new_window_and_capped_threshold[WTI-1.01-True] _________
+
+commodity = ('WTI', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:02:11.493748Z',...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 1.01, allowed = True
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='WTI', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_________ test_commodity_new_window_and_capped_threshold[WTI-1-False] __________
+
+commodity = ('WTI', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:02:11.493748Z',...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+remaining = 1, allowed = False
+
+    @pytest.mark.parametrize(
+        "remaining,allowed", [(540, False), (420.01, False), (420, True), (435, False), (120, True), (1.01, True), (1, False)]
+    )
+    def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed):
+        from test_strategy_reverification import make_book
+    
+        from btc15.strategies.settlement_edge.rules import evaluate
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        assert c.min_probability == c.late_min_probability == 0.84
+        assert c.entry_window_start == 420 and c.entry_cutoff == 1
+>       assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+E       AssertionError: assert (None == 0.99)
+E        +  where None = Strategy(asset='WTI', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_commodities.py:130: AssertionError
+_ test_commodity_exit_commits_remaining_held_contracts[GOLD-TAKE_PROFIT-.99-yes] _
+
+commodity = ('GOLD', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-17T08:03:54.4386Z', ...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+store = <btc15.storage.Store object at 0x7ace4d18e510>, side = 'yes'
+reason = 'TAKE_PROFIT', trigger = '.99'
+
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    @pytest.mark.parametrize("reason,trigger", [("TAKE_PROFIT", ".99"), ("HARD_STOP", ".55")])
+    def test_commodity_exit_commits_remaining_held_contracts(commodity, store, side, reason, trigger):
+        from test_exit_execution_v2 import held, quote, sells
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        now = market.close_time - 300
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        ex = held(store, market, now, c, side)
+        ex.monitor(market, quote(now, [(trigger, 10)], side), {}, now, "intent")
+>       assert ex.positions[market.ticker].exit_reason == reason
+E       AssertionError: assert '' == 'TAKE_PROFIT'
+E         
+E         - TAKE_PROFIT
+
+tests/test_commodities.py:211: AssertionError
+_ test_commodity_exit_commits_remaining_held_contracts[GOLD-TAKE_PROFIT-.99-no] _
+
+commodity = ('GOLD', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-17T08:03:54.4386Z', ...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+store = <btc15.storage.Store object at 0x7ace4d051580>, side = 'no'
+reason = 'TAKE_PROFIT', trigger = '.99'
+
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    @pytest.mark.parametrize("reason,trigger", [("TAKE_PROFIT", ".99"), ("HARD_STOP", ".55")])
+    def test_commodity_exit_commits_remaining_held_contracts(commodity, store, side, reason, trigger):
+        from test_exit_execution_v2 import held, quote, sells
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        now = market.close_time - 300
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        ex = held(store, market, now, c, side)
+        ex.monitor(market, quote(now, [(trigger, 10)], side), {}, now, "intent")
+>       assert ex.positions[market.ticker].exit_reason == reason
+E       AssertionError: assert '' == 'TAKE_PROFIT'
+E         
+E         - TAKE_PROFIT
+
+tests/test_commodities.py:211: AssertionError
+_ test_commodity_exit_commits_remaining_held_contracts[SILVER-TAKE_PROFIT-.99-yes] _
+
+commodity = ('SILVER', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:01:30.442069...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+store = <btc15.storage.Store object at 0x7ace4d18fa70>, side = 'yes'
+reason = 'TAKE_PROFIT', trigger = '.99'
+
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    @pytest.mark.parametrize("reason,trigger", [("TAKE_PROFIT", ".99"), ("HARD_STOP", ".55")])
+    def test_commodity_exit_commits_remaining_held_contracts(commodity, store, side, reason, trigger):
+        from test_exit_execution_v2 import held, quote, sells
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        now = market.close_time - 300
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        ex = held(store, market, now, c, side)
+        ex.monitor(market, quote(now, [(trigger, 10)], side), {}, now, "intent")
+>       assert ex.positions[market.ticker].exit_reason == reason
+E       AssertionError: assert '' == 'TAKE_PROFIT'
+E         
+E         - TAKE_PROFIT
+
+tests/test_commodities.py:211: AssertionError
+_ test_commodity_exit_commits_remaining_held_contracts[SILVER-TAKE_PROFIT-.99-no] _
+
+commodity = ('SILVER', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:01:30.442069...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+store = <btc15.storage.Store object at 0x7ace4d0ad400>, side = 'no'
+reason = 'TAKE_PROFIT', trigger = '.99'
+
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    @pytest.mark.parametrize("reason,trigger", [("TAKE_PROFIT", ".99"), ("HARD_STOP", ".55")])
+    def test_commodity_exit_commits_remaining_held_contracts(commodity, store, side, reason, trigger):
+        from test_exit_execution_v2 import held, quote, sells
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        now = market.close_time - 300
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        ex = held(store, market, now, c, side)
+        ex.monitor(market, quote(now, [(trigger, 10)], side), {}, now, "intent")
+>       assert ex.positions[market.ticker].exit_reason == reason
+E       AssertionError: assert '' == 'TAKE_PROFIT'
+E         
+E         - TAKE_PROFIT
+
+tests/test_commodities.py:211: AssertionError
+_ test_commodity_exit_commits_remaining_held_contracts[WTI-TAKE_PROFIT-.99-yes] _
+
+commodity = ('WTI', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:02:11.493748Z',...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+store = <btc15.storage.Store object at 0x7ace4d1fb2f0>, side = 'yes'
+reason = 'TAKE_PROFIT', trigger = '.99'
+
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    @pytest.mark.parametrize("reason,trigger", [("TAKE_PROFIT", ".99"), ("HARD_STOP", ".55")])
+    def test_commodity_exit_commits_remaining_held_contracts(commodity, store, side, reason, trigger):
+        from test_exit_execution_v2 import held, quote, sells
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        now = market.close_time - 300
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        ex = held(store, market, now, c, side)
+        ex.monitor(market, quote(now, [(trigger, 10)], side), {}, now, "intent")
+>       assert ex.positions[market.ticker].exit_reason == reason
+E       AssertionError: assert '' == 'TAKE_PROFIT'
+E         
+E         - TAKE_PROFIT
+
+tests/test_commodities.py:211: AssertionError
+_ test_commodity_exit_commits_remaining_held_contracts[WTI-TAKE_PROFIT-.99-no] _
+
+commodity = ('WTI', {'can_close_early': True, 'close_time': '2026-09-18T03:30:00Z', 'created_time': '2026-09-16T20:02:11.493748Z',...s'], 'category': 'Commodities', 'contract_terms_url': 'https://assets.kalshi.com/contract_terms/COMMODITIES.pdf', ...})
+store = <btc15.storage.Store object at 0x7ace4cf8ecc0>, side = 'no'
+reason = 'TAKE_PROFIT', trigger = '.99'
+
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    @pytest.mark.parametrize("reason,trigger", [("TAKE_PROFIT", ".99"), ("HARD_STOP", ".55")])
+    def test_commodity_exit_commits_remaining_held_contracts(commodity, store, side, reason, trigger):
+        from test_exit_execution_v2 import held, quote, sells
+    
+        symbol, raw, series = commodity
+        market = parse_market(raw, series)
+        now = market.close_time - 300
+        c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+        ex = held(store, market, now, c, side)
+        ex.monitor(market, quote(now, [(trigger, 10)], side), {}, now, "intent")
+>       assert ex.positions[market.ticker].exit_reason == reason
+E       AssertionError: assert '' == 'TAKE_PROFIT'
+E         
+E         - TAKE_PROFIT
+
+tests/test_commodities.py:211: AssertionError
+_ test_live_entry_uses_current_time_probability_schedule[-0.001-600-BTC-0.85] __
+
+live = (<btc15.live_automation.LiveAutomation object at 0x7ace4ce29790>, {'posts': [], 'reads': [], 'position': '0.00', 'stat...abled': True, 'contracts': 10, ...}, {'bid': 0.89, 'ask': 0.9, 'reasons': [], 'side': 'yes', ...}, [1790956028.379134])
+early = 0.85, remaining = 600, delta = -0.001
+
+    @pytest.mark.parametrize("live,early", [("BTC", .85), ("ETH", .83), ("SOL", .86), ("XRP", .85), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
+    @pytest.mark.parametrize("remaining", [600.001, 600, 599.999, 480, 420.001, 420, 419.999, 120, 1])
+    @pytest.mark.parametrize("delta", [0, -.001])
+    def test_live_entry_uses_current_time_probability_schedule(live, early, remaining, delta):
+        worker, state, manual, control, data, clock = live
+        clock[0] = control["close_time"] - remaining
+        floor = early if 420 < remaining <= 600 else .83
+        data["probability"] = floor + delta
+        if remaining > 600 or remaining <= 1 or delta < 0:
+>           with pytest.raises(HTTPException):
+E           Failed: DID NOT RAISE HTTPException
+
+tests/test_live_automation.py:688: Failed
+_ test_live_entry_uses_current_time_probability_schedule[-0.001-599.999-BTC-0.85] _
+
+live = (<btc15.live_automation.LiveAutomation object at 0x7ace4ce89ac0>, {'posts': [], 'reads': [], 'position': '0.00', 'stat...abled': True, 'contracts': 10, ...}, {'bid': 0.89, 'ask': 0.9, 'reasons': [], 'side': 'yes', ...}, [1790956028.506027])
+early = 0.85, remaining = 599.999, delta = -0.001
+
+    @pytest.mark.parametrize("live,early", [("BTC", .85), ("ETH", .83), ("SOL", .86), ("XRP", .85), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
+    @pytest.mark.parametrize("remaining", [600.001, 600, 599.999, 480, 420.001, 420, 419.999, 120, 1])
+    @pytest.mark.parametrize("delta", [0, -.001])
+    def test_live_entry_uses_current_time_probability_schedule(live, early, remaining, delta):
+        worker, state, manual, control, data, clock = live
+        clock[0] = control["close_time"] - remaining
+        floor = early if 420 < remaining <= 600 else .83
+        data["probability"] = floor + delta
+        if remaining > 600 or remaining <= 1 or delta < 0:
+>           with pytest.raises(HTTPException):
+E           Failed: DID NOT RAISE HTTPException
+
+tests/test_live_automation.py:688: Failed
+_ test_live_entry_uses_current_time_probability_schedule[-0.001-480-BTC-0.85] __
+
+live = (<btc15.live_automation.LiveAutomation object at 0x7ace4ce51760>, {'posts': [], 'reads': [], 'position': '0.00', 'stat...abled': True, 'contracts': 10, ...}, {'bid': 0.89, 'ask': 0.9, 'reasons': [], 'side': 'yes', ...}, [1790956148.602149])
+early = 0.85, remaining = 480, delta = -0.001
+
+    @pytest.mark.parametrize("live,early", [("BTC", .85), ("ETH", .83), ("SOL", .86), ("XRP", .85), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
+    @pytest.mark.parametrize("remaining", [600.001, 600, 599.999, 480, 420.001, 420, 419.999, 120, 1])
+    @pytest.mark.parametrize("delta", [0, -.001])
+    def test_live_entry_uses_current_time_probability_schedule(live, early, remaining, delta):
+        worker, state, manual, control, data, clock = live
+        clock[0] = control["close_time"] - remaining
+        floor = early if 420 < remaining <= 600 else .83
+        data["probability"] = floor + delta
+        if remaining > 600 or remaining <= 1 or delta < 0:
+>           with pytest.raises(HTTPException):
+E           Failed: DID NOT RAISE HTTPException
+
+tests/test_live_automation.py:688: Failed
+_ test_live_entry_uses_current_time_probability_schedule[-0.001-420.001-BTC-0.85] _
+
+live = (<btc15.live_automation.LiveAutomation object at 0x7ace4ce51f40>, {'posts': [], 'reads': [], 'position': '0.00', 'stat...bled': True, 'contracts': 10, ...}, {'bid': 0.89, 'ask': 0.9, 'reasons': [], 'side': 'yes', ...}, [1790956208.6845012])
+early = 0.85, remaining = 420.001, delta = -0.001
+
+    @pytest.mark.parametrize("live,early", [("BTC", .85), ("ETH", .83), ("SOL", .86), ("XRP", .85), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
+    @pytest.mark.parametrize("remaining", [600.001, 600, 599.999, 480, 420.001, 420, 419.999, 120, 1])
+    @pytest.mark.parametrize("delta", [0, -.001])
+    def test_live_entry_uses_current_time_probability_schedule(live, early, remaining, delta):
+        worker, state, manual, control, data, clock = live
+        clock[0] = control["close_time"] - remaining
+        floor = early if 420 < remaining <= 600 else .83
+        data["probability"] = floor + delta
+        if remaining > 600 or remaining <= 1 or delta < 0:
+>           with pytest.raises(HTTPException):
+E           Failed: DID NOT RAISE HTTPException
+
+tests/test_live_automation.py:688: Failed
+_______________ test_paper_profit_exit_still_enabled[yes-active] _______________
+
+store = <btc15.storage.Store object at 0x7ace4ce52300>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'active', side = 'yes'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+________________ test_paper_profit_exit_still_enabled[yes-eth] _________________
+
+store = <btc15.storage.Store object at 0x7ace4ce8aba0>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'eth', side = 'yes'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+________________ test_paper_profit_exit_still_enabled[yes-sol] _________________
+
+store = <btc15.storage.Store object at 0x7ace4ce8b140>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'sol', side = 'yes'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+________________ test_paper_profit_exit_still_enabled[yes-xrp] _________________
+
+store = <btc15.storage.Store object at 0x7ace4ce29f40>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'xrp', side = 'yes'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+________________ test_paper_profit_exit_still_enabled[yes-gold] ________________
+
+store = <btc15.storage.Store object at 0x7ace4ce2bcb0>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'gold', side = 'yes'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='GOLD', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+_______________ test_paper_profit_exit_still_enabled[yes-silver] _______________
+
+store = <btc15.storage.Store object at 0x7ace4ceaa510>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'silver', side = 'yes'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='SILVER', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+________________ test_paper_profit_exit_still_enabled[yes-wti] _________________
+
+store = <btc15.storage.Store object at 0x7ace4cea9e50>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'wti', side = 'yes'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='WTI', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+_______________ test_paper_profit_exit_still_enabled[no-active] ________________
+
+store = <btc15.storage.Store object at 0x7ace4ce6bf20>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'active', side = 'no'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='BTC', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+_________________ test_paper_profit_exit_still_enabled[no-eth] _________________
+
+store = <btc15.storage.Store object at 0x7ace4ce6ab40>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'eth', side = 'no'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='ETH', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+_________________ test_paper_profit_exit_still_enabled[no-sol] _________________
+
+store = <btc15.storage.Store object at 0x7ace4ce59f70>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'sol', side = 'no'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='SOL', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+_________________ test_paper_profit_exit_still_enabled[no-xrp] _________________
+
+store = <btc15.storage.Store object at 0x7ace4ce5a000>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'xrp', side = 'no'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='XRP', enabled=True, entry_window_start=600, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+________________ test_paper_profit_exit_still_enabled[no-gold] _________________
+
+store = <btc15.storage.Store object at 0x7ace4ce5be60>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'gold', side = 'no'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='GOLD', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+_______________ test_paper_profit_exit_still_enabled[no-silver] ________________
+
+store = <btc15.storage.Store object at 0x7ace4ce58590>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'silver', side = 'no'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='SILVER', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+_________________ test_paper_profit_exit_still_enabled[no-wti] _________________
+
+store = <btc15.storage.Store object at 0x7ace4ce5af60>
+market = Market(ticker='KXBTC15M-26SEP081800-00', event_ticker='KXBTC15M-26SEP081800', market_id='KXBTC15M-26SEP081800-00', tit...010'}, {'end': '0.9000', 'start': '0.1000', 'step': '0.0100'}, {'end': '1.0000', 'start': '0.9000', 'step': '0.0010'}])
+now = 1788904500.0, asset = 'wti', side = 'no'
+
+    @pytest.mark.parametrize("asset", ["active", "eth", "sol", "xrp", "gold", "silver", "wti"])
+    @pytest.mark.parametrize("side", ["yes", "no"])
+    def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
+        c = Strategy.load(f"config/settlement-edge-{asset}-paper.json")
+>       assert c.take_profit == 0.99
+E       AssertionError: assert None == 0.99
+E        +  where None = Strategy(asset='WTI', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.8, max_entry_price=0.9...od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001').take_profit
+
+tests/test_probability_exit_disabled.py:26: AssertionError
+______ test_crypto_presets_share_every_strategy_setting_except_asset[sol] ______
+
+asset = 'sol'
+
+    @pytest.mark.parametrize("asset", ["eth", "sol", "xrp"])
+    def test_crypto_presets_share_every_strategy_setting_except_asset(asset):
+        btc = asdict(Strategy.load("config/settlement-edge-active-paper.json"))
+        other = asdict(Strategy.load(f"config/settlement-edge-{asset}-paper.json"))
+        assert other.pop("asset") == asset.upper()
+        assert btc.pop("asset") == "BTC"
+>       assert other == btc
+E       AssertionError: assert {'enabled': T...ce': 0.8, ...} == {'enabled': T...ce': 0.8, ...}
+E         
+E         Omitting 73 identical items, use -vv to show
+E         Differing items:
+E         {'early_min_probability': 0.86} != {'early_min_probability': 0.83}
+E         Use -v to get more diff
+
+tests/test_probability_exit_disabled.py:44: AssertionError
+______ test_crypto_presets_share_every_strategy_setting_except_asset[xrp] ______
+
+asset = 'xrp'
+
+    @pytest.mark.parametrize("asset", ["eth", "sol", "xrp"])
+    def test_crypto_presets_share_every_strategy_setting_except_asset(asset):
+        btc = asdict(Strategy.load("config/settlement-edge-active-paper.json"))
+        other = asdict(Strategy.load(f"config/settlement-edge-{asset}-paper.json"))
+        assert other.pop("asset") == asset.upper()
+        assert btc.pop("asset") == "BTC"
+>       assert other == btc
+E       AssertionError: assert {'enabled': T...ce': 0.8, ...} == {'enabled': T...ce': 0.8, ...}
+E         
+E         Omitting 73 identical items, use -vv to show
+E         Differing items:
+E         {'early_min_probability': 0.85} != {'early_min_probability': 0.83}
+E         Use -v to get more diff
+
+tests/test_probability_exit_disabled.py:44: AssertionError
+__________________ test_crossed_delta_still_invalidates_book ___________________
+
+    def test_crossed_delta_still_invalidates_book():
+        book = Book()
+        book.snapshot({"yes_dollars_fp": [["0.4", "2"]], "no_dollars_fp": [["0.7", "2"]]}, 0)
+>       with pytest.raises(ValueError, match="Crossed"):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_processing_performance.py:52: Failed
+__________ test_reference_display_continues_while_analysis_is_blocked __________
+
+store = <btc15.storage.Store object at 0x7ace4cea9520>
+config = Strategy(asset='BTC', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.85, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001')
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-246/test_reference_display_continu0')
+raw = {'can_close_early': True, 'close_time': '2026-09-08T22:00:00Z', 'created_time': '2026-09-07T20:01:14.686972Z', 'custom_strike': {'round_digits': '2'}, ...}
+series = {'additional_prohibitions': ['Persons who are employed by any of the Source Agencies are not permitted to trade on the...tract_terms/CRYPTO.pdf', 'contract_url': 'https://assets.kalshi.com/regulatory/product-certifications/CRYPTO.pdf', ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ace4ceaa000>
+
+    def test_reference_display_continues_while_analysis_is_blocked(
+        store, config, tmp_path, raw, series, monkeypatch
+    ):
+        import asyncio
+        import threading
+    
+        from test_collection import fake_client, fake_socket
+    
+        from btc15 import runner
+        from btc15.config import Settings
+    
+        fake_client(monkeypatch, raw, series)
+        fake_socket(
+            monkeypatch,
+            [dict(type="cfbenchmarks_value_5hz", msg=dict(index_id="BRTI", value_usd="79200", source_ts_ms=1))],
+        )
+        release = threading.Event()
+        entered = threading.Event()
+        ingest = runner.Engine.ingest
+    
+        def slow(self, row):
+            entered.set()
+            if not release.wait(5):
+                raise RuntimeError("Test worker timed out")
+            return ingest(self, row)
+    
+        monkeypatch.setattr(runner.Engine, "ingest", slow)
+    
+        async def run():
+            stop = asyncio.Event()
+            task = asyncio.create_task(
+                runner.collect(Settings(data_dir=str(tmp_path)), config, store, stop_event=stop)
+            )
+            try:
+                for _ in range(100):
+                    display = store.read_market_display("reference")
+                    if display and display.get("reference_5hz"):
+                        break
+                    await asyncio.sleep(0.02)
+                assert entered.is_set()
+                assert display["connected"] and display["reference_5hz"]["value"] == "79200"
+                assert not store.read_market_display()  # Analysis has not published a quote snapshot.
+            finally:
+                stop.set()
+                release.set()
+                await asyncio.wait_for(task, 5)
+            assert not store.read_market_display("reference")["connected"]
+    
+>       asyncio.run(run())
+
+tests/test_processing_safety.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    async def run():
+        stop = asyncio.Event()
+        task = asyncio.create_task(
+            runner.collect(Settings(data_dir=str(tmp_path)), config, store, stop_event=stop)
+        )
+        try:
+            for _ in range(100):
+                display = store.read_market_display("reference")
+                if display and display.get("reference_5hz"):
+                    break
+                await asyncio.sleep(0.02)
+            assert entered.is_set()
+>           assert display["connected"] and display["reference_5hz"]["value"] == "79200"
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           TypeError: 'NoneType' object is not subscriptable
+
+tests/test_processing_safety.py:120: TypeError
+------------------------------ Captured log call -------------------------------
+WARNING  btc15.collector_recovery:collector_recovery.py:52 Collector backlog rising: 0.522s, 5/20000 events
+WARNING  btc15.collector_recovery:collector_recovery.py:46 Collector recovery requested: STOPPING; entries blocked
+WARNING  btc15:engine.py:271 {"code": "DISCONNECT", "detail": "{'reason': 'reconnect_or_shutdown'}", "market_id": "", "run_id": "017a6db6-2058-4d72-a813-e63eeea26cbf"}
+WARNING  btc15:engine.py:271 {"code": "DISCONNECT", "detail": "{'reason': 'shutdown'}", "market_id": "", "run_id": "017a6db6-2058-4d72-a813-e63eeea26cbf"}
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /root/Project15/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.12/site-packages/starlette/testclient.py:53
+  /root/Project15/.venv/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_bleep_probability.py::test_cloud_configs_share_single_model_and_probability_floor
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[540-False-active]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[540-False-eth]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[540-False-sol]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[540-False-xrp]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[420.01-False-active]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[420.01-False-eth]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[420.01-False-sol]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[420.01-False-xrp]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[420-True-active]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[420-True-eth]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[420-True-sol]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[420-True-xrp]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[435-False-active]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[435-False-eth]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[435-False-sol]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[435-False-xrp]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[120-True-active]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[120-True-eth]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[120-True-sol]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[120-True-xrp]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[15-True-active]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[15-True-eth]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[15-True-sol]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[15-True-xrp]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[1.01-True-active]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[1.01-True-eth]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[1.01-True-sol]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[1.01-True-xrp]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[1-False-active]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[1-False-eth]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[1-False-sol]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[1-False-xrp]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[0-False-active]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[0-False-eth]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[0-False-sol]
+FAILED tests/test_bleep_settlement_v2.py::test_deployed_entry_window[0-False-xrp]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[GOLD-540-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[GOLD-420.01-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[GOLD-420-True]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[GOLD-435-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[GOLD-120-True]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[GOLD-1.01-True]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[GOLD-1-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[SILVER-540-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[SILVER-420.01-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[SILVER-420-True]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[SILVER-435-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[SILVER-120-True]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[SILVER-1.01-True]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[SILVER-1-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[WTI-540-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[WTI-420.01-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[WTI-420-True]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[WTI-435-False]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[WTI-120-True]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[WTI-1.01-True]
+FAILED tests/test_commodities.py::test_commodity_new_window_and_capped_threshold[WTI-1-False]
+FAILED tests/test_commodities.py::test_commodity_exit_commits_remaining_held_contracts[GOLD-TAKE_PROFIT-.99-yes]
+FAILED tests/test_commodities.py::test_commodity_exit_commits_remaining_held_contracts[GOLD-TAKE_PROFIT-.99-no]
+FAILED tests/test_commodities.py::test_commodity_exit_commits_remaining_held_contracts[SILVER-TAKE_PROFIT-.99-yes]
+FAILED tests/test_commodities.py::test_commodity_exit_commits_remaining_held_contracts[SILVER-TAKE_PROFIT-.99-no]
+FAILED tests/test_commodities.py::test_commodity_exit_commits_remaining_held_contracts[WTI-TAKE_PROFIT-.99-yes]
+FAILED tests/test_commodities.py::test_commodity_exit_commits_remaining_held_contracts[WTI-TAKE_PROFIT-.99-no]
+FAILED tests/test_live_automation.py::test_live_entry_uses_current_time_probability_schedule[-0.001-600-BTC-0.85]
+FAILED tests/test_live_automation.py::test_live_entry_uses_current_time_probability_schedule[-0.001-599.999-BTC-0.85]
+FAILED tests/test_live_automation.py::test_live_entry_uses_current_time_probability_schedule[-0.001-480-BTC-0.85]
+FAILED tests/test_live_automation.py::test_live_entry_uses_current_time_probability_schedule[-0.001-420.001-BTC-0.85]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[yes-active]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[yes-eth]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[yes-sol]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[yes-xrp]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[yes-gold]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[yes-silver]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[yes-wti]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[no-active]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[no-eth]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[no-sol]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[no-xrp]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[no-gold]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[no-silver]
+FAILED tests/test_probability_exit_disabled.py::test_paper_profit_exit_still_enabled[no-wti]
+FAILED tests/test_probability_exit_disabled.py::test_crypto_presets_share_every_strategy_setting_except_asset[sol]
+FAILED tests/test_probability_exit_disabled.py::test_crypto_presets_share_every_strategy_setting_except_asset[xrp]
+FAILED tests/test_processing_performance.py::test_crossed_delta_still_invalidates_book
+FAILED tests/test_processing_safety.py::test_reference_display_continues_while_analysis_is_blocked
+86 failed, 2 warnings in 7.52s

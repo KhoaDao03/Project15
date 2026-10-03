@@ -177,7 +177,7 @@ high-water marks, drops, reasons and errors. Disk failure or a crash can leave a
 unknown tail and stale status. `clean_shutdown` means drained/finalized;
 `capture_complete` describes successful capture of the selected mode's records;
 check `capture_mode`/`exact_replay` separately. `diagnostics` identifies failed journal
-reads (with SQLite codes/messages), coverage-index failures and archive failures.
+reads (with SQLite codes/messages), coverage-index failures and retention cleanup failures.
 Journal reads release locks before serialization and retry without advancing past
 undelivered events; failed reads no longer fabricate feed gaps. Modern immutable
 execution journals replace redundant polling of order snapshots. Coverage failures
@@ -250,8 +250,8 @@ rewritten to imply earlier knowledge. Future/unobserved windows remain partial.
 | --- | --- |
 | Per-recorder queue | 8 MiB serialized payload and 8,192 records; producers never wait for disk |
 | Writer | One daemon thread; gzip level 1, roughly one-second flush, ten-minute rotation |
-| Maintenance | Roughly every five seconds, using monotonic elapsed time |
-| Active-log retention | Move closed segments and context to the archive after seven days or over the shared 20 GiB allowance; do not delete unarchived data |
+| Maintenance | Five seconds after the preceding pass finishes; uses a shared retention index without making other writers wait |
+| Active-log retention | Keep the newest 10,000 completed segments across all assets and producers; permanently delete the oldest excess files |
 | Free disk below 30 GiB | Portable capture drops records; trading continues |
 | Shutdown | Two-second drain budget; failed/timed-out sessions remain incomplete |
 
@@ -264,20 +264,30 @@ one hour; settlement obligations persist. Inspect interrupted files manually.
 
 ## Multiweek archives
 
-The recorder moves closed segments to a sibling `research-logs-archive/`
-directory before retiring them from `research-logs/`. `BTC15_RESEARCH_ARCHIVE_DIR`
-can select another **same-filesystem** path outside the active log tree. Moves are
-atomic; existing immutable conflicts or archive failures leave originals intact and
-report diagnostics. Open `.part` files are never moved. Context remains with both
-trees. The archive is not automatically deleted and is not an off-host backup.
-The 30 GiB free-space reserve still stops new capture when exhausted; export the
-archive to other storage before then. More retention cannot create missing history.
+The recorder now keeps a rolling **10,000 completed files** in `research-logs/`,
+shared by collectors and executor recorders across all markets. On first use it
+indexes existing completed files and removes any excess. New rotations update
+`retention.sqlite`; routine maintenance does not scan the directory tree. One
+shared hourly reconciliation catches interrupted registrations and external file
+changes. A busy cleanup retries on the next maintenance pass, so the count can
+briefly exceed the cap. Oldest means file modification time, with filename as a
+deterministic tie-breaker.
 
-Collect **both** trees for analysis. Combine archived segments first and active
-closed segments second, into a separate destination, so newer advisory summaries
-win. Run these offline on downloaded copies or at low priority:
+Only `events-*.jsonl.gz` files are deleted. Unfinished `.part` files, session
+metadata, coverage indexes, and UI trade databases are untouched. This count cap
+replaces automatic seven-day/20-GiB archiving; file sizes vary, so it is not a byte
+limit. The 30 GiB free-space reserve remains. The old
+`BTC15_RESEARCH_ARCHIVE_DIR` setting no longer controls recorder retention.
+Existing archives are left untouched.
+
+For longer research history, export completed files before they roll out of the
+window. Capture summaries can describe files that have since been pruned: rebuild
+coverage from the files actually retained. Combine any legacy archive first and
+then current files into a separate destination; run this offline on downloaded
+copies or at low priority:
 
 ```bash
+# Optional, if a legacy archive exists:
 .venv/bin/python -m btc15.research_archive research-logs-archive /path/to/combined
 .venv/bin/python -m btc15.research_archive research-logs /path/to/combined --rebuild-coverage
 ```

@@ -1,0 +1,860 @@
+{
+  "source": "All currently visible completed UI trades; no archived/cleared trades",
+  "snapshot": {
+    "fetched_at": 1790995676.8095903,
+    "source": "private UI /assets/{asset}/api/records?kind=trade_result&mode=PAPER&scope=settlement"
+  },
+  "visible_trades": 2253,
+  "visible_entry_start_et": "2026-09-24T14:53:00.770226-04:00",
+  "visible_entry_end_et": "2026-10-02T22:43:23.227626-04:00",
+  "matched_entry_start_et": "2026-09-27T20:52:39.619530-04:00",
+  "matched_entry_end_et": "2026-10-02T22:20:54.389356-04:00",
+  "boundary_rule": "lower seconds excluded; upper seconds included; close time minus first filled buy order creation time",
+  "summary": {
+    "10\u20139 min": {
+      "trades": 191,
+      "wins": 162,
+      "losses": 29,
+      "breakeven": 0,
+      "net_pnl": "33.5487",
+      "fees": "26.11733"
+    },
+    "9\u20138 min": {
+      "trades": 110,
+      "wins": 93,
+      "losses": 17,
+      "breakeven": 0,
+      "net_pnl": "-2.7437",
+      "fees": "13.89618"
+    },
+    "8\u20137 min": {
+      "trades": 134,
+      "wins": 110,
+      "losses": 24,
+      "breakeven": 0,
+      "net_pnl": "-25.2603",
+      "fees": "14.85196"
+    }
+  },
+  "total": {
+    "trades": 435,
+    "wins": 365,
+    "losses": 70,
+    "breakeven": 0,
+    "net_pnl": "5.5447",
+    "fees": "54.86547"
+  },
+  "by_asset": {
+    "BTC": {
+      "10\u20139 min": {
+        "trades": 71,
+        "wins": 59,
+        "losses": 12,
+        "breakeven": 0,
+        "net_pnl": "21.3388",
+        "fees": "14.41226"
+      },
+      "9\u20138 min": {
+        "trades": 19,
+        "wins": 19,
+        "losses": 0,
+        "breakeven": 0,
+        "net_pnl": "35.2246",
+        "fees": "2.3254"
+      },
+      "8\u20137 min": {
+        "trades": 36,
+        "wins": 33,
+        "losses": 3,
+        "breakeven": 0,
+        "net_pnl": "22.9400",
+        "fees": "4.8500"
+      }
+    },
+    "ETH": {
+      "10\u20139 min": {
+        "trades": 32,
+        "wins": 25,
+        "losses": 7,
+        "breakeven": 0,
+        "net_pnl": "-9.7167",
+        "fees": "2.8067"
+      },
+      "9\u20138 min": {
+        "trades": 23,
+        "wins": 22,
+        "losses": 1,
+        "breakeven": 0,
+        "net_pnl": "12.7750",
+        "fees": "1.3820"
+      },
+      "8\u20137 min": {
+        "trades": 29,
+        "wins": 23,
+        "losses": 6,
+        "breakeven": 0,
+        "net_pnl": "-13.2811",
+        "fees": "2.29693"
+      }
+    },
+    "SOL": {
+      "10\u20139 min": {
+        "trades": 19,
+        "wins": 18,
+        "losses": 1,
+        "breakeven": 0,
+        "net_pnl": "22.9726",
+        "fees": "2.80748"
+      },
+      "9\u20138 min": {
+        "trades": 16,
+        "wins": 12,
+        "losses": 4,
+        "breakeven": 0,
+        "net_pnl": "-17.2546",
+        "fees": "3.89762"
+      },
+      "8\u20137 min": {
+        "trades": 14,
+        "wins": 10,
+        "losses": 4,
+        "breakeven": 0,
+        "net_pnl": "-17.0543",
+        "fees": "2.6949"
+      }
+    },
+    "XRP": {
+      "10\u20139 min": {
+        "trades": 14,
+        "wins": 11,
+        "losses": 3,
+        "breakeven": 0,
+        "net_pnl": "-6.1607",
+        "fees": "1.86312"
+      },
+      "9\u20138 min": {
+        "trades": 17,
+        "wins": 12,
+        "losses": 5,
+        "breakeven": 0,
+        "net_pnl": "-18.5205",
+        "fees": "3.0815"
+      },
+      "8\u20137 min": {
+        "trades": 7,
+        "wins": 7,
+        "losses": 0,
+        "breakeven": 0,
+        "net_pnl": "8.1739",
+        "fees": "0.5586"
+      }
+    },
+    "DOGE": {
+      "10\u20139 min": {
+        "trades": 29,
+        "wins": 26,
+        "losses": 3,
+        "breakeven": 0,
+        "net_pnl": "4.2847",
+        "fees": "2.61795"
+      },
+      "9\u20138 min": {
+        "trades": 20,
+        "wins": 16,
+        "losses": 4,
+        "breakeven": 0,
+        "net_pnl": "-10.5976",
+        "fees": "1.9595"
+      },
+      "8\u20137 min": {
+        "trades": 24,
+        "wins": 20,
+        "losses": 4,
+        "breakeven": 0,
+        "net_pnl": "-9.8337",
+        "fees": "2.02947"
+      }
+    },
+    "BNB": {
+      "10\u20139 min": {
+        "trades": 9,
+        "wins": 8,
+        "losses": 1,
+        "breakeven": 0,
+        "net_pnl": "-0.3006",
+        "fees": "0.51192"
+      },
+      "9\u20138 min": {
+        "trades": 6,
+        "wins": 4,
+        "losses": 2,
+        "breakeven": 0,
+        "net_pnl": "-3.9336",
+        "fees": "0.7216"
+      },
+      "8\u20137 min": {
+        "trades": 8,
+        "wins": 4,
+        "losses": 4,
+        "breakeven": 0,
+        "net_pnl": "-13.5602",
+        "fees": "1.1017"
+      }
+    },
+    "HYPE": {
+      "10\u20139 min": {
+        "trades": 17,
+        "wins": 15,
+        "losses": 2,
+        "breakeven": 0,
+        "net_pnl": "1.1306",
+        "fees": "1.0979"
+      },
+      "9\u20138 min": {
+        "trades": 9,
+        "wins": 8,
+        "losses": 1,
+        "breakeven": 0,
+        "net_pnl": "-0.4370",
+        "fees": "0.52856"
+      },
+      "8\u20137 min": {
+        "trades": 16,
+        "wins": 13,
+        "losses": 3,
+        "breakeven": 0,
+        "net_pnl": "-2.6449",
+        "fees": "1.32036"
+      }
+    }
+  },
+  "near_boundary": [
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26OCT022045-45",
+      "entry_time_et": "2026-10-02T20:35:00.916066-04:00",
+      "seconds_remaining": 599.0839340686798,
+      "window": "10\u20139 min",
+      "contracts": 25.0,
+      "net_pnl": "3.5268",
+      "fees": "0.2232",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26OCT020545-45",
+      "entry_time_et": "2026-10-02T05:35:00.264319-04:00",
+      "seconds_remaining": 599.7356810569763,
+      "window": "10\u20139 min",
+      "contracts": 25.0,
+      "net_pnl": "1.2371",
+      "fees": "0.0879",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26OCT012230-30",
+      "entry_time_et": "2026-10-01T22:22:00.805626-04:00",
+      "seconds_remaining": 479.19437408447266,
+      "window": "8\u20137 min",
+      "contracts": 25.0,
+      "net_pnl": "0.9328",
+      "fees": "0.0672",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26OCT011615-15",
+      "entry_time_et": "2026-10-01T16:05:00.950560-04:00",
+      "seconds_remaining": 599.049439907074,
+      "window": "10\u20139 min",
+      "contracts": 25.0,
+      "net_pnl": "2.0831",
+      "fees": "0.1419",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26OCT011200-00",
+      "entry_time_et": "2026-10-01T11:50:00.698114-04:00",
+      "seconds_remaining": 599.3018860816956,
+      "window": "10\u20139 min",
+      "contracts": 25.0,
+      "net_pnl": "1.2371",
+      "fees": "0.0879",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26OCT010245-45",
+      "entry_time_et": "2026-10-01T02:37:00.498116-04:00",
+      "seconds_remaining": 479.50188398361206,
+      "window": "8\u20137 min",
+      "contracts": 25.0,
+      "net_pnl": "1.0263",
+      "fees": "0.0737",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP300545-45",
+      "entry_time_et": "2026-09-30T05:35:00.231318-04:00",
+      "seconds_remaining": 599.7686820030212,
+      "window": "10\u20139 min",
+      "contracts": 20.0,
+      "net_pnl": "1.1961",
+      "fees": "0.0839",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP300515-15",
+      "entry_time_et": "2026-09-30T05:05:00.592005-04:00",
+      "seconds_remaining": 599.4079949855804,
+      "window": "10\u20139 min",
+      "contracts": 20.0,
+      "net_pnl": "1.874",
+      "fees": "0.126",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP300015-15",
+      "entry_time_et": "2026-09-30T00:05:00.444983-04:00",
+      "seconds_remaining": 599.5550169944763,
+      "window": "10\u20139 min",
+      "contracts": 20.0,
+      "net_pnl": "-6.7263",
+      "fees": "0.5263",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP291930-30",
+      "entry_time_et": "2026-09-29T19:22:00.372731-04:00",
+      "seconds_remaining": 479.6272690296173,
+      "window": "8\u20137 min",
+      "contracts": 20.0,
+      "net_pnl": "1.5911",
+      "fees": "0.1089",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP290745-45",
+      "entry_time_et": "2026-09-29T07:35:00.934290-04:00",
+      "seconds_remaining": 599.065710067749,
+      "window": "10\u20139 min",
+      "contracts": 20.0,
+      "net_pnl": "0.9335",
+      "fees": "0.0665",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP290715-15",
+      "entry_time_et": "2026-09-29T07:05:00.426506-04:00",
+      "seconds_remaining": 599.5734939575195,
+      "window": "10\u20139 min",
+      "contracts": 20.0,
+      "net_pnl": "-7.3072",
+      "fees": "0.5072",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP290630-30",
+      "entry_time_et": "2026-09-29T06:21:00.696329-04:00",
+      "seconds_remaining": 539.3036708831787,
+      "window": "9\u20138 min",
+      "contracts": 20.0,
+      "net_pnl": "1.121",
+      "fees": "0.079",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP290030-30",
+      "entry_time_et": "2026-09-29T00:22:00.596008-04:00",
+      "seconds_remaining": 479.40399193763733,
+      "window": "8\u20137 min",
+      "contracts": 20.0,
+      "net_pnl": "1.874",
+      "fees": "0.126",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP281845-45",
+      "entry_time_et": "2026-09-28T18:35:00.681100-04:00",
+      "seconds_remaining": 599.3189001083374,
+      "window": "10\u20139 min",
+      "contracts": 15.0,
+      "net_pnl": "2.1161",
+      "fees": "0.1339",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP281730-30",
+      "entry_time_et": "2026-09-28T17:22:00.384755-04:00",
+      "seconds_remaining": 479.61524510383606,
+      "window": "8\u20137 min",
+      "contracts": 15.0,
+      "net_pnl": "1.5472",
+      "fees": "0.1028",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP281715-15",
+      "entry_time_et": "2026-09-28T17:05:00.693790-04:00",
+      "seconds_remaining": 599.3062100410461,
+      "window": "10\u20139 min",
+      "contracts": 15.0,
+      "net_pnl": "1.9735",
+      "fees": "0.1265",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP281015-15",
+      "entry_time_et": "2026-09-28T10:07:00.471051-04:00",
+      "seconds_remaining": 479.5289490222931,
+      "window": "8\u20137 min",
+      "contracts": 15.0,
+      "net_pnl": "2.1161",
+      "fees": "0.1339",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP280915-15",
+      "entry_time_et": "2026-09-28T09:07:00.530487-04:00",
+      "seconds_remaining": 479.4695129394531,
+      "window": "8\u20137 min",
+      "contracts": 15.0,
+      "net_pnl": "0.5737",
+      "fees": "0.0413",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BTC",
+      "market": "KXBTC15M-26SEP280615-15",
+      "entry_time_et": "2026-09-28T06:07:00.323968-04:00",
+      "seconds_remaining": 479.6760320663452,
+      "window": "8\u20137 min",
+      "contracts": 15.0,
+      "net_pnl": "0.8126",
+      "fees": "0.0574",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26OCT021430-30",
+      "entry_time_et": "2026-10-02T14:21:00.771778-04:00",
+      "seconds_remaining": 539.2282218933105,
+      "window": "9\u20138 min",
+      "contracts": 10.0,
+      "net_pnl": "0.5323",
+      "fees": "0.0377",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26OCT020115-15",
+      "entry_time_et": "2026-10-02T01:06:00.889604-04:00",
+      "seconds_remaining": 539.1103959083557,
+      "window": "9\u20138 min",
+      "contracts": 10.0,
+      "net_pnl": "0.6356",
+      "fees": "0.0444",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26OCT020030-30",
+      "entry_time_et": "2026-10-02T00:20:00.597036-04:00",
+      "seconds_remaining": 599.4029641151428,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "0.5792",
+      "fees": "0.0408",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP302015-15",
+      "entry_time_et": "2026-09-30T20:07:00.761586-04:00",
+      "seconds_remaining": 479.23841404914856,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "1.3157",
+      "fees": "0.0843",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP301600-00",
+      "entry_time_et": "2026-09-30T15:51:00.878481-04:00",
+      "seconds_remaining": 539.1215190887451,
+      "window": "9\u20138 min",
+      "contracts": 10.0,
+      "net_pnl": "0.7202",
+      "fees": "0.0498",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP300715-15",
+      "entry_time_et": "2026-09-30T07:05:00.385149-04:00",
+      "seconds_remaining": 599.6148509979248,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "0.5605",
+      "fees": "0.0395",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP291915-15",
+      "entry_time_et": "2026-09-29T19:05:00.248848-04:00",
+      "seconds_remaining": 599.7511520385742,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "1.126",
+      "fees": "0.074",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP281230-30",
+      "entry_time_et": "2026-09-28T12:22:00.258105-04:00",
+      "seconds_remaining": 479.74189496040344,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "0.3965",
+      "fees": "0.0285",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP281000-00",
+      "entry_time_et": "2026-09-28T09:52:00.627693-04:00",
+      "seconds_remaining": 479.37230706214905,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "-4.0487",
+      "fees": "0.21705",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP280545-45",
+      "entry_time_et": "2026-09-28T05:37:00.344875-04:00",
+      "seconds_remaining": 479.6551249027252,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "0.5567",
+      "fees": "0.0393",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP280500-00",
+      "entry_time_et": "2026-09-28T04:52:00.306655-04:00",
+      "seconds_remaining": 479.69334506988525,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "0.4911",
+      "fees": "0.0349",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "ETH",
+      "market": "KXETH15M-26SEP280145-45",
+      "entry_time_et": "2026-09-28T01:37:00.283233-04:00",
+      "seconds_remaining": 479.7167670726776,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "-5.0603",
+      "fees": "0.2103",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26OCT012300-00",
+      "entry_time_et": "2026-10-01T22:50:00.539698-04:00",
+      "seconds_remaining": 599.4603021144867,
+      "window": "10\u20139 min",
+      "contracts": 25.0,
+      "net_pnl": "1.0123",
+      "fees": "0.0727",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26OCT010145-45",
+      "entry_time_et": "2026-10-01T01:35:00.602478-04:00",
+      "seconds_remaining": 599.3975219726562,
+      "window": "10\u20139 min",
+      "contracts": 25.0,
+      "net_pnl": "2.4369",
+      "fees": "0.1631",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP301415-15",
+      "entry_time_et": "2026-09-30T14:05:59.689596-04:00",
+      "seconds_remaining": 540.3104040622711,
+      "window": "10\u20139 min",
+      "contracts": 25.0,
+      "net_pnl": "4.3372",
+      "fees": "0.2628",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP300200-00",
+      "entry_time_et": "2026-09-30T01:52:00.722323-04:00",
+      "seconds_remaining": 479.2776770591736,
+      "window": "8\u20137 min",
+      "contracts": 20.0,
+      "net_pnl": "1.2524",
+      "fees": "0.0876",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP291115-15",
+      "entry_time_et": "2026-09-29T11:05:59.060068-04:00",
+      "seconds_remaining": 540.9399321079254,
+      "window": "10\u20139 min",
+      "contracts": 20.0,
+      "net_pnl": "0.8155",
+      "fees": "0.0585",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP280230-30",
+      "entry_time_et": "2026-09-28T02:22:00.314653-04:00",
+      "seconds_remaining": 479.6853470802307,
+      "window": "8\u20137 min",
+      "contracts": 15.0,
+      "net_pnl": "0.8473",
+      "fees": "0.0597",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "SOL",
+      "market": "KXSOL15M-26SEP272230-30",
+      "entry_time_et": "2026-09-27T22:22:00.425735-04:00",
+      "seconds_remaining": 479.57426500320435,
+      "window": "8\u20137 min",
+      "contracts": 15.0,
+      "net_pnl": "0.7985",
+      "fees": "0.0565",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "XRP",
+      "market": "KXXRP15M-26SEP290800-00",
+      "entry_time_et": "2026-09-29T07:50:00.978832-04:00",
+      "seconds_remaining": 599.0211679935455,
+      "window": "10\u20139 min",
+      "contracts": 15.0,
+      "net_pnl": "0.6205",
+      "fees": "0.0445",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "DOGE",
+      "market": "KXDOGE15M-26SEP300100-00",
+      "entry_time_et": "2026-09-30T00:51:00.661161-04:00",
+      "seconds_remaining": 539.3388390541077,
+      "window": "9\u20138 min",
+      "contracts": 10.0,
+      "net_pnl": "1.3157",
+      "fees": "0.0843",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "DOGE",
+      "market": "KXDOGE15M-26SEP291330-30",
+      "entry_time_et": "2026-09-29T13:22:00.646832-04:00",
+      "seconds_remaining": 479.35316801071167,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "0.4152",
+      "fees": "0.0298",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "DOGE",
+      "market": "KXDOGE15M-26SEP290845-45",
+      "entry_time_et": "2026-09-29T08:35:00.456595-04:00",
+      "seconds_remaining": 599.5434050559998,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "0.4854",
+      "fees": "0.0346",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "DOGE",
+      "market": "KXDOGE15M-26SEP290530-30",
+      "entry_time_et": "2026-09-29T05:22:00.702296-04:00",
+      "seconds_remaining": 479.29770398139954,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "-4.052",
+      "fees": "0.21677",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "DOGE",
+      "market": "KXDOGE15M-26SEP281545-45",
+      "entry_time_et": "2026-09-28T15:37:00.283087-04:00",
+      "seconds_remaining": 479.716912984848,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "0.4854",
+      "fees": "0.0346",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BNB",
+      "market": "KXBNB15M-26OCT021215-15",
+      "entry_time_et": "2026-10-02T12:07:00.936869-04:00",
+      "seconds_remaining": 479.0631310939789,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "-4.0001",
+      "fees": "0.2201",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "BNB",
+      "market": "KXBNB15M-26SEP290100-00",
+      "entry_time_et": "2026-09-29T00:50:00.849933-04:00",
+      "seconds_remaining": 599.1500670909882,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "0.4386",
+      "fees": "0.0314",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "BNB",
+      "market": "KXBNB15M-26SEP282130-30",
+      "entry_time_et": "2026-09-28T21:20:00.371360-04:00",
+      "seconds_remaining": 599.6286399364471,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "-4.5295",
+      "fees": "0.2135",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "HYPE",
+      "market": "KXHYPE15M-26SEP301300-00",
+      "entry_time_et": "2026-09-30T12:51:00.507955-04:00",
+      "seconds_remaining": 539.4920449256897,
+      "window": "9\u20138 min",
+      "contracts": 10.0,
+      "net_pnl": "-4.9608",
+      "fees": "0.2108",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "HYPE",
+      "market": "KXHYPE15M-26SEP291400-00",
+      "entry_time_et": "2026-09-29T13:50:00.862869-04:00",
+      "seconds_remaining": 599.1371309757233,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "0.3824",
+      "fees": "0.0276",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "HYPE",
+      "market": "KXHYPE15M-26SEP290630-30",
+      "entry_time_et": "2026-09-29T06:20:00.526749-04:00",
+      "seconds_remaining": 599.4732511043549,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "0.4161",
+      "fees": "0.0299",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "HYPE",
+      "market": "KXHYPE15M-26SEP290600-00",
+      "entry_time_et": "2026-09-29T05:50:00.795818-04:00",
+      "seconds_remaining": 599.2041819095612,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "0.3918",
+      "fees": "0.0282",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "HYPE",
+      "market": "KXHYPE15M-26SEP290115-15",
+      "entry_time_et": "2026-09-29T01:07:59.541034-04:00",
+      "seconds_remaining": 420.4589660167694,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "-4.5383",
+      "fees": "0.2123",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "HYPE",
+      "market": "KXHYPE15M-26SEP290045-45",
+      "entry_time_et": "2026-09-29T00:35:00.461967-04:00",
+      "seconds_remaining": 599.5380330085754,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "0.7288",
+      "fees": "0.0502",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "HYPE",
+      "market": "KXHYPE15M-26SEP281915-15",
+      "entry_time_et": "2026-09-28T19:05:00.338280-04:00",
+      "seconds_remaining": 599.6617200374603,
+      "window": "10\u20139 min",
+      "contracts": 10.0,
+      "net_pnl": "-4.5407",
+      "fees": "0.2072",
+      "exit_reason": "HARD_STOP"
+    },
+    {
+      "asset": "HYPE",
+      "market": "KXHYPE15M-26SEP281530-30",
+      "entry_time_et": "2026-09-28T15:22:00.402779-04:00",
+      "seconds_remaining": 479.59722089767456,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "0.3731",
+      "fees": "0.0269",
+      "exit_reason": "SETTLEMENT"
+    },
+    {
+      "asset": "HYPE",
+      "market": "KXHYPE15M-26SEP280300-00",
+      "entry_time_et": "2026-09-28T02:52:00.201206-04:00",
+      "seconds_remaining": 479.7987940311432,
+      "window": "8\u20137 min",
+      "contracts": 10.0,
+      "net_pnl": "0.3731",
+      "fees": "0.0269",
+      "exit_reason": "SETTLEMENT"
+    }
+  ]
+}

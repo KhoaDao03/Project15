@@ -6,7 +6,6 @@ import time
 from decimal import Decimal
 from types import SimpleNamespace
 
-import pytest
 from research_helpers import records
 
 from btc15 import execution_journal
@@ -143,40 +142,6 @@ def test_sampled_snapshots_do_not_report_intentionally_omitted_sequence_as_gap(t
         c.close()
 
 
-def test_retention_conflict_keeps_original(research_recorder, tmp_path):
-    log = research_recorder(tmp_path / "capture")
-    log.emit("test", {})
-    log.close()
-    segment = next(log.directory.glob("events*.gz"))
-    target = log.archive_dir / segment.relative_to(log.root)
-    target.parent.mkdir(parents=True)
-    target.write_bytes(b"conflict")
-    with pytest.raises(ValueError, match="conflict"):
-        log._archive_segment(segment)
-    assert segment.exists() and target.read_bytes() == b"conflict"
-
-
-def test_archive_move_failure_preserves_source(research_recorder, tmp_path, monkeypatch):
-    from pathlib import Path
-
-    log = research_recorder(tmp_path / "capture")
-    log.emit("test", {})
-    log.close()
-    segment = next(log.directory.glob("events*.gz"))
-    original = Path.rename
-
-    def denied(path, target):
-        if path == segment:
-            raise OSError("archive unavailable")
-        return original(path, target)
-
-    monkeypatch.setattr(Path, "rename", denied)
-    with pytest.raises(OSError, match="archive unavailable"):
-        log._archive_segment(segment)
-    assert segment.exists()
-    assert not (log.archive_dir / segment.relative_to(log.root)).exists()
-
-
 def test_rebuilt_prefix_loss_and_partial_tail_stay_visible(research_recorder, tmp_path):
     import gzip
 
@@ -210,22 +175,16 @@ def test_legacy_settlement_cursor_advances_only_after_admission(tmp_path):
     assert log.settlement_cursor == 1
 
 
-def test_archive_failure_is_visible_without_discarding_new_capture(research_recorder, tmp_path, monkeypatch):
-    from btc15.research_log import ResearchLog
+def test_retention_failure_is_visible_without_discarding_new_capture(
+    research_recorder, tmp_path, monkeypatch
+):
+    def unavailable(*args):
+        raise OSError("retention unavailable")
 
-    old = tmp_path / "capture" / "BTC" / "old"
-    old.mkdir(parents=True)
-    segment = old / "events-old.jsonl.gz"
-    segment.write_bytes(b"preserve")
-
-    def unavailable(self, path):
-        raise OSError("archive unavailable")
-
-    monkeypatch.setattr(ResearchLog, "_archive_segment", unavailable)
-    log = research_recorder(tmp_path / "capture", max_disk_bytes=0)
+    monkeypatch.setattr("btc15.research_log.retain_completed", unavailable)
+    log = research_recorder(tmp_path)
     log.emit("test", dict(value=1))
     log.close()
-    assert log.status()["diagnostics"]["retention_archive"]["message"] == "archive unavailable"
+    assert log.status()["diagnostics"]["retention_cleanup"]["message"] == "retention unavailable"
     assert log.status()["dropped"] == 0
-    assert segment.read_bytes() == b"preserve"
     assert len(list(log.directory.glob("events*.gz"))) == 1

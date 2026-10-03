@@ -199,3 +199,28 @@ the security boundary. A temporary routing rollback to port 8001 requires starti
 the legacy viewer and restores its old root/control exposure, so prefer fixing the
 new service. The deployment report retains the exact pre-cutover Caddyfile for
 administrative recovery.
+
+## Performance history
+
+`/performance` compares recorded daily realized P&L in **America/New_York**.
+The trusted publisher derives `performance.json` after its scheduled history
+refresh. It contains all-time and per-day aggregates for each market; visitors
+read these precomputed totals through the read-only `/api/performance` route.
+P&L is assigned to the trade's closure date using `exit_timestamp`, after the
+recorded fees. Open positions do not contribute unrealized P&L. The page compares
+selected-day P&L with comparison-day P&L and charts cumulative recorded P&L.
+These are trade results, not historical account balance snapshots.
+
+The daily trade list uses `/api/history/{asset}?day=YYYY-MM-DD&basis=closed` (or
+`basis=opened` for entry-date browsing) with the existing bounded pagination,
+rate limit, cache and concurrency guards. Day boundaries use New York midnight,
+including daylight-saving changes. Unknown P&L remains unavailable; undated
+closures are counted in all-time results and explicitly excluded from daily
+results. Missing asset exports and stale histories are identified on the page.
+Days before the first available dated record cannot be selected.
+
+For updates to these features, deploy `public_site.py`, the performance HTML/JS,
+and shared static assets with their manifest hashes. The publisher uses the
+repository's `public_performance.py` and `public_export.py`; restart only the
+trusted public exporter when those change. The isolated website still reads
+sanitized files only, with no access to the private API or trading controls.

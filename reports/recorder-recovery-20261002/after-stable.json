@@ -1,0 +1,3785 @@
+[
+  {
+    "at": 1790956798.8780487,
+    "assets": {
+      "BTC": {
+        "status_age": 0.08960723876953125,
+        "connected": true,
+        "processing_lag": 0.005385832,
+        "queue_depth": 2,
+        "reference_age": 0.6724450588226318,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.001882784,
+          "outstanding_events": 2,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 16264,
+          "queued_bytes": 575,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.6702404022216797,
+        "connected": true,
+        "processing_lag": 0.203942971,
+        "queue_depth": 94,
+        "reference_age": 1.10093355178833,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.17925097,
+          "outstanding_events": 94,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 17163,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.9107215404510498,
+        "connected": true,
+        "processing_lag": 0.001421621,
+        "queue_depth": 0,
+        "reference_age": 0.9238898754119873,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 13629,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.1733713150024414,
+        "connected": true,
+        "processing_lag": 0.000818021,
+        "queue_depth": 0,
+        "reference_age": 0.5999526977539062,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956700.3940625,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 14724,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.5482583045959473,
+        "connected": true,
+        "processing_lag": 0.000645087,
+        "queue_depth": 0,
+        "reference_age": 0.6831402778625488,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 1.0177338123321533,
+        "connected": true,
+        "processing_lag": 0.003250184,
+        "queue_depth": 1,
+        "reference_age": 0.209547758102417,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.4871978759765625,
+        "connected": true,
+        "processing_lag": 0.002882866,
+        "queue_depth": 0,
+        "reference_age": 0.772801399230957,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956710.4311998,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.9983258247375488,
+        "connected": true,
+        "processing_lag": 0.075602386,
+        "queue_depth": 0,
+        "reference_age": 0.7904796600341797,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 10421,
+          "queued_bytes": 3447,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.21033906936645508,
+        "connected": true,
+        "processing_lag": 0.013650343,
+        "queue_depth": 0,
+        "reference_age": 0.6329636573791504,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 8309,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.4282360076904297,
+        "connected": true,
+        "processing_lag": 0.006045355,
+        "queue_depth": 0,
+        "reference_age": 0.3645668029785156,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956785.6639392,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 9424,
+          "queued_bytes": 3709,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956803.903202,
+    "assets": {
+      "BTC": {
+        "status_age": 0.733435869216919,
+        "connected": true,
+        "processing_lag": 0.003955904,
+        "queue_depth": 0,
+        "reference_age": 0.07420492172241211,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 16885,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.846149206161499,
+        "connected": true,
+        "processing_lag": 0.00166637,
+        "queue_depth": 0,
+        "reference_age": 0.9751038551330566,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.3619413,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 18279,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.7818422317504883,
+        "connected": true,
+        "processing_lag": 0.013755428,
+        "queue_depth": 1,
+        "reference_age": 1.034947395324707,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.002343367,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 14248,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.7302587032318115,
+        "connected": true,
+        "processing_lag": 0.006823461,
+        "queue_depth": 0,
+        "reference_age": 0.11035823822021484,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 14788,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.72161865234375,
+        "connected": true,
+        "processing_lag": 0.002503757,
+        "queue_depth": 0,
+        "reference_age": 0.5316338539123535,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.8132262229919434,
+        "connected": true,
+        "processing_lag": 0.004817618,
+        "queue_depth": 2,
+        "reference_age": 0.4376487731933594,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.000982189,
+          "outstanding_events": 2,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.7934544086456299,
+        "connected": true,
+        "processing_lag": 0.005038792,
+        "queue_depth": 0,
+        "reference_age": 0.483717679977417,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.8135247230529785,
+        "connected": true,
+        "processing_lag": 0.001208472,
+        "queue_depth": 0,
+        "reference_age": 1.0043506622314453,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.8076649,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 10975,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.8300163745880127,
+        "connected": true,
+        "processing_lag": 0.005644685,
+        "queue_depth": 4,
+        "reference_age": 0.979891300201416,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.004708003,
+          "outstanding_events": 4,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 8855,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 1.7476987838745117,
+        "connected": true,
+        "processing_lag": 0.007223682,
+        "queue_depth": 0,
+        "reference_age": 0.09969925880432129,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956785.6639392,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 9478,
+          "queued_bytes": 731122,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956808.9214704,
+    "assets": {
+      "BTC": {
+        "status_age": 0.6967620849609375,
+        "connected": true,
+        "processing_lag": 0.009309317,
+        "queue_depth": 0,
+        "reference_age": 0.09817218780517578,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 17761,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.7959301471710205,
+        "connected": true,
+        "processing_lag": 0.002149113,
+        "queue_depth": 0,
+        "reference_age": 0.041855573654174805,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.3619413,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 18866,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.704749345779419,
+        "connected": true,
+        "processing_lag": 0.001107693,
+        "queue_depth": 0,
+        "reference_age": 0.09556198120117188,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 14824,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.6829612255096436,
+        "connected": true,
+        "processing_lag": 0.003613975,
+        "queue_depth": 0,
+        "reference_age": 0.1468210220336914,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 15361,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.6832005977630615,
+        "connected": true,
+        "processing_lag": 0.006110036,
+        "queue_depth": 0,
+        "reference_age": 0.5864071846008301,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.769141674041748,
+        "connected": true,
+        "processing_lag": 0.001249909,
+        "queue_depth": 0,
+        "reference_age": 0.49706435203552246,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.5586323738098145,
+        "connected": true,
+        "processing_lag": 0.001132079,
+        "queue_depth": 0,
+        "reference_age": 0.7335000038146973,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.6780519485473633,
+        "connected": true,
+        "processing_lag": 0.004447885,
+        "queue_depth": 0,
+        "reference_age": 0.15911531448364258,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.8076649,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 11535,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.676063060760498,
+        "connected": true,
+        "processing_lag": 0.001904085,
+        "queue_depth": 0,
+        "reference_age": 0.16982769966125488,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 9407,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 4.940533876419067,
+        "connected": true,
+        "processing_lag": 1.315252225,
+        "queue_depth": 126,
+        "reference_age": 1.916700839996338,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 1.277045187,
+          "outstanding_events": 126,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956785.6639392,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 10045,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956813.9313185,
+    "assets": {
+      "BTC": {
+        "status_age": 0.6252295970916748,
+        "connected": true,
+        "processing_lag": 0.004156381,
+        "queue_depth": 0,
+        "reference_age": 0.24777603149414062,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 18669,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.723142147064209,
+        "connected": true,
+        "processing_lag": 0.001110919,
+        "queue_depth": 0,
+        "reference_age": 0.15071916580200195,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.3619413,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 19448,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.5963761806488037,
+        "connected": true,
+        "processing_lag": 0.01147008,
+        "queue_depth": 14,
+        "reference_age": 0.18053674697875977,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.004783093,
+          "outstanding_events": 14,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 15403,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.5638844966888428,
+        "connected": true,
+        "processing_lag": 0.110898437,
+        "queue_depth": 1,
+        "reference_age": 0.2947049140930176,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.026007011,
+          "outstanding_events": 1,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 15975,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.6369268894195557,
+        "connected": true,
+        "processing_lag": 0.001505347,
+        "queue_depth": 0,
+        "reference_age": 0.6428160667419434,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.7303709983825684,
+        "connected": true,
+        "processing_lag": 0.002448133,
+        "queue_depth": 0,
+        "reference_age": 0.5453321933746338,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.44728779792785645,
+        "connected": true,
+        "processing_lag": 0.002468832,
+        "queue_depth": 0,
+        "reference_age": 0.8570208549499512,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.4796755313873291,
+        "connected": true,
+        "processing_lag": 0.004928115,
+        "queue_depth": 0,
+        "reference_age": 0.3536720275878906,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.8076649,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 12084,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.6543493270874023,
+        "connected": true,
+        "processing_lag": 0.016884806,
+        "queue_depth": 0,
+        "reference_age": 0.1960759162902832,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 9984,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.20758748054504395,
+        "connected": true,
+        "processing_lag": 0.046486536,
+        "queue_depth": 22,
+        "reference_age": 0.6149497032165527,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.039935313,
+          "outstanding_events": 17,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956804.934407,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 11185,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956818.9450216,
+    "assets": {
+      "BTC": {
+        "status_age": 0.5671348571777344,
+        "connected": true,
+        "processing_lag": 0.002440929,
+        "queue_depth": 0,
+        "reference_age": 0.26639389991760254,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 19813,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.7056727409362793,
+        "connected": true,
+        "processing_lag": 0.003377191,
+        "queue_depth": 5,
+        "reference_age": 0.16623544692993164,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.002640973,
+          "outstanding_events": 5,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.3619413,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 20048,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.3282451629638672,
+        "connected": true,
+        "processing_lag": 0.002524425,
+        "queue_depth": 0,
+        "reference_age": 0.5254435539245605,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 15977,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.05940580368041992,
+        "connected": true,
+        "processing_lag": 0.002775986,
+        "queue_depth": 0,
+        "reference_age": 0.831831693649292,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 16532,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.5799591541290283,
+        "connected": true,
+        "processing_lag": 0.003355521,
+        "queue_depth": 0,
+        "reference_age": 0.7075388431549072,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.7149991989135742,
+        "connected": true,
+        "processing_lag": 0.004148495,
+        "queue_depth": 0,
+        "reference_age": 0.567450761795044,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.4175758361816406,
+        "connected": true,
+        "processing_lag": 0.001864471,
+        "queue_depth": 0,
+        "reference_age": 0.896329402923584,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.4616563320159912,
+        "connected": true,
+        "processing_lag": 0.000893272,
+        "queue_depth": 0,
+        "reference_age": 0.4209003448486328,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.8076649,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 12626,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.6312210559844971,
+        "connected": true,
+        "processing_lag": 0.00317407,
+        "queue_depth": 0,
+        "reference_age": 0.23482704162597656,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 10531,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.18991780281066895,
+        "connected": true,
+        "processing_lag": 0.004305239,
+        "queue_depth": 0,
+        "reference_age": 0.6923706531524658,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956804.934407,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 11747,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956823.9551172,
+    "assets": {
+      "BTC": {
+        "status_age": 0.5611648559570312,
+        "connected": true,
+        "processing_lag": 0.000888564,
+        "queue_depth": 0,
+        "reference_age": 0.24837732315063477,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 20695,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.6192653179168701,
+        "connected": true,
+        "processing_lag": 0.001426641,
+        "queue_depth": 0,
+        "reference_age": 0.27052807807922363,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.3619413,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 20875,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.2959253787994385,
+        "connected": true,
+        "processing_lag": 0.000872503,
+        "queue_depth": 0,
+        "reference_age": 0.5433559417724609,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 16764,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.0454411506652832,
+        "connected": true,
+        "processing_lag": 0.005140192,
+        "queue_depth": 0,
+        "reference_age": 0.8452057838439941,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 17284,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.5492472648620605,
+        "connected": true,
+        "processing_lag": 0.00381955,
+        "queue_depth": 0,
+        "reference_age": 0.7500321865081787,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.6874558925628662,
+        "connected": true,
+        "processing_lag": 0.002525176,
+        "queue_depth": 0,
+        "reference_age": 0.609156608581543,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.4101560115814209,
+        "connected": true,
+        "processing_lag": 0.000894534,
+        "queue_depth": 0,
+        "reference_age": 0.917513370513916,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.44954705238342285,
+        "connected": true,
+        "processing_lag": 0.002354587,
+        "queue_depth": 0,
+        "reference_age": 0.40798521041870117,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.8076649,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 13163,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.6207735538482666,
+        "connected": true,
+        "processing_lag": 0.003438476,
+        "queue_depth": 0,
+        "reference_age": 0.24181485176086426,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 11068,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.13760590553283691,
+        "connected": true,
+        "processing_lag": 0.00308237,
+        "queue_depth": 0,
+        "reference_age": 0.7189068794250488,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956804.934407,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 12325,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956828.9680116,
+    "assets": {
+      "BTC": {
+        "status_age": 0.5635471343994141,
+        "connected": true,
+        "processing_lag": 0.002640252,
+        "queue_depth": 7,
+        "reference_age": 0.2699306011199951,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.001902863,
+          "outstanding_events": 7,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 21555,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.5352857112884521,
+        "connected": true,
+        "processing_lag": 0.002406134,
+        "queue_depth": 0,
+        "reference_age": 0.3270604610443115,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.3619413,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 21461,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.2820141315460205,
+        "connected": true,
+        "processing_lag": 0.00325869,
+        "queue_depth": 0,
+        "reference_age": 0.5673918724060059,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 17334,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.030655622482299805,
+        "connected": true,
+        "processing_lag": 0.002300034,
+        "queue_depth": 0,
+        "reference_age": 0.8394103050231934,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 17840,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.42291688919067383,
+        "connected": true,
+        "processing_lag": 0.001948137,
+        "queue_depth": 0,
+        "reference_age": 0.8894476890563965,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.6703155040740967,
+        "connected": true,
+        "processing_lag": 0.002559231,
+        "queue_depth": 0,
+        "reference_age": 0.6384992599487305,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.3875846862792969,
+        "connected": true,
+        "processing_lag": 0.000675444,
+        "queue_depth": 0,
+        "reference_age": 0.9520478248596191,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.43287181854248047,
+        "connected": true,
+        "processing_lag": 0.003353077,
+        "queue_depth": 0,
+        "reference_age": 0.42861199378967285,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.8076649,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 13916,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.5908908843994141,
+        "connected": true,
+        "processing_lag": 0.002989134,
+        "queue_depth": 0,
+        "reference_age": 0.3031952381134033,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 11822,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.5431578159332275,
+        "connected": true,
+        "processing_lag": 0.008245014,
+        "queue_depth": 0,
+        "reference_age": 0.3688783645629883,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956804.934407,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 13096,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956833.9793863,
+    "assets": {
+      "BTC": {
+        "status_age": 0.5523669719696045,
+        "connected": true,
+        "processing_lag": 0.021923047,
+        "queue_depth": 20,
+        "reference_age": 0.3263664245605469,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.00931211,
+          "outstanding_events": 20,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 22426,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.5173265933990479,
+        "connected": true,
+        "processing_lag": 0.032233407,
+        "queue_depth": 24,
+        "reference_age": 0.3549370765686035,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.024335443,
+          "outstanding_events": 11,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.3619413,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 22047,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.2700979709625244,
+        "connected": true,
+        "processing_lag": 0.002375546,
+        "queue_depth": 0,
+        "reference_age": 0.643930196762085,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 17879,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.00564885139465332,
+        "connected": true,
+        "processing_lag": 0.002322549,
+        "queue_depth": 0,
+        "reference_age": 0.908045768737793,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 18413,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.4147047996520996,
+        "connected": true,
+        "processing_lag": 0.000575967,
+        "queue_depth": 0,
+        "reference_age": 0.9148521423339844,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.6606113910675049,
+        "connected": true,
+        "processing_lag": 0.004034341,
+        "queue_depth": 0,
+        "reference_age": 0.6667497158050537,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.36829614639282227,
+        "connected": true,
+        "processing_lag": 0.003324303,
+        "queue_depth": 0,
+        "reference_age": 0.9851047992706299,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.4194200038909912,
+        "connected": true,
+        "processing_lag": 0.006078819,
+        "queue_depth": 0,
+        "reference_age": 0.4538273811340332,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.8076649,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 14449,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.5711171627044678,
+        "connected": true,
+        "processing_lag": 0.008988684,
+        "queue_depth": 0,
+        "reference_age": 0.3115060329437256,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 11863,
+          "queued_bytes": 574,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 1.294466257095337,
+        "connected": true,
+        "processing_lag": 0.273707052,
+        "queue_depth": 1,
+        "reference_age": 0.5869781970977783,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.066632156,
+          "outstanding_events": 1,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956804.934407,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 13152,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956838.992362,
+    "assets": {
+      "BTC": {
+        "status_age": 0.5455489158630371,
+        "connected": true,
+        "processing_lag": 0.003403982,
+        "queue_depth": 0,
+        "reference_age": 0.3809645175933838,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 23341,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.4636526107788086,
+        "connected": true,
+        "processing_lag": 0.000772796,
+        "queue_depth": 0,
+        "reference_age": 0.44167137145996094,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.3619413,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 22629,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.25354790687561035,
+        "connected": true,
+        "processing_lag": 0.002482748,
+        "queue_depth": 0,
+        "reference_age": 0.640618085861206,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.5780869,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 18427,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.9952476024627686,
+        "connected": true,
+        "processing_lag": 0.003214187,
+        "queue_depth": 0,
+        "reference_age": 0.9094033241271973,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 18952,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.37546849250793457,
+        "connected": true,
+        "processing_lag": 0.000723714,
+        "queue_depth": 0,
+        "reference_age": 0.9659700393676758,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.6408498287200928,
+        "connected": true,
+        "processing_lag": 0.010512118,
+        "queue_depth": 0,
+        "reference_age": 0.6978206634521484,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.36362195014953613,
+        "connected": true,
+        "processing_lag": 0.002528374,
+        "queue_depth": 0,
+        "reference_age": 0.0009629726409912109,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 1.4027140140533447,
+        "connected": true,
+        "processing_lag": 0.014060759,
+        "queue_depth": 0,
+        "reference_age": 0.5541656017303467,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.8076649,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 14472,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.5609424114227295,
+        "connected": true,
+        "processing_lag": 0.004650916,
+        "queue_depth": 0,
+        "reference_age": 0.35570573806762695,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 12392,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.3679239749908447,
+        "connected": true,
+        "processing_lag": 0.002548972,
+        "queue_depth": 0,
+        "reference_age": 0.5303938388824463,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956804.934407,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 14230,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956844.0056186,
+    "assets": {
+      "BTC": {
+        "status_age": 0.5138301849365234,
+        "connected": true,
+        "processing_lag": 0.001151175,
+        "queue_depth": 0,
+        "reference_age": 0.36740660667419434,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 24272,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.6080207824707031,
+        "connected": true,
+        "processing_lag": 0.004475757,
+        "queue_depth": 0,
+        "reference_age": 0.27559471130371094,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 23372,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.10944461822509766,
+        "connected": true,
+        "processing_lag": 0.00828003,
+        "queue_depth": 0,
+        "reference_age": 0.7807126045227051,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 19098,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.9824154376983643,
+        "connected": true,
+        "processing_lag": 0.002603213,
+        "queue_depth": 0,
+        "reference_age": 0.9324338436126709,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 19559,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.3514416217803955,
+        "connected": true,
+        "processing_lag": 0.006209172,
+        "queue_depth": 0,
+        "reference_age": 0.0011982917785644531,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.6337890625,
+        "connected": true,
+        "processing_lag": 0.001991407,
+        "queue_depth": 0,
+        "reference_age": 0.717602014541626,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.35280585289001465,
+        "connected": true,
+        "processing_lag": 0.000837779,
+        "queue_depth": 0,
+        "reference_age": 0.02599167823791504,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.8982357978820801,
+        "connected": true,
+        "processing_lag": 0.000548307,
+        "queue_depth": 0,
+        "reference_age": 0.013161659240722656,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956702.8076649,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 15063,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.5502452850341797,
+        "connected": true,
+        "processing_lag": 0.002012958,
+        "queue_depth": 0,
+        "reference_age": 0.33695459365844727,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 12979,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.17412805557250977,
+        "connected": true,
+        "processing_lag": 0.000942234,
+        "queue_depth": 0,
+        "reference_age": 0.7798709869384766,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956804.934407,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 14839,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956849.0192306,
+    "assets": {
+      "BTC": {
+        "status_age": 0.2826883792877197,
+        "connected": true,
+        "processing_lag": 0.05542578,
+        "queue_depth": 17,
+        "reference_age": 0.6530888080596924,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0.052548985,
+          "outstanding_events": 17,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956711.926285,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 25407,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.548875093460083,
+        "connected": true,
+        "processing_lag": 0.002743105,
+        "queue_depth": 0,
+        "reference_age": 0.40724682807922363,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 23984,
+          "queued_bytes": 6048,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.04135489463806152,
+        "connected": true,
+        "processing_lag": 0.003133225,
+        "queue_depth": 0,
+        "reference_age": 0.8969693183898926,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 19827,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.9287781715393066,
+        "connected": true,
+        "processing_lag": 0.005917868,
+        "queue_depth": 0,
+        "reference_age": 0.005736112594604492,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 20127,
+          "queued_bytes": 492,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.33151793479919434,
+        "connected": true,
+        "processing_lag": 0.001107623,
+        "queue_depth": 0,
+        "reference_age": 0.03280067443847656,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.6173949241638184,
+        "connected": true,
+        "processing_lag": 0.002722957,
+        "queue_depth": 0,
+        "reference_age": 0.7424798011779785,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.33057403564453125,
+        "connected": true,
+        "processing_lag": 0.006161675,
+        "queue_depth": 0,
+        "reference_age": 0.059212446212768555,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.12548112869262695,
+        "connected": true,
+        "processing_lag": 0.009232151,
+        "queue_depth": 0,
+        "reference_age": 0.8372354507446289,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 15719,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.5331454277038574,
+        "connected": true,
+        "processing_lag": 0.001920114,
+        "queue_depth": 0,
+        "reference_age": 0.40914106369018555,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956703.1829157,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 13525,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.15942835807800293,
+        "connected": true,
+        "processing_lag": 0.000653824,
+        "queue_depth": 0,
+        "reference_age": 0.7956833839416504,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956804.934407,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 15461,
+          "queued_bytes": 575,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956854.031368,
+    "assets": {
+      "BTC": {
+        "status_age": 0.8048710823059082,
+        "connected": true,
+        "processing_lag": 0.099595842,
+        "queue_depth": 60,
+        "reference_age": 0.1585559844970703,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.085506237,
+          "outstanding_events": 60,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 26612,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.4783897399902344,
+        "connected": true,
+        "processing_lag": 0.008151329,
+        "queue_depth": 6,
+        "reference_age": 0.4458446502685547,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.00159171,
+          "outstanding_events": 6,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 25224,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 1.0091605186462402,
+        "connected": true,
+        "processing_lag": 0.163599508,
+        "queue_depth": 139,
+        "reference_age": 0.9352619647979736,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.157575943,
+          "outstanding_events": 139,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 21017,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.9101216793060303,
+        "connected": true,
+        "processing_lag": 0.001100019,
+        "queue_depth": 0,
+        "reference_age": 0.025212764739990234,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 21345,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.2971305847167969,
+        "connected": true,
+        "processing_lag": 0.000714197,
+        "queue_depth": 0,
+        "reference_age": 0.07336115837097168,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956708.860445,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.6036772727966309,
+        "connected": true,
+        "processing_lag": 0.002230324,
+        "queue_depth": 0,
+        "reference_age": 0.7753429412841797,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956709.9657955,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.32453346252441406,
+        "connected": true,
+        "processing_lag": 0.001796443,
+        "queue_depth": 0,
+        "reference_age": 0.07855415344238281,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 1.0197288990020752,
+        "connected": true,
+        "processing_lag": 0.09941928,
+        "queue_depth": 146,
+        "reference_age": 0.9528100490570068,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.092937377,
+          "outstanding_events": 146,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 16667,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.9060618877410889,
+        "connected": true,
+        "processing_lag": 0.008513275,
+        "queue_depth": 2,
+        "reference_age": 0.05953359603881836,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 14579,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 0.7275431156158447,
+        "connected": true,
+        "processing_lag": 1.152520254,
+        "queue_depth": 535,
+        "reference_age": 1.2515215873718262,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 1.123430601,
+          "outstanding_events": 535,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED"
+          ],
+          "since": 1790956804.934407,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 15957,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  },
+  {
+    "at": 1790956859.0460892,
+    "assets": {
+      "BTC": {
+        "status_age": 0.27579641342163086,
+        "connected": true,
+        "processing_lag": 0.499426906,
+        "queue_depth": 190,
+        "reference_age": 0.6627459526062012,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.495946762,
+          "outstanding_events": 190,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [],
+          "since": 1790956711.926285,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155817Z-0e519297408b41e090ba4354aefa2be9",
+          "paused": false,
+          "written": 27512,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "ETH": {
+        "status_age": 0.3252713680267334,
+        "connected": true,
+        "processing_lag": 0.000937434,
+        "queue_depth": 0,
+        "reference_age": 0.6081969738006592,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.3619413,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+          "paused": false,
+          "written": 25875,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SOL": {
+        "status_age": 0.7039647102355957,
+        "connected": true,
+        "processing_lag": 0.044796083,
+        "queue_depth": 3,
+        "reference_age": 0.24889492988586426,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.038311064,
+          "outstanding_events": 3,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.5780869,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-afc06fa8a208416ebe2e6e76ad6ab2a8",
+          "paused": false,
+          "written": 21660,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "XRP": {
+        "status_age": 0.8712043762207031,
+        "connected": true,
+        "processing_lag": 0.0109781,
+        "queue_depth": 0,
+        "reference_age": 0.13687944412231445,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956700.3940625,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155820Z-534b5f2dffaa4d739bd77a8c7ddfc245",
+          "paused": false,
+          "written": 21895,
+          "queued_bytes": 575,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "GOLD": {
+        "status_age": 0.1942760944366455,
+        "connected": true,
+        "processing_lag": 0.002766118,
+        "queue_depth": 0,
+        "reference_age": 0.19540929794311523,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956708.860445,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155828Z-7f19a172528d4883b81e6d00769fa6a7",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "SILVER": {
+        "status_age": 0.7594094276428223,
+        "connected": true,
+        "processing_lag": 0.001230794,
+        "queue_depth": 0,
+        "reference_age": 0.633650541305542,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956709.9657955,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155829Z-f9a30e33588547168cc7479f0e404a4f",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "WTI": {
+        "status_age": 0.7990291118621826,
+        "connected": true,
+        "processing_lag": 0.023581893,
+        "queue_depth": 0,
+        "reference_age": 0.6223313808441162,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": true,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [
+            "NO_ACTIVE_MARKET"
+          ],
+          "since": 1790956710.4311998,
+          "state": "RECOVERING",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155830Z-a2c7a7be0b5f466cb1dd52d331adf315",
+          "paused": true,
+          "written": 1,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "BNB": {
+        "status_age": 0.7757096290588379,
+        "connected": true,
+        "processing_lag": 0.005340246,
+        "queue_depth": 0,
+        "reference_age": 0.24204421043395996,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0,
+          "outstanding_events": 0,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956702.8076649,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-0a035a15f4cb4dcca6b75a119269505f",
+          "paused": false,
+          "written": 17454,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "HYPE": {
+        "status_age": 0.8639519214630127,
+        "connected": true,
+        "processing_lag": 0.1020636,
+        "queue_depth": 13,
+        "reference_age": 0.10268759727478027,
+        "recovery": {
+          "catching_up": false,
+          "entries_blocked": false,
+          "oldest_event_lag": 0.095471451,
+          "outstanding_events": 13,
+          "reason": "STARTUP",
+          "reasons": [],
+          "since": 1790956703.1829157,
+          "state": "READY",
+          "warning": false
+        },
+        "logging": {
+          "session": "20261002T155822Z-fa36d2f4a3114f70b9b3db55b3d8e62f",
+          "paused": false,
+          "written": 15382,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      },
+      "DOGE": {
+        "status_age": 3.2855634689331055,
+        "connected": true,
+        "processing_lag": 2.646407776,
+        "queue_depth": 477,
+        "reference_age": 2.658219337463379,
+        "recovery": {
+          "catching_up": true,
+          "entries_blocked": true,
+          "oldest_event_lag": 2.609640372,
+          "outstanding_events": 474,
+          "reason": "PROCESSING_BACKLOG",
+          "reasons": [
+            "BACKLOG_NOT_DRAINED",
+            "WAITING_FOR_FRESH_REFERENCE"
+          ],
+          "since": 1790956854.666019,
+          "state": "RECOVERING",
+          "warning": true
+        },
+        "logging": {
+          "session": "20261002T155824Z-ab5e3dc46baf4b80b35c5cc458e3edfe",
+          "paused": false,
+          "written": 16607,
+          "queued_bytes": 0,
+          "dropped": 0,
+          "drop_reasons": {},
+          "diagnostics": {}
+        }
+      }
+    }
+  }
+]

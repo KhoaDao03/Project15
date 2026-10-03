@@ -1,0 +1,81 @@
+{
+  "all_trades": {
+    "n": 3746,
+    "wins": 3275,
+    "losses": 471,
+    "pnl": 273.8208
+  },
+  "matched": {
+    "n": 284,
+    "wins": 241,
+    "losses": 43,
+    "pnl": 1.9211
+  },
+  "exact_check_matches": 283,
+  "first": "2026-09-27T15:41:35.314240-04:00",
+  "last": "2026-10-02T18:43:41.724351-04:00",
+  "split_at": 1790640503.514529,
+  "discovery": {
+    "n": 198,
+    "wins": 175,
+    "losses": 23,
+    "pnl": 24.0592
+  },
+  "validation": {
+    "n": 86,
+    "wins": 66,
+    "losses": 20,
+    "pnl": -22.1381
+  },
+  "by_asset": {
+    "BNB": {
+      "n": 38,
+      "wins": 31,
+      "losses": 7,
+      "pnl": -7.9698
+    },
+    "BTC": {
+      "n": 61,
+      "wins": 49,
+      "losses": 12,
+      "pnl": -8.1772
+    },
+    "DOGE": {
+      "n": 28,
+      "wins": 25,
+      "losses": 3,
+      "pnl": 4.5796
+    },
+    "ETH": {
+      "n": 65,
+      "wins": 55,
+      "losses": 10,
+      "pnl": -2.295
+    },
+    "HYPE": {
+      "n": 32,
+      "wins": 28,
+      "losses": 4,
+      "pnl": 1.4709
+    },
+    "SOL": {
+      "n": 42,
+      "wins": 39,
+      "losses": 3,
+      "pnl": 27.6211
+    },
+    "XRP": {
+      "n": 18,
+      "wins": 14,
+      "losses": 4,
+      "pnl": -13.3085
+    }
+  },
+  "tested_combinations": 20912,
+  "zero_win_candidates": 49,
+  "skipped": [
+    "KXETH15M-26SEP281200-00",
+    "KXHYPE15M-26SEP281145-45",
+    "KXHYPE15M-26SEP281500-00"
+  ]
+}
