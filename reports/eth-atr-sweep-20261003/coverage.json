@@ -1,0 +1,436 @@
+[
+  {
+    "ticker": "KXETH15M-26SEP280200-00",
+    "session": "20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916",
+    "close": 1790575200.0,
+    "eval_gap": 2.0178468227386475,
+    "book_gap": 1.1321778297424316
+  },
+  {
+    "ticker": "KXETH15M-26SEP280215-15",
+    "session": "20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916",
+    "close": 1790576100.0,
+    "eval_gap": 2.04355788230896,
+    "book_gap": 1.412187099456787
+  },
+  {
+    "ticker": "KXETH15M-26OCT021215-15",
+    "session": "20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306",
+    "close": 1790957700.0,
+    "eval_gap": 2.0263795852661133,
+    "book_gap": 2.039968967437744
+  },
+  {
+    "ticker": "KXETH15M-26OCT021230-30",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790958600.0,
+    "eval_gap": 2.0445902347564697,
+    "book_gap": 1.5137875080108643
+  },
+  {
+    "ticker": "KXETH15M-26OCT021245-45",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790959500.0,
+    "eval_gap": 2.034437656402588,
+    "book_gap": 1.3105173110961914
+  },
+  {
+    "ticker": "KXETH15M-26OCT021300-00",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790960400.0,
+    "eval_gap": 2.0355985164642334,
+    "book_gap": 1.3037514686584473
+  },
+  {
+    "ticker": "KXETH15M-26OCT021315-15",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790961300.0,
+    "eval_gap": 2.0305285453796387,
+    "book_gap": 1.6796672344207764
+  },
+  {
+    "ticker": "KXETH15M-26OCT021330-30",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790962200.0,
+    "eval_gap": 2.014230251312256,
+    "book_gap": 1.4355590343475342
+  },
+  {
+    "ticker": "KXETH15M-26OCT021345-45",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790963100.0,
+    "eval_gap": 2.0444564819335938,
+    "book_gap": 1.4031972885131836
+  },
+  {
+    "ticker": "KXETH15M-26OCT021400-00",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790964000.0,
+    "eval_gap": 2.0332658290863037,
+    "book_gap": 1.2648932933807373
+  },
+  {
+    "ticker": "KXETH15M-26OCT021415-15",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790964900.0,
+    "eval_gap": 2.0421714782714844,
+    "book_gap": 1.262885332107544
+  },
+  {
+    "ticker": "KXETH15M-26OCT021430-30",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790965800.0,
+    "eval_gap": 2.0302722454071045,
+    "book_gap": 1.4016766548156738
+  },
+  {
+    "ticker": "KXETH15M-26OCT021445-45",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790966700.0,
+    "eval_gap": 2.040370225906372,
+    "book_gap": 1.7762336730957031
+  },
+  {
+    "ticker": "KXETH15M-26OCT021500-00",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790967600.0,
+    "eval_gap": 2.0378854274749756,
+    "book_gap": 1.2241618633270264
+  },
+  {
+    "ticker": "KXETH15M-26OCT021515-15",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790968500.0,
+    "eval_gap": 2.0247418880462646,
+    "book_gap": 1.223078966140747
+  },
+  {
+    "ticker": "KXETH15M-26OCT021530-30",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790969400.0,
+    "eval_gap": 2.029785633087158,
+    "book_gap": 1.1965553760528564
+  },
+  {
+    "ticker": "KXETH15M-26OCT021545-45",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790970300.0,
+    "eval_gap": 2.0444202423095703,
+    "book_gap": 1.1976089477539062
+  },
+  {
+    "ticker": "KXETH15M-26OCT021600-00",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790971200.0,
+    "eval_gap": 2.022167205810547,
+    "book_gap": 1.9315118789672852
+  },
+  {
+    "ticker": "KXETH15M-26OCT021615-15",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790972100.0,
+    "eval_gap": 2.0218584537506104,
+    "book_gap": 1.1720764636993408
+  },
+  {
+    "ticker": "KXETH15M-26OCT021630-30",
+    "session": "20261002T161736Z-ca8d5e70187843dea77657aff399f9f6",
+    "close": 1790973000.0,
+    "eval_gap": 2.037121057510376,
+    "book_gap": 1.3849523067474365
+  },
+  {
+    "ticker": "KXETH15M-26OCT021715-15",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790975700.0,
+    "eval_gap": 2.037614107131958,
+    "book_gap": 1.317969799041748
+  },
+  {
+    "ticker": "KXETH15M-26OCT021730-30",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790976600.0,
+    "eval_gap": 2.0622425079345703,
+    "book_gap": 1.3655438423156738
+  },
+  {
+    "ticker": "KXETH15M-26OCT021745-45",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790977500.0,
+    "eval_gap": 2.023561477661133,
+    "book_gap": 1.3483352661132812
+  },
+  {
+    "ticker": "KXETH15M-26OCT021800-00",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790978400.0,
+    "eval_gap": 2.0629734992980957,
+    "book_gap": 1.1667516231536865
+  },
+  {
+    "ticker": "KXETH15M-26OCT021815-15",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790979300.0,
+    "eval_gap": 2.0400474071502686,
+    "book_gap": 1.2182526588439941
+  },
+  {
+    "ticker": "KXETH15M-26OCT021830-30",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790980200.0,
+    "eval_gap": 2.025592565536499,
+    "book_gap": 1.452869176864624
+  },
+  {
+    "ticker": "KXETH15M-26OCT021845-45",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790981100.0,
+    "eval_gap": 2.0444352626800537,
+    "book_gap": 1.3236567974090576
+  },
+  {
+    "ticker": "KXETH15M-26OCT021900-00",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790982000.0,
+    "eval_gap": 2.043337345123291,
+    "book_gap": 1.5035474300384521
+  },
+  {
+    "ticker": "KXETH15M-26OCT021915-15",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790982900.0,
+    "eval_gap": 2.0369033813476562,
+    "book_gap": 1.1974704265594482
+  },
+  {
+    "ticker": "KXETH15M-26OCT021930-30",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790983800.0,
+    "eval_gap": 2.112501621246338,
+    "book_gap": 1.1837224960327148
+  },
+  {
+    "ticker": "KXETH15M-26OCT021945-45",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790984700.0,
+    "eval_gap": 2.03383469581604,
+    "book_gap": 1.393425703048706
+  },
+  {
+    "ticker": "KXETH15M-26OCT022000-00",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790985600.0,
+    "eval_gap": 2.0365915298461914,
+    "book_gap": 1.212740421295166
+  },
+  {
+    "ticker": "KXETH15M-26OCT022015-15",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790986500.0,
+    "eval_gap": 2.019972562789917,
+    "book_gap": 1.4584646224975586
+  },
+  {
+    "ticker": "KXETH15M-26OCT022030-30",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790987400.0,
+    "eval_gap": 2.025580644607544,
+    "book_gap": 1.1785521507263184
+  },
+  {
+    "ticker": "KXETH15M-26OCT022045-45",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790988300.0,
+    "eval_gap": 2.053179979324341,
+    "book_gap": 1.4219062328338623
+  },
+  {
+    "ticker": "KXETH15M-26OCT022100-00",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790989200.0,
+    "eval_gap": 2.0185794830322266,
+    "book_gap": 1.2769420146942139
+  },
+  {
+    "ticker": "KXETH15M-26OCT022115-15",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790990100.0,
+    "eval_gap": 2.0418641567230225,
+    "book_gap": 1.1473169326782227
+  },
+  {
+    "ticker": "KXETH15M-26OCT022130-30",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790991000.0,
+    "eval_gap": 2.033601760864258,
+    "book_gap": 1.1552085876464844
+  },
+  {
+    "ticker": "KXETH15M-26OCT022145-45",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790991900.0,
+    "eval_gap": 2.0283968448638916,
+    "book_gap": 1.2925126552581787
+  },
+  {
+    "ticker": "KXETH15M-26OCT022200-00",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790992800.0,
+    "eval_gap": 2.0344862937927246,
+    "book_gap": 1.2238454818725586
+  },
+  {
+    "ticker": "KXETH15M-26OCT022215-15",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790993700.0,
+    "eval_gap": 2.0386288166046143,
+    "book_gap": 1.7373313903808594
+  },
+  {
+    "ticker": "KXETH15M-26OCT022230-30",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790994600.0,
+    "eval_gap": 2.020423650741577,
+    "book_gap": 1.2053632736206055
+  },
+  {
+    "ticker": "KXETH15M-26OCT022245-45",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790995500.0,
+    "eval_gap": 2.037721872329712,
+    "book_gap": 1.4007930755615234
+  },
+  {
+    "ticker": "KXETH15M-26OCT022300-00",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790996400.0,
+    "eval_gap": 2.071904420852661,
+    "book_gap": 1.2291114330291748
+  },
+  {
+    "ticker": "KXETH15M-26OCT022315-15",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790997300.0,
+    "eval_gap": 2.0182957649230957,
+    "book_gap": 1.1850059032440186
+  },
+  {
+    "ticker": "KXETH15M-26OCT022330-30",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790998200.0,
+    "eval_gap": 2.0285274982452393,
+    "book_gap": 1.1117594242095947
+  },
+  {
+    "ticker": "KXETH15M-26OCT022345-45",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1790999100.0,
+    "eval_gap": 2.026583433151245,
+    "book_gap": 1.2332861423492432
+  },
+  {
+    "ticker": "KXETH15M-26OCT030000-00",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1791000000.0,
+    "eval_gap": 2.0393714904785156,
+    "book_gap": 1.2251648902893066
+  },
+  {
+    "ticker": "KXETH15M-26OCT030015-15",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1791000900.0,
+    "eval_gap": 2.0497984886169434,
+    "book_gap": 1.2400016784667969
+  },
+  {
+    "ticker": "KXETH15M-26OCT030030-30",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1791001800.0,
+    "eval_gap": 2.0293729305267334,
+    "book_gap": 1.169569969177246
+  },
+  {
+    "ticker": "KXETH15M-26OCT030045-45",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1791002700.0,
+    "eval_gap": 2.052334785461426,
+    "book_gap": 1.5602927207946777
+  },
+  {
+    "ticker": "KXETH15M-26OCT030100-00",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1791003600.0,
+    "eval_gap": 2.0352511405944824,
+    "book_gap": 1.2867481708526611
+  },
+  {
+    "ticker": "KXETH15M-26OCT030115-15",
+    "session": "20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac",
+    "close": 1791004500.0,
+    "eval_gap": 2.0366368293762207,
+    "book_gap": 1.3971278667449951
+  },
+  {
+    "ticker": "KXETH15M-26OCT030145-45",
+    "session": "20261003T052201Z-e1f7321eb84142debab613afc203f51c",
+    "close": 1791006300.0,
+    "eval_gap": 2.03554630279541,
+    "book_gap": 1.1851601600646973
+  },
+  {
+    "ticker": "KXETH15M-26OCT030200-00",
+    "session": "20261003T052201Z-e1f7321eb84142debab613afc203f51c",
+    "close": 1791007200.0,
+    "eval_gap": 2.046708345413208,
+    "book_gap": 1.1598820686340332
+  },
+  {
+    "ticker": "KXETH15M-26OCT030215-15",
+    "session": "20261003T052201Z-e1f7321eb84142debab613afc203f51c",
+    "close": 1791008100.0,
+    "eval_gap": 2.05078125,
+    "book_gap": 1.219411849975586
+  },
+  {
+    "ticker": "KXETH15M-26OCT030245-45",
+    "session": "20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69",
+    "close": 1791009900.0,
+    "eval_gap": 2.0243334770202637,
+    "book_gap": 1.436497688293457
+  },
+  {
+    "ticker": "KXETH15M-26OCT030300-00",
+    "session": "20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69",
+    "close": 1791010800.0,
+    "eval_gap": 2.028635263442993,
+    "book_gap": 1.1305999755859375
+  },
+  {
+    "ticker": "KXETH15M-26OCT030315-15",
+    "session": "20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69",
+    "close": 1791011700.0,
+    "eval_gap": 2.0522499084472656,
+    "book_gap": 1.1710541248321533
+  },
+  {
+    "ticker": "KXETH15M-26OCT030330-30",
+    "session": "20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69",
+    "close": 1791012600.0,
+    "eval_gap": 2.0385234355926514,
+    "book_gap": 1.176814317703247
+  },
+  {
+    "ticker": "KXETH15M-26OCT030345-45",
+    "session": "20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69",
+    "close": 1791013500.0,
+    "eval_gap": 2.0214526653289795,
+    "book_gap": 1.2197699546813965
+  },
+  {
+    "ticker": "KXETH15M-26OCT030400-00",
+    "session": "20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69",
+    "close": 1791014400.0,
+    "eval_gap": 2.0286717414855957,
+    "book_gap": 1.1246540546417236
+  }
+]

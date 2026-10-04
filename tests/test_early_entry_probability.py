@@ -10,7 +10,7 @@ from btc15.strategies.settlement_edge.bleep import model_name
 from btc15.strategies.settlement_edge.model import Tick
 from btc15.strategies.settlement_edge.rules import evaluate
 
-THRESHOLDS = {"BTC": .83, "ETH": .83, "SOL": .86, "XRP": .86, "DOGE": .83, "BNB": .91, "HYPE": .87}
+THRESHOLDS = {"BTC": .83, "ETH": .85, "SOL": .86, "XRP": .86, "DOGE": .83, "BNB": .91, "HYPE": .87}
 
 
 @pytest.mark.parametrize("asset,early", THRESHOLDS.items())

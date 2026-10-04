@@ -1,0 +1,70 @@
+CRYPTO STOP-PRICE STUDY
+Snapshot: 2026-10-03T00:36:37.072846-04:00
+Conclusion: Existing logs do not establish an optimal stop. Keep 55 cents pending more evidence; 50 cents is a candidate for prospective comparison, not a validated replacement. No bot settings changed.
+
+Scope: Seven crypto bots; currently visible completed UI trades, excluding cleared history. 2,281 collected; comparisons of the current no-take-profit regime use 2,225 trades entered after September 24, 2026 at 8pm ET, excluding take-profit exits. Stops are held-side bid prices, not loss amounts.
+
+ACTUAL EXECUTION EVIDENCE
+Asset | completed trades | hard stops | later winning settlement | actual net P&L | hypothetical hold-to-settlement P&L change
+ALL | 2225 | 295 | 152 | $265.8838 | $+29.1367
+BTC | 554 | 88 | 41 | $104.0941 | $-56.8822
+ETH | 452 | 67 | 31 | $-4.0830 | $-29.9166
+SOL | 338 | 25 | 12 | $142.3364 | $-3.4426
+XRP | 261 | 32 | 22 | $22.1098 | $+83.1125
+DOGE | 181 | 19 | 9 | $14.4849 | $+2.7631
+BNB | 209 | 29 | 19 | $-0.2463 | $+43.4530
+HYPE | 230 | 35 | 18 | $-12.8121 | $-9.9505
+
+Holding to settlement fixes the original actual entries and sizes, removes actual sells, retains actual purchase fees, and uses recorded official outcomes. It is not a full alternative portfolio simulation: longer exposure can change later orders, loss-guard behavior, and available cash. No-stop delta is not the benefit of any particular lower stop.
+Actual hard-stop average fill: 52.37 cents; median 53 cents. 82 filled below 50 cents; 25 below 40 cents.
+
+MODELED STOP COMPARISON
+Common cohort: 212 trades (9.5% of eligible history), 2026-09-27T22:22:00.425735-04:00 through 2026-10-03T00:23:00.674054-04:00. Actual sample P&L $45.6341. 13 ultimately losing settlement outcomes.
+Stop cents | modeled P&L | delta vs modeled 55c | modeled losing trades | actual winners turned to modeled losses
+5 | $68.0465 | $+48.1701 | 13 | 0
+10 | $19.8784 | $+0.0020 | 16 | 0
+15 | $41.9126 | $+22.0362 | 16 | 0
+20 | $44.1713 | $+24.2949 | 17 | 0
+25 | $47.8501 | $+27.9737 | 18 | 0
+30 | $45.3905 | $+25.5141 | 19 | 0
+35 | $44.3081 | $+24.4317 | 20 | 0
+40 | $28.5397 | $+8.6633 | 22 | 0
+45 | $43.9375 | $+24.0611 | 25 | 2
+50 | $48.7791 | $+28.9027 | 27 | 2
+55 | $19.8764 | $+0.0000 | 35 | 4
+60 | $17.7016 | $-2.1748 | 36 | 5
+65 | $25.1003 | $+5.2239 | 38 | 7
+70 | $39.8124 | $+19.9360 | 42 | 11
+75 | $18.8833 | $-0.9931 | 52 | 21
+80 | $-5.7646 | $-25.6410 | 69 | 38
+
+METHOD
+Same original buy quantity, purchase cost and fees for every candidate. First observed fresh valid held-side bid at/below threshold triggers an irrevocable hypothetical exit; first retained book after delay supplies bid depth, not the trigger price. Entire quantity must fit retained depth. Otherwise comparison is unavailable. Trades without a stop use recorded official settlement. No partial-fill or market-impact simulation.
+Central delay 1 second; sensitivity 0.5 and 3 seconds. Actual hard-stop detection-to-acknowledgement timing on 295 recorded sells: median 0.54s, p90 2.48s, p95 3.23s. This excludes quote age and earlier unobserved crossings.
+Common cohort requires all stops 40–70 cents and all tested delays to have adequate coverage from entry acknowledgement through hypothetical exit (or settlement if no exit), no valid-book gap over 5s, and next execution book within 2s of eligibility. Empty held-side books count as observed but cannot fill an exit. A stricter 2s coverage comparison is retained in results.json. Broader 5–80c scenarios were evaluated on this same cohort.
+Recorded book samples may miss intervening crossings. Actual polling, queue delay, liquidity competition, fill confirmation, partial sales and order effects cannot be reconstructed exactly. Actual buy entry acknowledgement is used as exposure start; fills may precede it slightly.
+Modeled sell fees use the repository FeeAccumulator at 0.07 and $0.0001 balance precision. Reference: https://kalshi.com/docs/kalshi-fee-schedule.pdf (general taker formula and no settlement fee). Actual buy fees are taken from exchange order records.
+
+VALIDATION AND UNCERTAINTY
+Modeled 55c central P&L $19.8764, actual $45.6341; mean absolute discrepancy 1.148 cents per contract. Modeled deltas must not be added to actual account P&L as guaranteed gains.
+50c versus 55c, earlier70: 148 trades, delta $+29.2226.
+50c versus 55c, later30: 64 trades, delta $-0.3199.
+50c delta across delays: 0.5s $+30.8444, 1.0s $+28.9027, 3.0s $+12.1767
+50c cluster bootstrap 95% delta interval: $-18.87 to $82.64. 5,000 resamples of 70 shared 15-minute buckets; exploratory, not adjusted for searching multiple thresholds or model uncertainty.
+Very loose 5c had the highest in-sample modeled P&L, but mean loss per losing contract was 84.70c versus 34.38c at 55c. Its bootstrap interval also spans losses; it is not an acceptable claim of a validated optimum.
+The later 30% is a chronological retrospective check, not untouched prospective data. Settings and quantities changed during the history. Per-asset sample sizes are too small for reliable individual optima.
+
+PER-ASSET CENTRAL 40–70c EXPLORATORY COMPARISON
+Asset | usable sample | best among 40–70c | modeled delta vs 55c
+BTC | 52 | 70 | $+21.2578
+ETH | 43 | 40 | $+12.9035
+SOL | 38 | 40 | $+14.7168
+XRP | 20 | 50 | $+0.8542
+DOGE | 3 | 40 | $+0.0000 (all tied; no informative stops)
+BNB | 25 | 45 | $+2.1832
+HYPE | 31 | 50 | $+3.2487
+
+COVERAGE
+{'incomplete_path_or_execution_40_to70': 133, 'no_path': 1880, 'earlier_profit_taking_regime': 56}
+Scanned 1965 compressed collector segments. Read errors: 0.
+Final decision: do not raise or lower the live stop on these results alone. Compare 50c and 55c prospectively, particularly on XRP; retain full bid-depth paths for stopped trades and eventual winners.

@@ -96,7 +96,7 @@ async def test_loss_latch_preserves_hard_stop_exits(live):
     worker.write_asset(policy)
     control.update(enabled=False)
     worker.write(control)
-    data["bid"] = 0.55
+    data["bid"] = 0.50
     await worker.step_market(control)
     assert state["posts"][-1]["reduce_only"]
     assert state["posts"][-1]["time_in_force"] == "immediate_or_cancel"

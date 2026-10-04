@@ -123,7 +123,7 @@ async def test_disabled_buys_keep_stop_exits_and_sell_only_held(live):
     await worker.step_market(control)
     state["position"] = "10"
     control = worker.configure(LiveControl(ticker=TICKER, enabled=False, contracts=20, revision=1))
-    data["bid"] = 0.55
+    data["bid"] = 0.50
     await worker.step_market(control)
     order = state["posts"][-1]
     assert order["reduce_only"] and order["time_in_force"] == "immediate_or_cancel"
@@ -669,14 +669,14 @@ async def test_disabled_take_profit_holds_at_99_but_keeps_stop(live, side):
         data["bid"] = bid
         await worker.step_market(control)
         assert len(state["posts"]) == 1
-    data["bid"] = 0.55
+    data["bid"] = 0.50
     await worker.step_market(control)
     assert len(state["posts"]) == 2
     assert worker.controls()[TICKER]["exit_reason"] == "HARD_STOP"
     assert state["posts"][-1]["reduce_only"]
 
 
-@pytest.mark.parametrize("live,early", [("BTC", .85), ("ETH", .83), ("SOL", .86), ("XRP", .85), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
+@pytest.mark.parametrize("live,early", [("BTC", .83), ("ETH", .85), ("SOL", .86), ("XRP", .86), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
 @pytest.mark.parametrize("remaining", [600.001, 600, 599.999, 480, 420.001, 420, 419.999, 120, 1])
 @pytest.mark.parametrize("delta", [0, -.001])
 def test_live_entry_uses_current_time_probability_schedule(live, early, remaining, delta):

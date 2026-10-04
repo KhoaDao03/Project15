@@ -18,7 +18,7 @@ indicator_up = clip(0.5 + 0.12 * indicator_lean, 0.05, 0.95)
 p_up = clip((1 - weight) * base_up + weight * indicator_up, 0.02, 0.98)
 ```
 
-Multipliers are **BTC 0.95, ETH 0.95, SOL 1.00, XRP 1.10, BNB 1.25, HYPE 1.15, DOGE 1.10**. GOLD uses **1.35**; SILVER and WTI use **1.20**. The existing
+Multipliers are **BTC 0.95, ETH 1.05, SOL 1.00, XRP 1.10, BNB 1.10, HYPE 1.15, DOGE 1.10**. GOLD uses **1.35**; SILVER and WTI use **1.20**. The existing
 indicator lean uses Wilder RSI/Stochastic RSI and Bollinger Bands. Project15's
 causal candle construction is retained. ATR averages the 14 true ranges from the
 last 15 contiguous official-reference candles, including the causal current minute,
@@ -82,8 +82,8 @@ settlement uses the contract's actual rounding/comparison; official outcomes
 remain authoritative for settlement processing.
 
 Commodity paper markets share the ATR finish predictor with BTC settings, while
-retaining their Pyth terminal settlement rules. All seven paper presets use a
-99¢ take-profit and 55¢ hard stop. There
+retaining their Pyth terminal settlement rules. All seven crypto presets have take-profit disabled and use a
+50¢ hard stop. There
 is no user-selectable second crypto predictor or blend. New model identity and
 configuration hashes prevent silently resuming an old-model checkpoint. Prepare
 fresh cloud configurations; existing running installations are not migrated by
@@ -97,4 +97,4 @@ after the same safety and market-respect caps. Their ATR multipliers are gold 1.
 
 ## Timed crypto entry thresholds
 
-Crypto presets begin considering entries at 600 seconds remaining. For `420 < remaining <= 600`, capped confidence must meet BTC 83%, ETH 83%, SOL 86%, XRP 86%, DOGE 83%, BNB 91%, or HYPE 87%. At `remaining <= 420`, the active presets return to the standard/late 83% floor. Existing entry cutoffs and all other filters still apply. The `early_min_probability` setting defaults to zero, preserving older configuration behavior and identity.
+Crypto presets begin considering entries at 600 seconds remaining. For `420 < remaining <= 600`, capped confidence must meet BTC 83%, ETH 85%, SOL 86%, XRP 86%, DOGE 83%, BNB 91%, or HYPE 87%. At `remaining <= 420`, the active presets return to the standard/late 83% floor. Existing entry cutoffs and all other filters still apply. The `early_min_probability` setting defaults to zero, preserving older configuration behavior and identity.

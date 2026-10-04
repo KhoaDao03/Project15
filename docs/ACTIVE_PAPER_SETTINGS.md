@@ -9,11 +9,11 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | --- | --- |
 | Model | Bleep ATR finish estimate |
 | Early window | `420 < seconds_remaining <= 600` |
-| Early probability floor | BTC 83%; ETH 83%; SOL 86%; XRP 86%; DOGE 83%; BNB 91%; HYPE 87% |
+| Early probability floor | BTC 83%; ETH 85%; SOL 86%; XRP 86%; DOGE 83%; BNB 91%; HYPE 87% |
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 0.95; ETH 0.95; SOL 1.00; XRP 1.10; BNB 1.25; HYPE 1.15; DOGE 1.10 |
+| ATR sigma multiplier | BTC 0.95; ETH 1.05; SOL 1.00; XRP 1.10; BNB 1.10; HYPE 1.15; DOGE 1.10 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH/BNB/HYPE/DOGE; +10pp SOL/XRP; maximum 98% |
 | Spread filter | Disabled for all bots; zero spreads allowed. Missing/invalid/crossed quotes still fail validation. Legacy `max_spread` is ignored. |
 | Purchase range | 80–96¢ |
@@ -23,7 +23,7 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Net-edge / expected-value vetoes | Disabled |
 | Paper sizing | 10 contracts, all or none within the price cap |
 | Take-profit / resting profit orders | Disabled (`take_profit=null`) |
-| Hard stop | Held-side bid ≤55¢ |
+| Hard stop | Held-side bid ≤50¢ |
 | Model probability / hold-value exits | Disabled |
 | Standard cashout / profit-value exits | Disabled |
 | Paper post-close cooldown | 60 seconds |
@@ -31,7 +31,7 @@ Despite their filenames, these are also the source for fresh cloud signal config
 
 Any remaining inventory settles at expiration. Full-position paper sells stay
 committed and consume available depth; triggers are not guaranteed fill prices.
-Live automation shares the probability/entry strategy and the 55¢ stop threshold,
+Live automation shares the probability/entry strategy and the 50¢ stop threshold,
 with separate resting-order handling and user-selected quantity; see
 [live automation](LIVE_AUTOMATION.md).
 
@@ -47,7 +47,7 @@ histories and portfolios must not be reset or relabeled to claim they ran Bleep.
 ## BNB and HYPE
 
 Added presets use ETH's settings, including its +6pp market-respect cap, with the early probability thresholds listed above.
-ATR sigma multipliers are BNB **1.25** and HYPE **1.15**.
+ATR sigma multipliers are BNB **1.10** and HYPE **1.15**.
 Kalshi public metadata captured on September 26, 2026 confirms the same
 60-second CF Benchmarks settlement average, with BNB rounded to two decimal
 places and HYPE to four. HYPE uses `HYPEUSD_RTI`, not the retired

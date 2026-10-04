@@ -1,0 +1,2859 @@
+{
+  "counts": {
+    "book": 85831,
+    "evaluation": 61027,
+    "recording_gap": 25913
+  },
+  "errors": [],
+  "inventory": [
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790574040741671704.jsonl.gz",
+      "size": 7415137
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790574640918774132.jsonl.gz",
+      "size": 7398033
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790575241337953582.jsonl.gz",
+      "size": 7041578
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790575841402936158.jsonl.gz",
+      "size": 6426548
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790576441637481745.jsonl.gz",
+      "size": 2971479
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790577041642169485.jsonl.gz",
+      "size": 5585239
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790577641661080163.jsonl.gz",
+      "size": 5223659
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790578241866038473.jsonl.gz",
+      "size": 5572682
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790578841999527331.jsonl.gz",
+      "size": 7359907
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790579442032408737.jsonl.gz",
+      "size": 6677201
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790580042062169104.jsonl.gz",
+      "size": 6169335
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790580642092413229.jsonl.gz",
+      "size": 6552702
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790581242126316498.jsonl.gz",
+      "size": 7140044
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790581842134668183.jsonl.gz",
+      "size": 7027261
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790582442144474076.jsonl.gz",
+      "size": 6948007
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790583042258763818.jsonl.gz",
+      "size": 6852555
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790583642403645187.jsonl.gz",
+      "size": 4787746
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790584242658256006.jsonl.gz",
+      "size": 6154340
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790584842848780609.jsonl.gz",
+      "size": 6203760
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790585442877064486.jsonl.gz",
+      "size": 5667773
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790586042886450110.jsonl.gz",
+      "size": 15006051
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790586643073504652.jsonl.gz",
+      "size": 4969337
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790587243078086369.jsonl.gz",
+      "size": 7571822
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790587843085434046.jsonl.gz",
+      "size": 5317222
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790588451785837021.jsonl.gz",
+      "size": 6010278
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790589052000267874.jsonl.gz",
+      "size": 6596065
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790589652001885287.jsonl.gz",
+      "size": 5553363
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790590262981367729.jsonl.gz",
+      "size": 5808057
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790590862998537492.jsonl.gz",
+      "size": 6559919
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790591463084589086.jsonl.gz",
+      "size": 6024078
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790592071578933855.jsonl.gz",
+      "size": 5084964
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790592673247405580.jsonl.gz",
+      "size": 4894013
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790593274715335948.jsonl.gz",
+      "size": 4794228
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790593883403110221.jsonl.gz",
+      "size": 5528785
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790594483519719208.jsonl.gz",
+      "size": 3082123
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790595086933897911.jsonl.gz",
+      "size": 4660154
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790595697562464272.jsonl.gz",
+      "size": 4445374
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790596297884225074.jsonl.gz",
+      "size": 1100592
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790596907561280300.jsonl.gz",
+      "size": 1958772
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790597516972860611.jsonl.gz",
+      "size": 5330619
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790598125069956227.jsonl.gz",
+      "size": 6795883
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790598733989896059.jsonl.gz",
+      "size": 5245726
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790599345197872532.jsonl.gz",
+      "size": 5447139
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790599952347949916.jsonl.gz",
+      "size": 2279919
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790600560363630047.jsonl.gz",
+      "size": 325577
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790601170668513828.jsonl.gz",
+      "size": 5684991
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790601779495238151.jsonl.gz",
+      "size": 1343292
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790602390943895978.jsonl.gz",
+      "size": 39142
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790602999395889895.jsonl.gz",
+      "size": 60882
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790603605992123441.jsonl.gz",
+      "size": 2771938
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790604214537841928.jsonl.gz",
+      "size": 1586159
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790604823026257319.jsonl.gz",
+      "size": 1874121
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790605433622701631.jsonl.gz",
+      "size": 33114
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790606040791226403.jsonl.gz",
+      "size": 386632
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790606650338546513.jsonl.gz",
+      "size": 1506264
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790607260750249744.jsonl.gz",
+      "size": 1066077
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790607869241773754.jsonl.gz",
+      "size": 35740
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790608478280965110.jsonl.gz",
+      "size": 2564967
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790609085407150706.jsonl.gz",
+      "size": 334636
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790609695227480589.jsonl.gz",
+      "size": 34605
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790610307032359677.jsonl.gz",
+      "size": 1744779
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790610914725250415.jsonl.gz",
+      "size": 34167
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790611524819014156.jsonl.gz",
+      "size": 1075241
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790612133325457812.jsonl.gz",
+      "size": 533377
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790612744932581390.jsonl.gz",
+      "size": 1343672
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790613358452794810.jsonl.gz",
+      "size": 871331
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790613967765025747.jsonl.gz",
+      "size": 1426122
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790614586690826879.jsonl.gz",
+      "size": 41429
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790615193999989490.jsonl.gz",
+      "size": 35389
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790615808935118083.jsonl.gz",
+      "size": 27116
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790616417312465654.jsonl.gz",
+      "size": 25382
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790617030628986167.jsonl.gz",
+      "size": 25242
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790617643582294026.jsonl.gz",
+      "size": 23311
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790618260526321333.jsonl.gz",
+      "size": 26874
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790618869625518036.jsonl.gz",
+      "size": 33161
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790619476911140458.jsonl.gz",
+      "size": 36349
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790620090972952961.jsonl.gz",
+      "size": 1210212
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790620699305249828.jsonl.gz",
+      "size": 21402
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790621311584405496.jsonl.gz",
+      "size": 16045
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790621932249016903.jsonl.gz",
+      "size": 22889
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790622543789930402.jsonl.gz",
+      "size": 1511991
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790623155226651598.jsonl.gz",
+      "size": 17958
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790623769383222950.jsonl.gz",
+      "size": 1651992
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790624381402165491.jsonl.gz",
+      "size": 40787
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T000014Z-ad8c558f0e9c4ea3a763986fea0c3916/events-1790624992522382596.jsonl.gz",
+      "size": 30827
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790625781960616165.jsonl.gz",
+      "size": 369576
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790626396619106107.jsonl.gz",
+      "size": 54776
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790627007900774839.jsonl.gz",
+      "size": 52791
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790627620040742300.jsonl.gz",
+      "size": 58713
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790628234684935727.jsonl.gz",
+      "size": 45049
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790628853362501534.jsonl.gz",
+      "size": 612345
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790629463484529782.jsonl.gz",
+      "size": 30143
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790630074537213861.jsonl.gz",
+      "size": 1429897
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790630691246075912.jsonl.gz",
+      "size": 52638
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790631305315459048.jsonl.gz",
+      "size": 40055
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790631914891526760.jsonl.gz",
+      "size": 11095
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790632531239152347.jsonl.gz",
+      "size": 10842
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790633147325841415.jsonl.gz",
+      "size": 8802
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790633760906009317.jsonl.gz",
+      "size": 16182
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790634376781222127.jsonl.gz",
+      "size": 23821
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790634994049076267.jsonl.gz",
+      "size": 29629
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790635603139356113.jsonl.gz",
+      "size": 26563
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790636216428810397.jsonl.gz",
+      "size": 9113
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790636833973798957.jsonl.gz",
+      "size": 8489
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790637446584734503.jsonl.gz",
+      "size": 8327
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790638060531538340.jsonl.gz",
+      "size": 1101045
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790638681293090643.jsonl.gz",
+      "size": 14313
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790639292720248862.jsonl.gz",
+      "size": 16775
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790639904781461037.jsonl.gz",
+      "size": 15317
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790640524944408194.jsonl.gz",
+      "size": 108566
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790641137924439462.jsonl.gz",
+      "size": 1298813
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790641755252053411.jsonl.gz",
+      "size": 1064332
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790642366930617360.jsonl.gz",
+      "size": 19278
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790642981925773379.jsonl.gz",
+      "size": 1202661
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790643594807401122.jsonl.gz",
+      "size": 25873
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790644210636816268.jsonl.gz",
+      "size": 28403
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790644828917017621.jsonl.gz",
+      "size": 32611
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790645445828748418.jsonl.gz",
+      "size": 16863
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790646058664588396.jsonl.gz",
+      "size": 17923
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790646670659151902.jsonl.gz",
+      "size": 18595
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790647279725242678.jsonl.gz",
+      "size": 17506
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790647893045428369.jsonl.gz",
+      "size": 17574
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790648505741259194.jsonl.gz",
+      "size": 14693
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790649117044602252.jsonl.gz",
+      "size": 20478
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790649728951577200.jsonl.gz",
+      "size": 27566
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790650343662681093.jsonl.gz",
+      "size": 23241
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790650954103684373.jsonl.gz",
+      "size": 27483
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790651568329805117.jsonl.gz",
+      "size": 26555
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790652182273003761.jsonl.gz",
+      "size": 25803
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790652794211727254.jsonl.gz",
+      "size": 27114
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790653409832341616.jsonl.gz",
+      "size": 17929
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790654023460898029.jsonl.gz",
+      "size": 16982
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790654637690798144.jsonl.gz",
+      "size": 18881
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790655254297115034.jsonl.gz",
+      "size": 14136
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790655869471712759.jsonl.gz",
+      "size": 15516
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790656478686778968.jsonl.gz",
+      "size": 15942
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790657100723233680.jsonl.gz",
+      "size": 14213
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790657723535108793.jsonl.gz",
+      "size": 36432
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790658337364624147.jsonl.gz",
+      "size": 21734
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790658950717818405.jsonl.gz",
+      "size": 24909
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790659563722278611.jsonl.gz",
+      "size": 857770
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790660176592256350.jsonl.gz",
+      "size": 16179
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790660787480523840.jsonl.gz",
+      "size": 21179
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790661399774829531.jsonl.gz",
+      "size": 22131
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790662014778826028.jsonl.gz",
+      "size": 14761
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790662630576613206.jsonl.gz",
+      "size": 21949
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790663252803730616.jsonl.gz",
+      "size": 17287
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790663862729427455.jsonl.gz",
+      "size": 23490
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790664474017904233.jsonl.gz",
+      "size": 20036
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790665086910703250.jsonl.gz",
+      "size": 20964
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790665703454597169.jsonl.gz",
+      "size": 20198
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790666312471156798.jsonl.gz",
+      "size": 1327494
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790666926408013130.jsonl.gz",
+      "size": 16285
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790667540331115002.jsonl.gz",
+      "size": 16352
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790668151020153048.jsonl.gz",
+      "size": 940484
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790668769916391548.jsonl.gz",
+      "size": 18025
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790669389312792304.jsonl.gz",
+      "size": 17876
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790669998171900567.jsonl.gz",
+      "size": 14512
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790670611195727797.jsonl.gz",
+      "size": 20852
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790671221796283630.jsonl.gz",
+      "size": 23794
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790671833944596879.jsonl.gz",
+      "size": 16724
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790672450735750565.jsonl.gz",
+      "size": 25692
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790673071579043261.jsonl.gz",
+      "size": 29552
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790673683733626330.jsonl.gz",
+      "size": 20982
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790674295183079760.jsonl.gz",
+      "size": 33644
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790674904562076463.jsonl.gz",
+      "size": 21879
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790675523751033213.jsonl.gz",
+      "size": 1091407
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790676131482411962.jsonl.gz",
+      "size": 16013
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790676749054715128.jsonl.gz",
+      "size": 1128525
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790677375051514365.jsonl.gz",
+      "size": 802946
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790677990760271618.jsonl.gz",
+      "size": 12772
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790678605061470219.jsonl.gz",
+      "size": 18218
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790679222382860564.jsonl.gz",
+      "size": 13914
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790679838823665057.jsonl.gz",
+      "size": 1154347
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790680459197688520.jsonl.gz",
+      "size": 45352
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790681075911423618.jsonl.gz",
+      "size": 47860
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790681686970731964.jsonl.gz",
+      "size": 37456
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790682303417168209.jsonl.gz",
+      "size": 40609
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790682922551001589.jsonl.gz",
+      "size": 41615
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790683535925885947.jsonl.gz",
+      "size": 46869
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790684149946493524.jsonl.gz",
+      "size": 52494
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790684765508333712.jsonl.gz",
+      "size": 49815
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790685379037985991.jsonl.gz",
+      "size": 21971
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790685994513980696.jsonl.gz",
+      "size": 24860
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790686612578232269.jsonl.gz",
+      "size": 20554
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790687224909415505.jsonl.gz",
+      "size": 18698
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790687842052461887.jsonl.gz",
+      "size": 17284
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790688459960864950.jsonl.gz",
+      "size": 20141
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790689071830480734.jsonl.gz",
+      "size": 34066
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790689690262447943.jsonl.gz",
+      "size": 36736
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790690305583045286.jsonl.gz",
+      "size": 38500
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790690926701762676.jsonl.gz",
+      "size": 10535
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790691538927712835.jsonl.gz",
+      "size": 7515
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790692160886596249.jsonl.gz",
+      "size": 8293
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790692783102270024.jsonl.gz",
+      "size": 7712
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790693403483359571.jsonl.gz",
+      "size": 7102
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790694025874900687.jsonl.gz",
+      "size": 7085
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790694643718083829.jsonl.gz",
+      "size": 7138
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790695259388003729.jsonl.gz",
+      "size": 9599
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790695883884528898.jsonl.gz",
+      "size": 17262
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790696504439655210.jsonl.gz",
+      "size": 23351
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790697121430601606.jsonl.gz",
+      "size": 18989
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790697742556336380.jsonl.gz",
+      "size": 16239
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790698370651819416.jsonl.gz",
+      "size": 14228
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790698985426051931.jsonl.gz",
+      "size": 15486
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790699601624790091.jsonl.gz",
+      "size": 18058
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790700219714028093.jsonl.gz",
+      "size": 1586081
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790700839223358738.jsonl.gz",
+      "size": 35607
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790701461121021962.jsonl.gz",
+      "size": 34960
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790702076864469113.jsonl.gz",
+      "size": 33112
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790702703221024286.jsonl.gz",
+      "size": 32994
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790703325849297141.jsonl.gz",
+      "size": 35238
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790703941803806489.jsonl.gz",
+      "size": 34464
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790704567734242487.jsonl.gz",
+      "size": 32808
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790705186266692228.jsonl.gz",
+      "size": 33032
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790705807533245485.jsonl.gz",
+      "size": 36198
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790706434522655316.jsonl.gz",
+      "size": 37167
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790707054423804535.jsonl.gz",
+      "size": 1555865
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790707672133590566.jsonl.gz",
+      "size": 6661
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790708287047380611.jsonl.gz",
+      "size": 6659
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790708913200997179.jsonl.gz",
+      "size": 5991
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790709526391828030.jsonl.gz",
+      "size": 6613
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790710144982232513.jsonl.gz",
+      "size": 6960
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790710776740361408.jsonl.gz",
+      "size": 5802
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790711396242826149.jsonl.gz",
+      "size": 5997
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790712019391749775.jsonl.gz",
+      "size": 6177
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790712644558637051.jsonl.gz",
+      "size": 9745
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790713267334430785.jsonl.gz",
+      "size": 9602
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790713880987165562.jsonl.gz",
+      "size": 19599
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790714498330964818.jsonl.gz",
+      "size": 16921
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790715118090126513.jsonl.gz",
+      "size": 14224
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790715735916767568.jsonl.gz",
+      "size": 16635
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790716365581677159.jsonl.gz",
+      "size": 16622
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790716992712793335.jsonl.gz",
+      "size": 11114
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790717614963440276.jsonl.gz",
+      "size": 14907
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790718237870405059.jsonl.gz",
+      "size": 17158
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790718870761417775.jsonl.gz",
+      "size": 17944
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790719492677070272.jsonl.gz",
+      "size": 13360
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260928T200258Z-f3abf44539bb4cd9bd822273edfdb45b/events-1790720115155211477.jsonl.gz",
+      "size": 17302
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790721062197988676.jsonl.gz",
+      "size": 7525
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790721689348585992.jsonl.gz",
+      "size": 8212
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790722303066044882.jsonl.gz",
+      "size": 8082
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790722923050534563.jsonl.gz",
+      "size": 7149
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790723550259405895.jsonl.gz",
+      "size": 7800
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790724182398641932.jsonl.gz",
+      "size": 5303
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790724805879527748.jsonl.gz",
+      "size": 5727
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790725425276064215.jsonl.gz",
+      "size": 6679
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790726048584123254.jsonl.gz",
+      "size": 6457
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790726668174636342.jsonl.gz",
+      "size": 55225
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790727284027785947.jsonl.gz",
+      "size": 8456
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790727906276436244.jsonl.gz",
+      "size": 11073
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790728530919110601.jsonl.gz",
+      "size": 11550
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790729142952471617.jsonl.gz",
+      "size": 11650
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790729762064371694.jsonl.gz",
+      "size": 11066
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790730379809956893.jsonl.gz",
+      "size": 16595
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790730993383183635.jsonl.gz",
+      "size": 22016
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790731623283665215.jsonl.gz",
+      "size": 18678
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790732244444303991.jsonl.gz",
+      "size": 19806
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790732864188866657.jsonl.gz",
+      "size": 18055
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790733487437642887.jsonl.gz",
+      "size": 21715
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790734109788471952.jsonl.gz",
+      "size": 14699
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790734732087269190.jsonl.gz",
+      "size": 22554
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790735359269325461.jsonl.gz",
+      "size": 20969
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790735982539414899.jsonl.gz",
+      "size": 1833214
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790736597572199733.jsonl.gz",
+      "size": 5962
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790737221779400431.jsonl.gz",
+      "size": 6401
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790737840021792003.jsonl.gz",
+      "size": 1816108
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790738459720860680.jsonl.gz",
+      "size": 5756
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790739081873363623.jsonl.gz",
+      "size": 7741
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790739696857796784.jsonl.gz",
+      "size": 7093
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790740315043381146.jsonl.gz",
+      "size": 5876
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790740932592497854.jsonl.gz",
+      "size": 6835
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790741556606789125.jsonl.gz",
+      "size": 7372
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790742180731113369.jsonl.gz",
+      "size": 10747
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790742796386039600.jsonl.gz",
+      "size": 10574
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790743423152136813.jsonl.gz",
+      "size": 8645
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790744046028206328.jsonl.gz",
+      "size": 5449
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790744666961151748.jsonl.gz",
+      "size": 6266
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790745293812500440.jsonl.gz",
+      "size": 11340
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790745919269291948.jsonl.gz",
+      "size": 17405
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790746542570389921.jsonl.gz",
+      "size": 20412
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790747158892356086.jsonl.gz",
+      "size": 19605
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790747780695540669.jsonl.gz",
+      "size": 17675
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790748396198225375.jsonl.gz",
+      "size": 25087
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790749008858820616.jsonl.gz",
+      "size": 21068
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790749628414282627.jsonl.gz",
+      "size": 10339
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790750245345592625.jsonl.gz",
+      "size": 16229
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790750860062464067.jsonl.gz",
+      "size": 11305
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790751479281380384.jsonl.gz",
+      "size": 20197
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790752099898259085.jsonl.gz",
+      "size": 22339
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260929T223055Z-27d037fefd454d7b925690af17756066/events-1790752714392445618.jsonl.gz",
+      "size": 14584
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790753583522973996.jsonl.gz",
+      "size": 7349
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790754222416661307.jsonl.gz",
+      "size": 8669
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790754835804866430.jsonl.gz",
+      "size": 8889
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790755456005216782.jsonl.gz",
+      "size": 8227
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790756081663082543.jsonl.gz",
+      "size": 57022
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790756704748568882.jsonl.gz",
+      "size": 6038
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790757321334155241.jsonl.gz",
+      "size": 6679
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790757937120199985.jsonl.gz",
+      "size": 6482
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790758563742452881.jsonl.gz",
+      "size": 6382
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790759188826478718.jsonl.gz",
+      "size": 5412
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790759813740358910.jsonl.gz",
+      "size": 9982
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790760442717975054.jsonl.gz",
+      "size": 11069
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790761063634138781.jsonl.gz",
+      "size": 11080
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790761678057725549.jsonl.gz",
+      "size": 11435
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790762303755344856.jsonl.gz",
+      "size": 11714
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790762931681341197.jsonl.gz",
+      "size": 21793
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790763559279518625.jsonl.gz",
+      "size": 18573
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790764182378654176.jsonl.gz",
+      "size": 20837
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790764813983618434.jsonl.gz",
+      "size": 17562
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790765435354775419.jsonl.gz",
+      "size": 17168
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790766052486212807.jsonl.gz",
+      "size": 21097
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790766682716215595.jsonl.gz",
+      "size": 18722
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790767302462576208.jsonl.gz",
+      "size": 12195
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790767921853055173.jsonl.gz",
+      "size": 28142
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790768555319973809.jsonl.gz",
+      "size": 28816
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790769176418688346.jsonl.gz",
+      "size": 29341
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790769804142482239.jsonl.gz",
+      "size": 25723
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790770428615897316.jsonl.gz",
+      "size": 29857
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790771059727978476.jsonl.gz",
+      "size": 28093
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790771692990280399.jsonl.gz",
+      "size": 31176
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790772319711934578.jsonl.gz",
+      "size": 26698
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790772951298853206.jsonl.gz",
+      "size": 6102
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790773572959763793.jsonl.gz",
+      "size": 4747
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790774191510760914.jsonl.gz",
+      "size": 6067
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790774820285230391.jsonl.gz",
+      "size": 12775
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790775450612634267.jsonl.gz",
+      "size": 15631
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790776069468147721.jsonl.gz",
+      "size": 17659
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790776692097390812.jsonl.gz",
+      "size": 22178
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790777333497298478.jsonl.gz",
+      "size": 18250
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790777960824998521.jsonl.gz",
+      "size": 20210
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790778581297916642.jsonl.gz",
+      "size": 16513
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790779208881943315.jsonl.gz",
+      "size": 17977
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790779830599251445.jsonl.gz",
+      "size": 16707
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790780448706365788.jsonl.gz",
+      "size": 6963
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790781077353973081.jsonl.gz",
+      "size": 6665
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790781698026506275.jsonl.gz",
+      "size": 6504
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790782327372125451.jsonl.gz",
+      "size": 6987
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790782949103759514.jsonl.gz",
+      "size": 6801
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790783575113473476.jsonl.gz",
+      "size": 5749
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790784204956524780.jsonl.gz",
+      "size": 5140
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790784845267956915.jsonl.gz",
+      "size": 6121
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790785473243407462.jsonl.gz",
+      "size": 8353
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790786091615176385.jsonl.gz",
+      "size": 9814
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790786707878906571.jsonl.gz",
+      "size": 11598
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790787336583280733.jsonl.gz",
+      "size": 7851
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790787958053675174.jsonl.gz",
+      "size": 8493
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790788574432688354.jsonl.gz",
+      "size": 9034
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790789203254600992.jsonl.gz",
+      "size": 11097
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790789835552668265.jsonl.gz",
+      "size": 8914
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790790459535270578.jsonl.gz",
+      "size": 7124
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790791076315848472.jsonl.gz",
+      "size": 7845
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790791723162854761.jsonl.gz",
+      "size": 7960
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790792341764252991.jsonl.gz",
+      "size": 18371
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790792979896988937.jsonl.gz",
+      "size": 15534
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790793606702469816.jsonl.gz",
+      "size": 20238
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790794236468120618.jsonl.gz",
+      "size": 10629
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790794854654981194.jsonl.gz",
+      "size": 15788
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790795474853536408.jsonl.gz",
+      "size": 18683
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790796100364268493.jsonl.gz",
+      "size": 20428
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790796720874045567.jsonl.gz",
+      "size": 16805
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790797352870625214.jsonl.gz",
+      "size": 19332
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790797989853108171.jsonl.gz",
+      "size": 6380
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790798625662322632.jsonl.gz",
+      "size": 3966
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790799249894047404.jsonl.gz",
+      "size": 4787
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790799878465610863.jsonl.gz",
+      "size": 4559
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790800503435285421.jsonl.gz",
+      "size": 4776
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790801124328395975.jsonl.gz",
+      "size": 5198
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790801755375370381.jsonl.gz",
+      "size": 4641
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790802396437383653.jsonl.gz",
+      "size": 2125062
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790803018295393254.jsonl.gz",
+      "size": 7420
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790803641378383020.jsonl.gz",
+      "size": 7419
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790804272502114403.jsonl.gz",
+      "size": 7090
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790804892110621084.jsonl.gz",
+      "size": 15061
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790805522973993035.jsonl.gz",
+      "size": 11515
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790806150419664531.jsonl.gz",
+      "size": 8361
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790806771451752521.jsonl.gz",
+      "size": 7525
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790807413417687319.jsonl.gz",
+      "size": 14347
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790808053003365545.jsonl.gz",
+      "size": 7728
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790808687087635206.jsonl.gz",
+      "size": 10822
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790809314668991912.jsonl.gz",
+      "size": 8256
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790809943527382927.jsonl.gz",
+      "size": 8920
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790810564022981772.jsonl.gz",
+      "size": 12879
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790811194968466458.jsonl.gz",
+      "size": 13963
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790811813123621797.jsonl.gz",
+      "size": 16880
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790812445035529712.jsonl.gz",
+      "size": 9688
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790813062986900216.jsonl.gz",
+      "size": 13579
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790813698738929744.jsonl.gz",
+      "size": 20252
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790814316326662761.jsonl.gz",
+      "size": 15685
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790814937790795756.jsonl.gz",
+      "size": 8766
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790815559961915931.jsonl.gz",
+      "size": 9141
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790816183569088624.jsonl.gz",
+      "size": 8427
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790816801293545425.jsonl.gz",
+      "size": 7310
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790817421574930620.jsonl.gz",
+      "size": 7242
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790818053980233983.jsonl.gz",
+      "size": 8105
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790818689911085250.jsonl.gz",
+      "size": 17928
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790819307029759006.jsonl.gz",
+      "size": 22087
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790819931654804036.jsonl.gz",
+      "size": 23467
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790820570942508331.jsonl.gz",
+      "size": 23107
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790821203926834722.jsonl.gz",
+      "size": 20083
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790821830975216681.jsonl.gz",
+      "size": 25246
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790822457579684096.jsonl.gz",
+      "size": 24389
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790823092305996663.jsonl.gz",
+      "size": 20322
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790823708589669340.jsonl.gz",
+      "size": 21789
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790824355228059689.jsonl.gz",
+      "size": 21383
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790824981725458842.jsonl.gz",
+      "size": 15399
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790825604559718975.jsonl.gz",
+      "size": 15413
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790826233561783887.jsonl.gz",
+      "size": 19591
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790826860611820443.jsonl.gz",
+      "size": 15029
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790827495231004736.jsonl.gz",
+      "size": 19402
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790828126162258869.jsonl.gz",
+      "size": 16198
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790828758756692782.jsonl.gz",
+      "size": 7218
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790829398219259083.jsonl.gz",
+      "size": 9189
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790830029878213191.jsonl.gz",
+      "size": 13857
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790830670790283789.jsonl.gz",
+      "size": 9454
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790831297707649484.jsonl.gz",
+      "size": 15694
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790831914980756788.jsonl.gz",
+      "size": 16448
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790832554422625844.jsonl.gz",
+      "size": 13363
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790833198847262156.jsonl.gz",
+      "size": 13719
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790833832097741560.jsonl.gz",
+      "size": 13610
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790834452555893145.jsonl.gz",
+      "size": 11177
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790835086597738895.jsonl.gz",
+      "size": 11833
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790835718465586763.jsonl.gz",
+      "size": 9193
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790836352778189499.jsonl.gz",
+      "size": 11202
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790836980337262481.jsonl.gz",
+      "size": 11246
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790837601859675140.jsonl.gz",
+      "size": 10333
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790838227912627466.jsonl.gz",
+      "size": 20312
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790838856486718390.jsonl.gz",
+      "size": 19287
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790839479210238550.jsonl.gz",
+      "size": 5980
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790840095310966244.jsonl.gz",
+      "size": 5979
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790840713936959960.jsonl.gz",
+      "size": 6433
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790841332810902453.jsonl.gz",
+      "size": 6545
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790841959404718271.jsonl.gz",
+      "size": 6558
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790842587751974993.jsonl.gz",
+      "size": 6751
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790843210418273268.jsonl.gz",
+      "size": 10711
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790843840308720753.jsonl.gz",
+      "size": 10921
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790844463498579115.jsonl.gz",
+      "size": 5653
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790845088551739492.jsonl.gz",
+      "size": 5246
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790845717431302569.jsonl.gz",
+      "size": 4709
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790846342457683147.jsonl.gz",
+      "size": 10233
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790846972009646784.jsonl.gz",
+      "size": 17635
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790847603107509434.jsonl.gz",
+      "size": 15134
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790848231415839511.jsonl.gz",
+      "size": 17538
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790848862379083925.jsonl.gz",
+      "size": 20307
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790849492580234953.jsonl.gz",
+      "size": 15617
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790850119433398370.jsonl.gz",
+      "size": 19695
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790850751102580711.jsonl.gz",
+      "size": 16499
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790851381919296063.jsonl.gz",
+      "size": 17625
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790852015334145965.jsonl.gz",
+      "size": 15147
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790852646689517299.jsonl.gz",
+      "size": 19676
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790853275533756434.jsonl.gz",
+      "size": 9924
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790853905563314940.jsonl.gz",
+      "size": 4723
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790854539845500344.jsonl.gz",
+      "size": 4337
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790855174480266117.jsonl.gz",
+      "size": 4911
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790855807913884676.jsonl.gz",
+      "size": 4617
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790856442622638362.jsonl.gz",
+      "size": 7807
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790857065711797298.jsonl.gz",
+      "size": 8430
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790857694828255965.jsonl.gz",
+      "size": 8494
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790858331019796043.jsonl.gz",
+      "size": 8632
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790858967374248675.jsonl.gz",
+      "size": 7990
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790859598679636387.jsonl.gz",
+      "size": 8226
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790860225457451753.jsonl.gz",
+      "size": 8181
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790860847082039062.jsonl.gz",
+      "size": 8156
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790861479711814780.jsonl.gz",
+      "size": 7490
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790862110660418895.jsonl.gz",
+      "size": 19203
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790862742045839897.jsonl.gz",
+      "size": 15074
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790863376739938891.jsonl.gz",
+      "size": 15619
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790864007845772463.jsonl.gz",
+      "size": 13250
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790864632007713482.jsonl.gz",
+      "size": 13214
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790865261601351591.jsonl.gz",
+      "size": 16547
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790865887528161811.jsonl.gz",
+      "size": 18663
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790866521558652999.jsonl.gz",
+      "size": 12591
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790867158683213803.jsonl.gz",
+      "size": 10915
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790867793661647752.jsonl.gz",
+      "size": 6544
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790868422567440458.jsonl.gz",
+      "size": 9656
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790869050024664297.jsonl.gz",
+      "size": 10930
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790869681058454023.jsonl.gz",
+      "size": 13550
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790870332487296635.jsonl.gz",
+      "size": 11140
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790870968407401258.jsonl.gz",
+      "size": 15769
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790871599720651664.jsonl.gz",
+      "size": 11656
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790872225737461403.jsonl.gz",
+      "size": 12856
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790872877334217708.jsonl.gz",
+      "size": 8472
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790873504203083779.jsonl.gz",
+      "size": 9348
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790874142205521661.jsonl.gz",
+      "size": 7951
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790874771977879780.jsonl.gz",
+      "size": 8477
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790875420876426603.jsonl.gz",
+      "size": 8352
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790876064062104876.jsonl.gz",
+      "size": 9280
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790876703845525860.jsonl.gz",
+      "size": 10274
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790877357946854232.jsonl.gz",
+      "size": 12981
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790878001639197421.jsonl.gz",
+      "size": 18498
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790878625910484859.jsonl.gz",
+      "size": 21059
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790879255255133395.jsonl.gz",
+      "size": 19997
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790879887204172864.jsonl.gz",
+      "size": 20462
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790880515942522460.jsonl.gz",
+      "size": 19334
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790881167764366673.jsonl.gz",
+      "size": 19885
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790881818091448721.jsonl.gz",
+      "size": 16820
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790882457899183446.jsonl.gz",
+      "size": 5984
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790883096539613431.jsonl.gz",
+      "size": 7529
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790883729794057753.jsonl.gz",
+      "size": 8368
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790884374277178216.jsonl.gz",
+      "size": 6306
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790885015920894322.jsonl.gz",
+      "size": 6580
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790885658129475739.jsonl.gz",
+      "size": 7234
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790886283506851872.jsonl.gz",
+      "size": 7383
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790886914553316242.jsonl.gz",
+      "size": 6532
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790887551123273303.jsonl.gz",
+      "size": 7095
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790888183636482260.jsonl.gz",
+      "size": 11740
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790888816183836110.jsonl.gz",
+      "size": 10266
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790889455455241511.jsonl.gz",
+      "size": 9500
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790890110762841300.jsonl.gz",
+      "size": 13065
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790890760194326192.jsonl.gz",
+      "size": 8482
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790891398441328303.jsonl.gz",
+      "size": 7064
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790892034145832787.jsonl.gz",
+      "size": 11754
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790892679831885458.jsonl.gz",
+      "size": 10964
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790893307009782401.jsonl.gz",
+      "size": 7778
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790893948364841858.jsonl.gz",
+      "size": 6821
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790894580877593916.jsonl.gz",
+      "size": 9460
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790895223678055006.jsonl.gz",
+      "size": 9573
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790895860214968757.jsonl.gz",
+      "size": 7737
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790896494328083502.jsonl.gz",
+      "size": 8044
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790897138705650282.jsonl.gz",
+      "size": 6149
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790897783945129901.jsonl.gz",
+      "size": 7023
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790898411929352102.jsonl.gz",
+      "size": 9562
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790899040596605649.jsonl.gz",
+      "size": 8991
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790899667750422303.jsonl.gz",
+      "size": 6656
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790900311966922279.jsonl.gz",
+      "size": 7808
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790900942176355456.jsonl.gz",
+      "size": 9779
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790901585901878101.jsonl.gz",
+      "size": 7661
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790902217825885491.jsonl.gz",
+      "size": 5924
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790902849132751216.jsonl.gz",
+      "size": 6678
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790903493246508256.jsonl.gz",
+      "size": 10038
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790904148037442246.jsonl.gz",
+      "size": 6687
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790904787309013390.jsonl.gz",
+      "size": 7387
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790905429032815009.jsonl.gz",
+      "size": 7051
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790906068745356373.jsonl.gz",
+      "size": 5994
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790906705921849399.jsonl.gz",
+      "size": 9008
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790907346368001698.jsonl.gz",
+      "size": 9097
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790907991944092632.jsonl.gz",
+      "size": 8091
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790908643752136110.jsonl.gz",
+      "size": 7597
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790909285541433412.jsonl.gz",
+      "size": 5949
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790909942725803295.jsonl.gz",
+      "size": 8838
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790910577073611306.jsonl.gz",
+      "size": 9438
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790911206222063920.jsonl.gz",
+      "size": 8836
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790911836891309837.jsonl.gz",
+      "size": 11368
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790912490067043799.jsonl.gz",
+      "size": 11534
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790913120974424830.jsonl.gz",
+      "size": 9264
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790913757449484182.jsonl.gz",
+      "size": 8348
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790914398056028878.jsonl.gz",
+      "size": 8187
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790915058291755450.jsonl.gz",
+      "size": 5842
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790915694433238635.jsonl.gz",
+      "size": 6658
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790916341122964614.jsonl.gz",
+      "size": 6225
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790916969414032133.jsonl.gz",
+      "size": 6735
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790917623626606920.jsonl.gz",
+      "size": 6490
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790918258450421106.jsonl.gz",
+      "size": 6905
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790918891030823321.jsonl.gz",
+      "size": 6690
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790919521792970772.jsonl.gz",
+      "size": 6328
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790920145971813972.jsonl.gz",
+      "size": 6858
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790920794522878684.jsonl.gz",
+      "size": 6874
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790921441525120228.jsonl.gz",
+      "size": 6847
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790922075582151182.jsonl.gz",
+      "size": 6116
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790922706928726860.jsonl.gz",
+      "size": 7348
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790923346282591043.jsonl.gz",
+      "size": 7653
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790923991962911684.jsonl.gz",
+      "size": 8136
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790924634528094631.jsonl.gz",
+      "size": 8925
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790925260487139113.jsonl.gz",
+      "size": 11616
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790925898483382120.jsonl.gz",
+      "size": 11097
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790926527933204583.jsonl.gz",
+      "size": 9373
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790927173020126500.jsonl.gz",
+      "size": 11967
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790927811921166026.jsonl.gz",
+      "size": 9992
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790928451132627404.jsonl.gz",
+      "size": 8105
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790929087540332561.jsonl.gz",
+      "size": 11297
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790929730739847120.jsonl.gz",
+      "size": 9556
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790930363071867785.jsonl.gz",
+      "size": 7323
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790931004300447722.jsonl.gz",
+      "size": 6338
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790931636267030399.jsonl.gz",
+      "size": 10458
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790932282656319383.jsonl.gz",
+      "size": 12443
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790932913422273287.jsonl.gz",
+      "size": 8510
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790933539456721432.jsonl.gz",
+      "size": 11100
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790934169369453552.jsonl.gz",
+      "size": 11736
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790934795184821362.jsonl.gz",
+      "size": 11216
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790935423895364615.jsonl.gz",
+      "size": 10843
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790936068200465274.jsonl.gz",
+      "size": 10197
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790936708783972108.jsonl.gz",
+      "size": 8257
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790937338125086839.jsonl.gz",
+      "size": 11668
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790937982798951842.jsonl.gz",
+      "size": 8910
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790938625685976376.jsonl.gz",
+      "size": 8388
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790939251055956686.jsonl.gz",
+      "size": 7554
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790939883422633415.jsonl.gz",
+      "size": 6878
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790940537812072322.jsonl.gz",
+      "size": 5829
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790941186695992833.jsonl.gz",
+      "size": 5668
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790941826496727208.jsonl.gz",
+      "size": 5983
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790942465117007857.jsonl.gz",
+      "size": 9877
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790943112457827991.jsonl.gz",
+      "size": 7805
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790943758944519670.jsonl.gz",
+      "size": 6509
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790944396731114752.jsonl.gz",
+      "size": 7275
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790945034348632996.jsonl.gz",
+      "size": 6858
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790945668309843170.jsonl.gz",
+      "size": 8788
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790946302982409293.jsonl.gz",
+      "size": 8949
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790946933756634262.jsonl.gz",
+      "size": 8244
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790947579948460289.jsonl.gz",
+      "size": 9086
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790948229248798091.jsonl.gz",
+      "size": 10781
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790948867191389560.jsonl.gz",
+      "size": 10750
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790949514102984296.jsonl.gz",
+      "size": 8589
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790950144597517315.jsonl.gz",
+      "size": 12416
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790950798280126985.jsonl.gz",
+      "size": 8520
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790951439131622922.jsonl.gz",
+      "size": 7352
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790952088178478038.jsonl.gz",
+      "size": 9499
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790952720894305919.jsonl.gz",
+      "size": 8607
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790953374097845849.jsonl.gz",
+      "size": 9660
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790954016479168648.jsonl.gz",
+      "size": 6675
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790954671003950928.jsonl.gz",
+      "size": 10523
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790955318081059267.jsonl.gz",
+      "size": 6459
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20260930T073257Z-e32d3b78a64840d7bf93b49218a493f9/events-1790955961527104951.jsonl.gz",
+      "size": 11929
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306/events-1790956702229379268.jsonl.gz",
+      "size": 21670781
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T155822Z-ea8c609c04bb4d21a433db2eb9b6a306/events-1790957302239476367.jsonl.gz",
+      "size": 19766664
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790957856867257624.jsonl.gz",
+      "size": 20031245
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790958456965622031.jsonl.gz",
+      "size": 23607295
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790959057128852352.jsonl.gz",
+      "size": 12794288
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790959657412150826.jsonl.gz",
+      "size": 7060272
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790960257635970113.jsonl.gz",
+      "size": 7608367
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790960857675416050.jsonl.gz",
+      "size": 7253569
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790961457942463855.jsonl.gz",
+      "size": 7600127
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790962057994902078.jsonl.gz",
+      "size": 7771735
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790962658106395588.jsonl.gz",
+      "size": 7209500
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790963258228903517.jsonl.gz",
+      "size": 7685007
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790963858279336995.jsonl.gz",
+      "size": 7125531
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790964458336341864.jsonl.gz",
+      "size": 6909968
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790965058371675837.jsonl.gz",
+      "size": 7226413
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790965658445691127.jsonl.gz",
+      "size": 6163391
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790966258645687176.jsonl.gz",
+      "size": 7263543
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790966858666616948.jsonl.gz",
+      "size": 8005720
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790967458935290337.jsonl.gz",
+      "size": 6931316
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790968058978887197.jsonl.gz",
+      "size": 8490136
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790968659018430886.jsonl.gz",
+      "size": 6723351
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790969259083366950.jsonl.gz",
+      "size": 6897069
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790969859131677572.jsonl.gz",
+      "size": 7967698
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790970459203077556.jsonl.gz",
+      "size": 7109577
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790971059235840533.jsonl.gz",
+      "size": 9398517
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790971659250638582.jsonl.gz",
+      "size": 9324421
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790972259264983529.jsonl.gz",
+      "size": 7622533
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790972859434332414.jsonl.gz",
+      "size": 5574683
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T161736Z-ca8d5e70187843dea77657aff399f9f6/events-1790973460963240425.jsonl.gz",
+      "size": 511416
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790974237504406083.jsonl.gz",
+      "size": 22438678
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790974838899576525.jsonl.gz",
+      "size": 23666474
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790975439105437315.jsonl.gz",
+      "size": 14191913
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790976039137315610.jsonl.gz",
+      "size": 6771654
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790976639303413989.jsonl.gz",
+      "size": 7054132
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790977239365763151.jsonl.gz",
+      "size": 6552662
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790977839644824503.jsonl.gz",
+      "size": 7377866
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790978439672129607.jsonl.gz",
+      "size": 7092818
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790979039915302031.jsonl.gz",
+      "size": 6939534
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790979640003980361.jsonl.gz",
+      "size": 7713136
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790980240040560876.jsonl.gz",
+      "size": 6284476
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790980840088076787.jsonl.gz",
+      "size": 7092660
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790981440231981923.jsonl.gz",
+      "size": 7317229
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790982040295321012.jsonl.gz",
+      "size": 7368668
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790982640335889146.jsonl.gz",
+      "size": 6524012
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790983240417667875.jsonl.gz",
+      "size": 6224410
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790983840566204878.jsonl.gz",
+      "size": 6573238
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790984440632015666.jsonl.gz",
+      "size": 7017697
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790985040660899153.jsonl.gz",
+      "size": 7571196
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790985640930860204.jsonl.gz",
+      "size": 8303541
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790986240996617944.jsonl.gz",
+      "size": 9120163
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790986841117546524.jsonl.gz",
+      "size": 8652457
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790987441303709081.jsonl.gz",
+      "size": 9940869
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790988041438318097.jsonl.gz",
+      "size": 8032702
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790988641470135729.jsonl.gz",
+      "size": 8798600
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790989241641260546.jsonl.gz",
+      "size": 8017158
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790989841762421261.jsonl.gz",
+      "size": 6987948
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790990441775165626.jsonl.gz",
+      "size": 6940267
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790991042059684359.jsonl.gz",
+      "size": 7482387
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790991642097758585.jsonl.gz",
+      "size": 6811406
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790992242144215998.jsonl.gz",
+      "size": 7527149
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790992842299749471.jsonl.gz",
+      "size": 7800353
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790993442350921059.jsonl.gz",
+      "size": 6373366
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790994042398453967.jsonl.gz",
+      "size": 6854025
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790994642634620791.jsonl.gz",
+      "size": 6203860
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790995242646756298.jsonl.gz",
+      "size": 6728470
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790995842676342089.jsonl.gz",
+      "size": 6648508
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790996442747543726.jsonl.gz",
+      "size": 7149895
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790997042786670566.jsonl.gz",
+      "size": 9536257
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790997642935837851.jsonl.gz",
+      "size": 6521740
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790998243117616070.jsonl.gz",
+      "size": 6708284
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790998843147210011.jsonl.gz",
+      "size": 8010616
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1790999443220706847.jsonl.gz",
+      "size": 7083382
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1791000043300905131.jsonl.gz",
+      "size": 7375519
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1791000643437160751.jsonl.gz",
+      "size": 8653845
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1791001243493240268.jsonl.gz",
+      "size": 6467572
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1791001843636538965.jsonl.gz",
+      "size": 6936669
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1791002443661859660.jsonl.gz",
+      "size": 8770097
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1791003043803575399.jsonl.gz",
+      "size": 7422517
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1791003643838822998.jsonl.gz",
+      "size": 7445263
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1791004243861710545.jsonl.gz",
+      "size": 7311492
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261002T205037Z-a280a1c0491b4ea4a2023fddd30eaeac/events-1791004843966376120.jsonl.gz",
+      "size": 462805
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T052201Z-e1f7321eb84142debab613afc203f51c/events-1791004921942988966.jsonl.gz",
+      "size": 18297647
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T052201Z-e1f7321eb84142debab613afc203f51c/events-1791005522093254421.jsonl.gz",
+      "size": 22623646
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T052201Z-e1f7321eb84142debab613afc203f51c/events-1791006122178255171.jsonl.gz",
+      "size": 21756285
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T052201Z-e1f7321eb84142debab613afc203f51c/events-1791006722234870184.jsonl.gz",
+      "size": 8715850
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T052201Z-e1f7321eb84142debab613afc203f51c/events-1791007322351458687.jsonl.gz",
+      "size": 6737965
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T052201Z-e1f7321eb84142debab613afc203f51c/events-1791007922389065116.jsonl.gz",
+      "size": 4449667
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T061908Z-02c7afaeba3d497eaf71ffbdfbed90d6/events-1791008348614595046.jsonl.gz",
+      "size": 4392921
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791008594692426333.jsonl.gz",
+      "size": 18308572
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791009194783352087.jsonl.gz",
+      "size": 24026482
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791009794888539667.jsonl.gz",
+      "size": 21543841
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791010395050254757.jsonl.gz",
+      "size": 11343956
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791010995072496944.jsonl.gz",
+      "size": 6456345
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791011595152103767.jsonl.gz",
+      "size": 6513554
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791012195390583258.jsonl.gz",
+      "size": 6457712
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791012795510083317.jsonl.gz",
+      "size": 7516578
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791013395632138991.jsonl.gz",
+      "size": 6676466
+    },
+    {
+      "path": "/root/Project15/research-logs/ETH/20261003T062314Z-5badf530b7e4476e88f56a3c897c8c69/events-1791013995738978906.jsonl.gz",
+      "size": 6586262
+    }
+  ],
+  "settlements": 1442,
+  "runtime": {
+    "asset": "ETH",
+    "config": "ETH-crypto-stop50-trial-20261003T062044Z.json",
+    "data_dir": "ETH-crypto-stop50-trial-20261003T062044Z",
+    "run_id": "ETH-crypto-stop50-trial-20261003T062044Z-signals",
+    "live_only": true
+  },
+  "at": 1791015200.7031922
+}

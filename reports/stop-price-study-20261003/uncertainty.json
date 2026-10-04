@@ -1,0 +1,97 @@
+{
+  "5": {
+    "cluster_count": 70,
+    "delta": 48.1701,
+    "bootstrap95_delta_interval": [
+      -40.4345,
+      138.3716
+    ],
+    "mean_loss_per_contract": -0.8470405128205128,
+    "worst_loss_per_contract": -0.9293933333333333,
+    "losing_trades": 13
+  },
+  "40": {
+    "cluster_count": 70,
+    "delta": 8.663299999999996,
+    "bootstrap95_delta_interval": [
+      -70.6932,
+      89.3555
+    ]
+  },
+  "45": {
+    "cluster_count": 70,
+    "delta": 24.06109999999999,
+    "bootstrap95_delta_interval": [
+      -31.219500000000004,
+      88.0727
+    ]
+  },
+  "50": {
+    "cluster_count": 70,
+    "delta": 28.902699999999992,
+    "bootstrap95_delta_interval": [
+      -18.865300000000012,
+      82.63539999999999
+    ],
+    "mean_loss_per_contract": -0.40260913580246915,
+    "worst_loss_per_contract": -0.6326040000000002,
+    "losing_trades": 27
+  },
+  "55": {
+    "cluster_count": 70,
+    "delta": 0.0,
+    "bootstrap95_delta_interval": [
+      0.0,
+      0.0
+    ],
+    "mean_loss_per_contract": -0.3437546476190476,
+    "worst_loss_per_contract": -0.6326040000000002,
+    "losing_trades": 35
+  },
+  "60": {
+    "cluster_count": 70,
+    "delta": -2.174800000000016,
+    "bootstrap95_delta_interval": [
+      -20.800400000000007,
+      13.104399999999986
+    ]
+  },
+  "65": {
+    "cluster_count": 70,
+    "delta": 5.223899999999992,
+    "bootstrap95_delta_interval": [
+      -18.61940000000001,
+      29.29779999999999
+    ]
+  },
+  "70": {
+    "cluster_count": 70,
+    "delta": 19.936,
+    "bootstrap95_delta_interval": [
+      -18.194100000000006,
+      61.879000000000005
+    ],
+    "mean_loss_per_contract": -0.24801963492063492,
+    "worst_loss_per_contract": -0.5404899999999999,
+    "losing_trades": 42
+  },
+  "75": {
+    "cluster_count": 70,
+    "delta": -0.9931000000000023,
+    "bootstrap95_delta_interval": [
+      -50.408699999999996,
+      52.27159999999999
+    ]
+  },
+  "80": {
+    "cluster_count": 70,
+    "delta": -25.640999999999988,
+    "bootstrap95_delta_interval": [
+      -90.46379999999999,
+      46.09580000000001
+    ],
+    "mean_loss_per_contract": -0.14523870531400965,
+    "worst_loss_per_contract": -0.4234639999999999,
+    "losing_trades": 69
+  }
+}

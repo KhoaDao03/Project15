@@ -5,10 +5,10 @@ from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal
 
 SIGMA_MULTIPLIERS = {
     "BTC": 0.95,
-    "ETH": 0.95,
+    "ETH": 1.05,
     "SOL": 1.00,
     "XRP": 1.10,
-    "BNB": 1.25,
+    "BNB": 1.10,
     "HYPE": 1.15,
     "DOGE": 1.10,
     "GOLD": 1.35,

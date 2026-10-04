@@ -1,0 +1,58 @@
+ETH ATR MULTIPLIER SWEEP — 3 October 2026
+
+Conclusion: 1.35 has the highest modeled net PNL among the 31 tested values (0.50 to 2.00, step 0.05). All tested values lose money. This is an exploratory in-sample ranking, not a validated optimal multiplier or a recommendation to change live settings. No trading configurations, orders or services changed.
+
+Coverage: 710 completed ETH collector gzip segments scanned with no read errors; 62 common eligible market windows. Window close dates (America/New_York): {'2026-09-28': 2, '2026-10-02': 45, '2026-10-03': 15}. Coverage is discontinuous. Most older retained segments contain gaps or do not provide complete windows. Exclusions (session/market windows): {'incomplete_window': 44, 'recording_gap_in_window_or_warmup': 12, 'empty_window': 1}.
+
+ATR | Net PNL USD | Max realized drawdown USD | Wins | Losses | Trades
+1.35 | -1.5477 | 6.9203 | 7 | 2 | 9
+1.30 | -1.6461 | 6.9203 | 8 | 2 | 10
+1.40 | -1.8715 | 6.9203 | 7 | 2 | 9
+1.45 | -3.1611 | 6.9203 | 4 | 2 | 6
+1.50 | -3.6300 | 6.9203 | 3 | 2 | 5
+1.55 | -4.1923 | 6.9203 | 2 | 2 | 4
+1.60 | -5.2237 | 6.9203 | 1 | 2 | 3
+1.65 | -5.2237 | 6.9203 | 1 | 2 | 3
+1.70 | -5.2237 | 6.9203 | 1 | 2 | 3
+1.15 | -5.2338 | 6.9203 | 16 | 4 | 20
+1.25 | -5.6183 | 6.9203 | 9 | 3 | 12
+1.20 | -6.6143 | 6.9203 | 15 | 4 | 19
+1.85 | -6.8249 | 6.8249 | 0 | 2 | 2
+1.90 | -6.8249 | 6.8249 | 0 | 2 | 2
+1.95 | -6.8249 | 6.8249 | 0 | 2 | 2
+2.00 | -6.8249 | 6.8249 | 0 | 2 | 2
+1.75 | -6.9203 | 6.9203 | 0 | 2 | 2
+1.80 | -6.9203 | 6.9203 | 0 | 2 | 2
+1.05 | -8.2266 | 11.2543 | 23 | 6 | 29
+1.10 | -9.2450 | 10.4009 | 18 | 5 | 23
+1.00 | -13.8234 | 14.2245 | 26 | 8 | 34
+0.50 | -16.1909 | 28.5373 | 40 | 20 | 60
+0.80 | -19.9469 | 21.5594 | 36 | 12 | 48
+0.60 | -21.8286 | 30.6274 | 41 | 18 | 59
+0.55 | -22.6609 | 28.6322 | 40 | 20 | 60
+0.75 | -23.3095 | 25.0987 | 36 | 14 | 50
+0.95 | -23.9372 | 24.4414 | 27 | 10 | 37
+0.85 | -25.1977 | 26.6590 | 33 | 12 | 45
+0.65 | -27.9351 | 32.3895 | 40 | 18 | 58
+0.70 | -28.6829 | 31.2973 | 39 | 17 | 56
+0.90 | -31.3318 | 31.8079 | 28 | 12 | 40
+
+METHOD
+Current ETH entry policy projected over retained observations: 600 to >1 seconds remaining; 85% selected-side capped probability above 420 seconds, 83% thereafter; 80–96 cent entry quotes; minimum quality 85; market cap midpoint + 6 percentage points; recorded same-side confirmation and other non-probability gates preserved. Historical ENTRY_WINDOW and SPREAD rejections are ignored to apply current window/spread policy. This retains historical operational and confirmation state, rather than replaying all inputs from scratch.
+ATR multiplier alone changes the logged Normal-CDF probability, retaining the logged ATR, indicator lean/weight, comparator and safety clamp. Independent reconstruction at the recorded multiplier matched all 8,388 eligible probability observations, maximum absolute error 3.34e-16.
+Fixed 10-contract size, at most one trade per market, no take-profit, 50-cent held-side bid stop. One second assumed signal-to-entry and stop-to-sale delay. First retained book after delay must arrive within 2 seconds, supply depth for the whole order and satisfy entry price/market-cap constraints. Buy asks are complements of opposite-side bids. A failed entry fill attempt may retry at the next eligible observation. Stop execution uses observed depth, not a guaranteed 50-cent fill. If a stop delay extends beyond the last pre-close book, position settles.
+Fees use the repository FeeAccumulator: quadratic taker coefficient 0.07, order cumulative rounding, balance precision $0.0001. This is the logged bot fee assumption, not a claim that all hypothetical exchange fills have identical fees. Official general fee reference: https://kalshi.com/docs/kalshi-fee-schedule.pdf . No additional arbitrary slippage haircut; delayed quote/depth changes supply modeled slippage.
+Settlement uses recorded official yes/no results from the current ETH paper database, whose settlement history includes imported prior sessions. Outcomes are used only to score trades after close. All source databases were opened read-only.
+Common coverage requires all candidates to be evaluable on the same windows: entry-to-close evaluation gaps <=10 seconds, fresh valid book gaps <=5 seconds, no invalid book in window, and no recorded capture loss overlapping the window or preceding hour of reference warmup. Candidate windows without settled outcomes are excluded. These rules assess retained observations, not full feed continuity.
+Max drawdown is the largest peak-to-trough drop in cumulative closed-trade net PNL, starting at zero; it excludes unrealized intratrade drawdown. Wins/losses refer to positive/negative net PNL after fees. No assumed account balance or percentage drawdown.
+No full live-executor simulation: balance limits, global/daily loss guards, authorization, fill queue competition, intra-sample stop crossings and signal revalidation at execution are not reconstructed. Sampled quotes cannot establish actual fills. A different multiplier could also alter later operational state.
+
+ROBUSTNESS
+ATR 1.35: 0.5s delay PNL -1.2731; 3s delay -2.6310; 55-cent stop -1.4479; earlier 70% window PNL -2.0238 (8 trades), later 30% 0.4761 (1 trades).
+ATR 1.30: 0.5s delay PNL -1.3996; 3s delay -7.5609; 55-cent stop -1.5463; earlier 70% window PNL -2.1222 (9 trades), later 30% 0.4761 (1 trades).
+ATR 1.40: 0.5s delay PNL -1.6269; 3s delay -2.8710; 55-cent stop -1.7717; earlier 70% window PNL -2.3476 (8 trades), later 30% 0.4761 (1 trades).
+ATR 1.45: 0.5s delay PNL -2.5491; 3s delay -3.3658; 55-cent stop -3.0613; earlier 70% window PNL -3.1611 (6 trades), later 30% 0.0000 (0 trades).
+ATR 1.50: 0.5s delay PNL -3.8314; 3s delay -4.1213; 55-cent stop -3.5302; earlier 70% window PNL -3.6300 (5 trades), later 30% 0.0000 (0 trades).
+
+The ranking uses all covered data and is therefore in-sample. The chronological split is only a descriptive check; the top result has one trade in the later segment. Neither the sample size nor the net results establish profitability or justify a live replacement.
+Verification: all 31 result rows independently reconciled to exported trade rows; no duplicate ticker within a candidate/scenario; all win/loss counts and realized drawdowns reconciled. Full rankings and sensitivities: results.json. Trade-level audit: trades.csv. Extraction and simulation: scan.py and evaluate.py.

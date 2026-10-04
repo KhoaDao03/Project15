@@ -22,7 +22,7 @@ async def held_position(live):
 @pytest.mark.anyio
 async def test_stop_reuses_one_preflight_and_cannot_double_sell(live, monkeypatch):
     worker, state, manual, control, data, clock = await held_position(live)
-    data["bid"] = 0.55
+    data["bid"] = 0.50
     assert len(worker.detect_stops()) == 1
     state["reads"].clear()
     reads = []
@@ -41,7 +41,7 @@ async def test_stop_reuses_one_preflight_and_cannot_double_sell(live, monkeypatc
     assert state["reads"].count("markets/" + TICKER) == 1
     assert len(reads) == 1
     timing = manual.rows()[0]["timing"]
-    assert timing["stop_bid"] == 0.55
+    assert timing["stop_bid"] == 0.50
     assert timing["stop_detected_at"] <= timing["submitted_at"]
 
 
@@ -49,11 +49,11 @@ async def test_stop_reuses_one_preflight_and_cannot_double_sell(live, monkeypatc
 @pytest.mark.parametrize("block", ["stale", "above", "paused", "closed", "flat"])
 async def test_stop_detector_requires_fresh_managed_holdings(live, block):
     worker, state, manual, control, data, clock = await held_position(live)
-    data["bid"] = 0.55
+    data["bid"] = 0.50
     if block == "stale":
         data["fresh"] = False
     elif block == "above":
-        data["bid"] = 0.56
+        data["bid"] = 0.51
     elif block == "paused":
         worker.takeover(TICKER)
     elif block == "closed":
@@ -69,7 +69,7 @@ async def test_stop_detector_requires_fresh_managed_holdings(live, block):
 @pytest.mark.anyio
 async def test_trigger_persists_while_submission_waits_and_survives_restart(live):
     worker, state, manual, control, data, clock = await held_position(live)
-    data["bid"] = 0.55
+    data["bid"] = 0.50
     await manual.order_lock.acquire()
     task = asyncio.create_task(worker.watch_stops())
     try:
@@ -100,7 +100,7 @@ async def test_stop_worker_polls_without_notifications(live):
     task = asyncio.create_task(worker.watch_stops())
     try:
         await asyncio.sleep(0.01)
-        data["bid"] = 0.55
+        data["bid"] = 0.50
         for _ in range(100):
             if len(state["posts"]) == 2:
                 break
@@ -147,7 +147,7 @@ async def test_slow_exit_does_not_block_detection_in_another_market(live, monkey
     worker, state, manual, control, data, clock = await held_position(live)
     release = asyncio.Event()
     started = asyncio.Event()
-    bids = {TICKER: 0.55}
+    bids = {TICKER: 0.50}
 
     def book(control, now, trace=None):
         if trace is not None:
@@ -170,7 +170,7 @@ async def test_slow_exit_does_not_block_detection_in_another_market(live, monkey
         buy["request"]["ticker"] = other
         with manual.db() as db:
             db.execute("INSERT INTO manual_orders VALUES (?, ?)", (buy["id"], json.dumps(buy)))
-        bids[other] = 0.54
+        bids[other] = 0.49
         worker.stop_wakeup.set()
         for _ in range(100):
             if worker.control(other).get("exit_reason") == "HARD_STOP":
@@ -194,7 +194,7 @@ async def test_no_side_stop_uses_no_bid_and_clamps_to_actual_holdings(live, monk
     original = worker.book
 
     def book(*args, **kwargs):
-        return {**original(*args, **kwargs), "yes_bid": 0.90, "no_bid": 0.55}
+        return {**original(*args, **kwargs), "yes_bid": 0.90, "no_bid": 0.50}
 
     monkeypatch.setattr(worker, "book", book)
     assert worker.detect_stops()
@@ -208,7 +208,7 @@ async def test_no_side_stop_uses_no_bid_and_clamps_to_actual_holdings(live, monk
 async def test_stop_monitor_does_not_load_expired_control_history(live, monkeypatch):
     worker, state, manual, control, data, clock = await held_position(live)
     worker.write({**control, "ticker": "EXPIRED", "close_time": clock[0] - 1})
-    data["bid"] = 0.55
+    data["bid"] = 0.50
 
     def full_scan(*args, **kwargs):
         raise AssertionError("Stop monitor must query only open controls")
@@ -237,7 +237,7 @@ async def test_stop_submission_reserves_read_priority_and_restores_context(live,
         return await original(*args)
 
     monkeypatch.setattr(manual, "holdings", holdings)
-    data["bid"] = 0.55
+    data["bid"] = 0.50
     state["post_error"] = "timeout"
     await worker.step_market(control)
     assert seen == [True]

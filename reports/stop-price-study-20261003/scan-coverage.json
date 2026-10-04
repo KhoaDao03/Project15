@@ -1,0 +1,44 @@
+[
+  {
+    "asset": "BTC",
+    "files": 491,
+    "trades_with_points": 80,
+    "errors": []
+  },
+  {
+    "asset": "ETH",
+    "files": 431,
+    "trades_with_points": 74,
+    "errors": []
+  },
+  {
+    "asset": "SOL",
+    "files": 285,
+    "trades_with_points": 48,
+    "errors": []
+  },
+  {
+    "asset": "XRP",
+    "files": 171,
+    "trades_with_points": 24,
+    "errors": []
+  },
+  {
+    "asset": "DOGE",
+    "files": 213,
+    "trades_with_points": 37,
+    "errors": []
+  },
+  {
+    "asset": "BNB",
+    "files": 164,
+    "trades_with_points": 40,
+    "errors": []
+  },
+  {
+    "asset": "HYPE",
+    "files": 210,
+    "trades_with_points": 44,
+    "errors": []
+  }
+]
