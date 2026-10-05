@@ -192,6 +192,10 @@ def create_fleet_app(manifest):
             await asyncio.gather(*asset_shutdown_tasks.values(), return_exceptions=True)
             performance_stop.set()
             await performance_task
+            if overview_task is not None:
+                if not overview_task.done():
+                    overview_task.cancel()
+                await asyncio.gather(overview_task, return_exceptions=True)
             await execution.close()
             for history in history_stores.values():
                 history.close_history()
@@ -291,8 +295,18 @@ def create_fleet_app(manifest):
                 reasons=["LEDGER_UNAVAILABLE"],
             )
 
+    overview_task = None
+
     @app.get("/api/fleet")
     async def overview():
+        nonlocal overview_task
+        # Share only work in progress; the next request after completion reads afresh.
+        # A disconnected viewer must not cancel another viewer's response.
+        if overview_task is None or overview_task.done():
+            overview_task = asyncio.create_task(build_overview())
+        return await asyncio.shield(overview_task)
+
+    async def build_overview():
         rows = await asyncio.gather(*(asyncio.to_thread(summary, a, m) for a, m in members.items()))
         execution_status = await execution.overview(
             [market["ticker"] for row in rows for market in row.get("markets", [])]

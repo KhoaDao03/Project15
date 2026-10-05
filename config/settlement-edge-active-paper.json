@@ -70,7 +70,7 @@
   "bleep_exchange_seed_enabled": true,
   "bleep_safety_clamp_enabled": true,
   "entry_value_filters_enabled": false,
-  "fixed_stop_price": 0.5,
+  "fixed_stop_price": 0.55,
   "full_position_execution": true,
-  "early_min_probability": 0.83
+  "early_min_probability": 0.85
 }

@@ -96,5 +96,5 @@ def test_new_crypto_presets_match_eth_except_identity(asset):
 
     baseline = Strategy.load("config/settlement-edge-eth-paper.json")
     added = Strategy.load(f"config/settlement-edge-{asset.lower()}-paper.json")
-    assert asdict(added) == {**asdict(baseline), "asset": asset, "early_min_probability": added.early_min_probability}
+    assert asdict(added) == {**asdict(baseline), "asset": asset, "entry_window_start": 600, "early_min_probability": added.early_min_probability}
     assert capped_confidence(.99, .80, .82, asset) == .87

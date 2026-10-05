@@ -471,3 +471,43 @@ def test_overview_hides_unavailable_probability(invalid):
     if invalid == "nan":
         evaluation["body"]["probability"]["p_yes"] = float("nan")
     assert not fleet.market_probability(evaluation, member, market, 101, connected)["available"]
+
+
+def test_overlapping_overviews_share_work_but_completed_responses_are_not_cached(portfolios, monkeypatch):
+    import asyncio
+
+    manifest, _ = portfolios
+
+    async def scenario():
+        entered = asyncio.Event()
+        release = asyncio.Event()
+        calls = []
+
+        async def execution_overview(self, tickers=()):
+            calls.append(tuple(tickers))
+            entered.set()
+            await release.wait()
+            return dict(live=dict(available=True, revision=len(calls)), purchases={})
+
+        monkeypatch.setattr(fleet.ExecutionClient, "overview", execution_overview)
+        app = fleet.create_fleet_app(manifest)
+        endpoint = next(
+            route.endpoint for route in app.routes if getattr(route, "path", None) == "/api/fleet"
+        )
+        async with app.router.lifespan_context(app):
+            first = asyncio.create_task(endpoint())
+            await asyncio.wait_for(entered.wait(), 5)
+            second = asyncio.create_task(endpoint())
+            await asyncio.sleep(0)
+            first.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await first
+            release.set()
+            result = await asyncio.wait_for(second, 5)
+            assert len(calls) == 1
+            assert result["live"]["revision"] == 1
+            result = await endpoint()
+            assert len(calls) == 2
+            assert result["live"]["revision"] == 2
+
+    asyncio.run(scenario())

@@ -18,24 +18,34 @@
     if(!response.ok)throw Error(typeof data.detail==='string'?data.detail:'Request could not be validated');
     return data;
   }
-  let balanceBusy=false,balanceTimer=null;
+  let balanceBusy=false,balanceTimer=null,balanceGeneration=0;
   async function refreshRealBalance(){
-    if(balanceBusy)return;
+    if(balanceBusy||document.hidden)return;
     balanceBusy=true;clearTimeout(balanceTimer);
+    const generation=balanceGeneration;
     document.getElementById('real-account').hidden=false;
     const button=document.getElementById('real-balance-refresh');button.disabled=true;
     try{
       const data=await api('balance');
+      if(generation!==balanceGeneration||document.hidden)return;
       document.getElementById('real-balance').textContent=amount(data.available_cash_dollars);
       document.getElementById('real-balance-status').textContent='Kalshi primary account · cash only · updated '+new Date(data.server_time*1000).toLocaleTimeString();
     }catch(e){
+      if(generation!==balanceGeneration||document.hidden)return;
       document.getElementById('real-balance').textContent='—';
       document.getElementById('real-balance-status').textContent=e.message;
     }finally{
       balanceBusy=false;button.disabled=false;
-      balanceTimer=setTimeout(refreshRealBalance,30000);
+      if(!document.hidden)balanceTimer=setTimeout(refreshRealBalance,generation===balanceGeneration?30000:0);
     }
   }
+  document.addEventListener('visibilitychange',()=>{
+    balanceGeneration++;
+    clearTimeout(balanceTimer);
+    document.getElementById('real-balance').textContent='—';
+    document.getElementById('real-balance-status').textContent='Waiting for fresh balance';
+    if(!document.hidden&&typeof fleetMode!=='undefined'&&fleetMode)refreshRealBalance();
+  });
   document.getElementById('real-balance-refresh').onclick=refreshRealBalance;
   if(typeof fleetMode!=='undefined'&&fleetMode)refreshRealBalance();
   else window.addEventListener('fleet-ready',refreshRealBalance,{once:true});

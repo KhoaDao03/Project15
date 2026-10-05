@@ -73,5 +73,5 @@
   "asset": "XRP",
   "fixed_stop_price": 0.5,
   "full_position_execution": true,
-  "early_min_probability": 0.86
+  "early_min_probability": 0.87
 }

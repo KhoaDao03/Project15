@@ -1,6 +1,6 @@
 # Active crypto presets
 
-BTC, ETH, SOL, XRP, BNB, HYPE and DOGE use the same Bleep strategy settings except `asset` and `early_min_probability`; fixed volatility multipliers and market-cap premiums depend on asset identity.
+BTC, ETH, SOL, XRP, BNB, HYPE and DOGE use the same Bleep strategy settings except `asset`, `early_min_probability`, `fixed_stop_price`, and `entry_window_start`; fixed volatility multipliers and market-cap premiums depend on asset identity.
 The tracked files are `config/settlement-edge-{active,eth,sol,xrp,bnb,hype,doge}-paper.json`.
 Despite their filenames, these are also the source for fresh cloud signal configs.
 `prepare_cloud.py` freezes them into `data/cloud/{BTC,ETH,SOL,XRP,BNB,HYPE,DOGE}.json`.
@@ -8,12 +8,12 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Setting | Shared value |
 | --- | --- |
 | Model | Bleep ATR finish estimate |
-| Early window | `420 < seconds_remaining <= 600` |
-| Early probability floor | BTC 83%; ETH 85%; SOL 86%; XRP 86%; DOGE 83%; BNB 91%; HYPE 87% |
+| Early window | `420 < seconds_remaining <= 600`; disabled for ETH, which starts at 420 seconds |
+| Early probability floor | BTC 85%; ETH disabled (89% saved but inactive); SOL 86%; XRP 87%; DOGE 83%; BNB 91%; HYPE 87% |
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 0.95; ETH 1.05; SOL 1.00; XRP 1.10; BNB 1.10; HYPE 1.15; DOGE 1.10 |
+| ATR sigma multiplier | BTC 0.95; ETH 1.05; SOL 1.00; XRP 1.05; BNB 1.10; HYPE 1.15; DOGE 1.10 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH/BNB/HYPE/DOGE; +10pp SOL/XRP; maximum 98% |
 | Spread filter | Disabled for all bots; zero spreads allowed. Missing/invalid/crossed quotes still fail validation. Legacy `max_spread` is ignored. |
 | Purchase range | 80–96¢ |
@@ -23,7 +23,7 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Net-edge / expected-value vetoes | Disabled |
 | Paper sizing | 10 contracts, all or none within the price cap |
 | Take-profit / resting profit orders | Disabled (`take_profit=null`) |
-| Hard stop | Held-side bid ≤50¢ |
+| Hard stop | Held-side bid ≤55¢ for BTC; ≤50¢ for the other six cryptos |
 | Model probability / hold-value exits | Disabled |
 | Standard cashout / profit-value exits | Disabled |
 | Paper post-close cooldown | 60 seconds |
@@ -31,12 +31,12 @@ Despite their filenames, these are also the source for fresh cloud signal config
 
 Any remaining inventory settles at expiration. Full-position paper sells stay
 committed and consume available depth; triggers are not guaranteed fill prices.
-Live automation shares the probability/entry strategy and the 50¢ stop threshold,
+Live automation shares the probability/entry strategy and the per-asset stop thresholds,
 with separate resting-order handling and user-selected quantity; see
 [live automation](LIVE_AUTOMATION.md).
 
 All seven presets have a regression test comparing shared strategy fields except
-asset identity and early probability threshold. Exchange identifiers, official feeds and settlement precision are
+asset identity, early probability threshold, stop price, and entry window. Exchange identifiers, official feeds and settlement precision are
 necessarily asset-specific. Read [the probability model](PROBABILITY_MODEL.md) for
 its inputs and assumptions and [cloud deployment](CLOUD.md) for preparation.
 

@@ -7,7 +7,7 @@ SIGMA_MULTIPLIERS = {
     "BTC": 0.95,
     "ETH": 1.05,
     "SOL": 1.00,
-    "XRP": 1.10,
+    "XRP": 1.05,
     "BNB": 1.10,
     "HYPE": 1.15,
     "DOGE": 1.10,

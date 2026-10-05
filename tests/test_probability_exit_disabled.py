@@ -36,9 +36,15 @@ def test_paper_profit_exit_still_enabled(store, market, now, asset, side):
 
 
 @pytest.mark.parametrize("asset", ["eth", "sol", "xrp"])
-def test_crypto_presets_share_every_strategy_setting_except_asset(asset):
+def test_crypto_presets_share_settings_except_identity_probability_and_stop(asset):
     btc = asdict(Strategy.load("config/settlement-edge-active-paper.json"))
     other = asdict(Strategy.load(f"config/settlement-edge-{asset}-paper.json"))
     assert other.pop("asset") == asset.upper()
     assert btc.pop("asset") == "BTC"
+    other.pop("early_min_probability")
+    btc.pop("early_min_probability")
+    assert other.pop("fixed_stop_price") == .50
+    assert btc.pop("fixed_stop_price") == .55
+    assert other.pop("entry_window_start") == (420 if asset == "eth" else 600)
+    assert btc.pop("entry_window_start") == 600
     assert other == btc

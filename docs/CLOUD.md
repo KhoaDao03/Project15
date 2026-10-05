@@ -138,6 +138,27 @@ Allowed shutdown disables entries and cooperatively stops collectors; execution
 may remain running. Public controls cannot start services. Viewer status is in
 memory and can remain stale after shutdown.
 
+## Dashboard resource use
+
+The fleet overview keeps its existing refresh interval. Collapsed asset details
+pause their separate polling and market stream; expanding them resumes updates.
+Hidden browser tabs pause polling, disconnect the market stream, and suspend
+balance refreshes. Returning to the tab requests fresh data. Market references
+and balances are cleared while waiting for fresh readings.
+
+Overlapping fleet overview requests share one in-progress calculation. Completed
+responses are not cached, and disconnecting one viewer does not cancel another
+viewer’s request. Trading authorization, order submission, collectors, and exit
+checks are unchanged. History-cache invalidation remains unchanged.
+
+Static JavaScript changes load on a browser refresh without a service restart.
+The Python request-sharing change requires a later dashboard-only restart to
+activate; editing the file does not update an already-running process.
+
+Validation: `node tests/dashboard_visibility.cjs` exercises browser visibility,
+collapsed details, and stream/balance resumption. The fleet dashboard tests cover
+concurrent viewers, cancellation, and fresh reads after a response completes.
+
 ## Operation and acceptance
 
 ```bash

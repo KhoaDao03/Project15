@@ -10,7 +10,7 @@ from btc15.strategies.settlement_edge.bleep import model_name
 from btc15.strategies.settlement_edge.model import Tick
 from btc15.strategies.settlement_edge.rules import evaluate
 
-THRESHOLDS = {"BTC": .83, "ETH": .85, "SOL": .86, "XRP": .86, "DOGE": .83, "BNB": .91, "HYPE": .87}
+THRESHOLDS = {"BTC": .83, "ETH": .89, "SOL": .86, "XRP": .87, "DOGE": .83, "BNB": .91, "HYPE": .87}
 
 
 @pytest.mark.parametrize("asset,early", THRESHOLDS.items())
@@ -21,14 +21,15 @@ def test_signal_and_paper_submission_agree_on_schedule(store, market, asset, ear
     suffix = "active" if asset == "BTC" else asset.lower()
     config = Strategy.load(f"config/settlement-edge-{suffix}-paper.json")
     now = market.close_time - remaining
-    floor = early if 420 < remaining <= 600 else .83
+    start = 420 if asset == "ETH" else 600
+    floor = early if 420 < remaining <= start else .83
     assert config.probability_floor(remaining <= 120, remaining=remaining) == floor
     book = make_book(side, ".89", ".90", now)
     p = {"p_" + side: floor + delta, "lead": dict(side=side, confirmed_normal=True, confirmed_late=True)}
     d = evaluate(market, book, Tick(now, now, market.spec.strike + (10 if side == "yes" else -10)),
                  dict(regime="NORMAL"), p, dict(score=100, reasons=[]), now, config)
     codes = {r["code"] for r in d["reasons"]}
-    assert ("ENTRY_WINDOW" in codes) == (remaining > 600 or remaining <= 1)
+    assert ("ENTRY_WINDOW" in codes) == (remaining > start or remaining <= 1)
     assert ("MIN_PROBABILITY" in codes) == (delta < 0)
     assert (d["effective_max_entry_price"] is None) == (delta < 0)
     if delta < 0:
@@ -36,7 +37,7 @@ def test_signal_and_paper_submission_agree_on_schedule(store, market, asset, ear
         d["decision"] = "TRADE_CANDIDATE"
     ex = initialize(store, market, now, config, "PAPER")
     order = ex.submit(market, book, d, "early-window", now, True)
-    assert (order is not None) == (1 < remaining <= 600 and delta == 0)
+    assert (order is not None) == (1 < remaining <= start and delta == 0)
 
 
 @pytest.mark.parametrize("value", [-.01, 1.01, float("nan"), True, "0.87"])
