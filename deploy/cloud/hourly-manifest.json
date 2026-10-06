@@ -1,16 +1,16 @@
 [
   {
-    "asset": "ETH1H",
-    "config": "ETH1H.json",
-    "data_dir": "ETH1H",
-    "run_id": "ETH1H-live-signals",
+    "asset": "ETHD",
+    "config": "ETHD.json",
+    "data_dir": "ETHD",
+    "run_id": "ETHD-live-signals",
     "live_only": true
   },
   {
-    "asset": "XRP1H",
-    "config": "XRP1H.json",
-    "data_dir": "XRP1H",
-    "run_id": "XRP1H-live-signals",
+    "asset": "XRPD",
+    "config": "XRPD.json",
+    "data_dir": "XRPD",
+    "run_id": "XRPD-live-signals",
     "live_only": true
   }
 ]

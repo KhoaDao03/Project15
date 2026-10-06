@@ -15,7 +15,7 @@ from btc15.storage import read_events
 from btc15.strategies.settlement_edge.model import Tick
 
 
-@pytest.mark.parametrize("asset", ["ETH1H", "XRP1H", "BTC"])
+@pytest.mark.parametrize("asset", ["ETHD", "XRPD", "BTC"])
 def test_idle_ladder_strike_does_not_reconnect_fresh_hourly_feed(store, config, market, now, asset):
     from dataclasses import replace
 
@@ -46,7 +46,7 @@ def test_idle_ladder_strike_does_not_reconnect_fresh_hourly_feed(store, config, 
 def test_hourly_fresh_strike_does_not_hide_integrity_failures(store, config, market, now, failure):
     from dataclasses import replace
 
-    e, c = ready_inputs(store, replace(config, asset="ETH1H"), market, now)
+    e, c = ready_inputs(store, replace(config, asset="ETHD"), market, now)
     second = replace(market, ticker=market.ticker + "-second")
     e.markets[second.ticker] = second
     e.books[second.ticker] = copy.deepcopy(e.books[market.ticker])

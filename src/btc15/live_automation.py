@@ -186,7 +186,7 @@ class LiveAutomation:
                 selected[ticker] = controls[ticker]
 
         def priority(control):
-            if control["asset"] not in ("ETH1H", "XRP1H"):
+            if control["asset"] not in ("ETHD", "XRPD"):
                 return (not bool(control.get("exit_reason")), 0, 0)
             candidate = hourly_candidates.get(control["ticker"], {})
             return (

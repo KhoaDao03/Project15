@@ -12,7 +12,7 @@ from btc15.domain import parse_market
 from btc15.strategies.settlement_edge.bleep import SIGMA_MULTIPLIERS, capped_confidence
 
 
-@pytest.fixture(params=["ETH1H", "XRP1H"])
+@pytest.fixture(params=["ETHD", "XRPD"])
 def hourly(request):
     data = json.loads(Path(f"tests/fixtures/{request.param.lower()}-hourly-20261006.json").read_text())
     return (
@@ -38,8 +38,8 @@ def test_hourly_identity_precision_and_presets(hourly):
     assert c.take_profit is None and c.entry_limit_offset is None
     assert c.fixed_contracts == c.max_contracts == 10 and c.max_open_exposure == 25
     assert c.one_trade_per_market and c.bleep_safety_clamp_enabled and c.sustained_lead_enabled
-    assert SIGMA_MULTIPLIERS[c.asset] == {"ETH1H": 1.0, "XRP1H": 1.1}[c.asset]
-    premium = 0.06 if c.asset == "ETH1H" else 0.10
+    assert SIGMA_MULTIPLIERS[c.asset] == {"ETHD": 1.0, "XRPD": 1.1}[c.asset]
+    premium = 0.06 if c.asset == "ETHD" else 0.10
     assert capped_confidence(0.98, 0.80, 0.82, c.asset) == pytest.approx(0.81 + premium)
 
 

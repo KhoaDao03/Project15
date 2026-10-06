@@ -34,7 +34,7 @@ uv sync --locked --no-default-groups
 .venv/bin/python scripts/prepare_cloud.py
 ```
 
-The preparation command freezes the seven 15-minute crypto presets plus ETH1H/XRP1H hourly presets and creates
+The preparation command freezes the seven 15-minute crypto presets plus ETHD/XRPD hourly presets and creates
 `data/cloud/manifest.json`. It refuses an existing output directory. Future preset
 edits do not change those frozen files. The collectors refuse a paper portfolio or
 an incompatible configuration in their signal database.
@@ -59,7 +59,7 @@ mkdir -p ~/.config/systemd/user
 cp deploy/cloud/*.service ~/.config/systemd/user/
 systemctl --user daemon-reload
 sudo loginctl enable-linger "$USER"
-systemctl --user enable --now project15-signal@BTC project15-signal@ETH project15-signal@SOL project15-signal@XRP project15-signal@BNB project15-signal@HYPE project15-signal@DOGE project15-signal@ETH1H project15-signal@XRP1H project15-execution project15-dashboard
+systemctl --user enable --now project15-signal@BTC project15-signal@ETH project15-signal@SOL project15-signal@XRP project15-signal@BNB project15-signal@HYPE project15-signal@DOGE project15-signal@ETHD project15-signal@XRPD project15-execution project15-dashboard
 ```
 
 These services restart after failures with a 15-second delay. Explicit stops and
@@ -207,7 +207,7 @@ These are [optional uv extras](https://docs.astral.sh/uv/concepts/projects/sync/
 
 ## Hourly ETH and XRP
 
-ETH1H/XRP1H are separate hourly fleet members. For an existing deployment, use the
+ETHD/XRPD are separate hourly fleet members. For an existing deployment, use the
 [hourly go-live checklist](HOURLY.md), which preserves existing frozen configs and
 keeps new live buying disabled until the owner enables each asset. The prepared
 rows are also tracked in `deploy/cloud/hourly-manifest.json`.

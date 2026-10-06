@@ -81,14 +81,14 @@ Source: [DOGE series](https://api.elections.kalshi.com/trade-api/v2/series/KXDOG
 
 At exactly 600 seconds remaining, the early threshold applies. At exactly 420 seconds remaining, the floor becomes 83%, including the existing late window; the final one-second entry cutoff remains in force. These thresholds apply after the market-respect cap.
 
-## ETH1H and XRP1H hourly ladders
+## ETHD and XRPD hourly ladders
 
-Separate `settlement-edge-eth1h-paper.json` and `settlement-edge-xrp1h-paper.json`
+Separate `settlement-edge-ethd-paper.json` and `settlement-edge-xrpd-paper.json`
 presets add hourly ETH/XRP above/below ladders without changing the seven
 15-minute presets above. Both use a single 83% floor for `60 < seconds_left <= 600`,
 80–96¢ asks, 10 contracts, two bought/pending strikes per hourly event, and no
-stop, take-profit or entry blackout. ETH1H sigma is 1.00 with a 6pp confidence
-premium; XRP1H sigma is 1.10 with 10pp. `entry_limit_offset` ships as `null`.
+stop, take-profit or entry blackout. ETHD sigma is 1.00 with a 6pp confidence
+premium; XRPD sigma is 1.10 with 10pp. `entry_limit_offset` ships as `null`.
 Fresh cloud preparation now includes both. See [hourly settings and go-live
 checks](HOURLY.md) for frozen versions, strict settlement precision, fleet
 migration and fill-quality review. Owner live-buy authorization remains required.

@@ -12,15 +12,15 @@ class Asset:
 
     @property
     def series(self):
-        return {"ETH1H": "KXETHD", "XRP1H": "KXXRPD"}.get(self.symbol, f"KX{self.symbol}15M")
+        return {"ETHD": "KXETHD", "XRPD": "KXXRPD"}.get(self.symbol, f"KX{self.symbol}15M")
 
     @property
     def hourly(self):
-        return self.symbol in ("ETH1H", "XRP1H")
+        return self.symbol in ("ETHD", "XRPD")
 
     @property
     def underlying(self):
-        return self.symbol[:-2] if self.hourly else self.symbol
+        return self.symbol[:-1] if self.hourly else self.symbol
 
     @property
     def commodity(self):
@@ -45,8 +45,8 @@ ASSETS = {
     "GOLD": Asset("GOLD", "Metal.Index.1OZGOLD/USD", "GOLD", 2),
     "SILVER": Asset("SILVER", "Metal.Index.SILVER/USD", "SILVER", 3),
     "WTI": Asset("WTI", "Commodities.Index.PYTHOIL/USD", "PYTHOIL", 2),
-    "ETH1H": Asset("ETH1H", "ETHUSD_RTI", "ERTI", 2),
-    "XRP1H": Asset("XRP1H", "XRPUSD_RTI", "XRPUSD_RTI", 4),
+    "ETHD": Asset("ETHD", "ETHUSD_RTI", "ERTI", 2),
+    "XRPD": Asset("XRPD", "XRPUSD_RTI", "XRPUSD_RTI", 4),
 }
 
 

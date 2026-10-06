@@ -11,8 +11,8 @@ const signedMoney=value=>numeric(value)?(value>0?'+':'')+money(value):'—';
 const pnlClass=value=>value>0?'positive':value<0?'negative':'';
 const percent=value=>numeric(value)?(value*100).toFixed(1)+'%':'—';
 const count=value=>numeric(value)?value.toLocaleString('en-US'):'—';
-const symbols=['BTC','ETH','SOL','XRP','BNB','HYPE','DOGE','ETH1H','XRP1H','GOLD','SILVER','WTI'];
-const names=asset=>asset==='WTI'?'OIL / WTI':asset==='ETH1H'?'ETH hourly':asset==='XRP1H'?'XRP hourly':asset;
+const symbols=['BTC','ETH','SOL','XRP','BNB','HYPE','DOGE','ETHD','XRPD','GOLD','SILVER','WTI'];
+const names=asset=>asset==='WTI'?'OIL / WTI':asset==='ETHD'?'ETH hourly':asset==='XRPD'?'XRP hourly':asset;
 const coinPaths={
  DOGE:'M8 5h4a7 7 0 0 1 0 14H8V5Zm-3 7h9',
  BNB:'M12 2 6.5 7.5 8.6 9.6 12 6.2 15.4 9.6 17.5 7.5ZM2 12l3-3 3 3-3 3Zm10-3 3 3-3 3-3-3Zm7-0 3 3-3 3-3-3ZM6.5 16.5 12 22l5.5-5.5-2.1-2.1-3.4 3.4-3.4-3.4Z',
