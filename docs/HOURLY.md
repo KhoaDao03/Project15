@@ -1,20 +1,20 @@
-# ETH and XRP hourly ladders
+# ETH, XRP and HYPE hourly ladders
 
-`ETHD` (`KXETHD`) and `XRPD` (`KXXRPD`) are separate fleet assets, stores,
+`ETHD` (`KXETHD`), `XRPD` (`KXXRPD`) and `HYPED` (`KXHYPED`) are separate fleet assets, stores,
 controls and dashboard histories. Only above/below ladders are supported. The
-existing ETH/XRP 15-minute presets and their configuration versions are unchanged.
+existing ETH/XRP/HYPE 15-minute presets and their configuration versions are unchanged.
 
-| Setting | ETHD | XRPD |
-| --- | --- | --- |
-| ATR sigma multiplier | 1.00 | 1.10 |
-| Confidence cap premium over selected-side midpoint | 6 percentage points | 10 percentage points |
-| Probability floor, after cap | 83% | 83% |
-| Entry window | `60 < seconds_left <= 600` | Same |
-| Ask band | 80–96¢ | Same |
-| Contracts per strike | 10 | 10 |
-| Bought or pending strikes per event | At most 2 | At most 2 |
-| Stops / take-profit / blackout | Disabled | Disabled |
-| `entry_limit_offset` | `null` | `null` |
+| Setting | ETHD | XRPD | HYPED |
+| --- | --- | --- | --- |
+| ATR sigma multiplier | 1.00 | 1.10 | 1.40 |
+| Confidence cap premium over selected-side midpoint | 6 percentage points | 10 percentage points | 6 percentage points |
+| Probability floor, after cap | 83% | 83% | 83% |
+| Entry window | `60 < seconds_left <= 600` | Same | Same |
+| Ask band | 80–96¢ | Same | Same |
+| Contracts per strike | 10 | 10 | 10 |
+| Bought or pending strikes per event | At most 2 | At most 2 | At most 2 |
+| Stops / take-profit / blackout | Disabled | Disabled | Disabled |
+| `entry_limit_offset` | `null` | `null` | `0.01` |
 
 Only markets closing at the **next top of the hour** are discovered, regardless
 of how many hours or days earlier they opened. Daily/weekly openings that close
@@ -61,6 +61,35 @@ The owner's supplied 59-day replay motivates the event cap and holding to
 settlement. Its profit/slippage estimates have not been independently reproduced
 by this implementation. It omitted the indicator lean retained here.
 
+## HYPED addition
+
+HYPED uses the same two-strike selection, freshness, event cap and settlement
+machinery as ETHD/XRPD. Its preset copies ETHD with only `asset` and
+`entry_limit_offset` changed. The frozen HYPED version is `0be84b49fe332935`.
+ETHD remains `3efb5d90d16f9d9b`, XRPD remains `e546a5ad1fc8175d`, and the 15-minute
+HYPE sigma multiplier remains 1.15.
+
+HYPED deliberately ships with the tighter buy limit enabled: the lower of the
+signal ask plus 1¢ and 96¢, rounded down to a valid cent. The owner's supplied
+59-day replay found weaker results with a one-minute stale signal, motivating
+this cap on chasing a moved price. Those research results were not independently
+reproduced here. ETHD/XRPD retain their `null` offset.
+
+The public API fixtures captured on October 6 include 1 PM and 3 PM ordinary
+hourly events and the 5 PM daily event. All say `HYPEUSD_RTI` and `above $92.9999`;
+secondary wording matches ETHD exactly. The parser permits the optional `$` only
+for HYPED and still requires a matching decimal strike, index, rule time and
+secondary text. The 1 PM and 3 PM ladders had 300 strikes each; 5 PM had 40.
+All remain subject to next-top-of-hour discovery and two live-book selections.
+See `tests/fixtures/hyped-hourly-20261006.json`; the settled 1 PM capture is
+explicitly replayed as active by tests that simulate pre-close execution.
+
+Deploy HYPED as a live-signal collector with **new live buys disabled**. There is
+no paper-trading trial. Khoa separately enables `HYPED` in the private dashboard
+with `ENABLE_REAL_TRADING` at 10 contracts. Existing asset permissions are not
+changed. The executor's global loss guard includes every manifest member,
+including HYPED and its separate trade history.
+
 ## Go-live check
 
 On October 6, 2026, the owner requested reverting the hourly names to ETHD/XRPD after startup.
@@ -92,7 +121,7 @@ close matching and contract validation still happen locally.
 
 1. Deploy the reviewed local commits on `cloud-deploy` to the trading checkout.
    Retain existing credentials, state, service overrides and frozen configs.
-   For a **fresh** fleet, `scripts/prepare_cloud.py` now includes both hourly
+   For a **fresh** fleet, `scripts/prepare_cloud.py` now includes all three hourly
    presets. Never run fresh preparation over the existing data directory.
    To add only hourly members to another existing fleet, from the repo root run:
 
@@ -130,13 +159,13 @@ close matching and contract validation still happen locally.
 
    ```bash
    systemctl --user daemon-reload
-   systemctl --user enable --now project15-signal@ETHD project15-signal@XRPD
+   systemctl --user enable --now project15-signal@ETHD project15-signal@XRPD project15-signal@HYPED
    systemctl --user restart project15-execution project15-dashboard
-   systemctl --user status project15-signal@ETHD project15-signal@XRPD --no-pager
+   systemctl --user status project15-signal@ETHD project15-signal@XRPD project15-signal@HYPED --no-pager
    journalctl --user -u project15-signal@ETHD -u project15-signal@XRPD -n 60 --no-pager
    ```
 
-   In the private dashboard, open `/assets/ETHD` and `/assets/XRPD`. Confirm the
+   In the private dashboard, open `/assets/ETHD`, `/assets/XRPD` and `/assets/HYPED`. Confirm the
    collector is healthy, reference/book ages are fresh, parsed strikes appear,
    and every **tradable** market closes at the next top of the hour. Historical
    held/settling contracts may remain visible for settlement recovery. Verify
@@ -159,7 +188,7 @@ close matching and contract validation still happen locally.
    See [public isolation](PUBLIC_WEBSITE_ISOLATION.md) for first installation.
    No trading credentials or journals belong in the public installation.
 
-4. Khoa enables **ETHD** and **XRPD** separately in the private dashboard's live
+4. Khoa enables **ETHD**, **XRPD** and **HYPED** separately in the private dashboard's live
    buying control, confirming `ENABLE_REAL_TRADING`, with **10 contracts**.
    Verify stop price **0** and no take-profit. Buying stays disabled until this
    owner action; collectors themselves cannot place real orders.

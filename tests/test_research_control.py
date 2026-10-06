@@ -92,7 +92,7 @@ def test_cli_requires_explicit_targets_and_supports_groups(tmp_path, monkeypatch
     assert not (tmp_path / "logging-control.json").exists()
     monkeypatch.setattr("sys.argv", ["control", "stop", "crypto", "gold", "--root", str(tmp_path)])
     main()
-    assert read_control(tmp_path) == dict.fromkeys(["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD", "GOLD"], False)
+    assert read_control(tmp_path) == dict.fromkeys(["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD", "HYPED", "GOLD"], False)
     monkeypatch.setattr("sys.argv", ["control", "start", "all", "--root", str(tmp_path)])
     main()
     assert read_control(tmp_path) == dict.fromkeys(ASSETS, True)

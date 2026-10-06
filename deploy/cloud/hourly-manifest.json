@@ -12,5 +12,12 @@
     "data_dir": "XRPD",
     "run_id": "XRPD-live-signals",
     "live_only": true
+  },
+  {
+    "asset": "HYPED",
+    "config": "HYPED.json",
+    "data_dir": "HYPED",
+    "run_id": "HYPED-live-signals",
+    "live_only": true
   }
 ]

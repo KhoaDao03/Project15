@@ -81,14 +81,17 @@ Source: [DOGE series](https://api.elections.kalshi.com/trade-api/v2/series/KXDOG
 
 At exactly 600 seconds remaining, the early threshold applies. At exactly 420 seconds remaining, the floor becomes 83%, including the existing late window; the final one-second entry cutoff remains in force. These thresholds apply after the market-respect cap.
 
-## ETHD and XRPD hourly ladders
+## ETHD, XRPD and HYPED hourly ladders
 
-Separate `settlement-edge-ethd-paper.json` and `settlement-edge-xrpd-paper.json`
-presets add hourly ETH/XRP above/below ladders without changing the seven
-15-minute presets above. Both use a single 83% floor for `60 < seconds_left <= 600`,
+Separate `settlement-edge-ethd-paper.json`, `settlement-edge-xrpd-paper.json` and
+`settlement-edge-hyped-paper.json` presets add hourly ETH/XRP/HYPE above/below ladders without changing the seven
+15-minute presets above. All use a single 83% floor for `60 < seconds_left <= 600`,
 80–96¢ asks, 10 contracts, two bought/pending strikes per hourly event, and no
 stop, take-profit or entry blackout. ETHD sigma is 1.00 with a 6pp confidence
-premium; XRPD sigma is 1.10 with 10pp. `entry_limit_offset` ships as `null`.
-Fresh cloud preparation now includes both. See [hourly settings and go-live
+premium; XRPD sigma is 1.10 with 10pp; HYPED sigma is 1.40 with 6pp.
+ETHD/XRPD keep `entry_limit_offset: null`; HYPED ships with `0.01` to limit price
+chasing, given the owner's replay sensitivity to stale signals. HYPED version:
+`0be84b49fe332935`. The 15-minute HYPE sigma remains 1.15.
+Fresh cloud preparation now includes all three. See [hourly settings and go-live
 checks](HOURLY.md) for frozen versions, strict settlement precision, fleet
 migration and fill-quality review. Owner live-buy authorization remains required.

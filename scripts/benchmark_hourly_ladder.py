@@ -86,6 +86,6 @@ if __name__ == "__main__":
     with tempfile.TemporaryDirectory(prefix="hourly-benchmark-") as directory:
         print(
             json.dumps(
-                [benchmark(Path(directory), "ETHD", 300), benchmark(Path(directory), "XRPD", 75)], indent=2
+                [benchmark(Path(directory), "ETHD", 300), benchmark(Path(directory), "XRPD", 75), benchmark(Path(directory), "HYPED", 300)], indent=2
             )
         )

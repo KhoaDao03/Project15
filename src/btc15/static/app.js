@@ -1,7 +1,7 @@
 'use strict';
 const $=id=>document.getElementById(id);
-const assetBase=window.location.pathname.match(/^\/assets\/(BTC|ETH|SOL|XRP|BNB|HYPE|DOGE|ETHD|XRPD|GOLD|SILVER|WTI)(?:\/|$)/)?.[0].replace(/\/$/,'')||'';
-const hourlyAsset=asset=>asset==='ETHD'||asset==='XRPD';
+const assetBase=window.location.pathname.match(/^\/assets\/(BTC|ETH|SOL|XRP|BNB|HYPE|DOGE|ETHD|XRPD|HYPED|GOLD|SILVER|WTI)(?:\/|$)/)?.[0].replace(/\/$/,'')||'';
+const hourlyAsset=asset=>asset==='ETHD'||asset==='XRPD'||asset==='HYPED';
 const assetLabel=asset=>asset;
 let fleetMode=false;
 const apiPath=path=>fleetMode&&path.startsWith('/api/shutdown')?path:assetBase+path;

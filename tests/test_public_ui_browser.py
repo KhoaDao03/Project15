@@ -20,7 +20,7 @@ def test_public_ui_selection_history_and_layout():
                                          side='no' if asset['asset']=='ETH' else 'yes', confidence=.60 if asset['asset']=='ETH' else .75,
                                          timestamp=time.time(), quality_warning=False)
     for asset in snapshot['assets']:
-        if asset['asset'] in ('ETHD', 'XRPD'):
+        if asset['asset'] in ('ETHD', 'XRPD', 'HYPED'):
             base = asset['markets'][0]
             from datetime import datetime, timezone
             close = datetime.fromtimestamp(time.time() + 600, timezone.utc).isoformat()
@@ -70,7 +70,7 @@ def test_public_ui_selection_history_and_layout():
         expect(page.locator('#connection')).to_have_text('Connected')
         expect(page.locator('form, #owner-section, .shutdown')).to_have_count(0)
         expect(page.locator('body')).not_to_contain_text('Owner controls')
-        assert page.locator('#comparison .market-button').count() == 12
+        assert page.locator('#comparison .market-button').count() == 13
         expect(page.locator('[aria-label="Market status"] thead')).to_contain_text('Entry confidence')
         expect(page.locator('#market-status .probability').first).to_have_text('YES 75.0%')
         expect(page.locator('#detail .probability')).to_contain_text('YES 75.0%')
@@ -81,12 +81,12 @@ def test_public_ui_selection_history_and_layout():
         for confidence, side in [(None, 'yes'), (1.2, 'yes'), (.8, None)]:
             assert page.evaluate("([confidence,side]) => entryConfidenceView({stale:false},{markets:[{fresh:true,probability:{available:true,p_yes:.9,p_no:.1,confidence,side,timestamp:1}}]}).textContent", [confidence,side]) == 'Unavailable'
         metrics = page.evaluate('summarize(latest.assets)')
-        assert metrics['completed_trades'] == 1200
-        assert metrics['breakeven_trades'] == 12
-        assert metrics['win_rate'] == pytest.approx(1053/1200)
+        assert metrics['completed_trades'] == 1212
+        assert metrics['breakeven_trades'] == 13
+        assert metrics['win_rate'] == pytest.approx(1064/1212)
         assert page.evaluate('summarize(latest.assets.slice(1)).realized_pnl') is None
         assert page.evaluate('summarize(latest.assets.map(a=>({...a,completed_trades:0,wins:0}))).win_rate') is None
-        assert page.evaluate('leaders(latest.assets.map(a=>({...a,realized_pnl:1}))).length') == 9
+        assert page.evaluate('leaders(latest.assets.map(a=>({...a,realized_pnl:1}))).length') == 10
         assert page.evaluate('leaders(latest.assets.map(a=>({...a,completed_trades:0}))).length') == 0
         assert page.evaluate('leaders(latest.assets.map(a=>({...a,realized_pnl:null}))).length') == 0
         page.locator('#comparison .market-button').filter(has_text='DOGE').click()
@@ -101,10 +101,13 @@ def test_public_ui_selection_history_and_layout():
         expect(page.locator('#detail .source')).to_contain_text('XRPD-active')
         expect(page.locator('#detail .source')).not_to_contain_text('XRPD-later')
         expect(page.locator('#detail .source')).not_to_contain_text('XRPD-quiet')
-        for symbol in ('ETHD', 'XRPD'):
+        for symbol in ('ETHD', 'XRPD', 'HYPED'):
             row = page.locator('#market-status tr').filter(has=page.locator('button').filter(has_text=symbol))
             expect(row.locator('.probability-market')).to_have_count(1)
 
+        page.locator('#market-tabs [data-asset=HYPED]').click()
+        expect(page.locator('#detail-title')).to_have_text('HYPED / Market detail')
+        expect(page.locator('#detail .source')).to_contain_text('HYPED-active')
         page.locator('#market-tabs [data-asset=ETH]').click()
         expect(page.locator('#detail-title')).to_have_text('ETH / Market detail')
         expect(page.locator('#detail .probability')).to_contain_text('NO 60.0%')
@@ -131,7 +134,7 @@ def test_public_ui_selection_history_and_layout():
         assert page.evaluate('localStorage.length') == 0
         assert page.evaluate('sessionStorage.length') == 0
         page.reload()
-        expect(page.locator('#comparison .market-button')).to_have_count(12)
+        expect(page.locator('#comparison .market-button')).to_have_count(13)
         for width, height, name in [(1440, 1000, 'desktop'), (768, 1024, 'tablet'), (390, 844, 'mobile')]:
             page.set_viewport_size({'width': width, 'height': height})
             assert page.evaluate('document.documentElement.scrollWidth') <= width
