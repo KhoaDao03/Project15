@@ -253,7 +253,8 @@ def create_fleet_app(manifest):
                 ]
             for market in markets:
                 market["probability"] = market_probability(
-                    evaluation,
+                    (stores[asset].read_market_display(f"evaluation:{member['run_id']}:{market['ticker']}")
+                     if member["config"].asset_spec.hourly else evaluation),
                     member,
                     market,
                     now,
