@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 from . import backlog_entry, execution_journal
 from .decision_notifications import DecisionListener
 from .domain import timestamp
+from .entry_schedule import entry_blackout
 from .live_loss_guard import LIMIT, daily_pnl
 from .manual_trading import (  # noqa: F401
     UNRESOLVED,
@@ -74,6 +75,11 @@ class LiveAutomation:
                 "CREATE INDEX IF NOT EXISTS live_controls_close_time "
                 "ON live_controls(json_extract(body, '$.close_time'))"
             )
+            db.execute(
+                "CREATE INDEX IF NOT EXISTS live_controls_asset_recent ON live_controls("
+                "json_extract(body, '$.asset'), json_extract(body, '$.close_time') DESC, "
+                "json_extract(body, '$.ticker') DESC)"
+            )
             db.execute("CREATE TABLE IF NOT EXISTS live_assets (asset TEXT PRIMARY KEY, body TEXT NOT NULL)")
         # Carry existing user switch choices into the persistent asset controls.
         policies = self.assets()
@@ -117,19 +123,42 @@ class LiveAutomation:
 
     def cycle_controls(self):
         """Five recent markets per asset, plus older unresolved/open obligations."""
-        controls = self.controls()
-        selected = {}
-        counts = {}
-        for control in sorted(controls.values(), key=lambda c: (c["close_time"], c["ticker"]), reverse=True):
-            asset = control["asset"]
-            if counts.get(asset, 0) < 5:
-                selected[control["ticker"]] = control
-                counts[asset] = counts.get(asset, 0) + 1
-        held = {}
-        now = time.time()
-        active = [ticker for ticker, control in controls.items() if control["close_time"] > now]
-        obligations = {r["id"]: r for r in self.manual.rows(tickers=active, origin="bot")}
+        # Read the recent/active controls together, then release the read transaction
+        # before opening the order readers. Never cache authorization between cycles.
+        with self.manual.db() as db:
+            db.execute("BEGIN")
+            recent = []
+            for (asset,) in db.execute("SELECT DISTINCT json_extract(body, '$.asset') FROM live_controls"):
+                recent.extend(
+                    json.loads(body)
+                    for (body,) in db.execute(
+                        "SELECT body FROM live_controls WHERE json_extract(body, '$.asset') = ? "
+                        "ORDER BY json_extract(body, '$.close_time') DESC, "
+                        "json_extract(body, '$.ticker') DESC LIMIT 5",
+                        (asset,),
+                    )
+                )
+            selected = {
+                control["ticker"]: control
+                for control in sorted(recent, key=lambda c: (c["close_time"], c["ticker"]), reverse=True)
+            }
+            now = time.time()
+            active = {
+                ticker: json.loads(body)
+                for ticker, body in db.execute(
+                    "SELECT ticker,body FROM live_controls WHERE json_extract(body, '$.close_time') > ?",
+                    (now,),
+                )
+            }
+        controls = {**selected, **active}
+        obligations = {r["id"]: r for r in self.manual.rows(tickers=list(active), origin="bot")}
         obligations.update({r["id"]: r for r in self.manual.rows(unresolved=True, origin="bot")})
+        for ticker in dict.fromkeys(r["request"]["ticker"] for r in obligations.values()):
+            if ticker not in controls:
+                control = self.control(ticker)
+                if control is not None:
+                    controls[ticker] = control
+        held = {}
         for row in obligations.values():
             if row.get("origin") != "bot":
                 continue
@@ -379,7 +408,6 @@ class LiveAutomation:
         raise HTTPException(409, "Daily live loss limit reached; new buys disabled")
 
     def sync_markets(self):
-        controls = self.controls()
         for asset, policy in self.assets().items():
             if not policy["enabled"]:
                 continue
@@ -387,6 +415,7 @@ class LiveAutomation:
             snapshot = self.stores[asset].read_market_display() or {}
             if snapshot.get("run_id") != member["run_id"]:
                 continue
+            controls = self.controls([market["ticker"] for market in snapshot.get("markets", [])])
             for market in snapshot.get("markets", []):
                 if market["ticker"] in controls or timestamp(market["close_time"]) <= time.time():
                     continue
@@ -621,6 +650,11 @@ class LiveAutomation:
 
     def _entry(self, control, now, trace=None):
         asset = control["asset"]
+        window = None if self.members[asset]["config"].asset_spec.commodity else entry_blackout(now)
+        if window:
+            if trace is not None:
+                trace["entry_blackout"] = window
+            raise HTTPException(409, f"ENTRY_TIME_BLACKOUT: new buys blocked · {window}")
         if self.global_loss_guard is not None:
             self.global_loss_guard.check(now)
         self.check_daily_loss(asset, now)
@@ -721,7 +755,7 @@ class LiveAutomation:
             )
         ]
         if pending:
-            controls = self.controls()
+            controls = self.controls(list(dict.fromkeys(row["request"]["ticker"] for row in pending)))
             async with self.manual.client() as client:
                 for row in pending:
                     try:
@@ -765,7 +799,7 @@ class LiveAutomation:
         if bid is not None and bid < 0.70:
             control["resting_disabled"] = True
         if not control.get("paused") and bid is not None:
-            if bid <= control["stop_price"]:
+            if control["stop_price"] > 0 and bid <= control["stop_price"]:
                 self.commit_stop(control, bid, quote_trace)
             elif take_profit is not None and bid >= take_profit and not control.get("exit_reason"):
                 control["exit_reason"] = "TAKE_PROFIT"
@@ -839,6 +873,8 @@ class LiveAutomation:
                 continue
             control = controls[ticker]
             if control.get("exit_reason") != "HARD_STOP":
+                if control["stop_price"] <= 0:
+                    continue
                 trace = {}
                 try:
                     bid = self.book(control, now, trace).get(side + "_bid")
@@ -943,7 +979,7 @@ class LiveAutomation:
                     raise
                 bid = None
             # Fresh quotes establish a trigger; a committed exit survives feed loss.
-            if bid is not None and bid <= control["stop_price"]:
+            if control["stop_price"] > 0 and bid is not None and bid <= control["stop_price"]:
                 reason = "HARD_STOP"
                 self.commit_stop(control, bid, quote_trace)
             elif not reason and take_profit is not None and bid is not None and bid >= take_profit:
@@ -956,7 +992,9 @@ class LiveAutomation:
             if not reason:
                 if take_profit is None:
                     self.messages[ticker] = (
-                        f"Holding {held} {side.upper()} · stop {control['stop_price'] * 100:g}¢; take profit disabled"
+                        f"Holding {held} {side.upper()} · "
+                        + (f"stop {control['stop_price'] * 100:g}¢" if control["stop_price"] > 0 else "stop disabled")
+                        + "; take profit disabled"
                     )
                     return
                 if bid is not None and bid < 0.70:

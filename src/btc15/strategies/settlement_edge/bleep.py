@@ -11,7 +11,7 @@ SIGMA_MULTIPLIERS = {
     "BNB": 1.10,
     "HYPE": 1.15,
     "DOGE": 1.10,
-    "GOLD": 1.35,
+    "GOLD": 0.95,
     "SILVER": 1.20,
     "WTI": 1.20,
 }

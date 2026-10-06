@@ -1,0 +1,30 @@
+BTC loss review — snapshot October 5, 2026 22:32:33 UTC (18:32:33 ET)
+
+Scope: 203 completed BTC trades entered in the preceding 72 hours. All 203 matched by exact execution_check_id to accepted research decision checks; 168 winners, 35 losses. All positions were 25 contracts. Excludes open positions and any previously cleared history. Source UI histories and executor research records, not paper-signal results. Net realized P&L includes recorded fees.
+
+Results: wins +$332.3929, losses -$382.9942, net -$50.6013. Win rate 82.76%. Average win $1.9785; average loss $10.9427. At these observed payoffs break-even win rate is approximately 84.69%. Last 24 hours: 66 trades, 59 wins, 7 losses, +$29.2027. Thus the 72-hour deficit is not a claim that the latest day is unprofitable.
+
+Execution: all 35 losses were hard stops; 11 would ultimately settle on the purchased side. Holding all 35 to settlement instead would reduce actual P&L by a further $123.7976, accounting for recorded buy fees and eliminating actual sell proceeds/fees. This is historical settlement arithmetic, not a future forecast.
+22 stops used 50c (mean fill45.44c), 13 used55c (mean fill50.28c); different market conditions and entry settings prohibit causal comparison. Overall mean47.23c; seven fills below40c. Median quote receipt-to-stop detection .580s; p90 1.488s; maximum2.141s. Median detection-to-submit .275s; p90 1.391s; max3.954s. Median detection-to-ack .320s; max5.721s. Quote timestamps measure local receipt/publication, not exact exchange price-change time.
+
+Examples:
+KXBTC15M-26OCT051830-30: buy25 at87c, configured55c stop, detected bid54c, average fill29.0004c, net-$15.0583. Quote age at detection1.859s, of which1.847s receipt-to-publication. Detection-to-submit .160s. Entry book age .040s; no backlog bypass at entry. This suggests exit feed publication delay deserves priority even when entry freshness was good. Does not establish that54c was executable for25 contracts at submission.
+KXBTC15M-26OCT041500-00: buy25 at88c with56sec remaining. Configured55c stop; detected41c, fill26c, loss$16.0215. Quote age1.904s; detection-to-submit3.954s, detection-to-ack5.721s. Entry bypass active.
+KXBTC15M-26OCT041345-45: buy90c, configured50c, detected47c, fill27c, loss$16.2525. Quote age2.141s; detection-to-submit1.063s. Preflight includes .817s series-endpoint rate wait. Entry was fresh and bypass inactive.
+Current code triggers at stop_price but submits hard-stop sell limit1c (live_automation.py); manual_trading.py performs market and holdings API reads before submitting. Trigger is not a guaranteed sale price. A restrictive stop limit could leave exposure unclosed. Review publication latency, scheduling, rate-limit competition and critical preflight work while retaining position and duplicate-order safeguards. Faster execution has no proven dollar uplift from this observational sample; gaps and disappearing liquidity remain possible.
+
+Entry filter screening: 17 simple, predefined single-condition screens. See filter-results.json for complete results, including no-op rules. No outcome-optimized threshold grid or paired-condition search. Historical deletion arithmetic only: remove whole observed trade and its realized P&L, do not simulate later reentry or replacement trades. Estimated gains are not replay-tested strategy P&L.
+Rule / losses removed / winners removed / net improvement:
+No entries in final120sec: 5 / 13 / +$36.3823.
+Reject entry book age>1sec: 2 / 6 / +$8.2509.
+Reject backlog-bypassed entries: 4 / 19 / +$19.0974.
+Reject entries priced>=94c: 4 / 53 / -$15.8114.
+Disable entries >7min remaining: 12 / 61 / -$2.2883.
+Reject confidence<88%: 34 / 156 / +$60.5515, leaving only13 trades.
+Reject momentum against purchased side: 60sec rule3loss/15wins, -$6.7909;180sec rule3loss/12wins, -$7.7474.
+
+Temporal stability: first48hours vs last24hours was a descriptive check, not a sealed out-of-sample validation. Final120sec exclusion improves earlier48h by$41.4554 but loses$5.0731 in latest24h. Backlog exclusion improves earlier48h by$30.3353 but loses$11.2379 latest24h. Book age>1s excludes net losing groups in both portions: +$7.4944 and+$0.7565, but only one excluded loss per portion. Confidence88 rule loses$25.5996 in latest24h and removes190/203 trades overall. No screened condition removed losses without removing winners.
+
+Recommendations: prioritize exit feed latency and critical stop submission delays; prospective shadow test entry book age<=1sec and final120sec entry cutoff separately. Do not tighten probability or lower buy cap indiscriminately based on this sample. Do not remove stops to avoid whipsaws. Smaller position sizing reduces dollar losses and winners approximately proportionally; does not fix per-contract expectancy. Configurations changed during the period (stop50/55, early probabilities); the sample cannot identify an optimal ATR or stop value. Entry liquidity does not guarantee liquidity later at exit. No live settings or strategy code changed.
+
+Artifacts: trade-analysis.csv (all203), features.json, entry-checks.json, stop-analysis.json, filter-results.json, results.txt, raw UI snapshot, collection and coverage metadata, reproducible analysis scripts.

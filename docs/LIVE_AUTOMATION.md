@@ -259,3 +259,23 @@ The live worker disables automatic buys across all assets when the combined all-
 A background task calculates the total at startup and every 15 minutes, reusing unchanged history revisions. Entry authorization and enable requests check the latest result without scanning history. Missing, failed, or more-than-15-minute-30-second-old accounting blocks new automatic buys while exits continue. The cutoff is sampled, so it is not a guaranteed maximum loss.
 
 At the threshold, the global latch and all asset/market buy permissions are committed in one transaction. Existing position exits remain active. The latch survives service restarts and UTC day changes; individual enable controls cannot bypass it. An explicit operator-requested reset is required. The prior per-asset daily $20 guard remains disabled.
+
+### Disabled stop policy
+
+A live control with `stop_price=0` disables new hard-stop triggers, including at
+a zero bid. Gold uses this policy from October 6, 2026. Paper configurations must
+set both `fixed_stop_price=0` and `stop_multiplier=0` to disable price stops.
+Previously committed stops remain committed. Other assets retain positive stops.
+
+### Scheduled entry blackouts (October 6, 2026)
+
+Automatic live buys for BTC, ETH, SOL, XRP, BNB, HYPE and DOGE are blocked Monday–Friday 11:45–13:00,
+Tuesday additionally 20:00–21:15, Thursday additionally 19:45–21:00, and
+Saturday–Sunday 11:15–12:30. All times use America/New_York, including daylight
+saving changes. Start boundaries are inclusive; end boundaries are exclusive.
+The executor checks the schedule on entry and again after preflight immediately
+before submission. BTC backlog exceptions cannot bypass it. The dashboard/research
+rejection is ENTRY_TIME_BLACKOUT. Exits, settlement and manual tickets are
+unaffected. Gold, silver and WTI do not use these blackout windows. Entry permission resumes automatically after the window, subject to
+the existing controls and other filters. Orders already submitted cannot be recalled
+by this check. Signal collection and paper research continue during these windows.

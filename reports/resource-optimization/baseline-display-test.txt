@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_reference_display_continues_while_analysis_is_blocked __________
+tests/test_processing_safety.py:128: in test_reference_display_continues_while_analysis_is_blocked
+    asyncio.run(run())
+/usr/lib/python3.12/asyncio/runners.py:194: in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/asyncio/base_events.py:687: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+tests/test_processing_safety.py:120: in run
+    assert display["connected"] and display["reference_5hz"]["value"] == "79200"
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: 'NoneType' object is not subscriptable
+------------------------------ Captured log call -------------------------------
+WARNING  btc15.collector_recovery:collector_recovery.py:52 Collector backlog rising: 0.505s, 5/20000 events
+WARNING  btc15.collector_recovery:collector_recovery.py:46 Collector recovery requested: STOPPING; entries blocked
+WARNING  btc15:engine.py:271 {"code": "DISCONNECT", "detail": "{'reason': 'reconnect_or_shutdown'}", "market_id": "", "run_id": "0f8a35c6-0eec-4b83-8dc6-3ee9a49fcf2c"}
+WARNING  btc15:engine.py:271 {"code": "DISCONNECT", "detail": "{'reason': 'shutdown'}", "market_id": "", "run_id": "0f8a35c6-0eec-4b83-8dc6-3ee9a49fcf2c"}
+=========================== short test summary info ============================
+FAILED tests/test_processing_safety.py::test_reference_display_continues_while_analysis_is_blocked
+1 failed in 2.80s

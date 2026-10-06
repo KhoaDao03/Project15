@@ -127,3 +127,12 @@ with `live_only: true` for GOLD, SILVER, and WTI. The former
 The active dashboard uses real order history only. Original simulation ledgers
 remain archived in their previous directories and are not used for live totals.
 Commodity ATR multipliers are gold 1.35, silver 1.20, and WTI 1.20. Existing reference warm-up checks still apply.
+
+## Gold settings — October 6, 2026
+
+Gold uses ATR multiplier 0.95. Early entries are allowed with more than 7 and up to
+10 minutes remaining at 87% capped confidence. Standard/late confidence remains
+84%, price range 80–96 cents, and live quantity 10 contracts. Gold stops are disabled
+(`fixed_stop_price=0`, `stop_multiplier=0`); take profit remains disabled. Positions
+therefore remain open until settlement unless manually closed. Silver and WTI
+settings are unchanged. These gold settings supersede the historical tables above.

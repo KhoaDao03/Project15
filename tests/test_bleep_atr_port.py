@@ -15,7 +15,7 @@ from btc15.strategies.settlement_edge.rules import evaluate
 
 @pytest.mark.parametrize(
     "asset,multiplier",
-    [("BTC", 0.95), ("ETH", 1.05), ("SOL", 1.00), ("XRP", 1.05), ("BNB", 1.10), ("HYPE", 1.15), ("DOGE", 1.10), ("GOLD", 1.35), ("SILVER", 1.20), ("WTI", 1.20)],
+    [("BTC", 0.95), ("ETH", 1.05), ("SOL", 1.00), ("XRP", 1.05), ("BNB", 1.10), ("HYPE", 1.15), ("DOGE", 1.10), ("GOLD", 0.95), ("SILVER", 1.20), ("WTI", 1.20)],
 )
 @pytest.mark.parametrize("remaining", [480, 120, 10, 1])
 @pytest.mark.parametrize("offset", [-20, 20])

@@ -632,7 +632,7 @@ async function refreshFleet(){
         liveSave.onclick=async()=>{
           if(liveBusy||!liveTicker||!liveCount.reportValidity())return;
           const enabled=liveEnabled.checked,ticker=liveTicker,count=Number(liveCount.value);
-          if(enabled&&!window.confirm('Enable REAL trades for all '+row.asset+' markets until switched off? Buy up to '+count+' contracts per market; hard stop sells with a 1¢ minimum; automatic take-profit and resting profit orders are disabled. Continues into future markets and across dashboard restarts.'))return;
+          if(enabled&&!window.confirm('Enable REAL trades for all '+row.asset+' markets until switched off? Buy up to '+count+' contracts per market; enabled hard stops sell with a 1¢ minimum; automatic take-profit and resting profit orders are disabled. Continues into future markets and across dashboard restarts.'))return;
           liveBusy=true;liveSave.disabled=true;
           try{const response=await fetch('/api/live/control',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticker,enabled,contracts:count,revision:liveRevision,confirm:enabled?'ENABLE_REAL_TRADING':''})});const result=await response.json();if(!response.ok)throw Error(typeof result.detail==='string'?result.detail:'Invalid live settings');liveDirty=false;liveRevision=result.revision;liveStatus.textContent=enabled?'Live buys enabled':'New buys off · automatic exits continue';}catch(e){liveStatus.textContent=e.message;}finally{liveBusy=false;liveSave.disabled=false;}
         };

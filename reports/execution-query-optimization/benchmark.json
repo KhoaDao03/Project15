@@ -1,0 +1,33 @@
+{
+  "controls": 9176,
+  "active_controls": 7,
+  "order_rows": 21,
+  "selected_controls": 42,
+  "samples": 30,
+  "equivalent": true,
+  "index_build_ms": 27.323,
+  "timings": {
+    "cycle": {
+      "before": {
+        "wall_ms": 75.05,
+        "cpu_ms": 74.248
+      },
+      "after": {
+        "wall_ms": 23.548,
+        "cpu_ms": 23.529
+      }
+    },
+    "sync": {
+      "before": {
+        "wall_ms": 67.61,
+        "cpu_ms": 67.596
+      },
+      "after": {
+        "wall_ms": 2.439,
+        "cpu_ms": 2.441
+      }
+    }
+  },
+  "baseline_source_sha256": "ba3589dc7d33a5a828084d9de078fb8f0dd2efee5bdc526465aa6be6ff332fb9",
+  "optimized_source_sha256": "38bb51f238980d37e657e822d76b7d2c262cc6d9d20c5028eeff22bb2d7818f8"
+}

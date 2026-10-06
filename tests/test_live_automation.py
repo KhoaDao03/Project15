@@ -28,6 +28,8 @@ def live(venue, monkeypatch, request):  # noqa: F811
     from dataclasses import replace
 
     config = replace(Strategy.load(f"config/settlement-edge-{preset}-paper.json"), take_profit=0.99)
+    if asset == "GOLD":
+        config = replace(config, fixed_stop_price=.55)  # Exercise enabled-stop behavior explicitly.
     now = time.time()
     clock = [now]
     data = dict(bid=0.89, ask=0.90, reasons=[], side="yes", healthy=True, fresh=True)
@@ -105,7 +107,7 @@ async def test_buy_full_quantity_once_and_restart(live):
     assert len(state["posts"]) == 1
     assert state["posts"][0]["time_in_force"] == "fill_or_kill"
     assert state["posts"][0]["count"] == "10.00"
-    assert state["posts"][0]["price"] == "0.9600"
+    assert state["posts"][0]["price"] == ("0.9300" if control["asset"] == "HYPE" else "0.9600")
     assert manual.rows()[0]["origin"] == "bot"
     state["position"] = "10"
     restarted = LiveAutomation(manual, worker.members, worker.stores)
@@ -564,16 +566,17 @@ async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
 @pytest.mark.anyio
 @pytest.mark.parametrize("side", ["yes", "no"])
 @pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
-async def test_live_buy_limit_matches_96_cent_entry_filter(live, side):
+async def test_live_buy_limit_matches_asset_entry_filter(live, side):
     worker, state, manual, control, data, clock = live
-    data.update(side=side, bid=0.95, ask=0.961)
+    cap = .93 if control["asset"] == "HYPE" else .96
+    data.update(side=side, bid=cap-.01, ask=cap+.001)
     with pytest.raises(HTTPException, match="entry price"):
         await worker.step_market(control)
     assert not state["posts"]
-    data["ask"] = 0.96
+    data["ask"] = cap
     await worker.step_market(control)
     order = state["posts"][-1]
-    assert order["price"] == ("0.9600" if side == "yes" else "0.0400")
+    assert order["price"] == f"{cap if side == 'yes' else 1-cap:.4f}"
     assert order["time_in_force"] == "fill_or_kill"
 
 
@@ -676,7 +679,7 @@ async def test_disabled_take_profit_holds_at_99_but_keeps_stop(live, side):
     assert state["posts"][-1]["reduce_only"]
 
 
-@pytest.mark.parametrize("live,early", [("BTC", .83), ("ETH", .89), ("SOL", .86), ("XRP", .87), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
+@pytest.mark.parametrize("live,early", [("BTC", .85), ("ETH", .89), ("SOL", .86), ("XRP", .87), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
 @pytest.mark.parametrize("remaining", [600.001, 600, 599.999, 480, 420.001, 420, 419.999, 120, 1])
 @pytest.mark.parametrize("delta", [0, -.001])
 def test_live_entry_uses_current_time_probability_schedule(live, early, remaining, delta):
@@ -712,7 +715,7 @@ def test_early_live_floor_uses_capped_confidence_and_rechecks_time_after_book(li
 
 @pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 @pytest.mark.parametrize("side", ["yes", "no"])
-@pytest.mark.parametrize("bid,ask", [(.90, .90), (.70, .95)])
+@pytest.mark.parametrize("bid,ask", [(.90, .90), (.70, .92)])
 def test_live_entry_has_no_spread_filter(live, side, bid, ask):
     worker, state, manual, control, data, clock = live
     data.update(side=side, bid=bid, ask=ask)

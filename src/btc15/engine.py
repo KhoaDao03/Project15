@@ -115,6 +115,7 @@ class Engine:
         self.series_fee_changes = None
         self.last_received = -float("inf")
         self._model_cache = {}
+        self._settled_latest = None
         self.research_log = None
         self._research_models = {}
         self._research_books = {}
@@ -625,8 +626,33 @@ class Engine:
         if now < market.close_time or result not in ("yes", "no"):
             raise ValueError("Premature settlement")
         if evidence is None:
-            return self.executor.settle(market, result, now)
-        return self.executor.settle(market, result, now, evidence=evidence)
+            outcome = self.executor.settle(market, result, now)
+        else:
+            outcome = self.executor.settle(market, result, now, evidence=evidence)
+        if outcome in ("SETTLED", "ALREADY_SETTLED"):
+            self._release_settled_cache(ticker)
+        return outcome
+
+    def _release_settled_cache(self, ticker):
+        # Only derived state can be discarded. Contract identities, books, journal
+        # records and research linkage remain available for late/conflicting events.
+        order = self.executor.orders.get(ticker)
+        if ticker in self.executor.positions or ticker in self.executor.quarantines or (order and order.active):
+            return
+        for cache in (
+            self._model_cache,
+            self._lead_history,
+            self._decision_keys,
+            self._signal_quote_inputs,
+            self._management_gaps,
+            self.last_evaluation,
+        ):
+            cache.pop(ticker, None)
+        latest = max(self.latest, key=lambda t: self.latest[t]["timestamp"], default=None)
+        if ticker == latest:
+            self._settled_latest = ticker
+        else:
+            self.latest.pop(ticker, None)
 
     def processing_markets(self, now, kind, msg):
         # Discovery is infrequent. Keep historical markets out of the per-event scan,
@@ -654,6 +680,9 @@ class Engine:
 
     def process(self, now, event_id, kind, msg):
         c = self.config
+        # Same reference history, clock and configuration for every market in this
+        # event. Keep separate copies for market-specific decoration and records.
+        event_features = None
         for ticker, market in self.processing_markets(now, kind, msg):
             if ticker in self._pending_settlement:
                 self._processing_tickers.pop(ticker, None)
@@ -809,7 +838,9 @@ class Engine:
                 model_started_mono = time.monotonic_ns() if self.research_log is not None else None
                 calculation_features = {}
                 try:
-                    f = features(self.ticks, now, c)
+                    if event_features is None:
+                        event_features = features(self.ticks, now, c)
+                    f = copy.deepcopy(event_features)
                     calculation_features = f
                     if c.bleep_exchange_seed_enabled and self.bleep_seed:
                         from .bleep_seed import seeded_inputs
@@ -1040,6 +1071,11 @@ class Engine:
                 }
                 if self.record_evaluations:
                     self.store.add("opportunity", body, self.run_id, self.mode, now, ticker, op, record_id=op)
+                if self._settled_latest is not None:
+                    previous = self.latest.get(self._settled_latest)
+                    if previous is None or body["timestamp"] > previous["timestamp"]:
+                        self.latest.pop(self._settled_latest, None)
+                        self._settled_latest = None
                 self.latest[ticker] = body
                 self._last_op[ticker] = op
             else:

@@ -4,12 +4,13 @@ import json
 import sqlite3
 import threading
 from collections import defaultdict
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from contextvars import ContextVar
 from decimal import Decimal
 from pathlib import Path
 
 from .domain import timestamp
+from .order_history import HISTORY_TRIGGERS
 
 
 class LiveFallbackStore:
@@ -17,6 +18,7 @@ class LiveFallbackStore:
         self.store, self.journal, self.run_id, self.asset = store, Path(journal), run_id, asset
         self._history = ContextVar("live_fallback_snapshot", default=None)
         self._journal_reader = None
+        self._revision_schema = None
         self._revision_lock = threading.Lock()
         self._cached_revision = None
         self._cached_fallback = None
@@ -30,9 +32,25 @@ class LiveFallbackStore:
                 self._journal_reader = sqlite3.connect(
                     self.journal.resolve().as_uri() + "?mode=ro", uri=True, check_same_thread=False
                 )
-            # data_version is comparable only on the same connection. It detects
-            # committed updates even when an existing order ID is reconciled.
-            version = self._journal_reader.execute("PRAGMA data_version").fetchone()[0]
+            schema = self._journal_reader.execute("PRAGMA schema_version").fetchone()[0]
+            if self._revision_schema is None or self._revision_schema[0] != schema:
+                triggers = {
+                    r[0]
+                    for r in self._journal_reader.execute(
+                        "SELECT name FROM sqlite_master WHERE type='trigger' AND tbl_name='manual_orders'"
+                    )
+                }
+                self._revision_schema = (schema, set(HISTORY_TRIGGERS).issubset(triggers))
+            if self._revision_schema[1]:
+                row = self._journal_reader.execute(
+                    "SELECT revision FROM manual_history_revisions WHERE prefix=?",
+                    ("KX" + self.asset.upper() + "15M",),
+                ).fetchone()
+                version = ("asset", schema, row[0] if row else 0)
+            else:
+                # Old/unmigrated databases remain safe, including updates to an
+                # existing order. Never create schema from this read-only reader.
+                version = ("database", schema, self._journal_reader.execute("PRAGMA data_version").fetchone()[0])
         return revision, version
 
     def close_history(self):
@@ -40,6 +58,9 @@ class LiveFallbackStore:
             if self._journal_reader is not None:
                 self._journal_reader.close()
                 self._journal_reader = None
+            self._revision_schema = None
+            self._cached_revision = None
+            self._cached_fallback = None
 
     def __getattr__(self, name):
         return getattr(self.store, name)
@@ -73,11 +94,11 @@ class LiveFallbackStore:
     def _fallback(self):
         if not self.journal.exists():
             return []
-        with sqlite3.connect(self.journal.resolve().as_uri() + "?mode=ro", uri=True) as db:
+        with closing(sqlite3.connect(self.journal.resolve().as_uri() + "?mode=ro", uri=True)) as db:
             rows = [
                 json.loads(b)
                 for (b,) in db.execute(
-                    "SELECT body FROM manual_orders WHERE json_extract(body,'$.request.ticker') LIKE ?",
+                    "SELECT body FROM manual_orders WHERE json_extract(body,'$.request.ticker') LIKE ? ORDER BY rowid",
                     ("KX" + self.asset + "15M-%",),
                 )
             ]

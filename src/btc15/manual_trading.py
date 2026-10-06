@@ -18,7 +18,7 @@ import websockets
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field
 
-from . import execution_journal
+from . import execution_journal, order_history
 from .api import KalshiClient, read_timings, stop_reads
 from .config import Settings
 from .domain import timestamp
@@ -123,6 +123,7 @@ class ManualTrading:
         with self.db() as db:
             db.execute("CREATE TABLE IF NOT EXISTS manual_orders (id TEXT PRIMARY KEY, body TEXT NOT NULL)")
             execution_journal.initialize(db)
+            order_history.initialize(db)
 
             for name, expression in (
                 ("state", "$.state"),

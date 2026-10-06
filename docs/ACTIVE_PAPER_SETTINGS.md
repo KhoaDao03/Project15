@@ -1,6 +1,6 @@
 # Active crypto presets
 
-BTC, ETH, SOL, XRP, BNB, HYPE and DOGE use the same Bleep strategy settings except `asset`, `early_min_probability`, `fixed_stop_price`, and `entry_window_start`; fixed volatility multipliers and market-cap premiums depend on asset identity.
+BTC, ETH, SOL, XRP, BNB, HYPE and DOGE use the same Bleep strategy settings except `asset`, `early_min_probability`, `fixed_stop_price`, `entry_window_start`, and `max_entry_price`; fixed volatility multipliers and market-cap premiums depend on asset identity.
 The tracked files are `config/settlement-edge-{active,eth,sol,xrp,bnb,hype,doge}-paper.json`.
 Despite their filenames, these are also the source for fresh cloud signal configs.
 `prepare_cloud.py` freezes them into `data/cloud/{BTC,ETH,SOL,XRP,BNB,HYPE,DOGE}.json`.
@@ -16,7 +16,7 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | ATR sigma multiplier | BTC 0.95; ETH 1.05; SOL 1.00; XRP 1.05; BNB 1.10; HYPE 1.15; DOGE 1.10 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH/BNB/HYPE/DOGE; +10pp SOL/XRP; maximum 98% |
 | Spread filter | Disabled for all bots; zero spreads allowed. Missing/invalid/crossed quotes still fail validation. Legacy `max_spread` is ignored. |
-| Purchase range | 80–96¢ |
+| Purchase range | BNB 86–96¢; HYPE 80–93¢; other cryptos 80–96¢ |
 | Same-side confirmations | 1 standard; 1 late |
 | Normalized lead minimum | Disabled; fresh side confirmation remains |
 | Directional Bollinger entry filter | Disabled |

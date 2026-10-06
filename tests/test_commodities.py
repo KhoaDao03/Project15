@@ -126,12 +126,12 @@ def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed
     market = parse_market(raw, series)
     c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
     assert c.min_probability == c.late_min_probability == 0.84
-    assert c.entry_window_start == 420 and c.entry_cutoff == 1
-    assert c.take_profit == 0.99 and c.fixed_stop_price == 0.55
+    assert c.entry_window_start == (600 if symbol == "GOLD" else 420) and c.entry_cutoff == 1
+    assert c.take_profit is None and c.fixed_stop_price == (0 if symbol == "GOLD" else 0.55)
     assert not c.bleep_exchange_seed_enabled
     now = market.close_time - remaining
     lead = dict(side="yes", confirmed_normal=True, confirmed_late=True, confirmation_samples=1)
-    for confidence in [0.84, 0.8399, 0.83]:
+    for confidence in [0.87, 0.84, 0.8399, 0.83]:
         d = evaluate(
             market,
             make_book("yes", ".89", ".90", now),
@@ -142,7 +142,9 @@ def test_commodity_new_window_and_capped_threshold(commodity, remaining, allowed
             now,
             c,
         )
-        assert (d["decision"] == "TRADE_CANDIDATE") == (allowed and confidence == 0.84)
+        window = 1 < remaining <= c.entry_window_start
+        threshold = .87 if symbol == "GOLD" and remaining > 420 else .84
+        assert (d["decision"] == "TRADE_CANDIDATE") == (window and confidence >= threshold)
 
 
 def test_commodity_uses_configured_sigma_and_cap(commodity):
@@ -160,7 +162,7 @@ def test_commodity_uses_configured_sigma_and_cap(commodity):
     result = probability(spec, [Tick(now, now, spot)], now, f, Strategy(asset=symbol))
     assert result["model"] == "bleep-reference-atr-finish-v5"
     assert result["atr_source"] == "official_reference_rolling"
-    assert result["sigma_t"] == pytest.approx(spot * 0.002 * math.sqrt(2) * (1.35 if symbol == "GOLD" else 1.20))
+    assert result["sigma_t"] == pytest.approx(spot * 0.002 * math.sqrt(2) * (0.95 if symbol == "GOLD" else 1.20))
     assert capped_confidence(0.98, 0.76, 0.78, symbol) == 0.83
 
 
@@ -206,6 +208,8 @@ def test_commodity_exit_commits_remaining_held_contracts(commodity, store, side,
     market = parse_market(raw, series)
     now = market.close_time - 300
     c = Strategy.load(f"config/settlement-edge-{symbol.lower()}-paper.json")
+    from dataclasses import replace
+    c = replace(c, fixed_stop_price=.55, take_profit=.99)
     ex = held(store, market, now, c, side)
     ex.monitor(market, quote(now, [(trigger, 10)], side), {}, now, "intent")
     assert ex.positions[market.ticker].exit_reason == reason

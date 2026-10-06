@@ -1201,7 +1201,7 @@ class PaperExecutor:
             committed_reason = pos.exit_reason
             if committed_reason == "STANDARD_CASHOUT" and market.close_time - now <= 120:
                 self._expire_value_exit(market, now, "CASHOUT_WINDOW_ENDED")
-            elif committed_reason == "STANDARD_CASHOUT" and bid <= self.config.stop_price(
+            elif committed_reason == "STANDARD_CASHOUT" and self.config.stop_price(pos.cost / pos.bought) > 0 and bid <= self.config.stop_price(
                 pos.cost / pos.bought
             ):
                 self._expire_value_exit(market, now, "HARD_STOP_OVERRIDE")
@@ -1241,7 +1241,7 @@ class PaperExecutor:
         # The persisted reason and eligibility timestamp also survive checkpoint recovery.
         reason = (
             "HARD_STOP"
-            if pos.exit_reason == "HARD_STOP" or bid <= c.stop_price(entry)
+            if pos.exit_reason == "HARD_STOP" or 0 < c.stop_price(entry) and bid <= c.stop_price(entry)
             else "TAKE_PROFIT"
             if target is not None and bid >= target
             else ""

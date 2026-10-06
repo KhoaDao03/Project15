@@ -1,0 +1,7 @@
+{
+  "samples_per_variant": 100,
+  "single_market_cpu_ms": {
+    "before": 7.074442000000126,
+    "after": 7.59168700000007
+  }
+}
