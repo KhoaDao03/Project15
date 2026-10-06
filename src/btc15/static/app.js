@@ -2,7 +2,7 @@
 const $=id=>document.getElementById(id);
 const assetBase=window.location.pathname.match(/^\/assets\/(BTC|ETH|SOL|XRP|BNB|HYPE|DOGE|ETHD|XRPD|GOLD|SILVER|WTI)(?:\/|$)/)?.[0].replace(/\/$/,'')||'';
 const hourlyAsset=asset=>asset==='ETHD'||asset==='XRPD';
-const assetLabel=asset=>hourlyAsset(asset)?asset.slice(0,-1)+' · 1 hour':asset;
+const assetLabel=asset=>asset;
 let fleetMode=false;
 const apiPath=path=>fleetMode&&path.startsWith('/api/shutdown')?path:assetBase+path;
 const fmt=(v,d=2)=>v===null||v===undefined?'—':Number(v).toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d});
