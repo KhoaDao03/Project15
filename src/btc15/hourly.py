@@ -151,3 +151,111 @@ def publish_candidates(engine, published):
     published.clear()
     published.update(current)
     return True
+
+
+def entry_obligations(path, series):
+    """Read filled/pending buys conservatively; a read failure must abort rotation."""
+    import json
+    import sqlite3
+    from pathlib import Path
+
+    from .manual_trading import UNRESOLVED
+
+    path = Path(path)
+    if not path.exists():
+        return set()
+    with sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=5) as db:
+        rows = db.execute(
+            "SELECT body FROM manual_orders WHERE json_extract(body, '$.request.ticker') >= ? "
+            "AND json_extract(body, '$.request.ticker') < ?",
+            (series + "-", series + "."),
+        ).fetchall()
+    return {
+        row["request"]["ticker"]
+        for (body,) in rows
+        for row in [json.loads(body)]
+        if row["request"]["action"] == "buy"
+        and (row["state"] in UNRESOLVED or D((row.get("exchange_order") or {}).get("fill_count_fp", "0")) > 0)
+    }
+
+
+def select_markets(engine, raws, series, now, obligations=()):
+    """Rank REST quotes for subscription only; never publish them as trade signals.
+
+    Minimize the summed probability/ask-band shortfall (both measured in dollars
+    per $1 contract). Preserve ties to avoid rotating otherwise equal candidates.
+    Actual entry still needs fresh sequenced books and the full engine checks.
+    """
+    import math
+
+    from .domain import parse_market
+    from .strategies.settlement_edge.bleep import capped_confidence, probability
+    from .strategies.settlement_edge.model import features
+
+    c = engine.config
+    current = engine.hourly_watchlist or set()
+    protected = (
+        set(obligations)
+        | set(engine.executor.positions)
+        | {t for t, order in engine.executor.orders.items() if order.active}
+    )
+    reference = engine.ticks[-1] if engine.ticks else None
+    reference_fresh = reference is not None and (
+        0 <= now - reference.received <= c.reference_max_age
+        and -c.max_clock_skew <= now - reference.source <= c.reference_max_age
+    )
+    f = None
+    if reference_fresh:
+        try:
+            f = features(engine.ticks, now, c)
+            if c.bleep_exchange_seed_enabled and engine.bleep_seed:
+                from .bleep_seed import seeded_inputs
+
+                f["bleep"] = seeded_inputs(
+                    engine.bleep_candles, engine.bleep_seed["last_minute"], engine.ticks, now
+                )
+        except ValueError:
+            pass
+    ranked, pinned, evidence = [], [], {}
+    for raw in raws:
+        ticker = raw["ticker"]
+        if ticker in protected:
+            pinned.append(raw)
+            evidence[ticker] = dict(reason="FILLED_OR_PENDING")
+            continue
+        try:
+            market = parse_market(raw, series)
+            if not market.tradable(now):
+                continue
+            side = market.spec.favored(reference.price) if reference_fresh else None
+            quotes = {}
+            for candidate in ("yes", "no"):
+                bid, ask = (float(raw.get(candidate + key) or 0) for key in ("_bid_dollars", "_ask_dollars"))
+                if all(math.isfinite(v) for v in (bid, ask)) and 0 <= bid <= ask <= 1 and ask > 0:
+                    quotes[candidate] = (bid, ask)
+            # Startup has no causal reference yet: bootstrap subscriptions with
+            # quote-only ranking, then rerank with the model after reference arrives.
+            if side is None and quotes:
+                side = max(quotes, key=lambda k: sum(quotes[k]))
+            bid, ask = quotes[side]
+            confidence = capped_confidence(1.0, bid, ask, c.asset)
+            basis = "QUOTE_ONLY_WARMUP"
+            if f is not None:
+                try:
+                    p = probability(market.spec, engine.ticks, now, f, c)
+                    confidence = capped_confidence(p["p_" + side], bid, ask, c.asset)
+                    basis = "MODEL_AND_REST_QUOTES"
+                except ValueError:
+                    pass
+            floor = c.probability_floor(remaining=market.close_time - now)
+            gap = max(0, floor - confidence) + max(0, c.min_entry_price - ask, ask - c.max_entry_price)
+            volume = float(raw.get("volume_fp") or 0)
+            if not math.isfinite(volume):
+                volume = 0
+            evidence[ticker] = dict(basis=basis, side=side, ask=ask, confidence=confidence, shortfall=gap)
+            ranked.append(((gap, ticker not in current, -volume, ticker), raw))
+        except (ValueError, KeyError, TypeError, ArithmeticError):
+            continue
+    ranked.sort(key=lambda item: item[0])
+    chosen = pinned + [raw for _, raw in ranked[: max(0, 2 - len(pinned))]]
+    return chosen, {raw["ticker"]: evidence[raw["ticker"]] for raw in chosen}

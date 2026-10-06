@@ -17,7 +17,7 @@ from .collector_recovery import CollectorRecovery
 from .decision_notifications import notify_decision, notify_quote
 from .domain import Book, dumps, parse_market
 from .engine import Engine
-from .hourly import publish_candidates
+from .hourly import entry_obligations, publish_candidates, select_markets
 from .models import guard_archived_exposure, require_single_run
 from .reference_history import load_history, save_history
 from .research_log import start_research_log
@@ -297,6 +297,8 @@ async def collect(
             for ticker, snapshot in initial_paper.get("contracts", {}).items():
                 tracked[ticker] = snapshot["raw"]
         settled_tickers = set()
+        if config.asset_spec.hourly:
+            engine.hourly_watchlist = set()
         connected = False
         started = time.monotonic()
         maximum_queue = 0
@@ -457,6 +459,8 @@ async def collect(
             if time.monotonic() - last_display >= 0.05 or not connected or publish_live:
                 markets = []
                 for ticker, market in engine.markets.items():
+                    if engine.hourly_watchlist is not None and ticker not in engine.hourly_watchlist:
+                        continue
                     if not market.tradable(now):
                         continue
                     book = engine.books[ticker]
@@ -629,13 +633,26 @@ async def collect(
                     break
 
         async def refresh():
-            nonlocal tickers
+            nonlocal tickers, tracked
             while not stop.is_set():
                 try:
                     # Fence the request before any network await. An in-flight active
                     # response started before a lifecycle pause cannot release it.
                     metadata_request_started_at = time.time()
                     series, markets = await client.discover()
+                    selection = None
+                    if config.asset_spec.hourly:
+                        obligations = await work(
+                            entry_obligations, Path(settings.data_dir).parent / "manual-orders.sqlite",
+                            config.asset_spec.series,
+                        ) if live_signals else set()
+                        markets, selection = await work(select_markets, engine, markets, series, time.time(), obligations)
+                        # Retain settlement polling for fills/pending orders and
+                        # previously selected strikes, never every discovered rung.
+                        tracked = {t: raw for t, raw in tracked.items()
+                                   if t in obligations or t in tickers
+                                   or t in engine.executor.positions
+                                   or (t in engine.executor.orders and engine.executor.orders[t].active)}
                     changes = {}
                     for event in sorted({m["event_ticker"] for m in markets}):
                         changes[event] = [
@@ -664,6 +681,7 @@ async def collect(
                                 series_fee_changes=series_changes,
                                 exchange_status=status,
                                 clock_skew=client.last_clock_skew,
+                                **({"hourly_watchlist": selection} if selection is not None else {}),
                             ),
                         )
                     )
@@ -738,12 +756,21 @@ async def collect(
                         connected = True
                         emit(dict(type="connected", msg={"tickers": tickers}))
                         for subscription in subscriptions(tickers, config.asset):
+                            if config.asset_spec.hourly and not tickers and subscription["id"] in (3, 4):
+                                continue
                             await ws.send(json.dumps(subscription))
                         backoff = 1
                         market_sids = {}
                         subscribed_markets = set(tickers)
+                        market_subscribed = bool(tickers) or not config.asset_spec.hourly
                         request_id = 10
                         while not stop.is_set() and not reconnect.is_set():
+                            if not market_subscribed and tickers:
+                                for subscription in subscriptions(tickers, config.asset):
+                                    if subscription["id"] in (3, 4):
+                                        await ws.send(json.dumps(subscription))
+                                subscribed_markets = set(tickers)
+                                market_subscribed = True
                             if len(market_sids) == 3 and set(tickers) != subscribed_markets:
                                 desired = set(tickers)
                                 for action, changed in (

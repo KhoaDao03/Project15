@@ -142,7 +142,8 @@ class CollectorRecovery:
             stalled.append("REFERENCE_STREAM_STALLED")
         if lag > self.WARNING_LAG or depth > capacity * self.RESUME_QUEUE_FRACTION:
             reasons.append("BACKLOG_NOT_DRAINED")
-        markets = [m for m in engine.markets.values() if m.tradable(now)]
+        markets = [m for m in engine.markets.values() if m.tradable(now)
+                   and (engine.hourly_watchlist is None or m.ticker in engine.hourly_watchlist)]
         if not markets:
             reasons.append("NO_ACTIVE_MARKET")
         idle_book_reasons, idle_book_stalls = [], []

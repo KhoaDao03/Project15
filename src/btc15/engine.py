@@ -126,6 +126,7 @@ class Engine:
         self._pending_settlement = set()
         self._processing_tickers = {}
         self._known_tickers = set()
+        self.hourly_watchlist = None
         self._decision_keys = {}
         self._signal_quote_inputs = {}
         self._management_gaps = {}
@@ -412,11 +413,30 @@ class Engine:
                 self.sequences[sid] = seq
                 return False
             self.sequences[sid] = seq
+        if (kind in ("orderbook_snapshot", "orderbook_delta", "trade", "ticker")
+            and self.hourly_watchlist is not None
+            and msg.get("market_ticker") not in self.hourly_watchlist):
+            # Consume sequence numbers from in-flight removed subscriptions, but
+            # do not rebuild a book or revive a signal for an unselected strike.
+            return True
         try:
             if kind == "metadata":
                 series = msg["series"]
                 if series.get("ticker") != self.config.asset_spec.series:
                     raise ValueError("Metadata asset does not match the frozen run")
+                if self.config.asset_spec.hourly and "hourly_watchlist" in msg:
+                    selected = set(msg["hourly_watchlist"])
+                    selected.update(self.executor.positions)
+                    selected.update(t for t, o in self.executor.orders.items() if o.active)
+                    for ticker in set(self.books) - selected:
+                        self.books[ticker] = Book()
+                        for cache in (self.latest, self._model_cache, self._lead_history,
+                                      self._collector_book_sids, self.last_evaluation):
+                            cache.pop(ticker, None)
+                    self.hourly_watchlist = selected
+                    for ticker in selected:
+                        if ticker in self.markets:
+                            self._processing_tickers[ticker] = None
                 self.series_fees = series
                 self.series_fee_changes = msg.get("series_fee_changes")
                 self.fee_changes = msg.get("fee_changes", {})
@@ -672,6 +692,8 @@ class Engine:
             tickers = sorted(tickers, key=lambda t: -float(self.markets[t].raw.get("volume_fp") or 0))
         for ticker in tickers:
             market = self.markets[ticker]
+            if self.hourly_watchlist is not None and ticker not in self.hourly_watchlist:
+                continue
             if local and ticker != target and now < market.close_time:
                 order = self.executor.orders.get(ticker)
                 # Time passing can affect another market's pending order/position.

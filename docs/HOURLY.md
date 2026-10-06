@@ -21,9 +21,25 @@ of how many hours or days earlier they opened. Daily/weekly openings that close
 at that hour are included. Otherwise later events are excluded until rollover.
 A strike can be bought once; killed zero-fill attempts release their event slot.
 Partial fills, unresolved buys and earlier filled buys consume slots, including
-after restart. First qualifying strikes have priority; simultaneous candidates
-are ordered by descending `volume_fp`. Unfilled retries still require a fresh
-signal and known prior outcome.
+after restart. Among the tracked strikes, first qualifying signals have priority;
+simultaneous candidates are ordered by descending `volume_fp`. Unfilled retries
+still require a fresh signal and known prior outcome.
+
+Only **two strikes per hourly bot** receive continuous live-book processing. On
+each metadata refresh (normally every 15 seconds plus request time), the collector
+ranks the next-hour ladder using REST quotes and the current ATR probability
+model. Ranking minimizes probability shortfall below 83% plus ask-price distance
+outside 80–96 cents. Passing both checks ranks first; ties retain current selections,
+then favor higher volume. During reference/model warmup, quote-only ranking
+bootstraps subscriptions; it never authorizes a trade. Filled or pending strikes
+take priority and consume these two slots. Existing obligations are preserved
+even if manual activity has created more than two.
+
+Unselected books are unsubscribed, excluded from evaluation/recovery/display, and
+their old candidate signals are cleared. Metadata identities and trade evidence
+remain available for settlement/audit. Newly selected strikes require fresh
+sequenced snapshots and every original entry check. Other 15-minute bots keep
+their existing subscription behavior.
 
 The existing ATR-finish formula, warmup, reference feeds and indicator lean remain
 in use. Sustained-lead confirmation stays enabled with the inherited normal
@@ -125,8 +141,8 @@ close matching and contract validation still happen locally.
    and every **tradable** market closes at the next top of the hour. Historical
    held/settling contracts may remain visible for settlement recovery. Verify
    the hourly asset labels and separate histories on the public dashboard.
-   Full-ladder synthetic tests used 300 ETH and 75 XRP books; retained subscriptions
-   are not narrowed. See the [implementation report](../reports/hourly-20261006/report.md)
+   Initial full-ladder synthetic tests used 300 ETH and 75 XRP books. Live book
+   subscriptions are now narrowed to the two selected strikes described above. See the [implementation report](../reports/hourly-20261006/report.md)
    for measured costs. Check production processing lag stays below 2 seconds.
 
 3. Deploy the isolated public site's asset-list changes using the existing
