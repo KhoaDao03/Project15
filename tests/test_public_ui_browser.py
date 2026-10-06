@@ -19,6 +19,15 @@ def test_public_ui_selection_history_and_layout():
             market['probability'] = dict(available=True, p_yes=yes, p_no=1-yes,
                                          side='no' if asset['asset']=='ETH' else 'yes', confidence=.60 if asset['asset']=='ETH' else .75,
                                          timestamp=time.time(), quality_warning=False)
+    for asset in snapshot['assets']:
+        if asset['asset'] in ('ETHD', 'XRPD'):
+            base = asset['markets'][0]
+            from datetime import datetime, timezone
+            close = datetime.fromtimestamp(time.time() + 600, timezone.utc).isoformat()
+            later = datetime.fromtimestamp(time.time() + 4200, timezone.utc).isoformat()
+            asset['markets'] = [dict(base, ticker=asset['asset']+'-quiet', close_time=close, volume_fp='1'),
+                               dict(base, ticker=asset['asset']+'-active', close_time=close, volume_fp='100'),
+                               dict(base, ticker=asset['asset']+'-later', close_time=later, volume_fp='1000')]
     state = {'stale': False, 'view_fail': False}
     requests = []
     errors = []
@@ -87,6 +96,15 @@ def test_public_ui_selection_history_and_layout():
         expect(page.locator('#detail-title')).to_have_text('ETHD / Market detail')
         page.locator('#market-tabs [data-asset=XRPD]').click()
         expect(page.locator('#detail-title')).to_have_text('XRPD / Market detail')
+        expect(page.locator('#detail .probability-market')).to_have_count(1)
+        expect(page.locator('#detail .source')).to_contain_text('2 strikes')
+        expect(page.locator('#detail .source')).to_contain_text('XRPD-active')
+        expect(page.locator('#detail .source')).not_to_contain_text('XRPD-later')
+        expect(page.locator('#detail .source')).not_to_contain_text('XRPD-quiet')
+        for symbol in ('ETHD', 'XRPD'):
+            row = page.locator('#market-status tr').filter(has=page.locator('button').filter(has_text=symbol))
+            expect(row.locator('.probability-market')).to_have_count(1)
+
         page.locator('#market-tabs [data-asset=ETH]').click()
         expect(page.locator('#detail-title')).to_have_text('ETH / Market detail')
         expect(page.locator('#detail .probability')).to_contain_text('NO 60.0%')

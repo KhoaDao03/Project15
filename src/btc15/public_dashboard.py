@@ -43,7 +43,7 @@ async def read_snapshot(client):
         public["state"] = row.get("operational", {}).get("state", "UNAVAILABLE")
         public["markets"] = [
             {
-                **pick(market, "ticker fresh"),
+                **pick(market, "ticker fresh close_time volume_fp"),
                 "probability": (
                     pick(market["probability"], "available p_yes p_no side confidence timestamp quality_warning")
                     if market.get("fresh") and market.get("probability", {}).get("available")
