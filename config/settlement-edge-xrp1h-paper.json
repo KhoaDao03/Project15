@@ -70,7 +70,7 @@
   "bleep_exchange_seed_enabled": true,
   "bleep_safety_clamp_enabled": true,
   "entry_value_filters_enabled": false,
-  "asset": "ETHD",
+  "asset": "XRP1H",
   "fixed_stop_price": 0,
   "full_position_execution": true,
   "early_min_probability": 0,

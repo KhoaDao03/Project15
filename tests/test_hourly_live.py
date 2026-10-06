@@ -215,7 +215,7 @@ async def test_hourly_history_and_global_guard_include_fills(hourly_live):
         "settlement", dict(result="yes"), "hourly", "PAPER", manual.rows()[0]["created_at"] + 3600, ticker
     )
     view = LiveFallbackStore(store, manual.path, "hourly", asset)
-    other = LiveFallbackStore(store, manual.path, "hourly", asset[:-1])
+    other = LiveFallbackStore(store, manual.path, "hourly", w.members[asset]["config"].asset_spec.underlying)
     guard = GlobalLossGuard(manual, w.members, w.stores)
     try:
         assert view.list("trade_result")[0]["body"]["net_pnl"] == pytest.approx(0.97)

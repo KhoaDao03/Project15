@@ -138,11 +138,19 @@ class KalshiClient:
         if index is None:
             raise ValueError("Series exchange index missing")
         markets = []
-        for status in ("open", "unopened"):
+        for status in ((None,) if selected.hourly else ("open", "unopened")):
+            params = dict(series_ticker=selected.series, limit=100, exchange_index=index)
+            if selected.hourly:
+                # Fetch this ladder, not every open/unopened hourly event. Close
+                # filters cannot be combined with open/unopened status filters.
+                close = (int(time.time()) // 3600 + 1) * 3600
+                params.update(min_close_ts=close - 1, max_close_ts=close + 1)
+            else:
+                params["status"] = status
             async for raw in self.pages(
                 "markets",
                 "markets",
-                dict(series_ticker=selected.series, status=status, limit=100, exchange_index=index),
+                params,
             ):
                 if raw is not None:
                     markets.append(raw)

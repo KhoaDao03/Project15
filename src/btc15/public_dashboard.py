@@ -35,7 +35,7 @@ async def read_snapshot(client):
     assets = []
     for row in fleet["assets"]:
         asset = row["asset"]
-        if asset not in ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD", "GOLD", "SILVER", "WTI"):
+        if asset not in ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETH1H", "XRP1H", "GOLD", "SILVER", "WTI"):
             continue
         public = pick(row, "asset healthy price open_positions realized_pnl wins losses completed_trades "
                       "breakeven_trades win_rate current_streak longest_win_streak longest_loss_streak")
@@ -288,7 +288,7 @@ def create_public_app(admin_port=8000):
         if set(body) - {"confirm", "asset"} or body.get("confirm") is not True:
             raise HTTPException(422, "Explicit shutdown confirmation required")
         asset = body.get("asset")
-        if "asset" in body and (not isinstance(asset, str) or asset not in ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD", "GOLD", "SILVER", "WTI")):
+        if "asset" in body and (not isinstance(asset, str) or asset not in ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETH1H", "XRP1H", "GOLD", "SILVER", "WTI")):
             raise HTTPException(422, "Select a supported bot")
         async with action_lock:
             authorize(request)
@@ -338,7 +338,7 @@ def create_public_app(admin_port=8000):
 
     @app.get("/api/history/{asset}")
     async def history(asset: str, offset: int = Query(0, ge=0), limit: int = Query(25, ge=1, le=100)):
-        if asset not in ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD", "GOLD", "SILVER", "WTI"):
+        if asset not in ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETH1H", "XRP1H", "GOLD", "SILVER", "WTI"):
             raise HTTPException(404, "Unknown market")
         try:
             # Resolve the run privately, using the same recorded source as the snapshot.

@@ -6,7 +6,7 @@ const signed=value=>numeric(value)?(value>0?'+':'')+money(value):'—';
 const percent=value=>numeric(value)?(value*100).toFixed(1)+'%':'—';
 const count=value=>numeric(value)?value.toLocaleString('en-US'):'—';
 const pnlClass=value=>value>0?'positive':value<0?'negative':'';
-const symbols=['BTC','ETH','SOL','XRP','BNB','HYPE','DOGE','ETHD','XRPD','GOLD','SILVER','WTI'];
+const symbols=['BTC','ETH','SOL','XRP','BNB','HYPE','DOGE','ETH1H','XRP1H','GOLD','SILVER','WTI'];
 const name=asset=>asset==='WTI'?'OIL / WTI':asset;
 const zone='America/New_York';
 const timestamp=value=>numeric(value)?new Date(value*1000).toLocaleString('en-US',{timeZone:zone}):'—';

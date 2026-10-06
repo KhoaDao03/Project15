@@ -32,7 +32,7 @@ def parse_hourly_market(raw, series, asset):
     ):
         raise ValueError("Only hourly above/below strikes are supported")
     primary, secondary = raw.get("rules_primary", ""), raw.get("rules_secondary", "")
-    index = {"ETHD": "Ethereum Real-Time Index (ERTI)", "XRPD": "Ripple-Dollar Real Time Index (XRPUSD_RTI)"}[
+    index = {"ETH1H": "Ethereum Real-Time Index (ERTI)", "XRP1H": "Ripple-Dollar Real Time Index (XRPUSD_RTI)"}[
         asset.symbol
     ]
     match = re.fullmatch(
@@ -46,8 +46,8 @@ def parse_hourly_market(raw, series, asset):
     # Hourly rules specify a simple mean, with no rounding of that mean. Unlike
     # 15m contracts, comparison is strict at the published decimal strike.
     expected_secondary = {
-        "ETHD": "Not all cryptocurrency price data is the same. While checking a source like Google or Coinbase may help guide your decision, the price used to determine this market is based on CF Benchmarks' corresponding Real Time Index (RTI). At the last minute before expiration, 60 RTI prices are collected. The official and final value is the average of these prices.",
-        "XRPD": "The market resolves based on a simple average of the CF Benchmarks index for the 60 seconds prior to the specified time. The price must meet the criterion at exactly the specified time on the target date. If no data is available or incomplete at the expiration time, affected strikes resolve to No. For cryptocurrencies with multiple versions, the Exchange will specify which version or ticker is being tracked. The CF Benchmarks Real-Time Index provides continuous pricing data for major cryptocurrencies.",
+        "ETH1H": "Not all cryptocurrency price data is the same. While checking a source like Google or Coinbase may help guide your decision, the price used to determine this market is based on CF Benchmarks' corresponding Real Time Index (RTI). At the last minute before expiration, 60 RTI prices are collected. The official and final value is the average of these prices.",
+        "XRP1H": "The market resolves based on a simple average of the CF Benchmarks index for the 60 seconds prior to the specified time. The price must meet the criterion at exactly the specified time on the target date. If no data is available or incomplete at the expiration time, affected strikes resolve to No. For cryptocurrencies with multiple versions, the Exchange will specify which version or ticker is being tracked. The CF Benchmarks Real-Time Index provides continuous pricing data for major cryptocurrencies.",
     }
     if secondary != expected_secondary[asset.symbol]:
         raise ValueError("Unrecognized hourly secondary rules")

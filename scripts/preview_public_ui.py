@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, HTMLResponse
 
 STATIC = Path(__file__).resolve().parents[1] / "src/btc15/public_static"
-ASSETS = ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD", "GOLD", "SILVER", "WTI")
+ASSETS = ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETH1H", "XRP1H", "GOLD", "SILVER", "WTI")
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 

@@ -145,6 +145,8 @@ class CollectorRecovery:
         markets = [m for m in engine.markets.values() if m.tradable(now)]
         if not markets:
             reasons.append("NO_ACTIVE_MARKET")
+        idle_book_reasons, idle_book_stalls = [], []
+        fresh_books = 0
         for market in markets:
             ticker = market.ticker
             market_blocked = ticker in engine.executor.quarantines or ticker in engine.executor.venue_pauses
@@ -154,11 +156,29 @@ class CollectorRecovery:
             if ticker not in self.snapshots:
                 reasons.append("WAITING_FOR_SEQUENCED_SNAPSHOT:" + ticker)
             else:
-                for failure in freshness_rechecks(engine.books[ticker], engine.ticks, now, now, self.config):
+                failures = freshness_rechecks(engine.books[ticker], engine.ticks, now, now, self.config)
+                if not failures and not market_blocked:
+                    fresh_books += 1
+                for failure in failures:
+                    if self.config.asset_spec.hourly and failure["code"] in (
+                        "BOOK_RECEIVE_AGE",
+                        "BOOK_SOURCE_AGE",
+                    ):
+                        idle_book_reasons.append(failure["code"] + ":" + ticker)
+                        if not market_blocked:
+                            idle_book_stalls.append("BOOK_STREAM_STALLED:" + ticker)
+                        continue
                     reasons.append(failure["code"] + ":" + ticker)
                     book_stale |= failure["code"].startswith("BOOK_")
             if book_stale and not market_blocked:
                 stalled.append("BOOK_STREAM_STALLED:" + ticker)
+        # Quiet ladder strikes do not diagnose a broken subscription when other
+        # sequenced books are fresh. Each strike still passes the unchanged
+        # engine and execution freshness checks before it can produce an entry.
+        # Missing snapshots, invalid books and integrity failures remain blocking.
+        if not fresh_books:
+            reasons.extend(idle_book_reasons)
+            stalled.extend(idle_book_stalls)
         if (
             stopping
             or not connected

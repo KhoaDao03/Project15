@@ -1,10 +1,10 @@
 # ETH and XRP hourly ladders
 
-`ETHD` (`KXETHD`) and `XRPD` (`KXXRPD`) are separate fleet assets, stores,
+`ETH1H` (`KXETHD`) and `XRP1H` (`KXXRPD`) are separate fleet assets, stores,
 controls and dashboard histories. Only above/below ladders are supported. The
 existing ETH/XRP 15-minute presets and their configuration versions are unchanged.
 
-| Setting | ETHD | XRPD |
+| Setting | ETH1H | XRP1H |
 | --- | --- | --- |
 | ATR sigma multiplier | 1.00 | 1.10 |
 | Confidence cap premium over selected-side midpoint | 6 percentage points | 10 percentage points |
@@ -36,7 +36,7 @@ samples. We compare that mean directly to the decimal strike; we do not apply th
 15-minute contracts' rounding. The settlement-distribution boundary uses that
 same unrounded strike. The existing 15-minute parser body, comparison behavior
 and model results remain unchanged. Captured API fixtures are in
-`tests/fixtures/{ethd,xrpd}-hourly-20261006.json`. The captured XRP
+`tests/fixtures/{eth1h,xrp1h}-hourly-20261006.json`. The captured XRP
 `settlement_timer_seconds` is 1800 (ETH: 60): that metadata delay does not change
 the 60-second averaging window stated in the contract rules. Unknown rule wording
 fails closed.
@@ -47,11 +47,29 @@ by this implementation. It omitted the indicator lean retained here.
 
 ## Go-live check
 
-This change prepares code and fleet rows; it does **not** enable buying, send
-orders, restart services or publish the public website. On the current workspace,
-`data/cloud/ETHD.json`, `XRPD.json` and the two manifest rows are already prepared.
-Their versions are `3efb5d90d16f9d9b` and `e546a5ad1fc8175d`, respectively.
+On October 6, 2026, the owner requested the names ETH1H/XRP1H and startup.
+Both collectors are now started and enabled at boot; the private/public dashboards
+and executor membership were reloaded. **Hourly live buying remains disabled.**
+On the current workspace,
+`data/cloud/ETH1H.json`, `XRP1H.json` and the two manifest rows are already prepared.
+Their versions are `944018fc1f931152` and `7430f19f09d56c76`, respectively.
 Both ship with `entry_limit_offset: null` and no enabled live policy.
+
+The first live startup exposed repeated reconnects caused by inactive far-out
+strikes aging while other ladder books continued updating. Hourly collector
+recovery now tolerates those idle books only while another sequenced, valid book
+is fresh. Missing snapshots, integrity failures, stale references and a fully
+stalled ladder still block/recover. Per-strike signal and execution freshness
+checks are unchanged, so an idle strike cannot qualify for entry. Existing
+15-minute recovery behavior is unchanged. Recovery and hourly entry tests passed
+(97 tests), in addition to 138 rename, contract, dashboard and signal tests.
+Discovery now requests only the next hourly close using the API's close-time
+bounds, avoiding a scan of later events before each connection/metadata refresh.
+All strikes at that close remain included. The hourly contract and discovery
+suite passed (42 tests); public browser/research-control checks passed (17 tests).
+The [API filter compatibility rules](https://docs.kalshi.com/api-reference/market/get-markets)
+require omitting the open/unopened status filter with close-time bounds; exact
+close matching and contract validation still happen locally.
 
 1. Deploy the reviewed local commits on `cloud-deploy` to the trading checkout.
    Retain existing credentials, state, service overrides and frozen configs.
@@ -93,13 +111,13 @@ Both ship with `entry_limit_offset: null` and no enabled live policy.
 
    ```bash
    systemctl --user daemon-reload
-   systemctl --user enable --now project15-signal@ETHD project15-signal@XRPD
+   systemctl --user enable --now project15-signal@ETH1H project15-signal@XRP1H
    systemctl --user restart project15-execution project15-dashboard
-   systemctl --user status project15-signal@ETHD project15-signal@XRPD --no-pager
-   journalctl --user -u project15-signal@ETHD -u project15-signal@XRPD -n 60 --no-pager
+   systemctl --user status project15-signal@ETH1H project15-signal@XRP1H --no-pager
+   journalctl --user -u project15-signal@ETH1H -u project15-signal@XRP1H -n 60 --no-pager
    ```
 
-   In the private dashboard, open `/assets/ETHD` and `/assets/XRPD`. Confirm the
+   In the private dashboard, open `/assets/ETH1H` and `/assets/XRP1H`. Confirm the
    collector is healthy, reference/book ages are fresh, parsed strikes appear,
    and every **tradable** market closes at the next top of the hour. Historical
    held/settling contracts may remain visible for settlement recovery. Verify
@@ -122,7 +140,7 @@ Both ship with `entry_limit_offset: null` and no enabled live policy.
    See [public isolation](PUBLIC_WEBSITE_ISOLATION.md) for first installation.
    No trading credentials or journals belong in the public installation.
 
-4. Khoa enables **ETHD** and **XRPD** separately in the private dashboard's live
+4. Khoa enables **ETH1H** and **XRP1H** separately in the private dashboard's live
    buying control, confirming `ENABLE_REAL_TRADING`, with **10 contracts**.
    Verify stop price **0** and no take-profit. Buying stays disabled until this
    owner action; collectors themselves cannot place real orders.
@@ -153,7 +171,7 @@ with sqlite3.connect('file:data/cloud/manual-orders.sqlite?mode=ro', uri=True) a
 PY
 ```
 
-After approximately **100 filled ETHD trades**, compare the mean fill price minus
+After approximately **100 filled ETH1H trades**, compare the mean fill price minus
 signal ask against **1¢**, and check mean realized net P&L per 10-contract trade
 is **positive**, including exchange fees. Use completed hourly dashboard trades
 for net P&L, not gross fill differences. If slippage exceeds 1¢, consider setting

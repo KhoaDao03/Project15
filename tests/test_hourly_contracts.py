@@ -1,4 +1,5 @@
 import json
+import time
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -11,7 +12,7 @@ from btc15.domain import parse_market
 from btc15.strategies.settlement_edge.bleep import SIGMA_MULTIPLIERS, capped_confidence
 
 
-@pytest.fixture(params=["ETHD", "XRPD"])
+@pytest.fixture(params=["ETH1H", "XRP1H"])
 def hourly(request):
     data = json.loads(Path(f"tests/fixtures/{request.param.lower()}-hourly-20261006.json").read_text())
     return (
@@ -30,15 +31,15 @@ def test_hourly_identity_precision_and_presets(hourly):
     assert not m.spec.yes(m.spec.strike)
     assert m.spec.yes(m.spec.strike + 10 ** (-c.asset_spec.round_digits - 2))
     assert m.spec.favored(m.spec.strike) == "yes"
-    assert c.asset_spec.index == asset_spec(c.asset[:-1]).index
+    assert c.asset_spec.index == asset_spec(c.asset_spec.underlying).index
     assert c.entry_window_start == 600 and c.entry_cutoff == 60 and not c.late_entry_enabled
     assert c.early_min_probability == 0 and c.probability_floor(remaining=600) == 0.83
     assert c.fixed_stop_price == c.stop_multiplier == c.post_close_cooldown == 0
     assert c.take_profit is None and c.entry_limit_offset is None
     assert c.fixed_contracts == c.max_contracts == 10 and c.max_open_exposure == 25
     assert c.one_trade_per_market and c.bleep_safety_clamp_enabled and c.sustained_lead_enabled
-    assert SIGMA_MULTIPLIERS[c.asset] == {"ETHD": 1.0, "XRPD": 1.1}[c.asset]
-    premium = 0.06 if c.asset == "ETHD" else 0.10
+    assert SIGMA_MULTIPLIERS[c.asset] == {"ETH1H": 1.0, "XRP1H": 1.1}[c.asset]
+    premium = 0.06 if c.asset == "ETH1H" else 0.10
     assert capped_confidence(0.98, 0.80, 0.82, c.asset) == pytest.approx(0.81 + premium)
 
 
@@ -99,18 +100,21 @@ async def test_only_next_hour_discovered(hourly, monkeypatch):
         return {"series": series}
 
     async def pages(path, key, params, *args):
-        if params["status"] == "open":
-            yield raw
-            yield dict(
-                raw,
-                ticker=raw["ticker"] + "OLD",
-                close_time=datetime.fromtimestamp(m.close_time - 3600, UTC).isoformat(),
-            )
-            yield dict(
-                raw,
-                ticker=raw["ticker"] + "NEXT",
-                close_time=datetime.fromtimestamp(m.close_time + 3600, UTC).isoformat(),
-            )
+        assert "status" not in params
+        close = (int(time.time()) // 3600 + 1) * 3600
+        assert params["min_close_ts"] == close - 1
+        assert params["max_close_ts"] == close + 1
+        yield raw
+        yield dict(
+            raw,
+            ticker=raw["ticker"] + "OLD",
+            close_time=datetime.fromtimestamp(m.close_time - 3600, UTC).isoformat(),
+        )
+        yield dict(
+            raw,
+            ticker=raw["ticker"] + "NEXT",
+            close_time=datetime.fromtimestamp(m.close_time + 3600, UTC).isoformat(),
+        )
 
     client.get = get
     client.pages = pages
@@ -128,7 +132,7 @@ def test_hourly_changes_only_requested_preset_fields(hourly):
     from dataclasses import asdict
 
     _, _, c = hourly
-    original = Strategy.load(f"config/settlement-edge-{c.asset[:-1].lower()}-paper.json")
+    original = Strategy.load(f"config/settlement-edge-{c.asset_spec.underlying.lower()}-paper.json")
     allowed = {
         "asset",
         "entry_window_start",

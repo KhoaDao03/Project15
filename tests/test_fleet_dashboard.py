@@ -396,7 +396,7 @@ def test_fleet_rejects_stale_and_future_snapshots(portfolios, offset):
 def test_twelve_asset_manifest_and_dashboard(portfolios):
     manifest, _ = portfolios
     rows = json.loads(manifest.read_text())
-    for asset in ("BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI", "ETHD", "XRPD"):
+    for asset in ("BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI", "ETH1H", "XRP1H"):
         directory = manifest.parent / asset
         directory.mkdir()
         config = directory / "config.json"
@@ -407,7 +407,7 @@ def test_twelve_asset_manifest_and_dashboard(portfolios):
     with TestClient(fleet.create_fleet_app(manifest), base_url="http://127.0.0.1:8000") as client:
         response = client.get("/api/fleet").json()
         assert len(response["assets"]) == 12
-        for asset in ("BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI", "ETHD", "XRPD"):
+        for asset in ("BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI", "ETH1H", "XRP1H"):
             assert client.get("/assets/" + asset + "/api/health").json()["asset"] == asset
             assert not next(r for r in response["assets"] if r["asset"] == asset)["paper_only"]
 

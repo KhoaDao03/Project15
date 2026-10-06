@@ -60,7 +60,7 @@ def test_paper_event_cap_pending_killed_and_restart(hourly, store):
     assert submit(tickers[2], 5) is not None
     ex.cancel(tickers[1], now + 1, "killed")
     ex.cancel(tickers[2], now + 1, "killed")
-    assert submit("KX" + c.asset + "-26OCT0614-T1", 6) is not None
+    assert submit(c.asset_spec.series + "-26OCT0614-T1", 6) is not None
 
 
 @pytest.mark.anyio

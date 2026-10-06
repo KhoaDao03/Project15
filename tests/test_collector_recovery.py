@@ -15,6 +15,54 @@ from btc15.storage import read_events
 from btc15.strategies.settlement_edge.model import Tick
 
 
+@pytest.mark.parametrize("asset", ["ETH1H", "XRP1H", "BTC"])
+def test_idle_ladder_strike_does_not_reconnect_fresh_hourly_feed(store, config, market, now, asset):
+    from dataclasses import replace
+
+    from btc15.engine import freshness_rechecks
+
+    config = replace(config, asset=asset)
+    e, c = ready_inputs(store, config, market, now)
+    idle = replace(market, ticker=market.ticker + "-idle")
+    e.markets[idle.ticker] = idle
+    e.books[idle.ticker] = copy.deepcopy(e.books[market.ticker])
+    e.books[idle.ticker].received = e.books[idle.ticker].source_time = now - 30
+    c.snapshots.add(idle.ticker)
+    c.check(e, now, 0, 0, 100, True)
+    assert c.paused.is_set() == (asset == "BTC")
+    assert bool(c._stalled_since) == (asset == "BTC")
+    # The idle strike is still ineligible for entry even when the feed is ready.
+    assert {r["code"] for r in freshness_rechecks(e.books[idle.ticker], e.ticks, now, now, config)} == {
+        "BOOK_RECEIVE_AGE",
+        "BOOK_SOURCE_AGE",
+    }
+    # A stall across the entire ladder must still block and initiate recovery.
+    e.books[market.ticker].received = now - 30
+    c.check(e, now, 0, 0, 100, True)
+    assert c.paused.is_set() and c._stalled_since
+
+
+@pytest.mark.parametrize("failure", ["snapshot", "invalid", "quarantine", "reference"])
+def test_hourly_fresh_strike_does_not_hide_integrity_failures(store, config, market, now, failure):
+    from dataclasses import replace
+
+    e, c = ready_inputs(store, replace(config, asset="ETH1H"), market, now)
+    second = replace(market, ticker=market.ticker + "-second")
+    e.markets[second.ticker] = second
+    e.books[second.ticker] = copy.deepcopy(e.books[market.ticker])
+    c.snapshots.add(second.ticker)
+    if failure == "snapshot":
+        c.snapshots.remove(second.ticker)
+    elif failure == "invalid":
+        e.books[second.ticker].valid = False
+    elif failure == "quarantine":
+        e.executor.quarantines[second.ticker] = {}
+    else:
+        e.ticks = [Tick(now - 30, now - 30, market.spec.strike)]
+    c.check(e, now, 0, 0, 100, True)
+    assert c.paused.is_set() and c.reasons
+
+
 def ready_inputs(store, config, market, now):
     e = Engine(store, config, "PAPER", execute=False, record_evaluations=False)
     e.markets[market.ticker] = market

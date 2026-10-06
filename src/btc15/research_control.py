@@ -10,7 +10,7 @@ from pathlib import Path
 from .assets import ASSETS
 
 GROUPS = {
-    "crypto": ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD"),
+    "crypto": ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETH1H", "XRP1H"),
     "commodities": ("GOLD", "SILVER", "WTI"),
     "all": tuple(ASSETS),
 }
