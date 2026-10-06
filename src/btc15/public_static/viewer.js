@@ -35,6 +35,7 @@ const coinPaths={
 let latest=null;
 let selected='BTC',historyMode=false,historyOffset=0,historyTotal=0,historyBusy=false,historyRequest=0;
 function coin(asset){
+  asset=({ETHD:'ETH',XRPD:'XRP'})[asset]||asset;
   if(!coinPaths[asset])return el('span',asset[0],'coin '+asset.toLowerCase());
   const node=el('span','','coin '+asset.toLowerCase()),svg=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS('http://www.w3.org/2000/svg','path');
   svg.setAttribute('viewBox',asset==='HYPE'?'0 0 144 144':'0 0 24 24');svg.setAttribute('aria-hidden','true');path.setAttribute('d',coinPaths[asset]);
@@ -88,14 +89,14 @@ function render(data){
   const metrics=[['$','Realized P&L',signedMoney(total.realized_pnl),(data.live_only?'Live · ':'')+'After recorded fees'+(partial?' · partial':''),pnlClass(total.realized_pnl)],['▤','Completed trades',count(total.completed_trades),'Recorded history'],['♜','Wins / losses',count(total.wins)+' / '+count(total.losses),'Completed trades'],['◎','Overall win rate',percent(total.win_rate),'Weighted by completed trades'],['▤','Open trades',count(total.open_positions),'Current snapshot'],['♛','Top crypto by P&L',top.map(a=>a.asset).join(' / ')||'—',top.length?signedMoney(top[0].realized_pnl):'No ranked history']];
   $('summary').replaceChildren(...metrics.map(([icon,label,value,note,cls])=>{const metric=el('div','','metric'),text=el('div','');text.append(el('small',label),el('strong',value,cls),el('small',note));metric.append(el('span',icon,'metric-icon'),text);return metric;}));
   const rows=[];
-  for(const [label,group] of [['Digital assets',assets.slice(0,7)],['Commodities',assets.slice(7)]]){
+  for(const [label,group] of [['Digital assets',assets.slice(0,9)],['Commodities',assets.slice(9)]]){
     const heading=el('tr','','group-row'),cell=el('td',label.toUpperCase());cell.colSpan=9;heading.append(cell);rows.push(heading);
     group.sort((a,b)=>(numeric(b.realized_pnl)?b.realized_pnl:-Infinity)-(numeric(a.realized_pnl)?a.realized_pnl:-Infinity));
     for(const a of group){const row=el('tr','',[selected===a.asset?'selected':'',numeric(a.open_positions)&&a.open_positions>0?'has-open-trade':''].filter(Boolean).join(' ')),market=el('td','');market.append(marketButton(a.asset));const rank=numeric(a.realized_pnl)?1+group.filter(b=>numeric(b.realized_pnl)&&b.realized_pnl>a.realized_pnl).length:'—';row.append(el('td',rank),market);performanceCells(row,a);row.addEventListener('click',event=>{if(!event.target.closest('button'))selectMarket(a.asset);});rows.push(row);}
   }
   $('comparison').replaceChildren(...rows);
   const totals=el('tr',''),label=el('td',partial?'TOTAL · partial':'TOTAL ('+symbols.length+' markets)');label.colSpan=2;totals.append(label);performanceCells(totals,total);$('totals').replaceChildren(totals);
-  $('insight').textContent=(top.length?(top.map(a=>a.asset).join(' and ')+(top.length>1?' share the crypto lead':' leads crypto')+' by recorded realized P&L. '):'Crypto ranking requires available completed history for all seven markets. ')+(partial?'Some totals are unavailable or partial. ':'')+'These are recorded trade results, not underlying market-price returns.';
+  $('insight').textContent=(top.length?(top.map(a=>a.asset).join(' and ')+(top.length>1?' share the crypto lead':' leads crypto')+' by recorded realized P&L. '):'Crypto ranking requires available completed history for all nine crypto markets. ')+(partial?'Some totals are unavailable or partial. ':'')+'These are recorded trade results, not underlying market-price returns.';
   $('market-status').replaceChildren(...assets.map(a=>{const row=el('tr','',[selected===a.asset?'selected':'',numeric(a.open_positions)&&a.open_positions>0?'has-open-trade':''].filter(Boolean).join(' ')),market=el('td',''),price=el('td',referenceMoney(a.price,a.asset)),status=el('td',''),buying=el('td','');market.append(marketButton(a.asset));if(!a.markets?.length||a.markets.some(m=>!m.fresh))price.append(el('small','⚠ Stale market data','stale'));status.append(statusBadge(data,a));buying.append(buyingBadge(data,a));const probability=el('td','');probability.append(entryConfidenceView(data,a));row.append(market,price,probability,status,buying);row.addEventListener('click',event=>{if(!event.target.closest('button'))selectMarket(a.asset);});return row;}));
   const asset=assets.find(a=>a.asset===selected);$('detail-title').textContent=names(selected)+' / Market detail';$('detail-icon').replaceWith(Object.assign(coin(selected),{id:'detail-icon'}));
   const reference=el('div','','reference-row'),price=el('div',''),status=el('div','');price.append(el('small','Reference price'),el('strong',referenceMoney(asset.price,asset.asset)));status.append(el('small','Operational status'),el('br',''),statusBadge(data,asset));reference.append(price,status,entryConfidenceView(data,asset,true));
