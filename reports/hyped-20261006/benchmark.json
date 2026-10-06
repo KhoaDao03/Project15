@@ -1,0 +1,11 @@
+{
+  "asset": "HYPED",
+  "strikes": 300,
+  "median_wall_ms": 719.03,
+  "median_cpu_ms": 694.77,
+  "max_wall_ms": 835.84,
+  "allocated_retained_mib": 7.16,
+  "allocated_peak_mib": 7.24,
+  "process_peak_rss_mib": 68.96,
+  "candidates": 144
+}

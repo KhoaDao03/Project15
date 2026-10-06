@@ -21,6 +21,10 @@ from btc15.strategies.settlement_edge.model import Tick
 def benchmark(root, asset, count):
     captured = json.loads(Path(f"tests/fixtures/{asset.lower()}-hourly-20261006.json").read_text())
     original = parse_market(captured["market"], captured["series"])
+    # Historical API captures may already be settled; this benchmark replays
+    # a synthetic pre-close ladder, not the captured settlement state.
+    if original.status != "active":
+        original = replace(original, status="active", raw=dict(original.raw, status="active", result="", settlement_ts=None))
     config = Strategy.load(f"config/settlement-edge-{asset.lower()}-paper.json")
     now = original.close_time - 300
     tracemalloc.start()

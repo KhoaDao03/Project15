@@ -1,0 +1,20 @@
+{
+  "config/settlement-edge-active-paper.json": "b5203aeb52ff3bd1",
+  "config/settlement-edge-bnb-paper.json": "ad86f62d54c8dc12",
+  "config/settlement-edge-combined-paper.json": "811a24514cac3a81",
+  "config/settlement-edge-doge-paper.json": "f727b3bb8fd642be",
+  "config/settlement-edge-entry-paper.json": "a2017930e664610c",
+  "config/settlement-edge-eth-paper.json": "147b51f41aa8b6d2",
+  "config/settlement-edge-ethd-paper.json": "3efb5d90d16f9d9b",
+  "config/settlement-edge-exit-paper.json": "b33c219468f7ce11",
+  "config/settlement-edge-fill-paper.json": "52c7983a615f7783",
+  "config/settlement-edge-fill-taker-paper.json": "f62d4866f2508b81",
+  "config/settlement-edge-gold-paper.json": "7961272c46e08890",
+  "config/settlement-edge-hype-paper.json": "fb7ff4f7390010c0",
+  "config/settlement-edge-paper-moderate.json": "9686eb808073e59b",
+  "config/settlement-edge-silver-paper.json": "3522c4db80354e2b",
+  "config/settlement-edge-sol-paper.json": "f9dbb228d0186bae",
+  "config/settlement-edge-wti-paper.json": "90c802a2d776c0b8",
+  "config/settlement-edge-xrp-paper.json": "d959dc695a439496",
+  "config/settlement-edge-xrpd-paper.json": "e546a5ad1fc8175d"
+}

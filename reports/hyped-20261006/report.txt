@@ -1,0 +1,101 @@
+HYPED hourly rollout — October 6, 2026 (America/New_York)
+
+Scope
+- Pulled cloud-deploy first: already current at 8f4b24e.
+- Added HYPED / KXHYPED using the existing hourly parser, discovery,
+  two-strike selector, live execution, settlement and dashboard machinery.
+- No range markets, new strategy framework or paper-trading trial.
+
+Configuration
+- Version: 9e1dff29e24034e1.
+- ATR sigma: 1.40; selected-side midpoint confidence premium: 6 points.
+- Capped probability floor: 83%; entry window: 60 < seconds left <= 600.
+- Ask band: 80–96 cents; 10 contracts; existing shared cap: two filled/pending
+  strikes per hourly event; maximum configured open exposure: $25.
+- entry_limit_offset: null, following the owner's subsequent request to disable
+  the initially requested 1-cent offset. Buy limit may reach the 96-cent maximum.
+  No stops, take-profit or entry blackout. The optional offset remains tested.
+- The supplied replay and profitability claims were not independently reproduced.
+
+Contract evidence
+- Real public API fixtures: tests/fixtures/hyped-hourly-20261006.json.
+- Series: GET /trade-api/v2/series/KXHYPED.
+- Events: KXHYPED-26OCT0613 (1 PM), KXHYPED-26OCT0615 (3 PM),
+  KXHYPED-26OCT0617 (5 PM); GET /trade-api/v2/markets?event_ticker=<event>.
+- All three observed primary rules name HYPEUSD_RTI and prefix the strike
+  with a dollar sign, e.g. "above $92.9999". Secondary text matches ETHD.
+- Only HYPED gains the optional dollar prefix. Strike, index, rule time,
+  secondary text and next-hour event identity still fail closed on mismatch.
+- Settlement remains an unrounded, strict-above comparison against the final
+  60-second CF reference average. HYPED reuses HYPE's index and four decimals.
+- Ordinary 1 PM and 3 PM ladders had 300 strikes; the 5 PM daily ladder had 40.
+  The ordinary fixture was already finalized when captured; pre-close tests
+  explicitly replay its active state rather than altering the saved capture.
+
+Files changed
+- Identity/parser/model/execution: assets.py, hourly.py, bleep.py and
+  live_automation.py; new settlement-edge-hyped-paper.json and API fixture.
+- Deployment/tools: hourly-manifest.json, prepare_cloud.py,
+  preview_public_ui.py and benchmark_hourly_ladder.py.
+- Dashboards: public_dashboard.py, public_site.py, viewer.js, performance.js,
+  static/app.js, static/index.html and research_control.py.
+- Tests: extended hourly contracts/selection/live/recovery, fleet/cloud,
+  research-control and public browser cases; added HYPED candidate priority,
+  strict dollar/index parsing, default offset and cent-rounding checks.
+- Documentation: HOURLY.md, ACTIVE_PAPER_SETTINGS.md and CLOUD.md.
+
+Preservation
+- All 18 existing preset hashes in pre-change-hashes.json are unchanged.
+- All 17 entries in tests/fixtures/pre-hourly-config-hashes.json match.
+- All 12 prior deployed runtime configuration hashes are unchanged.
+- ETHD: 3efb5d90d16f9d9b; XRPD: e546a5ad1fc8175d, both retaining null offsets.
+- The 15-minute HYPE sigma remains 1.15. Existing collectors were not restarted.
+- Existing hourly and 15-minute selection/execution algorithms are unchanged;
+  this change registers HYPED with the existing hourly paths.
+
+Rollout
+- Prepared HYPED.json and added only HYPED to the existing runtime manifest;
+  did not run fresh fleet preparation over data/cloud.
+- Enabled/started project15-signal@HYPED at 4:29:57 PM ET.
+- Reloaded the executor, private dashboard and public exporter; staged/reloaded
+  the isolated public site. Both browser pages show HYPED separately from HYPE.
+- The first start hit a temporary execution-journal SQLite lock during the
+  executor reload. Systemd restarted it automatically. Subsequent checks showed
+  a connected, READY feed with two selected 5 PM strikes and fresh HYPE prices.
+- Normal warmup, book-age and entry-window checks still apply. Quiet books can
+  trigger the existing reconnect protection; no freshness checks were relaxed.
+- HYPED is an executor member and therefore included in its global loss guard;
+  the HYPED filled-trade/guard regression test verifies its separate P&L history.
+- No HYPED live policy enabled; no HYPED orders. Khoa must enable it separately
+  in the private dashboard using ENABLE_REAL_TRADING at 10 contracts.
+
+Validation
+- Full baseline: 2,771 passed, 63 failed, 3 skipped (757.41 seconds).
+- The six known preset-policy failures are ETH, SOL, XRP, BNB, HYPE and DOGE
+  cases of tests/test_strategy_settings.py::test_crypto_preset_entry_policy.
+- Baseline has 57 additional failures; see baseline-failures.txt.
+- Full after addition: 2,826 passed, 63 failed, 3 skipped (731.61 seconds).
+  Exact failure sets match: zero new failures, including the same known six.
+- After the owner requested disabling the offset: 132 hourly contract/live/
+  selection tests passed. Full suite was completed before this final config edit.
+  An initial sandboxed targeted run was interrupted; the socket-enabled run passed.
+- Public/private live browser checks passed without JavaScript errors.
+- Offline HYPED benchmark: 300 synthetic books, median 719.03 ms wall /
+  694.77 ms CPU, 7.24 MiB peak traced allocation, 68.96 MiB process peak RSS.
+  This is not the production subscription count: production tracks two books.
+- Raw suite outputs and JUnit files are retained locally under
+  /tmp/project15-hyped-validation-20261006; exact failure lists and counts are
+  committed with this report. Commits remain local on cloud-deploy; no push.
+
+Final owner-requested offset change
+- Disabled the 1-cent offset in both the preset and deployed HYPED.json.
+- Changing the config version made the retained live-signal run reject startup;
+  the collector, dashboard and executor were briefly unavailable during reload.
+- Preserved the original HYPED signal database in
+  data/cloud/HYPED/retained-offset-0.01-20261006 and started a fresh signal run
+  with the new version. No trade history existed or was deleted. Existing assets
+  and the shared execution journal were preserved.
+- Final runtime readback: null offset, version 9e1dff29e24034e1, connected/READY,
+  two tracked strikes, no enabled HYPED policy and zero HYPED orders.
+- Remaining limitation: the full suite has the same 63 pre-existing failures;
+  these were not repaired in this task. No profitability replay was reproduced.

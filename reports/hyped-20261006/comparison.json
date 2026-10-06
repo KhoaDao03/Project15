@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "passed": 2771,
+    "failed": 63,
+    "skipped": 3
+  },
+  "after_initial_addition": {
+    "passed": 2826,
+    "failed": 63,
+    "skipped": 3
+  },
+  "new_failures": [],
+  "resolved_failures": [],
+  "known_six": [
+    "tests/test_strategy_settings.py::test_crypto_preset_entry_policy[bnb]",
+    "tests/test_strategy_settings.py::test_crypto_preset_entry_policy[doge]",
+    "tests/test_strategy_settings.py::test_crypto_preset_entry_policy[eth]",
+    "tests/test_strategy_settings.py::test_crypto_preset_entry_policy[hype]",
+    "tests/test_strategy_settings.py::test_crypto_preset_entry_policy[sol]",
+    "tests/test_strategy_settings.py::test_crypto_preset_entry_policy[xrp]"
+  ],
+  "after_offset_disabled_targeted": {
+    "passed": 132,
+    "failed": 0,
+    "seconds": 22.17
+  }
+}

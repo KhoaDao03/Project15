@@ -1,0 +1,40 @@
+{
+  "checked_at": 1791318800.917608,
+  "asset": "HYPED",
+  "price": 92.2371,
+  "tracked": 2,
+  "tickers": [
+    "KXHYPED-26OCT0617-T91.9999",
+    "KXHYPED-26OCT0617-T93.9999"
+  ],
+  "closes": [
+    "2026-10-06T21:00:00Z"
+  ],
+  "connected": true,
+  "recovery": "READY",
+  "processing_lag": 0.015857235,
+  "entry_reasons": [
+    "ENTRY_WINDOW",
+    "MAX_PRICE",
+    "MIN_PRICE",
+    "MIN_PROBABILITY",
+    "MODEL_QUALITY",
+    "REFERENCE_GAP",
+    "STALE_BOOK",
+    "WARMUP"
+  ],
+  "executor_running": true,
+  "executor_member": true,
+  "global_loss_guard": {
+    "limit": -50.0,
+    "check_interval_seconds": 900,
+    "basis": "all_time_dashboard_realized",
+    "pnl": 251.6381,
+    "updated_at": 1791318676.7522554,
+    "triggered": false,
+    "error": null
+  },
+  "live_buying_enabled": false,
+  "orders": 0,
+  "browser_verified": true
+}
