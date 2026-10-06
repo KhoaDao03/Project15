@@ -84,7 +84,7 @@ def hourly_live(hourly, venue, store, monkeypatch):  # noqa: F811
 
 
 @pytest.mark.parametrize(
-    "offset,ask,expected", [(None, 0.90, 0.96), (0.01, 0.90, 0.91), (0.01, 0.96, 0.96), (0, 0.90, 0.90)]
+    "offset,ask,expected", [(None, 0.90, 0.96), (0.01, 0.90, 0.91), (0.01, 0.96, 0.96), (0.01, 0.905, 0.91), (0, 0.90, 0.90)]
 )
 def test_hourly_limit_and_blackout(hourly_live, offset, ask, expected):
     from btc15.entry_schedule import entry_blackout
@@ -137,7 +137,8 @@ async def test_hourly_live_holds_and_records_fill(hourly_live):
     assert len(state["posts"]) == 1
     row = manual.rows()[0]
     obs = row["timing"]["hourly_entry"]
-    assert obs["limit_sent"] == 0.96 and obs["signal_ask"] == 0.90
+    assert obs["limit_sent"] == (0.91 if control["asset"] == "HYPED" else 0.96)
+    assert obs["signal_ask"] == 0.90
     assert obs["fill_price"] == 0.90 and obs["fill_minus_signal_ask"] == 0
     state["position"] = "10"
     snapshot = store.read_market_display()
@@ -271,3 +272,17 @@ def test_missing_hourly_signal_ask_blocks_entry(hourly_live):
     select(expected_fill_price=None)
     with pytest.raises(HTTPException, match="Hourly signal ask unavailable"):
         w.entry(control, clock[0])
+
+
+def test_hourly_candidate_priority_is_first_signal_then_volume(hourly_live):
+    w, _, _, control, _, store, _ = hourly_live
+    event = control["ticker"].rsplit("-T", 1)[0]
+    tickers = [event+"-T"+str(i) for i in (1, 2, 3)]
+    for ticker in tickers:
+        w.write(dict(control, ticker=ticker))
+    store.publish_market_display({
+        tickers[0]: dict(since=1, volume=10),
+        tickers[1]: dict(since=2, volume=1000),
+        tickers[2]: dict(since=1, volume=20),
+    }, "hourly_candidates:hourly")
+    assert [c["ticker"] for c in w.cycle_controls()][:3] == [tickers[2], tickers[0], tickers[1]]

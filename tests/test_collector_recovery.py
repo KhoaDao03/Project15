@@ -15,7 +15,7 @@ from btc15.storage import read_events
 from btc15.strategies.settlement_edge.model import Tick
 
 
-@pytest.mark.parametrize("asset", ["ETHD", "XRPD", "BTC"])
+@pytest.mark.parametrize("asset", ["ETHD", "XRPD", "HYPED", "BTC"])
 def test_idle_ladder_strike_does_not_reconnect_fresh_hourly_feed(store, config, market, now, asset):
     from dataclasses import replace
 

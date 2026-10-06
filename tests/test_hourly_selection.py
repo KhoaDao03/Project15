@@ -17,6 +17,7 @@ from btc15.strategies.settlement_edge.model import Tick
 
 def ladder(raw):
     rows = []
+    prefix = "above $" if "above $" in raw["rules_primary"] else "above "
     for n, ask in enumerate((0.85, 0.90, 0.99, 0.50)):
         strike = raw["floor_strike"] + n
         rows.append(
@@ -25,7 +26,7 @@ def ladder(raw):
                 floor_strike=strike,
                 ticker=raw["event_ticker"] + "-T" + str(strike),
                 rules_primary=raw["rules_primary"].replace(
-                    "above " + str(raw["floor_strike"]) + " at", "above " + str(strike) + " at"
+                    prefix + str(raw["floor_strike"]) + " at", prefix + str(strike) + " at"
                 ),
                 yes_bid_dollars=str(ask - 0.02),
                 yes_ask_dollars=str(ask),

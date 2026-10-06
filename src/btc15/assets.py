@@ -1,4 +1,4 @@
-"""Verified identities for supported 15-minute contracts and ETH/XRP hourly ladders."""
+"""Verified identities for supported 15-minute contracts and ETH/XRP/HYPE hourly ladders."""
 
 from dataclasses import dataclass
 
@@ -12,11 +12,11 @@ class Asset:
 
     @property
     def series(self):
-        return {"ETHD": "KXETHD", "XRPD": "KXXRPD"}.get(self.symbol, f"KX{self.symbol}15M")
+        return {"ETHD": "KXETHD", "XRPD": "KXXRPD", "HYPED": "KXHYPED"}.get(self.symbol, f"KX{self.symbol}15M")
 
     @property
     def hourly(self):
-        return self.symbol in ("ETHD", "XRPD")
+        return self.symbol in ("ETHD", "XRPD", "HYPED")
 
     @property
     def underlying(self):
@@ -47,6 +47,7 @@ ASSETS = {
     "WTI": Asset("WTI", "Commodities.Index.PYTHOIL/USD", "PYTHOIL", 2),
     "ETHD": Asset("ETHD", "ETHUSD_RTI", "ERTI", 2),
     "XRPD": Asset("XRPD", "XRPUSD_RTI", "XRPUSD_RTI", 4),
+    "HYPED": Asset("HYPED", "HYPEUSD_RTI", "HYPEUSD_RTI", 4),
 }
 
 

@@ -12,11 +12,13 @@ from btc15.domain import parse_market
 from btc15.strategies.settlement_edge.bleep import SIGMA_MULTIPLIERS, capped_confidence
 
 
-@pytest.fixture(params=["ETHD", "XRPD"])
+@pytest.fixture(params=["ETHD", "XRPD", "HYPED"])
 def hourly(request):
     data = json.loads(Path(f"tests/fixtures/{request.param.lower()}-hourly-20261006.json").read_text())
+    # The captured HYPE 1 PM contract had settled; replay it before close.
+    raw = dict(data["market"], status="active", result="", settlement_ts=None) if request.param == "HYPED" else data["market"]
     return (
-        data["market"],
+        raw,
         data["series"],
         Strategy.load(f"config/settlement-edge-{request.param.lower()}-paper.json"),
     )
@@ -35,11 +37,12 @@ def test_hourly_identity_precision_and_presets(hourly):
     assert c.entry_window_start == 600 and c.entry_cutoff == 60 and not c.late_entry_enabled
     assert c.early_min_probability == 0 and c.probability_floor(remaining=600) == 0.83
     assert c.fixed_stop_price == c.stop_multiplier == c.post_close_cooldown == 0
-    assert c.take_profit is None and c.entry_limit_offset is None
+    assert c.take_profit is None
+    assert c.entry_limit_offset == (0.01 if c.asset == "HYPED" else None)
     assert c.fixed_contracts == c.max_contracts == 10 and c.max_open_exposure == 25
     assert c.one_trade_per_market and c.bleep_safety_clamp_enabled and c.sustained_lead_enabled
-    assert SIGMA_MULTIPLIERS[c.asset] == {"ETHD": 1.0, "XRPD": 1.1}[c.asset]
-    premium = 0.06 if c.asset == "ETHD" else 0.10
+    assert SIGMA_MULTIPLIERS[c.asset] == {"ETHD": 1.0, "XRPD": 1.1, "HYPED": 1.4}[c.asset]
+    premium = 0.10 if c.asset == "XRPD" else 0.06
     assert capped_confidence(0.98, 0.80, 0.82, c.asset) == pytest.approx(0.81 + premium)
 
 
@@ -72,7 +75,7 @@ def test_hourly_long_open_time_is_allowed(hourly, hours):
 def test_optional_limit_and_identity(hourly, offset):
     _, _, c = hourly
     new = replace(c, entry_limit_offset=offset)
-    assert (new.version == c.version) == (offset is None)
+    assert (new.version == c.version) == (offset == c.entry_limit_offset)
 
 
 @pytest.mark.parametrize("offset", [-0.01, 0.051, True, "0.01", float("nan"), float("inf")])
@@ -156,3 +159,31 @@ def test_hourly_changes_only_requested_preset_fields(hourly):
     for key, value in asdict(c).items():
         if key not in allowed:
             assert value == getattr(original, key), key
+
+
+def test_hyped_observed_hours_dollar_and_existing_versions():
+    data = json.loads(Path("tests/fixtures/hyped-hourly-20261006.json").read_text())
+    for key in ("market", "daily_market", "ordinary_3pm_market"):
+        raw = data[key]
+        m = parse_market(raw, data["series"])
+        assert m.spec.strike == 92.9999 and m.spec.rounding == "unrounded"
+        assert m.spec.settlement_start == m.close_time - 60
+        assert m.spec.comparison_operator == ">" and not m.spec.yes(92.9999)
+        assert m.spec.yes(92.99990001)
+        no_dollar = dict(raw, rules_primary=raw["rules_primary"].replace("above $", "above "))
+        assert parse_market(no_dollar, data["series"]).spec.strike == m.spec.strike
+        for primary in (raw["rules_primary"].replace("HYPEUSD_RTI", "HYPEUSDRTI"),
+                        raw["rules_primary"].replace("$92.9999", "$93.9999")):
+            with pytest.raises(ValueError):
+                parse_market(dict(raw, rules_primary=primary), data["series"])
+    for asset, version in (("ETHD", "3efb5d90d16f9d9b"), ("XRPD", "e546a5ad1fc8175d")):
+        assert Strategy.load(f"config/settlement-edge-{asset.lower()}-paper.json").version == version
+        captured = json.loads(Path(f"tests/fixtures/{asset.lower()}-hourly-20261006.json").read_text())
+        raw = captured["market"]
+        with pytest.raises(ValueError):
+            parse_market(dict(raw, rules_primary=raw["rules_primary"].replace("above ", "above $")), captured["series"])
+    original = json.loads(Path("config/settlement-edge-ethd-paper.json").read_text())
+    hype = json.loads(Path("config/settlement-edge-hyped-paper.json").read_text())
+    assert hype == dict(original, asset="HYPED", entry_limit_offset=0.01)
+    assert asset_spec("HYPED").underlying == "HYPE"
+    assert SIGMA_MULTIPLIERS["HYPE"] == 1.15
