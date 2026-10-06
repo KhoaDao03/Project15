@@ -17,6 +17,7 @@ from .collector_recovery import CollectorRecovery
 from .decision_notifications import notify_decision, notify_quote
 from .domain import Book, dumps, parse_market
 from .engine import Engine
+from .hourly import publish_candidates
 from .models import guard_archived_exposure, require_single_run
 from .reference_history import load_history, save_history
 from .research_log import start_research_log
@@ -301,6 +302,7 @@ async def collect(
         maximum_queue = 0
         last_status = 0
         last_display = 0
+        hourly_published = {}
         last_live_decision = None
         live_decision_eligible = False
         display_reference = None
@@ -431,6 +433,10 @@ async def collect(
             if recovery_changed:
                 store.add("collector_recovery", recovery_status, engine.run_id, "PAPER", now)
                 last_recovery_status = signature
+            hourly_changed = bool(
+                (paper or live_signals) and config.asset_spec.hourly
+                and publish_candidates(engine, hourly_published)
+            )
             latest_live = max(engine.latest.values(), key=lambda b: b["timestamp"]) if engine.latest else None
             eligible_live = bool(
                 latest_live
@@ -594,6 +600,8 @@ async def collect(
                 live_decision_eligible = eligible_live
                 if eligible_live and store.engine.dialect.name == "sqlite":
                     notify_decision(store.engine.url.database)
+            if hourly_changed and store.engine.dialect.name == "sqlite":
+                notify_decision(store.engine.url.database)
             return valid
 
         async def consume():

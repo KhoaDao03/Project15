@@ -667,7 +667,10 @@ class Engine:
                     self._processing_tickers.pop(ticker)
         local = kind in ("orderbook_snapshot", "orderbook_delta", "trade", "market_lifecycle_v2")
         target = msg.get("market_ticker")
-        for ticker in tuple(self._processing_tickers):
+        tickers = tuple(self._processing_tickers)
+        if self.config.asset_spec.hourly:
+            tickers = sorted(tickers, key=lambda t: -float(self.markets[t].raw.get("volume_fp") or 0))
+        for ticker in tickers:
             market = self.markets[ticker]
             if local and ticker != target and now < market.close_time:
                 order = self.executor.orders.get(ticker)

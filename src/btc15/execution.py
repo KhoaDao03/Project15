@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass, field
 from decimal import ROUND_CEILING, ROUND_FLOOR, InvalidOperation
 from functools import wraps
 
+from .assets import MAX_POSITIONS_PER_HOURLY_EVENT
 from .domain import D, order_direction, parse_market
 from .recovery import contract_hash, evidence_hash, older_metadata, restore_market, validate_final_evidence
 from .strategies.settlement_edge.bleep import capped_confidence
@@ -434,6 +435,13 @@ class PaperExecutor:
             return reject("STRATEGY_DISABLED", "Strategy entries are disabled")
         if self.market_trade_limit_reached(market.ticker):
             return reject("MARKET_TRADE_LIMIT", "The one-filled-trade limit for this market has been reached")
+        if c.asset_spec.hourly:
+            occupied = {ticker for ticker, order in self.orders.items()
+                        if ticker.rsplit("-T", 1)[0] == market.event_ticker
+                        and (order.active or order.remaining < order.quantity or order.completed_at is not None or order.cycle > 1)}
+            occupied.update(t for t in self.positions if t.rsplit("-T", 1)[0] == market.event_ticker)
+            if market.ticker not in occupied and len(occupied) >= MAX_POSITIONS_PER_HOURLY_EVENT:
+                return reject("EVENT_TRADE_LIMIT", "Two strikes already bought or pending in this hourly event")
         if not self.post_close_ready(now):
             return reject(
                 "POST_CLOSE_COOLDOWN",

@@ -9,6 +9,7 @@ from contextvars import ContextVar
 from decimal import Decimal
 from pathlib import Path
 
+from .assets import asset_spec
 from .domain import timestamp
 from .order_history import HISTORY_TRIGGERS
 
@@ -44,7 +45,7 @@ class LiveFallbackStore:
             if self._revision_schema[1]:
                 row = self._journal_reader.execute(
                     "SELECT revision FROM manual_history_revisions WHERE prefix=?",
-                    ("KX" + self.asset.upper() + "15M",),
+                    (asset_spec(self.asset.upper()).series,),
                 ).fetchone()
                 version = ("asset", schema, row[0] if row else 0)
             else:
@@ -99,7 +100,7 @@ class LiveFallbackStore:
                 json.loads(b)
                 for (b,) in db.execute(
                     "SELECT body FROM manual_orders WHERE json_extract(body,'$.request.ticker') LIKE ? ORDER BY rowid",
-                    ("KX" + self.asset + "15M-%",),
+                    (asset_spec(self.asset).series + "-%",),
                 )
             ]
         groups = defaultdict(list)

@@ -17,6 +17,7 @@ from contextlib import closing
 from dataclasses import asdict
 from pathlib import Path
 
+from .assets import asset_spec
 from .domain import dumps, jsonable
 from .research_control import read_control
 from .research_coverage import Coverage, atomic_json
@@ -341,7 +342,7 @@ class ResearchLog:
             with closing(sqlite3.connect(f"file:{self.order_db}?mode=ro", uri=True, timeout=0)) as db:
                 if not db.execute("SELECT 1 FROM sqlite_master WHERE name='execution_events'").fetchone():
                     return
-                events = list(read_events(db, self.execution_cursor, "KX" + self.asset + "15M-", limit=500))
+                events = list(read_events(db, self.execution_cursor, asset_spec(self.asset).series + "-", limit=500))
             for event in events:
                 if not self.capture_execution(event, delivery="journal_backfill"):
                     break
@@ -460,7 +461,7 @@ class ResearchLog:
                     "select body from manual_orders where json_extract(body,'$.updated_at')>=? "
                     "and json_extract(body,'$.updated_at')<? "
                     "and json_extract(body,'$.request.ticker') like ?",
-                    (self.order_cursor, cutoff, "KX" + self.asset + "15M-%"),
+                    (self.order_cursor, cutoff, asset_spec(self.asset).series + "-%"),
                 ).fetchall()
             for (raw,) in rows:
                 body = json.loads(raw)

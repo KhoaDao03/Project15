@@ -14,6 +14,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 
 from . import backlog_entry, execution_journal
+from .assets import MAX_POSITIONS_PER_HOURLY_EVENT, asset_spec
 from .decision_notifications import DecisionListener
 from .domain import timestamp
 from .entry_schedule import entry_blackout
@@ -67,6 +68,7 @@ class LiveAutomation:
         self.global_loss_guard = None
         self.stop_wakeup = asyncio.Event()
         self._market_locks = WeakValueDictionary()
+        self._hourly_event_locks = WeakValueDictionary()
         with manual.db() as db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS live_controls (ticker TEXT PRIMARY KEY, body TEXT NOT NULL)"
@@ -151,6 +153,13 @@ class LiveAutomation:
                 )
             }
         controls = {**selected, **active}
+        hourly_candidates = {}
+        for asset, member in self.members.items():
+            if member["config"].asset_spec.hourly:
+                hourly_candidates.update(
+                    self.stores[asset].read_market_display("hourly_candidates:" + member["run_id"]) or {}
+                )
+        selected.update({t: active[t] for t in hourly_candidates if t in active})
         obligations = {r["id"]: r for r in self.manual.rows(tickers=list(active), origin="bot")}
         obligations.update({r["id"]: r for r in self.manual.rows(unresolved=True, origin="bot")})
         for ticker in dict.fromkeys(r["request"]["ticker"] for r in obligations.values()):
@@ -175,7 +184,17 @@ class LiveAutomation:
         for ticker, quantity in held.items():
             if quantity > 0 and controls[ticker]["close_time"] > now:
                 selected[ticker] = controls[ticker]
-        return sorted(selected.values(), key=lambda c: not bool(c.get("exit_reason")))
+
+        def priority(control):
+            if control["asset"] not in ("ETHD", "XRPD"):
+                return (not bool(control.get("exit_reason")), 0, 0)
+            candidate = hourly_candidates.get(control["ticker"], {})
+            return (
+                not bool(control.get("exit_reason")), candidate.get("since", float("inf")),
+                -float(candidate.get("volume") or 0),
+            )
+
+        return sorted(selected.values(), key=priority)
 
     def write(self, control):
         with self.manual.db() as db:
@@ -199,7 +218,7 @@ class LiveAutomation:
             event = execution_journal.append(
                 db,
                 "asset_policy_changed",
-                market="KX" + policy["asset"] + "15M-",
+                market=asset_spec(policy["asset"]).series + "-",
                 body=policy,
             )
         self.manual.publish_execution(event)
@@ -346,7 +365,7 @@ class LiveAutomation:
         if latched and not rearm:
             raise HTTPException(409, "Daily live loss limit reached; new buys disabled")
         try:
-            rows = [r for r in self.manual.rows() if r["request"]["ticker"].startswith(f"KX{asset}15M-")]
+            rows = [r for r in self.manual.rows() if r["request"]["ticker"].startswith(asset_spec(asset).series + "-")]
             settlements = {}
             if any(Decimal((r.get("exchange_order") or {}).get("fill_count_fp", "0")) > 0 for r in rows):
                 member = self.members[asset]
@@ -417,6 +436,8 @@ class LiveAutomation:
                 continue
             controls = self.controls([market["ticker"] for market in snapshot.get("markets", [])])
             for market in snapshot.get("markets", []):
+                if asset_spec(asset).hourly and timestamp(market["close_time"]) != (int(time.time()) // 3600 + 1) * 3600:
+                    continue
                 if market["ticker"] in controls or timestamp(market["close_time"]) <= time.time():
                     continue
                 self.write(
@@ -430,6 +451,7 @@ class LiveAutomation:
                         config_version=policy["config_version"],
                         stop_price=policy["stop_price"],
                         close_time=timestamp(market["close_time"]),
+                        **({"event_ticker": market["ticker"].rsplit("-T", 1)[0], "volume_fp": market.get("volume_fp")} if asset_spec(asset).hourly else {}),
                     )
                 )
 
@@ -522,7 +544,7 @@ class LiveAutomation:
         orders = [
             r
             for r in self.manual.rows()
-            if asset is None or r["request"]["ticker"].startswith(f"KX{asset}15M-")
+            if asset is None or r["request"]["ticker"].startswith(asset_spec(asset).series + "-")
         ]
         if any(r.get("resting_take_profit") and r["state"] in UNRESOLVED for r in orders):
             raise HTTPException(409, "Wait for the resting take-profit order cancellation to be confirmed")
@@ -650,7 +672,8 @@ class LiveAutomation:
 
     def _entry(self, control, now, trace=None):
         asset = control["asset"]
-        window = None if self.members[asset]["config"].asset_spec.commodity else entry_blackout(now)
+        spec = self.members[asset]["config"].asset_spec
+        window = None if spec.commodity or spec.hourly else entry_blackout(now)
         if window:
             if trace is not None:
                 trace["entry_blackout"] = window
@@ -674,7 +697,24 @@ class LiveAutomation:
             trace["backlog_entry_bypass"] = bypass
         if not report["healthy"] and not bypass:
             raise HTTPException(409, "Collector health blocks automatic entry")
-        record = self.stores[asset].read_market_display("evaluation:" + member["run_id"]) or {}
+        if config.asset_spec.hourly:
+            event = control["ticker"].rsplit("-T", 1)[0]
+            occupied = {
+                r["request"]["ticker"] for r in self.manual.rows(event_ticker=event)
+                if r["request"]["action"] == "buy"
+                and r["request"]["ticker"].rsplit("-T", 1)[0] == event
+                and r["request"]["ticker"] != control["ticker"]
+                and (
+                    r["state"] in UNRESOLVED
+                    or Decimal((r.get("exchange_order") or {}).get("fill_count_fp", "0")) > 0
+                )
+            }
+            if len(occupied) >= MAX_POSITIONS_PER_HOURLY_EVENT:
+                raise HTTPException(409, "EVENT_TRADE_LIMIT: two hourly strikes filled or pending")
+        key = "evaluation:" + member["run_id"]
+        if config.asset_spec.hourly:
+            key += ":" + control["ticker"]
+        record = self.stores[asset].read_market_display(key) or {}
         d = record.get("body", {})
         now = max(now, time.time())
         if trace is not None:
@@ -729,6 +769,20 @@ class LiveAutomation:
         # The tick grid is validated again against venue metadata before submission.
         # Use the same maximum for signal eligibility and real buy orders.
         limit = Decimal(str(config.max_entry_price))
+        if config.asset_spec.hourly:
+            signal_ask = d.get("expected_fill_price")
+            if type(signal_ask) not in (int, float) or not math.isfinite(signal_ask):
+                raise HTTPException(409, "Hourly signal ask unavailable")
+            if config.entry_limit_offset is not None:
+                limit = min(limit, Decimal(str(signal_ask)) + Decimal(str(config.entry_limit_offset)))
+                # Hourly grids are one cent; never round the tighter ceiling up.
+                limit = limit.quantize(Decimal(".01"), rounding="ROUND_FLOOR")
+            d = dict(d, hourly_entry=dict(
+                signal_ask=signal_ask, limit_sent=float(limit), seconds_left=remaining,
+                strike=d.get("settlement_spec", {}).get("strike"),
+                event_ticker=control["ticker"].rsplit("-T", 1)[0], model_probability=p,
+                capped_probability=confidence, signal_timestamp=d.get("timestamp"),
+            ))
         if bypass:
             d = dict(
                 d,
@@ -918,6 +972,13 @@ class LiveAutomation:
             await asyncio.gather(*tasks.values(), return_exceptions=True)
 
     async def step_market(self, control, *, stops_only=False):
+        if asset_spec(control["asset"]).hourly:
+            event = control["ticker"].rsplit("-T", 1)[0]
+            async with self._hourly_event_locks.setdefault(event, asyncio.Lock()):
+                return await self._locked_step_market(control, stops_only=stops_only)
+        return await self._locked_step_market(control, stops_only=stops_only)
+
+    async def _locked_step_market(self, control, *, stops_only=False):
         async with self.market_lock(control["ticker"]):
             if stops_only:
                 current = self.control(control["ticker"])
@@ -1042,6 +1103,8 @@ class LiveAutomation:
                 return
             side, limit, decision = self.entry(control, now)
             timing = dict(decision_at=decision.get("timestamp"), decision_detected_at=time.time())
+            if config.asset_spec.hourly:
+                timing["hourly_entry"] = decision["hourly_entry"]
             if control["asset"] == "BTC":
                 timing["backlog_entry_policy"] = dict(initial=decision.get("backlog_entry_bypass"))
             if decision.get("execution_check_id"):

@@ -51,5 +51,6 @@ def test_legacy_config_retains_probability_and_identity():
     assert c.probability_floor(remaining=450) == c.min_probability
     values = asdict(c)
     values.pop("early_min_probability")
+    assert values.pop("entry_limit_offset") is None
     previous = {"probability_model": model_name(c.asset), **values}
     assert c.version == hashlib.sha256(json.dumps(previous, sort_keys=True).encode()).hexdigest()[:16]

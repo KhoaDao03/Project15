@@ -7,6 +7,7 @@ import time
 import uuid
 from pathlib import Path
 
+from .assets import asset_spec
 from .domain import dumps, timestamp
 
 INDEX_NAME = "coverage.sqlite"
@@ -114,7 +115,7 @@ class Coverage:
         if event == "metadata":
             for raw in msg.get("markets", []):
                 if not isinstance(raw, dict) or not raw.get("ticker", "").startswith(
-                    "KX" + self.asset + "15M-"
+                    asset_spec(self.asset).series + "-"
                 ):
                     continue
                 ticker = raw["ticker"]
@@ -150,7 +151,7 @@ class Coverage:
             if self.capture_mode == "sampled" and event == "orderbook_snapshot":
                 sequence_gap = False  # Deltas on this subscription are intentionally omitted.
             self.sequences[sid] = seq
-        if ticker and ticker.startswith("KX" + self.asset + "15M-"):
+        if ticker and ticker.startswith(asset_spec(self.asset).series + "-"):
             market = self.market(ticker)
             market["input_counts"][event] = market["input_counts"].get(event, 0) + 1
             market.setdefault("first_received_at", record["received_at"])

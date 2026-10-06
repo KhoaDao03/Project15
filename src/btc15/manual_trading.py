@@ -20,10 +20,15 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from . import execution_journal, order_history
 from .api import KalshiClient, read_timings, stop_reads
+from .assets import ASSETS
 from .config import Settings
 from .domain import timestamp
 
-TICKER = re.compile(r"KX(?:BTC|ETH|SOL|XRP|BNB|HYPE|DOGE|GOLD|SILVER|WTI)15M-[A-Z0-9-]{1,60}\Z")
+_HOURLY_SERIES = "|".join(re.escape(a.series) for a in ASSETS.values() if a.hourly)
+TICKER = re.compile(
+    r"(?:KX(?:BTC|ETH|SOL|XRP|BNB|HYPE|DOGE|GOLD|SILVER|WTI)15M-[A-Z0-9-]{1,60}|(?:"
+    + _HOURLY_SERIES + r")-\d{2}[A-Z]{3}\d{4}-T\d+(?:\.\d+)?)\Z"
+)
 UNRESOLVED = ("submitting", "accepted", "unknown")
 
 
@@ -143,12 +148,19 @@ class ManualTrading:
         finally:
             connection.close()
 
-    def rows(self, *, ticker=None, tickers=None, unresolved=False, origin=None, limit=None):
+    def rows(self, *, ticker=None, tickers=None, event_ticker=None, unresolved=False, origin=None, limit=None):
         """Read only the needed journal records; never cache authorization/order state."""
         clauses, parameters = [], []
         if ticker is not None:
             clauses.append("json_extract(body, '$.request.ticker') = ?")
             parameters.append(ticker)
+        if event_ticker is not None:
+            # Hourly ladder grammar: use the existing ticker index to avoid loading
+            # the lifetime fleet journal on every candidate's authorization check.
+            clauses.append(
+                "json_extract(body, '$.request.ticker') >= ? AND json_extract(body, '$.request.ticker') < ?"
+            )
+            parameters.extend((event_ticker + "-T", event_ticker + "-U"))
         if tickers is not None:
             if not tickers:
                 return []
@@ -244,6 +256,19 @@ class ManualTrading:
                 row["timing"] = {**previous.get("timing", {}), **row.get("timing", {})}
                 if "fill_notification" in previous:
                     row["fill_notification"] = previous["fill_notification"]
+            hourly = row.get("timing", {}).get("hourly_entry")
+            exchange = row.get("exchange_order") or {}
+            if hourly and row["request"]["action"] == "buy":
+                filled = Decimal(exchange.get("fill_count_fp") or "0")
+                costs = [exchange.get(k) for k in ("maker_fill_cost_dollars", "taker_fill_cost_dollars")]
+                # Missing exchange economics must not look like a free fill.
+                hourly.pop("fill_price", None)
+                hourly.pop("fill_minus_signal_ask", None)
+                if filled > 0 and all(cost is not None for cost in costs):
+                    paid = sum(map(Decimal, costs), Decimal(0))
+                    hourly["fill_price"] = float(paid / filled)
+                    if hourly.get("signal_ask") is not None:
+                        hourly["fill_minus_signal_ask"] = float(paid / filled - Decimal(str(hourly["signal_ask"])))
             db.execute("UPDATE manual_orders SET body=? WHERE id=?", (json.dumps(row), row["id"]))
             recorded = execution_journal.append(db, event, row=row, body=details, received_at=received_at)
         self.publish_execution(recorded)

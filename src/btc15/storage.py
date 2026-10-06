@@ -198,7 +198,7 @@ class Store:
         with self.transaction() as c:
             return tuple(c.execute(query.group_by(records.c.kind).order_by(records.c.kind)).all())
 
-    def publish_record(self, kind, body, run_id, mode, now, market="", opportunity_id=""):
+    def publish_record(self, kind, body, run_id, mode, now, market="", opportunity_id="", *, key=None):
         row = dict(
             id=opportunity_id or f"{kind}:{run_id}",
             kind=kind,
@@ -209,7 +209,7 @@ class Store:
             market=market,
             opportunity_id=opportunity_id,
         )
-        self.publish_market_display(row, f"{kind}:{run_id}")
+        self.publish_market_display(row, key or f"{kind}:{run_id}")
 
     def latest_evaluation(self, run_id, mode):
         live = self.read_market_display(f"evaluation:{run_id}") if run_id else None
