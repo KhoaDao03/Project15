@@ -1,0 +1,11 @@
+{
+  "existing_config_versions_checked": 196,
+  "all_unchanged": true,
+  "original_15m_parser_body_identical": true,
+  "manifest_members": 12,
+  "hourly_versions": {
+    "ETHD": "3efb5d90d16f9d9b",
+    "XRPD": "e546a5ad1fc8175d"
+  },
+  "entry_limit_offset": null
+}

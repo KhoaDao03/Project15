@@ -11,8 +11,8 @@ const signedMoney=value=>numeric(value)?(value>0?'+':'')+money(value):'—';
 const pnlClass=value=>value>0?'positive':value<0?'negative':'';
 const percent=value=>numeric(value)?(value*100).toFixed(1)+'%':'—';
 const count=value=>numeric(value)?value.toLocaleString('en-US'):'—';
-const symbols=['BTC','ETH','SOL','XRP','BNB','HYPE','DOGE','GOLD','SILVER','WTI'];
-const names=asset=>asset==='WTI'?'OIL / WTI':asset;
+const symbols=['BTC','ETH','SOL','XRP','BNB','HYPE','DOGE','ETHD','XRPD','GOLD','SILVER','WTI'];
+const names=asset=>asset==='WTI'?'OIL / WTI':asset==='ETHD'?'ETH hourly':asset==='XRPD'?'XRP hourly':asset;
 const coinPaths={
  DOGE:'M8 5h4a7 7 0 0 1 0 14H8V5Zm-3 7h9',
  BNB:'M12 2 6.5 7.5 8.6 9.6 12 6.2 15.4 9.6 17.5 7.5ZM2 12l3-3 3 3-3 3Zm10-3 3 3-3 3-3-3Zm7-0 3 3-3 3-3-3ZM6.5 16.5 12 22l5.5-5.5-2.1-2.1-3.4 3.4-3.4-3.4Z',
@@ -40,7 +40,7 @@ function summarize(assets){
   result.win_rate=result.completed_trades>0&&numeric(result.wins)?result.wins/result.completed_trades:null;
   return result;
 }
-function leaders(assets){const crypto=assets.filter(a=>symbols.slice(0,7).includes(a.asset));if(crypto.length!==7||crypto.some(a=>!numeric(a.realized_pnl)||!numeric(a.completed_trades))||!crypto.some(a=>a.completed_trades>0))return [];const best=Math.max(...crypto.map(a=>a.realized_pnl));return crypto.filter(a=>a.realized_pnl===best);}
+function leaders(assets){const crypto=assets.filter(a=>symbols.slice(0,9).includes(a.asset));if(crypto.length!==9||crypto.some(a=>!numeric(a.realized_pnl)||!numeric(a.completed_trades))||!crypto.some(a=>a.completed_trades>0))return [];const best=Math.max(...crypto.map(a=>a.realized_pnl));return crypto.filter(a=>a.realized_pnl===best);}
 function liveBuyingStatus(data,asset){if(data.stale||!data.live_available||typeof asset.live_policy?.enabled!=='boolean')return ['Unavailable','buying-unknown'];return asset.live_policy.enabled?['ON','buying-on']:['OFF','buying-off'];}
 function buyingBadge(data,asset){const [label,cls]=liveBuyingStatus(data,asset);const badge=el('span',label,'badge live-buying '+cls);badge.title='Saved new-buy setting; entries require strategy and health checks. Automatic exits are separate.';return badge;}
 function statusBadge(data,asset){return el('span',data.stale?'Updates delayed':asset.healthy?asset.state:'Checks pending','badge '+(data.stale||!asset.healthy?'status-warning':''));}

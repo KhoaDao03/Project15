@@ -16,7 +16,7 @@ from zoneinfo import ZoneInfo
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, JSONResponse
 
-ASSETS = ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI")
+ASSETS = ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD", "GOLD", "SILVER", "WTI")
 HISTORY_RATE = 5
 HISTORY_BURST = 10
 HISTORY_CONCURRENCY = 2

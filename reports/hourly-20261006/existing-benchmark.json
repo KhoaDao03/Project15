@@ -1,0 +1,42 @@
+{
+  "synthetic_order_rows": 8694,
+  "identical_read_bodies_and_order": true,
+  "seven_history_reads": {
+    "before": {
+      "wall_ms": 157.104,
+      "cpu_ms": 155.564
+    },
+    "after": {
+      "wall_ms": 42.027,
+      "cpu_ms": 42.033
+    }
+  },
+  "committed_single_order_updates": {
+    "before": {
+      "wall_ms": 2.519,
+      "cpu_ms": 0.676
+    },
+    "after": {
+      "wall_ms": 2.561,
+      "cpu_ms": 0.813
+    }
+  },
+  "identical_features": true,
+  "three_market_features": {
+    "before": {
+      "wall_ms": 21.777,
+      "cpu_ms": 21.782
+    },
+    "after": {
+      "wall_ms": 5.686,
+      "cpu_ms": 5.69
+    }
+  },
+  "retired_market_cache_allocations": {
+    "markets": 300,
+    "before_bytes": 803748,
+    "after_bytes": 26606,
+    "retained_latest": 1,
+    "remaining_model_cache": 0
+  }
+}

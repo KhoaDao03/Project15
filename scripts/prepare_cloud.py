@@ -10,7 +10,7 @@ from btc15.config import Strategy
 def prepare(output):
     root = Path(__file__).resolve().parents[1]
     configs = {}
-    for asset in ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE"):
+    for asset in ("BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD"):
         name = "active" if asset == "BTC" else asset.lower()
         path = root / "config" / f"settlement-edge-{name}-paper.json"
         Strategy.load(path)

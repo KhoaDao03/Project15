@@ -1,0 +1,16 @@
+[
+  {
+    "asset": "ETHD",
+    "config": "ETHD.json",
+    "data_dir": "ETHD",
+    "run_id": "ETHD-live-signals",
+    "live_only": true
+  },
+  {
+    "asset": "XRPD",
+    "config": "XRPD.json",
+    "data_dir": "XRPD",
+    "run_id": "XRPD-live-signals",
+    "live_only": true
+  }
+]

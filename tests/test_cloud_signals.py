@@ -70,7 +70,7 @@ def test_cloud_manifest_matches_services_and_refuses_overwrite(tmp_path):
     prepare = runpy.run_path("scripts/prepare_cloud.py")["prepare"]
     path = prepare(tmp_path / "cloud")
     members = load_members(path)
-    assert set(members) == {"BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE"}
+    assert set(members) == {"BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "ETHD", "XRPD"}
     for asset, member in members.items():
         assert member["run_id"] == f"{asset}-live-signals"
         assert member["live_only"]
