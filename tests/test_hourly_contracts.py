@@ -38,7 +38,7 @@ def test_hourly_identity_precision_and_presets(hourly):
     assert c.early_min_probability == 0 and c.probability_floor(remaining=600) == 0.83
     assert c.fixed_stop_price == c.stop_multiplier == c.post_close_cooldown == 0
     assert c.take_profit is None
-    assert c.entry_limit_offset == (0.01 if c.asset == "HYPED" else None)
+    assert c.entry_limit_offset is None
     assert c.fixed_contracts == c.max_contracts == 10 and c.max_open_exposure == 25
     assert c.one_trade_per_market and c.bleep_safety_clamp_enabled and c.sustained_lead_enabled
     assert SIGMA_MULTIPLIERS[c.asset] == {"ETHD": 1.0, "XRPD": 1.1, "HYPED": 1.4}[c.asset]
@@ -184,6 +184,6 @@ def test_hyped_observed_hours_dollar_and_existing_versions():
             parse_market(dict(raw, rules_primary=raw["rules_primary"].replace("above ", "above $")), captured["series"])
     original = json.loads(Path("config/settlement-edge-ethd-paper.json").read_text())
     hype = json.loads(Path("config/settlement-edge-hyped-paper.json").read_text())
-    assert hype == dict(original, asset="HYPED", entry_limit_offset=0.01)
+    assert hype == dict(original, asset="HYPED")
     assert asset_spec("HYPED").underlying == "HYPE"
     assert SIGMA_MULTIPLIERS["HYPE"] == 1.15

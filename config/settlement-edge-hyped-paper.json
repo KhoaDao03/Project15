@@ -74,5 +74,5 @@
   "fixed_stop_price": 0,
   "full_position_execution": true,
   "early_min_probability": 0,
-  "entry_limit_offset": 0.01
+  "entry_limit_offset": null
 }

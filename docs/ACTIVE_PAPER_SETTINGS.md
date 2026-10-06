@@ -89,9 +89,9 @@ Separate `settlement-edge-ethd-paper.json`, `settlement-edge-xrpd-paper.json` an
 80–96¢ asks, 10 contracts, two bought/pending strikes per hourly event, and no
 stop, take-profit or entry blackout. ETHD sigma is 1.00 with a 6pp confidence
 premium; XRPD sigma is 1.10 with 10pp; HYPED sigma is 1.40 with 6pp.
-ETHD/XRPD keep `entry_limit_offset: null`; HYPED ships with `0.01` to limit price
-chasing, given the owner's replay sensitivity to stale signals. HYPED version:
-`0be84b49fe332935`. The 15-minute HYPE sigma remains 1.15.
+All three use `entry_limit_offset: null`; the owner disabled HYPED's initially
+requested 1¢ offset on October 6, 2026. HYPED version: `9e1dff29e24034e1`.
+The 15-minute HYPE sigma remains 1.15.
 Fresh cloud preparation now includes all three. See [hourly settings and go-live
 checks](HOURLY.md) for frozen versions, strict settlement precision, fleet
 migration and fill-quality review. Owner live-buy authorization remains required.

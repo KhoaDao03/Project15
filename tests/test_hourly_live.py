@@ -137,7 +137,7 @@ async def test_hourly_live_holds_and_records_fill(hourly_live):
     assert len(state["posts"]) == 1
     row = manual.rows()[0]
     obs = row["timing"]["hourly_entry"]
-    assert obs["limit_sent"] == (0.91 if control["asset"] == "HYPED" else 0.96)
+    assert obs["limit_sent"] == 0.96
     assert obs["signal_ask"] == 0.90
     assert obs["fill_price"] == 0.90 and obs["fill_minus_signal_ask"] == 0
     state["position"] = "10"

@@ -14,7 +14,7 @@ existing ETH/XRP/HYPE 15-minute presets and their configuration versions are unc
 | Contracts per strike | 10 | 10 | 10 |
 | Bought or pending strikes per event | At most 2 | At most 2 | At most 2 |
 | Stops / take-profit / blackout | Disabled | Disabled | Disabled |
-| `entry_limit_offset` | `null` | `null` | `0.01` |
+| `entry_limit_offset` | `null` | `null` | `null` |
 
 Only markets closing at the **next top of the hour** are discovered, regardless
 of how many hours or days earlier they opened. Daily/weekly openings that close
@@ -64,16 +64,15 @@ by this implementation. It omitted the indicator lean retained here.
 ## HYPED addition
 
 HYPED uses the same two-strike selection, freshness, event cap and settlement
-machinery as ETHD/XRPD. Its preset copies ETHD with only `asset` and
-`entry_limit_offset` changed. The frozen HYPED version is `0be84b49fe332935`.
+machinery as ETHD/XRPD. Its preset copies ETHD with only `asset` changed.
+The frozen HYPED version is `9e1dff29e24034e1`.
 ETHD remains `3efb5d90d16f9d9b`, XRPD remains `e546a5ad1fc8175d`, and the 15-minute
 HYPE sigma multiplier remains 1.15.
 
-HYPED deliberately ships with the tighter buy limit enabled: the lower of the
-signal ask plus 1¢ and 96¢, rounded down to a valid cent. The owner's supplied
-59-day replay found weaker results with a one-minute stale signal, motivating
-this cap on chasing a moved price. Those research results were not independently
-reproduced here. ETHD/XRPD retain their `null` offset.
+The owner disabled HYPED's initially requested 1¢ entry-limit offset on
+October 6, 2026. All three hourly presets now use `entry_limit_offset: null`,
+so the buy limit can reach the configured 96¢ maximum even when the signal ask
+is lower. The optional tighter limit remains available and tested.
 
 The public API fixtures captured on October 6 include 1 PM and 3 PM ordinary
 hourly events and the 5 PM daily event. All say `HYPEUSD_RTI` and `above $92.9999`;
