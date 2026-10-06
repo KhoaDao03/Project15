@@ -12,6 +12,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
 from .assets import asset_spec
+from .domain import timestamp
 from .read_budget import ReadBudget, read_cost, shared_budget_path
 
 read_timings = ContextVar("kalshi_read_timings", default=None)
@@ -173,6 +174,9 @@ class KalshiClient:
                 unique[ticker] = resolved
         # Preserve invalid canonical metadata for research; runner still validates it.
         ordered = sorted(unique.values(), key=lambda m: m["close_time"])
+        if selected.hourly:
+            close = (int(time.time()) // 3600 + 1) * 3600
+            return series, [m for m in ordered if timestamp(m["close_time"]) == close]
         active = [m for m in ordered if m.get("status") == "active"]
         upcoming = [m for m in ordered if m.get("status") != "active"]
         return series, active + upcoming[:1]

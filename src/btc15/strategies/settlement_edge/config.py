@@ -15,6 +15,7 @@ class Strategy:
     no_new_entry: int = 120
     min_entry_price: float = 0.85
     max_entry_price: float = 0.99
+    entry_limit_offset: float | None = None
     min_probability: float = 0.90
     # Zero retains the standard floor; otherwise applies only with 7–8 minutes left.
     early_min_probability: float = 0
@@ -108,6 +109,11 @@ class Strategy:
                 raise ValueError(f"{f.name} requires a number")
             if isinstance(v, (float, int)) and (not math.isfinite(v) or v < 0):
                 raise ValueError(f"Invalid {f.name}")
+        if self.entry_limit_offset is not None and (
+            type(self.entry_limit_offset) not in (int, float)
+            or not math.isfinite(self.entry_limit_offset) or not 0 <= self.entry_limit_offset <= .05
+        ):
+            raise ValueError("Invalid entry_limit_offset")
         if self.full_position_execution and (self.passive or self.sizing_mode != "fixed_contracts"):
             raise ValueError("Full-position execution requires aggressive fixed-contract sizing")
         if not 0 <= self.fixed_stop_price < 1:
@@ -153,6 +159,8 @@ class Strategy:
         from .bleep import model_name
 
         values = {"probability_model": model_name(self.asset), **asdict(self)}
+        if self.entry_limit_offset is None:
+            values.pop("entry_limit_offset")
         if not self.early_min_probability:
             values.pop("early_min_probability")
         return hashlib.sha256(json.dumps(values, sort_keys=True).encode()).hexdigest()[:16]

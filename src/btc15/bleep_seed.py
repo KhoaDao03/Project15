@@ -40,7 +40,7 @@ def validate_seed(body, now, asset="BTC"):
 async def fetch_seed(client, now, asset="BTC"):
     from .assets import asset_spec
 
-    asset_spec(asset)
+    underlying = asset_spec(asset).underlying
 
     def iso(t):
         return datetime.fromtimestamp(t, timezone.utc).isoformat()
@@ -48,18 +48,18 @@ async def fetch_seed(client, now, asset="BTC"):
     sources = [
         (
             "coinbase",
-            f"https://api.exchange.coinbase.com/products/{asset}-USD/candles",
+            f"https://api.exchange.coinbase.com/products/{underlying}-USD/candles",
             dict(granularity=60, start=iso(now - 101 * 60), end=iso(now)),
         ),
         (
             "kraken",
             "https://api.kraken.com/0/public/OHLC",
-            dict(pair="XBTUSD" if asset == "BTC" else asset + "USD", interval=1),
+            dict(pair="XBTUSD" if underlying == "BTC" else underlying + "USD", interval=1),
         ),
         (
             "binance",
             "https://api.binance.com/api/v3/klines",
-            dict(symbol=asset + "USDT", interval="1m", limit=101),
+            dict(symbol=underlying + "USDT", interval="1m", limit=101),
         ),
     ]
     errors = []

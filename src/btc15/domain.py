@@ -51,7 +51,7 @@ class SettlementSpecification:
             or self.round_digits != asset.round_digits
         ):
             raise ValueError("Unverified settlement methodology")
-        if self.rounding not in ("ambiguous_half_tie", "half_even", "half_up"):
+        if self.rounding not in ("ambiguous_half_tie", "half_even", "half_up", "unrounded"):
             raise ValueError("Unknown rounding")
 
     @property
@@ -62,6 +62,9 @@ class SettlementSpecification:
 
     def yes(self, average, rounding=None):
         r = rounding or self.rounding
+        if r == "unrounded":
+            value, strike = D(average), D(self.strike)
+            return {">": value > strike, ">=": value >= strike, "<": value < strike, "<=": value <= strike}[self.comparison_operator]
         if r == "ambiguous_half_tie":
             a, b = self.yes(average, "half_even"), self.yes(average, "half_up")
             if a != b:
@@ -77,7 +80,7 @@ class SettlementSpecification:
 
     def favored(self, price):
         if price == self.strike:
-            return None
+            return "yes" if self.rounding == "unrounded" else None
         above = price > self.strike
         return "yes" if above == (self.comparison_operator in (">=", ">")) else "no"
 
@@ -126,6 +129,10 @@ class Market:
 
 def parse_market(raw, series):
     asset = next((a for a in ASSETS.values() if a.series == series.get("ticker")), None)
+    if asset is not None and asset.hourly:
+        from .hourly import parse_hourly_market
+
+        return parse_hourly_market(raw, series, asset)
     if asset is None or series.get("frequency") != "fifteen_min":
         raise ValueError("Not a supported 15-minute series")
     if not re.fullmatch(re.escape(asset.series) + r"-[A-Z0-9]+-\d+", raw.get("ticker", "")):
