@@ -220,6 +220,10 @@ def create_fleet_app(manifest):
             reference = stores[asset].read_market_display("reference") or {}
             snapshot = stores[asset].read_market_display() or {}
             evaluation = stores[asset].read_market_display(f"evaluation:{member['run_id']}")
+            hourly_probabilities = (
+                stores[asset].read_market_display(f"probability_display:{member['run_id']}") or {}
+                if member["config"].asset_spec.hourly else {}
+            )
             # A snapshot may be published while this request is being processed.
             # Compare with a clock sampled after both reads, never request-start time.
             now = time.time()
@@ -253,7 +257,7 @@ def create_fleet_app(manifest):
                 ]
             for market in markets:
                 market["probability"] = market_probability(
-                    (stores[asset].read_market_display(f"evaluation:{member['run_id']}:{market['ticker']}")
+                    (hourly_probabilities.get(market["ticker"])
                      if member["config"].asset_spec.hourly else evaluation),
                     member,
                     market,

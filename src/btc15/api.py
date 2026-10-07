@@ -2,6 +2,8 @@
 
 import asyncio
 import base64
+import logging
+import math
 import time
 from contextvars import ContextVar
 from pathlib import Path
@@ -13,10 +15,11 @@ from cryptography.hazmat.primitives.asymmetric import padding
 
 from .assets import asset_spec
 from .domain import timestamp
-from .read_budget import ReadBudget, read_cost, shared_budget_path
+from .read_budget import READ_RATE, ReadBudget, read_cost, shared_budget_path
 
 read_timings = ContextVar("kalshi_read_timings", default=None)
 stop_reads = ContextVar("kalshi_stop_reads", default=False)
+log = logging.getLogger(__name__)
 
 
 class KalshiClient:
@@ -56,6 +59,7 @@ class KalshiClient:
         metric = dict(
             endpoint=path.split("?")[0],
             attempts=0,
+            responses=[],
             rate_wait_ms=0.0,
             network_ms=0.0,
             retry_wait_ms=0.0,
@@ -79,22 +83,40 @@ class KalshiClient:
                 metric["attempts"] += 1
                 metric["rate_wait_ms"] += (time.monotonic() - wait_started) * 1000
             signed_path = urlparse(self.settings.rest_url).path + "/" + path.lstrip("/")
-            headers = self.headers("GET", signed_path) if authenticated else {}
+            # Credentialed collectors share the account budget, even for public
+            # metadata. Do not silently send that traffic as anonymous requests.
+            signed = authenticated or bool(self.key and self.settings.api_key_id)
+            headers = self.headers("GET", signed_path) if signed else {}
             start = time.time()
             network_started = time.monotonic()
             try:
                 response = await self.http.get(path.lstrip("/"), params=params, headers=headers)
                 if metric is not None:
                     metric["http_status"] = response.status_code
+                    metric["responses"].append(dict(status=response.status_code, received_at=time.time()))
             finally:
                 if metric is not None:
                     metric["network_ms"] += (time.monotonic() - network_started) * 1000
             if response.status_code == 429 or response.status_code >= 500:
+                # A 429 without Retry-After means exhausted tokens, not a
+                # mandatory one-second ban. Back off exponentially from refill
+                # time; 5xx responses retain the longer server-error backoff.
+                fallback = (
+                    max(0.05, read_cost(path) / READ_RATE) * 2**attempt
+                    if response.status_code == 429 else 2**attempt
+                )
                 try:
-                    delay = float(response.headers.get("Retry-After", 2**attempt))
+                    delay = float(response.headers.get("Retry-After", fallback))
+                    if not math.isfinite(delay):
+                        delay = fallback
                 except ValueError:
-                    delay = 2**attempt
-                delay = min(10, max(0.1, delay))
+                    delay = fallback
+                delay = max(0.05, delay)
+                log.warning(
+                    "Kalshi read retry asset=%s endpoint=%s status=%s attempt=%s signed=%s stop=%s delay=%.3fs",
+                    self.settings.asset, path.split("?")[0], response.status_code,
+                    attempt + 1, signed, stop_reads.get(), delay,
+                )
                 if response.status_code == 429:
                     await self.read_budget.penalize(delay)
                 if attempt < 3:

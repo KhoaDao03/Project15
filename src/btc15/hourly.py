@@ -115,6 +115,17 @@ def parse_hourly_market(raw, series, asset):
     )
 
 
+def publish_probability_display(engine):
+    """Publish every watched strike for display, independently of entry eligibility."""
+    engine.store.publish_market_display(
+        {
+            ticker: dict(run_id=engine.run_id, timestamp=decision["timestamp"], body=decision)
+            for ticker, decision in engine.latest.items()
+        },
+        f"probability_display:{engine.run_id}",
+    )
+
+
 def publish_candidates(engine, published):
     """Publish a complete ladder pass atomically, including lost-signal invalidations.
 

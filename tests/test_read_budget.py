@@ -229,3 +229,49 @@ async def test_credentialed_clients_share_origin_budget(tmp_path, monkeypatch):
     finally:
         await a.close()
         await b.close()
+
+
+@pytest.mark.anyio
+async def test_429_default_backoff_uses_refill_time_and_records_all_statuses(monkeypatch, caplog):
+    delays = []
+    statuses = iter([429, 429, 200])
+    client = KalshiClient(Settings())
+    await client.http.aclose()
+    client.http = httpx.AsyncClient(base_url=Settings.rest_url + '/', transport=httpx.MockTransport(
+        lambda request: httpx.Response(next(statuses), json={})))
+    async def acquire(*args, **kwargs):
+        pass
+    async def penalize(delay):
+        delays.append(delay)
+    monkeypatch.setattr(client.read_budget, 'acquire', acquire)
+    monkeypatch.setattr(client.read_budget, 'penalize', penalize)
+    metrics = []
+    token = read_timings.set(metrics)
+    try:
+        await client.get('series/KXBTC15M')
+    finally:
+        read_timings.reset(token)
+        await client.close()
+    assert delays == [.05, .1]
+    assert [r['status'] for r in metrics[0]['responses']] == [429, 429, 200]
+    assert 'endpoint=series/KXBTC15M status=429' in caplog.text
+
+
+@pytest.mark.anyio
+async def test_public_metadata_signed_when_credentials_available(monkeypatch):
+    client = KalshiClient(Settings(api_key_id='test'))
+    client.key = object()
+    client.read_budget = ReadBudget()
+    client.read_budget.state.update(tokens=600)
+    monkeypatch.setattr(client, 'headers', lambda method, path: {'KALSHI-ACCESS-KEY': 'test'})
+    requests = []
+    def handler(request):
+        requests.append(request)
+        return httpx.Response(200, json={})
+    await client.http.aclose()
+    client.http = httpx.AsyncClient(base_url=Settings.rest_url + '/', transport=httpx.MockTransport(handler))
+    try:
+        await client.get('series/KXBTC15M')
+    finally:
+        await client.close()
+    assert requests[0].headers['KALSHI-ACCESS-KEY'] == 'test'

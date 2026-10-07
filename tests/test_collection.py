@@ -248,3 +248,32 @@ def test_transport_loss_reconnects_and_rebuilds_book(store, config, tmp_path, ra
     assert len(snapshots) == 2
     assert snapshots[0]["connection_id"] != snapshots[1]["connection_id"]
     assert not [r for r in store.list(kind="health") if r["body"]["code"] in ("SEQUENCE_GAP", "INVALID_DATA")]
+
+
+def test_quote_processing_trace_distinguishes_republication(store, config, tmp_path, raw, series, monkeypatch):
+    from copy import deepcopy
+    from types import SimpleNamespace
+
+    from btc15.domain import timestamp
+
+    offset = timestamp(raw['close_time']) - 300 - time.time()
+    monkeypatch.setattr(runner, 'time', SimpleNamespace(
+        time=lambda: time.time() + offset, monotonic=time.monotonic, monotonic_ns=time.monotonic_ns))
+    fake_client(monkeypatch, raw, series)
+    fake_socket(monkeypatch, [dict(type='orderbook_snapshot', sid=3, seq=1, msg=dict(
+        market_ticker=raw['ticker'], yes_dollars_fp=[['.80', '2']], no_dollars_fp=[['.85', '2']]))])
+    published = []
+    publish = store.publish_market_display
+    def capture(body, key='current'):
+        if key == 'current':
+            published.append(deepcopy(body))
+        return publish(body, key)
+    monkeypatch.setattr(store, 'publish_market_display', capture)
+    asyncio.run(runner.collect(Settings(data_dir=str(tmp_path)), config, store, duration=.3))
+    quotes = [(s['published_at'], m) for s in published for m in s.get('markets', [])
+              if m.get('book_first_published_at') is not None]
+    assert len(quotes) >= 2
+    first = quotes[0][1]
+    assert first['book_received'] <= first['book_processing_started_at'] <= first['book_processed_at'] <= first['book_first_published_at']
+    assert all(m['book_first_published_at'] == first['book_first_published_at'] for _, m in quotes)
+    assert quotes[-1][0] > first['book_first_published_at']

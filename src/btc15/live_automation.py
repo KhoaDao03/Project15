@@ -899,6 +899,9 @@ class LiveAutomation:
                 stop_bid=bid,
                 quote_received_at=snapshot.get("market", {}).get("book_received"),
                 quote_published_at=snapshot.get("published_at"),
+                quote_processing_started_at=snapshot.get("market", {}).get("book_processing_started_at"),
+                quote_processed_at=snapshot.get("market", {}).get("book_processed_at"),
+                quote_first_published_at=snapshot.get("market", {}).get("book_first_published_at"),
             ),
         )
         self.write(control)

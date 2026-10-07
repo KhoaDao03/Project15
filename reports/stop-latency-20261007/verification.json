@@ -1,0 +1,185 @@
+{
+  "status": "deployed",
+  "changes": [
+    "Reuse identity-verified market routing and price grid only for authorized HARD_STOP sells; cache expires at close or after 900 seconds, is bounded to 256 entries, and is invalidated on rejected orders or failed metadata refresh. Fresh holdings, reduce-only IOC, journal, and final authorization remain.",
+    "Sign credentialed metadata reads so they use the account budget the host limiter models.",
+    "Use exponential 429 backoff starting at token refill time (50ms for ordinary reads), keeping four attempts and shared cooldown; honor Retry-After and retain 5xx backoff.",
+    "Record intermediate response statuses and log retry endpoint, asset, signing, stop priority, and delay.",
+    "Record quote processing start/end and first publication to separate actual processing delay from unchanged-book age."
+  ],
+  "benchmark": {
+    "cold": {
+      "n": 5,
+      "median_preflight_ms": 106.70874395873398,
+      "read_counts": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    "warm": {
+      "n": 5,
+      "median_preflight_ms": 53.366023988928646,
+      "read_counts": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  "benchmark_limitations": "Five cold and five warm samples, real GETs and synthetic holdings in temporary DB; all ten non-GET attempts blocked by transport. Not deployed stop-loss latency.",
+  "tests": {
+    "focused_passed": 91,
+    "broader_passed": 153,
+    "lint": "pass",
+    "diff_check": "pass"
+  },
+  "investigation": {
+    "account_limits": {
+      "grants": [],
+      "read": {
+        "bucket_capacity": 600,
+        "refill_rate": 200
+      },
+      "usage_tier": "basic",
+      "write": {
+        "bucket_capacity": 100,
+        "refill_rate": 100
+      }
+    },
+    "endpoint_costs": {
+      "default_cost": 10,
+      "endpoint_costs": [
+        {
+          "cost": 30,
+          "method": "POST",
+          "path": "/trade-api/v2/account/api_usage_level/upgrade"
+        },
+        {
+          "cost": 50,
+          "method": "GET",
+          "path": "/trade-api/v2/cfbenchmarks"
+        },
+        {
+          "cost": 50,
+          "method": "GET",
+          "path": "/trade-api/v2/cfbenchmarks/*endpoint"
+        },
+        {
+          "cost": 2,
+          "method": "POST",
+          "path": "/trade-api/v2/communications/quotes"
+        },
+        {
+          "cost": 2,
+          "method": "DELETE",
+          "path": "/trade-api/v2/communications/quotes/:quote_id"
+        },
+        {
+          "cost": 2,
+          "method": "GET",
+          "path": "/trade-api/v2/communications/quotes/:quote_id"
+        },
+        {
+          "cost": 2,
+          "method": "DELETE",
+          "path": "/trade-api/v2/communications/rfqs/:rfq_id/quotes/:quote_id"
+        },
+        {
+          "cost": 2,
+          "method": "GET",
+          "path": "/trade-api/v2/communications/rfqs/:rfq_id/quotes/:quote_id"
+        },
+        {
+          "cost": 1,
+          "method": "PUT",
+          "path": "/trade-api/v2/communications/rfqs/:rfq_id/quotes/:quote_id/confirm"
+        },
+        {
+          "cost": 5,
+          "method": "GET",
+          "path": "/trade-api/v2/margin/balance"
+        },
+        {
+          "cost": 1,
+          "method": "DELETE",
+          "path": "/trade-api/v2/margin/orders/:order_id"
+        },
+        {
+          "cost": 1,
+          "method": "POST",
+          "path": "/trade-api/v2/margin/orders/:order_id/decrease"
+        },
+        {
+          "cost": 2,
+          "method": "DELETE",
+          "path": "/trade-api/v2/portfolio/events/orders"
+        },
+        {
+          "cost": 2,
+          "method": "DELETE",
+          "path": "/trade-api/v2/portfolio/events/orders/:order_id"
+        },
+        {
+          "cost": 2,
+          "method": "DELETE",
+          "path": "/trade-api/v2/portfolio/events/orders/batched"
+        },
+        {
+          "cost": 2,
+          "method": "GET",
+          "path": "/trade-api/v2/portfolio/orders/:order_id"
+        },
+        {
+          "cost": 2,
+          "method": "POST",
+          "path": "/trade-api/v2/portfolio/subaccounts/positions/transfer/batched"
+        }
+      ]
+    },
+    "paced_endpoint_responses": 24,
+    "paced_429s": 0,
+    "limitation": "Paced probes did not reproduce background throttling; exact production source requires the staged retry logging after rollout.",
+    "official_source": "https://docs.kalshi.com/getting_started/rate_limits"
+  },
+  "source_hashes": {
+    "src/btc15/api.py": "c8d1be112cce51a2ef4ae311755e3c9adec89ea3a02a6913996644f08a0fd65c",
+    "src/btc15/manual_trading.py": "11f13a6ea81ec7955c7334a294427cc42837729fa2dab3b26a4df747f941c898",
+    "src/btc15/live_automation.py": "08fec5b403ddb51eefc8f121c66dc6277d9b3c0b03a0070445913196cc939e49",
+    "tests/test_stop_worker.py": "0ee024a2ad2290a4f8c2a7c09c588418e3ef3e9d80117847c5dc25a531684f06",
+    "tests/test_live_latency.py": "59bd872cafaa24ab15c43a7866f545bb263e40288874237b809086ca01c693da",
+    "tests/test_read_budget.py": "59e982752bdace3f12420188ad3d77d3dbd36418657a33edba5cb73172a6d15a",
+    "tests/test_collection.py": "fec79866bc11ad087be978446ef0e56e6760d2220aa77e21f6e4014923451e22",
+    "src/btc15/runner.py": "9167ce160442f13872aea5bd26a7ad151c7888acee57c1e7a64633dce382ea2e"
+  },
+  "deployment": {
+    "checked_at": 1791393056.1487265,
+    "since": 1791392678.6973176,
+    "cycle_age_seconds": 0.7921078205108643,
+    "policies_restored": true,
+    "services": {
+      "project15-execution.service": "MainPID=641225\nNRestarts=0\nActiveState=active\n",
+      "project15-dashboard.service": "MainPID=641226\nNRestarts=0\nActiveState=active\n",
+      "project15-signal@BTC.service": "MainPID=641227\nNRestarts=0\nActiveState=active\n",
+      "project15-signal@ETH.service": "MainPID=641228\nNRestarts=0\nActiveState=active\n",
+      "project15-signal@SOL.service": "MainPID=641229\nNRestarts=0\nActiveState=active\n",
+      "project15-signal@XRP.service": "MainPID=641231\nNRestarts=0\nActiveState=active\n",
+      "project15-signal@GOLD.service": "MainPID=641230\nNRestarts=0\nActiveState=active\n",
+      "project15-signal@BNB.service": "MainPID=641232\nNRestarts=0\nActiveState=active\n",
+      "project15-signal@HYPE.service": "MainPID=641234\nNRestarts=0\nActiveState=active\n",
+      "project15-signal@DOGE.service": "MainPID=641233\nNRestarts=0\nActiveState=active\n",
+      "project15-signal@ETHD.service": "MainPID=641617\nNRestarts=1\nActiveState=active\n",
+      "project15-signal@XRPD.service": "MainPID=641582\nNRestarts=1\nActiveState=active\n",
+      "project15-signal@HYPED.service": "MainPID=641569\nNRestarts=1\nActiveState=active\n"
+    },
+    "retries": [],
+    "stop_errors": [],
+    "live_stop_count": 0,
+    "live_order_count": 2,
+    "startup_note": "Hourly ETHD/XRPD/HYPED each restarted once due to database-lock errors during startup/control restoration, then recovered. Other services had zero automatic restarts."
+  }
+}

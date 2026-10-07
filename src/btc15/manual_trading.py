@@ -7,6 +7,7 @@ import re
 import sqlite3
 import time
 from contextlib import asynccontextmanager, contextmanager
+from copy import deepcopy
 from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Literal
@@ -123,6 +124,7 @@ class ManualTrading:
         self.research_check = None
         self.research_execution = None
         self._client = None
+        self._stop_metadata = {}
         self.fill_wakeup = asyncio.Event()
         self.fill_stream = dict(connected=False, last_event_at=None)
         with self.db() as db:
@@ -453,6 +455,8 @@ class ManualTrading:
             await asyncio.sleep(2)
 
     async def market(self, client, ticker):
+        # A fresh observation supersedes the stop cache, including failed refreshes.
+        self._stop_metadata.pop(ticker, None)
         if not TICKER.fullmatch(ticker):
             raise HTTPException(422, "Select a supported crypto or commodity 15-minute contract")
         series_ticker = ticker.split("-", 1)[0]
@@ -467,7 +471,29 @@ class ManualTrading:
             market["close_time"]
         ):
             raise HTTPException(409, "This contract is not open for trading")
+        now = time.time()
+        self._stop_metadata = {
+            t: entry for t, entry in self._stop_metadata.items() if entry["expires_at"] > now
+        }
+        # Only routing and price-grid data are reused for reduce-only hard stops.
+        # The venue still authoritatively checks pauses/status when accepting IOC.
+        if len(self._stop_metadata) >= 256:
+            self._stop_metadata.pop(next(iter(self._stop_metadata)))
+        self._stop_metadata[ticker] = dict(
+            market=deepcopy(market), observed_at=now,
+            expires_at=min(now + 900, timestamp(market["close_time"])),
+        )
         return market
+
+    def stop_metadata(self, ticker):
+        entry = self._stop_metadata.get(ticker)
+        now = time.time()
+        if entry is None:
+            return None
+        if not timestamp(entry["market"]["open_time"]) <= now < entry["expires_at"]:
+            self._stop_metadata.pop(ticker, None)
+            return None
+        return entry
 
     async def holdings(self, client, ticker, exchange_index):
         rows = [
@@ -694,7 +720,14 @@ class ManualTrading:
 
         try:
             async with self.client() as client:
-                market = await self.market(client, order.ticker)
+                cached = self.stop_metadata(order.ticker) if (
+                    authorize and reason == "HARD_STOP" and order.action == "sell"
+                ) else None
+                market = deepcopy(cached["market"]) if cached else await self.market(client, order.ticker)
+                row["timing"].update(
+                    metadata_cache_hit=bool(cached),
+                    metadata_age_ms=(time.time() - cached["observed_at"]) * 1000 if cached else 0,
+                )
                 if trace is not None:
                     trace.update(market_response=market, market_observed_at=time.time())
                 if authorize and order.action == "buy":
@@ -768,6 +801,7 @@ class ManualTrading:
                     acknowledged_at=time.time(), submission_ms=(time.monotonic() - post_start) * 1000
                 )
                 if response.status_code in (400, 401, 403, 404, 422, 429):
+                    self._stop_metadata.pop(order.ticker, None)
                     try:
                         error = response.json()
                     except ValueError:

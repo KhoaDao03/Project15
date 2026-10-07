@@ -1,0 +1,56 @@
+......F................................................................. [ 47%]
+........................................................................ [ 94%]
+.........                                                                [100%]
+=================================== FAILURES ===================================
+___________ test_quote_processing_trace_distinguishes_republication ____________
+
+store = <btc15.storage.Store object at 0x780127990800>
+config = Strategy(asset='BTC', enabled=True, entry_window_start=420, no_new_entry=120, min_entry_price=0.85, max_entry_price=0....od=14, stochastic_period=14, atr_period=14, taker_fee_rate=0.07, maker_fee_rate=0.0175, fee_balance_precision='0.0001')
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-105/test_quote_processing_trace_di0')
+raw = {'can_close_early': True, 'close_time': '2026-10-07T17:00:01.963168+00:00', 'created_time': '2026-09-07T20:01:14.686972Z', 'custom_strike': {'round_digits': '2'}, ...}
+series = {'additional_prohibitions': ['Persons who are employed by any of the Source Agencies are not permitted to trade on the...tract_terms/CRYPTO.pdf', 'contract_url': 'https://assets.kalshi.com/regulatory/product-certifications/CRYPTO.pdf', ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x780127991b20>
+
+    def test_quote_processing_trace_distinguishes_republication(store, config, tmp_path, raw, series, monkeypatch):
+        from copy import deepcopy
+        from datetime import UTC, datetime
+    
+        now = time.time()
+        raw = dict(raw, open_time=datetime.fromtimestamp(now - 60, UTC).isoformat(),
+                   close_time=datetime.fromtimestamp(now + 300, UTC).isoformat())
+        fake_client(monkeypatch, raw, series)
+        fake_socket(monkeypatch, [dict(type='orderbook_snapshot', sid=3, seq=1, msg=dict(
+            market_ticker=raw['ticker'], yes_dollars_fp=[['.80', '2']], no_dollars_fp=[['.85', '2']]))])
+        published = []
+        publish = store.publish_market_display
+        def capture(body, key='current'):
+            if key == 'current':
+                published.append(deepcopy(body))
+            return publish(body, key)
+        monkeypatch.setattr(store, 'publish_market_display', capture)
+        asyncio.run(runner.collect(Settings(data_dir=str(tmp_path)), config, store, duration=.3))
+        quotes = [(s['published_at'], m) for s in published for m in s.get('markets', [])
+                  if m.get('book_first_published_at') is not None]
+>       assert len(quotes) >= 2
+E       assert 0 >= 2
+E        +  where 0 = len([])
+
+tests/test_collection.py:273: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  btc15:engine.py:273 {"code": "INVALID_MARKET", "detail": "Not a 15-minute contract", "market_id": "KXBTC15M-26SEP081800-00", "run_id": "b539b540-d069-46c6-abd3-6c628626f7bd"}
+WARNING  btc15.collector_recovery:collector_recovery.py:46 Collector recovery requested: STOPPING; entries blocked
+WARNING  btc15:engine.py:273 {"code": "DISCONNECT", "detail": "{'reason': 'reconnect_or_shutdown'}", "market_id": "", "run_id": "b539b540-d069-46c6-abd3-6c628626f7bd"}
+WARNING  btc15:engine.py:273 {"code": "DISCONNECT", "detail": "{'reason': 'shutdown'}", "market_id": "", "run_id": "b539b540-d069-46c6-abd3-6c628626f7bd"}
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /root/Project15/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv/lib/python3.12/site-packages/starlette/testclient.py:53
+  /root/Project15/.venv/lib/python3.12/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_collection.py::test_quote_processing_trace_distinguishes_republication
+1 failed, 152 passed, 2 warnings in 43.75s

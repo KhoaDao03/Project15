@@ -187,3 +187,31 @@ def test_hourly_manual_ticker_grammar(hourly):
     raw, _, _ = hourly
     assert TICKER.fullmatch(raw["ticker"])
     assert not TICKER.fullmatch(raw["ticker"].replace("-T", "-B"))
+
+
+def test_probability_display_updates_ineligible_strikes_without_changing_candidates(store):
+    from btc15.config import Strategy
+    from btc15.fleet import market_probability
+    from btc15.hourly import publish_probability_display
+
+    config = Strategy()
+    member = dict(run_id="display", config=config)
+    decision = dict(timestamp=100, ticker="held", decision="NO_TRADE", side="no",
+                    conservative_probability=.9, probability=dict(p_yes=.1, p_no=.9),
+                    versions=dict(config=config.version), reasons=[])
+    engine = SimpleNamespace(store=store, run_id="display", latest={"held": decision})
+    store.publish_market_display({"other": {"since": 99}}, "hourly_candidates:display")
+    publish_probability_display(engine)
+    record = store.read_market_display("probability_display:display")["held"]
+    assert market_probability(record, member, dict(ticker="held", fresh=True), 101, True)["confidence"] == .9
+    engine.latest["held"] = dict(decision, timestamp=102, conservative_probability=.85)
+    publish_probability_display(engine)
+    record = store.read_market_display("probability_display:display")["held"]
+    assert market_probability(record, member, dict(ticker="held", fresh=True), 103, True)["confidence"] == .85
+    assert not market_probability(record, member, dict(ticker="held", fresh=False), 103, True)["available"]
+    assert not market_probability(record, member, dict(ticker="held", fresh=True), 110, True)["available"]
+    assert store.read_market_display("hourly_candidates:display") == {"other": {"since": 99}}
+    assert store.read_market_display("evaluation:display:held") is None
+    engine.latest.clear()
+    publish_probability_display(engine)
+    assert store.read_market_display("probability_display:display") == {}

@@ -1,0 +1,520 @@
+{
+  "ticker": "KXBTC15M-26OCT071300-00",
+  "blocked_writes": 10,
+  "samples": [
+    {
+      "warm": false,
+      "timing": {
+        "submission_requested_at": 1791392008.084141,
+        "coordination_wait_ms": 0.03156898310407996,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392008.124497
+              }
+            ],
+            "rate_wait_ms": 0.22611301392316818,
+            "network_ms": 29.419029015116394,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392008.093628,
+            "http_status": 200,
+            "total_ms": 30.947349965572357
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26OCT071300-00",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392008.1570065
+              }
+            ],
+            "rate_wait_ms": 0.20556396339088678,
+            "network_ms": 30.93326196540147,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392008.124587,
+            "http_status": 200,
+            "total_ms": 32.554566976614296
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392008.1926506
+              }
+            ],
+            "rate_wait_ms": 0.21779700182378292,
+            "network_ms": 33.46449095988646,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392008.1572628,
+            "http_status": 200,
+            "total_ms": 35.45758198015392
+          }
+        ],
+        "preflight_started_at": 1791392008.0900187,
+        "metadata_cache_hit": false,
+        "metadata_age_ms": 0,
+        "preflight_completed_at": 1791392008.1994216,
+        "preflight_ms": 105.85852200165391,
+        "submitted_at": 1791392008.2056832,
+        "acknowledged_at": 1791392008.2064044,
+        "submission_ms": 0.71961700450629
+      }
+    },
+    {
+      "warm": true,
+      "timing": {
+        "submission_requested_at": 1791392008.5130484,
+        "coordination_wait_ms": 0.025637971702963114,
+        "reads": [
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392009.3520868
+              }
+            ],
+            "rate_wait_ms": 799.3367629824206,
+            "network_ms": 31.07066103257239,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392008.5202954,
+            "http_status": 200,
+            "total_ms": 831.8739469978027
+          }
+        ],
+        "preflight_started_at": 1791392008.516912,
+        "metadata_cache_hit": true,
+        "metadata_age_ms": 436.46931648254395,
+        "preflight_completed_at": 1791392009.3586123,
+        "preflight_ms": 838.4673200198449,
+        "submitted_at": 1791392009.3620136,
+        "acknowledged_at": 1791392009.3624923,
+        "submission_ms": 0.47805398935452104
+      }
+    },
+    {
+      "warm": true,
+      "timing": {
+        "submission_requested_at": 1791392009.6682277,
+        "coordination_wait_ms": 0.03206002293154597,
+        "reads": [
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392010.7124739
+              }
+            ],
+            "rate_wait_ms": 1003.2940919627436,
+            "network_ms": 30.505771981552243,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392009.6773517,
+            "http_status": 200,
+            "total_ms": 1035.8399329707026
+          }
+        ],
+        "preflight_started_at": 1791392009.6724536,
+        "metadata_cache_hit": true,
+        "metadata_age_ms": 1593.5213565826416,
+        "preflight_completed_at": 1791392010.7238286,
+        "preflight_ms": 1046.6536249732599,
+        "submitted_at": 1791392010.7276185,
+        "acknowledged_at": 1791392010.7284536,
+        "submission_ms": 0.8344220113940537
+      }
+    },
+    {
+      "warm": false,
+      "timing": {
+        "submission_requested_at": 1791392011.0340455,
+        "coordination_wait_ms": 0.02453598426654935,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392011.0733333
+              }
+            ],
+            "rate_wait_ms": 0.19599799998104572,
+            "network_ms": 27.574556006584316,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392011.044527,
+            "http_status": 200,
+            "total_ms": 28.86927896179259
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26OCT071300-00",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392011.1086354
+              }
+            ],
+            "rate_wait_ms": 0.23806595709174871,
+            "network_ms": 34.00960098952055,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392011.0734036,
+            "http_status": 200,
+            "total_ms": 35.32921097939834
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392011.1411755
+              }
+            ],
+            "rate_wait_ms": 0.33729197457432747,
+            "network_ms": 30.898255994543433,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392011.1088376,
+            "http_status": 200,
+            "total_ms": 32.446494966279715
+          }
+        ],
+        "preflight_started_at": 1791392011.0417068,
+        "metadata_cache_hit": false,
+        "metadata_age_ms": 0,
+        "preflight_completed_at": 1791392011.14931,
+        "preflight_ms": 104.83240999747068,
+        "submitted_at": 1791392011.161429,
+        "acknowledged_at": 1791392011.1630797,
+        "submission_ms": 1.6492169816046953
+      }
+    },
+    {
+      "warm": false,
+      "timing": {
+        "submission_requested_at": 1791392011.4896743,
+        "coordination_wait_ms": 0.029736023861914873,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392011.5282555
+              }
+            ],
+            "rate_wait_ms": 0.23417797638103366,
+            "network_ms": 28.892834030557424,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392011.4980063,
+            "http_status": 200,
+            "total_ms": 30.31878301408142
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26OCT071300-00",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392011.5643249
+              }
+            ],
+            "rate_wait_ms": 1.3219950487837195,
+            "network_ms": 33.44974300125614,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392011.5283322,
+            "http_status": 200,
+            "total_ms": 36.09243000391871
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392011.597984
+              }
+            ],
+            "rate_wait_ms": 0.23325596703216434,
+            "network_ms": 31.841902993619442,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392011.5645428,
+            "http_status": 200,
+            "total_ms": 33.534872985910624
+          }
+        ],
+        "preflight_started_at": 1791392011.4940512,
+        "metadata_cache_hit": false,
+        "metadata_age_ms": 0,
+        "preflight_completed_at": 1791392011.608247,
+        "preflight_ms": 110.29070900985971,
+        "submitted_at": 1791392011.6178193,
+        "acknowledged_at": 1791392011.618654,
+        "submission_ms": 0.833550002425909
+      }
+    },
+    {
+      "warm": true,
+      "timing": {
+        "submission_requested_at": 1791392011.924376,
+        "coordination_wait_ms": 0.02990604843944311,
+        "reads": [
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392011.970036
+              }
+            ],
+            "rate_wait_ms": 0.24127098731696606,
+            "network_ms": 29.771308007184416,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392011.9389503,
+            "http_status": 200,
+            "total_ms": 31.139618949964643
+          }
+        ],
+        "preflight_started_at": 1791392011.931453,
+        "metadata_cache_hit": true,
+        "metadata_age_ms": 3855.1223278045654,
+        "preflight_completed_at": 1791392011.992153,
+        "preflight_ms": 53.366023988928646,
+        "submitted_at": 1791392011.998376,
+        "acknowledged_at": 1791392011.9989228,
+        "submission_ms": 0.5457719671539962
+      }
+    },
+    {
+      "warm": true,
+      "timing": {
+        "submission_requested_at": 1791392012.3038921,
+        "coordination_wait_ms": 0.02890400355681777,
+        "reads": [
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392012.3457053
+              }
+            ],
+            "rate_wait_ms": 0.22322800941765308,
+            "network_ms": 31.688717019278556,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392012.3125787,
+            "http_status": 200,
+            "total_ms": 33.18267298163846
+          }
+        ],
+        "preflight_started_at": 1791392012.3098147,
+        "metadata_cache_hit": true,
+        "metadata_age_ms": 4228.754758834839,
+        "preflight_completed_at": 1791392012.3547404,
+        "preflight_ms": 42.29283699532971,
+        "submitted_at": 1791392012.3580465,
+        "acknowledged_at": 1791392012.3587306,
+        "submission_ms": 0.6832689978182316
+      }
+    },
+    {
+      "warm": false,
+      "timing": {
+        "submission_requested_at": 1791392012.662288,
+        "coordination_wait_ms": 0.02245203359052539,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392013.386609
+              }
+            ],
+            "rate_wait_ms": 659.9515039706603,
+            "network_ms": 35.75808403547853,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392012.6895893,
+            "http_status": 200,
+            "total_ms": 697.0918549923226
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26OCT071300-00",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392013.418972
+              }
+            ],
+            "rate_wait_ms": 0.23967900779098272,
+            "network_ms": 30.255482997745275,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392013.38669,
+            "http_status": 200,
+            "total_ms": 32.372957037296146
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392013.452373
+              }
+            ],
+            "rate_wait_ms": 0.6152919959276915,
+            "network_ms": 31.59372799564153,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392013.419186,
+            "http_status": 200,
+            "total_ms": 33.268543949816376
+          }
+        ],
+        "preflight_started_at": 1791392012.6862907,
+        "metadata_cache_hit": false,
+        "metadata_age_ms": 0,
+        "preflight_completed_at": 1791392013.457699,
+        "preflight_ms": 768.1652850005776,
+        "submitted_at": 1791392013.467145,
+        "acknowledged_at": 1791392013.4680746,
+        "submission_ms": 0.9285979904234409
+      }
+    },
+    {
+      "warm": false,
+      "timing": {
+        "submission_requested_at": 1791392013.7740297,
+        "coordination_wait_ms": 0.027130008675158024,
+        "reads": [
+          {
+            "endpoint": "series/KXBTC15M",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392013.8283238
+              }
+            ],
+            "rate_wait_ms": 0.24905597092583776,
+            "network_ms": 30.510540993418545,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392013.7963703,
+            "http_status": 200,
+            "total_ms": 33.780471014324576
+          },
+          {
+            "endpoint": "markets/KXBTC15M-26OCT071300-00",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392013.8616068
+              }
+            ],
+            "rate_wait_ms": 0.3559260512702167,
+            "network_ms": 29.562627023551613,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392013.8301632,
+            "http_status": 200,
+            "total_ms": 31.526133010629565
+          },
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392013.8953164
+              }
+            ],
+            "rate_wait_ms": 0.1946549746207893,
+            "network_ms": 32.10993600077927,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392013.861776,
+            "http_status": 200,
+            "total_ms": 33.6250209948048
+          }
+        ],
+        "preflight_started_at": 1791392013.7878187,
+        "metadata_cache_hit": false,
+        "metadata_age_ms": 0,
+        "preflight_completed_at": 1791392013.9030263,
+        "preflight_ms": 106.70874395873398,
+        "submitted_at": 1791392013.9099538,
+        "acknowledged_at": 1791392013.9108272,
+        "submission_ms": 0.8724340004846454
+      }
+    },
+    {
+      "warm": true,
+      "timing": {
+        "submission_requested_at": 1791392014.2163866,
+        "coordination_wait_ms": 0.030256982427090406,
+        "reads": [
+          {
+            "endpoint": "portfolio/positions",
+            "attempts": 1,
+            "responses": [
+              {
+                "status": 200,
+                "received_at": 1791392014.259031
+              }
+            ],
+            "rate_wait_ms": 0.3442050074227154,
+            "network_ms": 32.110605970956385,
+            "retry_wait_ms": 0.0,
+            "started_at": 1791392014.2250972,
+            "http_status": 200,
+            "total_ms": 34.001025022007525
+          }
+        ],
+        "preflight_started_at": 1791392014.2204006,
+        "metadata_cache_hit": true,
+        "metadata_age_ms": 6141.265392303467,
+        "preflight_completed_at": 1791392014.263856,
+        "preflight_ms": 38.97875198163092,
+        "submitted_at": 1791392014.2875636,
+        "acknowledged_at": 1791392014.2882097,
+        "submission_ms": 0.6447659689001739
+      }
+    }
+  ],
+  "summary": {
+    "cold": {
+      "n": 5,
+      "median_preflight_ms": 106.70874395873398,
+      "read_counts": [
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    "warm": {
+      "n": 5,
+      "median_preflight_ms": 53.366023988928646,
+      "read_counts": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  }
+}

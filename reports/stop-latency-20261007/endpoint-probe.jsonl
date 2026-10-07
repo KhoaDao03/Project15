@@ -1,0 +1,25 @@
+{"costs": {"default_cost": 10, "endpoint_costs": [{"cost": 30, "method": "POST", "path": "/trade-api/v2/account/api_usage_level/upgrade"}, {"cost": 50, "method": "GET", "path": "/trade-api/v2/cfbenchmarks"}, {"cost": 50, "method": "GET", "path": "/trade-api/v2/cfbenchmarks/*endpoint"}, {"cost": 2, "method": "POST", "path": "/trade-api/v2/communications/quotes"}, {"cost": 2, "method": "DELETE", "path": "/trade-api/v2/communications/quotes/:quote_id"}, {"cost": 2, "method": "GET", "path": "/trade-api/v2/communications/quotes/:quote_id"}, {"cost": 2, "method": "DELETE", "path": "/trade-api/v2/communications/rfqs/:rfq_id/quotes/:quote_id"}, {"cost": 2, "method": "GET", "path": "/trade-api/v2/communications/rfqs/:rfq_id/quotes/:quote_id"}, {"cost": 1, "method": "PUT", "path": "/trade-api/v2/communications/rfqs/:rfq_id/quotes/:quote_id/confirm"}, {"cost": 5, "method": "GET", "path": "/trade-api/v2/margin/balance"}, {"cost": 1, "method": "DELETE", "path": "/trade-api/v2/margin/orders/:order_id"}, {"cost": 1, "method": "POST", "path": "/trade-api/v2/margin/orders/:order_id/decrease"}, {"cost": 2, "method": "DELETE", "path": "/trade-api/v2/portfolio/events/orders"}, {"cost": 2, "method": "DELETE", "path": "/trade-api/v2/portfolio/events/orders/:order_id"}, {"cost": 2, "method": "DELETE", "path": "/trade-api/v2/portfolio/events/orders/batched"}, {"cost": 2, "method": "GET", "path": "/trade-api/v2/portfolio/orders/:order_id"}, {"cost": 2, "method": "POST", "path": "/trade-api/v2/portfolio/subaccounts/positions/transfer/batched"}]}}
+{"at": 1791391924.9147925, "endpoint": "series/KXBTC15M", "signed": false, "status": 200}
+{"at": 1791391925.9964454, "endpoint": "series/fee_changes", "signed": false, "status": 200}
+{"at": 1791391927.0740426, "endpoint": "exchange/status", "signed": false, "status": 200}
+{"at": 1791391928.317212, "endpoint": "markets", "signed": false, "status": 200}
+{"at": 1791391929.43158, "endpoint": "series/KXBTC15M", "signed": true, "status": 200}
+{"at": 1791391930.6538568, "endpoint": "series/fee_changes", "signed": true, "status": 200}
+{"at": 1791391931.7873268, "endpoint": "exchange/status", "signed": true, "status": 200}
+{"at": 1791391933.0382984, "endpoint": "markets", "signed": true, "status": 200}
+{"at": 1791391934.669395, "endpoint": "series/KXBTC15M", "signed": false, "status": 200}
+{"at": 1791391935.7717113, "endpoint": "series/fee_changes", "signed": false, "status": 200}
+{"at": 1791391936.8941517, "endpoint": "exchange/status", "signed": false, "status": 200}
+{"at": 1791391937.9885898, "endpoint": "markets", "signed": false, "status": 200}
+{"at": 1791391939.8413, "endpoint": "series/KXBTC15M", "signed": true, "status": 200}
+{"at": 1791391941.0422275, "endpoint": "series/fee_changes", "signed": true, "status": 200}
+{"at": 1791391942.3880715, "endpoint": "exchange/status", "signed": true, "status": 200}
+{"at": 1791391943.56898, "endpoint": "markets", "signed": true, "status": 200}
+{"at": 1791391944.6482406, "endpoint": "series/KXBTC15M", "signed": false, "status": 200}
+{"at": 1791391945.7395725, "endpoint": "series/fee_changes", "signed": false, "status": 200}
+{"at": 1791391946.7876365, "endpoint": "exchange/status", "signed": false, "status": 200}
+{"at": 1791391947.8396268, "endpoint": "markets", "signed": false, "status": 200}
+{"at": 1791391949.0274744, "endpoint": "series/KXBTC15M", "signed": true, "status": 200}
+{"at": 1791391950.13344, "endpoint": "series/fee_changes", "signed": true, "status": 200}
+{"at": 1791391951.1895127, "endpoint": "exchange/status", "signed": true, "status": 200}
+{"at": 1791391952.3319018, "endpoint": "markets", "signed": true, "status": 200}

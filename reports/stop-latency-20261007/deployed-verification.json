@@ -1,0 +1,26 @@
+{
+  "checked_at": 1791393056.1487265,
+  "since": 1791392678.6973176,
+  "cycle_age_seconds": 0.7921078205108643,
+  "policies_restored": true,
+  "services": {
+    "project15-execution.service": "MainPID=641225\nNRestarts=0\nActiveState=active\n",
+    "project15-dashboard.service": "MainPID=641226\nNRestarts=0\nActiveState=active\n",
+    "project15-signal@BTC.service": "MainPID=641227\nNRestarts=0\nActiveState=active\n",
+    "project15-signal@ETH.service": "MainPID=641228\nNRestarts=0\nActiveState=active\n",
+    "project15-signal@SOL.service": "MainPID=641229\nNRestarts=0\nActiveState=active\n",
+    "project15-signal@XRP.service": "MainPID=641231\nNRestarts=0\nActiveState=active\n",
+    "project15-signal@GOLD.service": "MainPID=641230\nNRestarts=0\nActiveState=active\n",
+    "project15-signal@BNB.service": "MainPID=641232\nNRestarts=0\nActiveState=active\n",
+    "project15-signal@HYPE.service": "MainPID=641234\nNRestarts=0\nActiveState=active\n",
+    "project15-signal@DOGE.service": "MainPID=641233\nNRestarts=0\nActiveState=active\n",
+    "project15-signal@ETHD.service": "MainPID=641617\nNRestarts=1\nActiveState=active\n",
+    "project15-signal@XRPD.service": "MainPID=641582\nNRestarts=1\nActiveState=active\n",
+    "project15-signal@HYPED.service": "MainPID=641569\nNRestarts=1\nActiveState=active\n"
+  },
+  "retries": [],
+  "stop_errors": [],
+  "live_stop_count": 0,
+  "live_order_count": 2,
+  "startup_note": "Hourly ETHD/XRPD/HYPED each restarted once due to database-lock errors during startup/control restoration, then recovered. Other services had zero automatic restarts."
+}

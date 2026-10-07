@@ -82,18 +82,6 @@ function entryConfidenceView(data,asset,detail=false){
   if(detail)root.append(el('small','Capped confidence for the selected side; other entry checks still apply.','probability-note'));
   return root;
 }
-function sitoutSchedule(asset){
-  // Match the live executor: hourly cryptos and commodities are exempt.
-  if(!['BTC','ETH','SOL','XRP','BNB','HYPE','DOGE'].includes(asset))return null;
-  const section=el('section','','streaks sitout-schedule');
-  section.setAttribute('aria-label','Entry sit-out windows');
-  section.append(el('strong','Entry sit-out windows · ET'));
-  for(const [day,hours] of [['Monday–Friday','11:45–13:00'],['Tuesday (additional)','20:00–21:15'],['Thursday (additional)','19:45–21:00'],['Saturday–Sunday','11:15–12:30']]){
-    const row=el('div','','streak-row');row.append(el('span',day),el('span',hours));section.append(row);
-  }
-  section.append(el('p','Eastern Time (New York); daylight saving adjusts automatically. No new entries during these windows. Entries may resume at the end; existing exits remain active.','muted'));
-  return section;
-}
 function selectMarket(asset){selected=asset;historyOffset=0;historyRequest++;if(latest)render(latest);if(historyMode)loadHistory();}
 function streakLabel(value){if(!numeric(value))return '—';if(value===0)return 'No streak';return Math.abs(value)+' '+(value>0?(value===1?'win':'wins'):(value===-1?'loss':'losses'));}
 function performanceCells(row,a){for(const [key,format] of [['realized_pnl',signedMoney],['completed_trades',count],['wins',count],['losses',count],['win_rate',percent],['current_streak',streakLabel],['open_positions',count]])row.append(el('td',format(a[key]),['realized_pnl','current_streak'].includes(key)?pnlClass(a[key]):''));}
@@ -118,7 +106,7 @@ function render(data){
   const asset=assets.find(a=>a.asset===selected);$('detail-title').textContent=names(selected)+' / Market detail';$('detail-icon').replaceWith(Object.assign(coin(selected),{id:'detail-icon'}));
   const reference=el('div','','reference-row'),price=el('div',''),status=el('div','');price.append(el('small','Reference price'),el('strong',referenceMoney(asset.price,asset.asset)));status.append(el('small','Operational status'),el('br',''),statusBadge(data,asset));reference.append(price,status,entryConfidenceView(data,asset,true));
   const source=el('div','','source');source.append(el('small',asset.ladderCount!==undefined?'Hourly ladder · most-traded strike · '+asset.ladderCount+' strikes':'Source market identifier(s)'),el('span',asset.markets?.map(m=>m.ticker+(m.fresh?'':' · stale')).join(', ')||'Unavailable'));
-  const streaks=el('div','','streaks');streaks.append(el('strong','Performance (recorded)'));for(const [name,value] of [['Current win streak',numeric(asset.current_streak)?Math.max(0,asset.current_streak):null],['Current loss streak',numeric(asset.current_streak)?Math.max(0,-asset.current_streak):null],['Longest win streak',asset.longest_win_streak],['Longest loss streak',asset.longest_loss_streak]]){const line=el('div','','streak-row');line.append(el('span',name),el('span',count(value)));streaks.append(line);}const sitout=sitoutSchedule(asset.asset);$('detail').replaceChildren(reference,source,...(sitout?[sitout]:[]),streaks);
+  const streaks=el('div','','streaks');streaks.append(el('strong','Performance (recorded)'));for(const [name,value] of [['Current win streak',numeric(asset.current_streak)?Math.max(0,asset.current_streak):null],['Current loss streak',numeric(asset.current_streak)?Math.max(0,-asset.current_streak):null],['Longest win streak',asset.longest_win_streak],['Longest loss streak',asset.longest_loss_streak]]){const line=el('div','','streak-row');line.append(el('span',name),el('span',count(value)));streaks.append(line);}$('detail').replaceChildren(reference,source,streaks);
   for(const button of $('market-tabs').children){button.setAttribute('aria-pressed',String(button.dataset.asset===selected));const count=assets.find(a=>a.asset===button.dataset.asset)?.open_positions;button.classList.toggle('has-open-trade',numeric(count)&&count>0);}
   $('trades-icon').replaceWith(Object.assign(coin(selected),{id:'trades-icon'}));
   $('trades-title').textContent=names(selected)+(historyMode?' · Trade records':' · Latest 5 trades');

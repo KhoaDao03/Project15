@@ -10,6 +10,12 @@ from test_manual_trading import TICKER, venue  # noqa: F401
 from btc15.live_automation import LiveAutomation
 
 
+@pytest.fixture(autouse=True)
+def outside_entry_blackout(monkeypatch):
+    # These tests create a holding to exercise exits, independently of wall time.
+    monkeypatch.setattr("btc15.live_automation.entry_blackout", lambda now: None)
+
+
 async def held_position(live):
     worker, state, manual, control, data, clock = live
     member = worker.members[control["asset"]]
@@ -37,11 +43,12 @@ async def test_stop_reuses_one_preflight_and_cannot_double_sell(live, monkeypatc
     assert len(state["posts"]) == 2
     assert state["posts"][-1]["reduce_only"]
     assert state["posts"][-1]["price"] == "0.0100"
-    assert state["reads"].count("series/KXETH15M") == 1
-    assert state["reads"].count("markets/" + TICKER) == 1
+    assert state["reads"].count("series/KXETH15M") == 0
+    assert state["reads"].count("markets/" + TICKER) == 0
     assert len(reads) == 1
     timing = manual.rows()[0]["timing"]
     assert timing["stop_bid"] == 0.50
+    assert timing["metadata_cache_hit"] is True
     assert timing["stop_detected_at"] <= timing["submitted_at"]
 
 
@@ -243,3 +250,73 @@ async def test_stop_submission_reserves_read_priority_and_restores_context(live,
     assert seen == [True]
     assert manual.rows()[0]["state"] == "unknown"
     assert not stop_reads.get()
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize('cache_state', ['cold', 'expired'])
+async def test_stop_cache_miss_fetches_metadata_and_still_checks_holdings(live, cache_state):
+    worker, state, manual, control, data, clock = await held_position(live)
+    if cache_state == 'cold':
+        manual._stop_metadata.clear()
+    else:
+        manual._stop_metadata[TICKER]['expires_at'] = 0
+    data['bid'] = .49
+    state['position'] = '3'
+    state['reads'].clear()
+    await worker.step_market(control)
+    assert state['reads'].count('series/KXETH15M') == 1
+    assert state['reads'].count('markets/' + TICKER) == 1
+    assert state['posts'][-1]['count'] == '3.00'
+    assert state['posts'][-1]['reduce_only'] is True
+    assert manual.rows()[0]['timing']['metadata_cache_hit'] is False
+
+
+@pytest.mark.anyio
+async def test_cached_stop_checks_fresh_holdings_and_zero_blocks_sale(live):
+    worker, state, manual, control, data, clock = await held_position(live)
+    data['bid'] = .49
+    state['position'] = '0'
+    await worker.step_market(control)
+    assert len(state['posts']) == 1
+    assert manual.rows()[0]['timing']['metadata_cache_hit'] is True
+    assert 'zero holdings' in manual.rows()[0]['message']
+
+
+@pytest.mark.anyio
+async def test_stop_rejection_invalidates_metadata_without_post_retry(live):
+    worker, state, manual, control, data, clock = await held_position(live)
+    data['bid'] = .49
+    state['post_error'] = 422
+    await worker.step_market(control)
+    assert len(state['posts']) == 2
+    assert TICKER not in manual._stop_metadata
+    assert manual.rows()[0]['state'] == 'rejected'
+
+
+@pytest.mark.anyio
+async def test_fresh_market_refresh_invalidates_cache_on_closed_market(live):
+    from fastapi import HTTPException
+    worker, state, manual, control, data, clock = await held_position(live)
+    assert manual.stop_metadata(TICKER)
+    state['status'] = 'closed'
+    async with manual.client() as client:
+        with pytest.raises(HTTPException):
+            await manual.market(client, TICKER)
+    assert manual.stop_metadata(TICKER) is None
+
+
+@pytest.mark.anyio
+async def test_stop_records_processing_and_first_publication_times(live, monkeypatch):
+    worker, state, manual, control, data, clock = await held_position(live)
+    def book(control, now, trace=None):
+        trace['book_snapshot'] = dict(published_at=100, market=dict(
+            book_received=95, book_processing_started_at=96,
+            book_processed_at=97, book_first_published_at=98))
+        return dict(yes_bid=.49)
+    monkeypatch.setattr(worker, 'book', book)
+    worker.detect_stops()
+    timing = worker.control(TICKER)['stop_timing']
+    assert timing['quote_processing_started_at'] == 96
+    assert timing['quote_processed_at'] == 97
+    assert timing['quote_first_published_at'] == 98
+    assert timing['quote_published_at'] == 100

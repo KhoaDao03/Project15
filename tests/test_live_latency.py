@@ -7,6 +7,11 @@ from test_live_automation import live  # noqa: F401
 from test_manual_trading import TICKER, venue  # noqa: F401
 
 
+@pytest.fixture(autouse=True)
+def outside_entry_blackout(monkeypatch):
+    monkeypatch.setattr("btc15.live_automation.entry_blackout", lambda now: None)
+
+
 @pytest.mark.anyio
 async def test_entry_reuses_connection_and_reads_metadata_once(live):  # noqa: F811
     worker, state, manual, control, *_ = live

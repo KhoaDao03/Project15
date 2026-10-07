@@ -1,0 +1,122 @@
+{
+  "BTC": {
+    "queue_ms": {
+      "n": 20,
+      "median": 6.41,
+      "p95": 197.44,
+      "max": 324.45
+    },
+    "processing_ms": {
+      "n": 20,
+      "median": 0.23,
+      "p95": 0.67,
+      "max": 0.73
+    },
+    "receipt_to_first_publication_ms": {
+      "n": 20,
+      "median": 8.82,
+      "p95": 197.63,
+      "max": 324.64
+    }
+  },
+  "SOL": {
+    "queue_ms": {
+      "n": 20,
+      "median": 1.28,
+      "p95": 6.89,
+      "max": 79.36
+    },
+    "processing_ms": {
+      "n": 20,
+      "median": 0.32,
+      "p95": 0.63,
+      "max": 0.83
+    },
+    "receipt_to_first_publication_ms": {
+      "n": 20,
+      "median": 4.36,
+      "p95": 75.76,
+      "max": 79.63
+    }
+  },
+  "XRP": {
+    "queue_ms": {
+      "n": 20,
+      "median": 0.59,
+      "p95": 103.87,
+      "max": 156.58
+    },
+    "processing_ms": {
+      "n": 20,
+      "median": 0.32,
+      "p95": 0.68,
+      "max": 0.7
+    },
+    "receipt_to_first_publication_ms": {
+      "n": 20,
+      "median": 2.36,
+      "p95": 104.2,
+      "max": 157.34
+    }
+  },
+  "BNB": {
+    "queue_ms": {
+      "n": 20,
+      "median": 1.35,
+      "p95": 7.0,
+      "max": 15.63
+    },
+    "processing_ms": {
+      "n": 20,
+      "median": 0.32,
+      "p95": 1.44,
+      "max": 3.09
+    },
+    "receipt_to_first_publication_ms": {
+      "n": 20,
+      "median": 2.27,
+      "p95": 52.16,
+      "max": 98.68
+    }
+  },
+  "HYPE": {
+    "queue_ms": {
+      "n": 19,
+      "median": 0.73,
+      "p95": 27.46,
+      "max": 27.46
+    },
+    "processing_ms": {
+      "n": 19,
+      "median": 0.28,
+      "p95": 0.81,
+      "max": 0.81
+    },
+    "receipt_to_first_publication_ms": {
+      "n": 19,
+      "median": 1.27,
+      "p95": 27.71,
+      "max": 27.71
+    }
+  },
+  "DOGE": {
+    "queue_ms": {
+      "n": 20,
+      "median": 1.0,
+      "p95": 23.32,
+      "max": 72.3
+    },
+    "processing_ms": {
+      "n": 20,
+      "median": 0.29,
+      "p95": 2.04,
+      "max": 4.72
+    },
+    "receipt_to_first_publication_ms": {
+      "n": 20,
+      "median": 1.57,
+      "p95": 35.31,
+      "max": 72.56
+    }
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "limits": {
+    "grants": [],
+    "read": {
+      "bucket_capacity": 600,
+      "refill_rate": 200
+    },
+    "usage_tier": "basic",
+    "write": {
+      "bucket_capacity": 100,
+      "refill_rate": 100
+    }
+  },
+  "responses": [
+    {
+      "at": 1791391529.0497139,
+      "path": "/trade-api/v2/account/limits",
+      "status": 200,
+      "authenticated": true,
+      "retry_after": null
+    },
+    {
+      "at": 1791391529.076523,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": false,
+      "retry_after": null
+    },
+    {
+      "at": 1791391530.2997227,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": true,
+      "retry_after": null
+    },
+    {
+      "at": 1791391531.3838112,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": false,
+      "retry_after": null
+    },
+    {
+      "at": 1791391533.0105684,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": true,
+      "retry_after": null
+    },
+    {
+      "at": 1791391534.2207162,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": false,
+      "retry_after": null
+    },
+    {
+      "at": 1791391535.4265354,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": true,
+      "retry_after": null
+    },
+    {
+      "at": 1791391536.6625102,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": false,
+      "retry_after": null
+    },
+    {
+      "at": 1791391537.7968783,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": true,
+      "retry_after": null
+    },
+    {
+      "at": 1791391538.9400055,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": false,
+      "retry_after": null
+    },
+    {
+      "at": 1791391540.0648768,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": true,
+      "retry_after": null
+    },
+    {
+      "at": 1791391541.1744475,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": false,
+      "retry_after": null
+    },
+    {
+      "at": 1791391542.5068314,
+      "path": "/trade-api/v2/series/KXBTC15M",
+      "status": 200,
+      "authenticated": true,
+      "retry_after": null
+    }
+  ]
+}

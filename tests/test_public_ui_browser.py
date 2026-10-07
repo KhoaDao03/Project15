@@ -105,6 +105,20 @@ def test_public_ui_selection_history_and_layout():
             row = page.locator('#market-status tr').filter(has=page.locator('button').filter(has_text=symbol))
             expect(row.locator('.probability-market')).to_have_count(1)
 
+        for symbol in ('ETHD', 'XRPD', 'HYPED'):
+            page.locator('#market-tabs [data-asset='+symbol+']').click()
+            for held, expected in [(['quiet'], 'quiet'), (['quiet', 'active'], 'active'), ([], 'active')]:
+                asset = next(a for a in snapshot['assets'] if a['asset'] == symbol)
+                asset['trades'] = [dict(market=symbol+'-'+suffix, status='OPEN') for suffix in held]
+                for market in asset['markets']:
+                    market['probability'] = dict(market['probability'], confidence=.9 if market['ticker'].endswith('quiet') else .6)
+                page.evaluate('data => render(data)', snapshot)
+                expect(page.locator('#detail .source')).to_contain_text(symbol+'-'+expected)
+                expected_confidence = '90.0%' if expected == 'quiet' else '60.0%'
+                expect(page.locator('#detail .probability-market')).to_contain_text(expected_confidence)
+                row = page.locator('#market-status tr').filter(has=page.get_by_role('button', name=symbol, exact=True))
+                expect(row.locator('.probability-market')).to_contain_text(expected_confidence)
+
         page.locator('#market-tabs [data-asset=HYPED]').click()
         expect(page.locator('#detail-title')).to_have_text('HYPED / Market detail')
         expect(page.locator('#detail .source')).to_contain_text('HYPED-active')

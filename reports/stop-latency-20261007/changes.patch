@@ -1,0 +1,450 @@
+diff --git a/src/btc15/api.py b/src/btc15/api.py
+index 4f26c48..6fe183d 100644
+--- a/src/btc15/api.py
++++ b/src/btc15/api.py
+@@ -2,6 +2,8 @@
+ 
+ import asyncio
+ import base64
++import logging
++import math
+ import time
+ from contextvars import ContextVar
+ from pathlib import Path
+@@ -13,10 +15,11 @@ from cryptography.hazmat.primitives.asymmetric import padding
+ 
+ from .assets import asset_spec
+ from .domain import timestamp
+-from .read_budget import ReadBudget, read_cost, shared_budget_path
++from .read_budget import READ_RATE, ReadBudget, read_cost, shared_budget_path
+ 
+ read_timings = ContextVar("kalshi_read_timings", default=None)
+ stop_reads = ContextVar("kalshi_stop_reads", default=False)
++log = logging.getLogger(__name__)
+ 
+ 
+ class KalshiClient:
+@@ -56,6 +59,7 @@ class KalshiClient:
+         metric = dict(
+             endpoint=path.split("?")[0],
+             attempts=0,
++            responses=[],
+             rate_wait_ms=0.0,
+             network_ms=0.0,
+             retry_wait_ms=0.0,
+@@ -79,22 +83,40 @@ class KalshiClient:
+                 metric["attempts"] += 1
+                 metric["rate_wait_ms"] += (time.monotonic() - wait_started) * 1000
+             signed_path = urlparse(self.settings.rest_url).path + "/" + path.lstrip("/")
+-            headers = self.headers("GET", signed_path) if authenticated else {}
++            # Credentialed collectors share the account budget, even for public
++            # metadata. Do not silently send that traffic as anonymous requests.
++            signed = authenticated or bool(self.key and self.settings.api_key_id)
++            headers = self.headers("GET", signed_path) if signed else {}
+             start = time.time()
+             network_started = time.monotonic()
+             try:
+                 response = await self.http.get(path.lstrip("/"), params=params, headers=headers)
+                 if metric is not None:
+                     metric["http_status"] = response.status_code
++                    metric["responses"].append(dict(status=response.status_code, received_at=time.time()))
+             finally:
+                 if metric is not None:
+                     metric["network_ms"] += (time.monotonic() - network_started) * 1000
+             if response.status_code == 429 or response.status_code >= 500:
++                # A 429 without Retry-After means exhausted tokens, not a
++                # mandatory one-second ban. Back off exponentially from refill
++                # time; 5xx responses retain the longer server-error backoff.
++                fallback = (
++                    max(0.05, read_cost(path) / READ_RATE) * 2**attempt
++                    if response.status_code == 429 else 2**attempt
++                )
+                 try:
+-                    delay = float(response.headers.get("Retry-After", 2**attempt))
++                    delay = float(response.headers.get("Retry-After", fallback))
++                    if not math.isfinite(delay):
++                        delay = fallback
+                 except ValueError:
+-                    delay = 2**attempt
+-                delay = min(10, max(0.1, delay))
++                    delay = fallback
++                delay = max(0.05, delay)
++                log.warning(
++                    "Kalshi read retry asset=%s endpoint=%s status=%s attempt=%s signed=%s stop=%s delay=%.3fs",
++                    self.settings.asset, path.split("?")[0], response.status_code,
++                    attempt + 1, signed, stop_reads.get(), delay,
++                )
+                 if response.status_code == 429:
+                     await self.read_budget.penalize(delay)
+                 if attempt < 3:
+diff --git a/src/btc15/live_automation.py b/src/btc15/live_automation.py
+index 889fa42..273d1de 100644
+--- a/src/btc15/live_automation.py
++++ b/src/btc15/live_automation.py
+@@ -899,6 +899,9 @@ class LiveAutomation:
+                 stop_bid=bid,
+                 quote_received_at=snapshot.get("market", {}).get("book_received"),
+                 quote_published_at=snapshot.get("published_at"),
++                quote_processing_started_at=snapshot.get("market", {}).get("book_processing_started_at"),
++                quote_processed_at=snapshot.get("market", {}).get("book_processed_at"),
++                quote_first_published_at=snapshot.get("market", {}).get("book_first_published_at"),
+             ),
+         )
+         self.write(control)
+diff --git a/src/btc15/manual_trading.py b/src/btc15/manual_trading.py
+index 4873b9c..e4c5511 100644
+--- a/src/btc15/manual_trading.py
++++ b/src/btc15/manual_trading.py
+@@ -7,6 +7,7 @@ import re
+ import sqlite3
+ import time
+ from contextlib import asynccontextmanager, contextmanager
++from copy import deepcopy
+ from decimal import ROUND_CEILING, ROUND_FLOOR, Decimal, InvalidOperation
+ from pathlib import Path
+ from typing import Literal
+@@ -123,6 +124,7 @@ class ManualTrading:
+         self.research_check = None
+         self.research_execution = None
+         self._client = None
++        self._stop_metadata = {}
+         self.fill_wakeup = asyncio.Event()
+         self.fill_stream = dict(connected=False, last_event_at=None)
+         with self.db() as db:
+@@ -453,6 +455,8 @@ class ManualTrading:
+             await asyncio.sleep(2)
+ 
+     async def market(self, client, ticker):
++        # A fresh observation supersedes the stop cache, including failed refreshes.
++        self._stop_metadata.pop(ticker, None)
+         if not TICKER.fullmatch(ticker):
+             raise HTTPException(422, "Select a supported crypto or commodity 15-minute contract")
+         series_ticker = ticker.split("-", 1)[0]
+@@ -467,8 +471,30 @@ class ManualTrading:
+             market["close_time"]
+         ):
+             raise HTTPException(409, "This contract is not open for trading")
++        now = time.time()
++        self._stop_metadata = {
++            t: entry for t, entry in self._stop_metadata.items() if entry["expires_at"] > now
++        }
++        # Only routing and price-grid data are reused for reduce-only hard stops.
++        # The venue still authoritatively checks pauses/status when accepting IOC.
++        if len(self._stop_metadata) >= 256:
++            self._stop_metadata.pop(next(iter(self._stop_metadata)))
++        self._stop_metadata[ticker] = dict(
++            market=deepcopy(market), observed_at=now,
++            expires_at=min(now + 900, timestamp(market["close_time"])),
++        )
+         return market
+ 
++    def stop_metadata(self, ticker):
++        entry = self._stop_metadata.get(ticker)
++        now = time.time()
++        if entry is None:
++            return None
++        if not timestamp(entry["market"]["open_time"]) <= now < entry["expires_at"]:
++            self._stop_metadata.pop(ticker, None)
++            return None
++        return entry
++
+     async def holdings(self, client, ticker, exchange_index):
+         rows = [
+             r
+@@ -694,7 +720,14 @@ class ManualTrading:
+ 
+         try:
+             async with self.client() as client:
+-                market = await self.market(client, order.ticker)
++                cached = self.stop_metadata(order.ticker) if (
++                    authorize and reason == "HARD_STOP" and order.action == "sell"
++                ) else None
++                market = deepcopy(cached["market"]) if cached else await self.market(client, order.ticker)
++                row["timing"].update(
++                    metadata_cache_hit=bool(cached),
++                    metadata_age_ms=(time.time() - cached["observed_at"]) * 1000 if cached else 0,
++                )
+                 if trace is not None:
+                     trace.update(market_response=market, market_observed_at=time.time())
+                 if authorize and order.action == "buy":
+@@ -768,6 +801,7 @@ class ManualTrading:
+                     acknowledged_at=time.time(), submission_ms=(time.monotonic() - post_start) * 1000
+                 )
+                 if response.status_code in (400, 401, 403, 404, 422, 429):
++                    self._stop_metadata.pop(order.ticker, None)
+                     try:
+                         error = response.json()
+                     except ValueError:
+diff --git a/tests/test_collection.py b/tests/test_collection.py
+index 4b82f45..a31ea43 100644
+--- a/tests/test_collection.py
++++ b/tests/test_collection.py
+@@ -248,3 +248,32 @@ def test_transport_loss_reconnects_and_rebuilds_book(store, config, tmp_path, ra
+     assert len(snapshots) == 2
+     assert snapshots[0]["connection_id"] != snapshots[1]["connection_id"]
+     assert not [r for r in store.list(kind="health") if r["body"]["code"] in ("SEQUENCE_GAP", "INVALID_DATA")]
++
++
++def test_quote_processing_trace_distinguishes_republication(store, config, tmp_path, raw, series, monkeypatch):
++    from copy import deepcopy
++    from types import SimpleNamespace
++
++    from btc15.domain import timestamp
++
++    offset = timestamp(raw['close_time']) - 300 - time.time()
++    monkeypatch.setattr(runner, 'time', SimpleNamespace(
++        time=lambda: time.time() + offset, monotonic=time.monotonic, monotonic_ns=time.monotonic_ns))
++    fake_client(monkeypatch, raw, series)
++    fake_socket(monkeypatch, [dict(type='orderbook_snapshot', sid=3, seq=1, msg=dict(
++        market_ticker=raw['ticker'], yes_dollars_fp=[['.80', '2']], no_dollars_fp=[['.85', '2']]))])
++    published = []
++    publish = store.publish_market_display
++    def capture(body, key='current'):
++        if key == 'current':
++            published.append(deepcopy(body))
++        return publish(body, key)
++    monkeypatch.setattr(store, 'publish_market_display', capture)
++    asyncio.run(runner.collect(Settings(data_dir=str(tmp_path)), config, store, duration=.3))
++    quotes = [(s['published_at'], m) for s in published for m in s.get('markets', [])
++              if m.get('book_first_published_at') is not None]
++    assert len(quotes) >= 2
++    first = quotes[0][1]
++    assert first['book_received'] <= first['book_processing_started_at'] <= first['book_processed_at'] <= first['book_first_published_at']
++    assert all(m['book_first_published_at'] == first['book_first_published_at'] for _, m in quotes)
++    assert quotes[-1][0] > first['book_first_published_at']
+diff --git a/tests/test_live_latency.py b/tests/test_live_latency.py
+index 555d861..036b547 100644
+--- a/tests/test_live_latency.py
++++ b/tests/test_live_latency.py
+@@ -7,6 +7,11 @@ from test_live_automation import live  # noqa: F401
+ from test_manual_trading import TICKER, venue  # noqa: F401
+ 
+ 
++@pytest.fixture(autouse=True)
++def outside_entry_blackout(monkeypatch):
++    monkeypatch.setattr("btc15.live_automation.entry_blackout", lambda now: None)
++
++
+ @pytest.mark.anyio
+ async def test_entry_reuses_connection_and_reads_metadata_once(live):  # noqa: F811
+     worker, state, manual, control, *_ = live
+diff --git a/tests/test_read_budget.py b/tests/test_read_budget.py
+index 29627a1..76e45f4 100644
+--- a/tests/test_read_budget.py
++++ b/tests/test_read_budget.py
+@@ -229,3 +229,49 @@ async def test_credentialed_clients_share_origin_budget(tmp_path, monkeypatch):
+     finally:
+         await a.close()
+         await b.close()
++
++
++@pytest.mark.anyio
++async def test_429_default_backoff_uses_refill_time_and_records_all_statuses(monkeypatch, caplog):
++    delays = []
++    statuses = iter([429, 429, 200])
++    client = KalshiClient(Settings())
++    await client.http.aclose()
++    client.http = httpx.AsyncClient(base_url=Settings.rest_url + '/', transport=httpx.MockTransport(
++        lambda request: httpx.Response(next(statuses), json={})))
++    async def acquire(*args, **kwargs):
++        pass
++    async def penalize(delay):
++        delays.append(delay)
++    monkeypatch.setattr(client.read_budget, 'acquire', acquire)
++    monkeypatch.setattr(client.read_budget, 'penalize', penalize)
++    metrics = []
++    token = read_timings.set(metrics)
++    try:
++        await client.get('series/KXBTC15M')
++    finally:
++        read_timings.reset(token)
++        await client.close()
++    assert delays == [.05, .1]
++    assert [r['status'] for r in metrics[0]['responses']] == [429, 429, 200]
++    assert 'endpoint=series/KXBTC15M status=429' in caplog.text
++
++
++@pytest.mark.anyio
++async def test_public_metadata_signed_when_credentials_available(monkeypatch):
++    client = KalshiClient(Settings(api_key_id='test'))
++    client.key = object()
++    client.read_budget = ReadBudget()
++    client.read_budget.state.update(tokens=600)
++    monkeypatch.setattr(client, 'headers', lambda method, path: {'KALSHI-ACCESS-KEY': 'test'})
++    requests = []
++    def handler(request):
++        requests.append(request)
++        return httpx.Response(200, json={})
++    await client.http.aclose()
++    client.http = httpx.AsyncClient(base_url=Settings.rest_url + '/', transport=httpx.MockTransport(handler))
++    try:
++        await client.get('series/KXBTC15M')
++    finally:
++        await client.close()
++    assert requests[0].headers['KALSHI-ACCESS-KEY'] == 'test'
+diff --git a/tests/test_stop_worker.py b/tests/test_stop_worker.py
+index c6b09d2..b404c3b 100644
+--- a/tests/test_stop_worker.py
++++ b/tests/test_stop_worker.py
+@@ -10,6 +10,12 @@ from test_manual_trading import TICKER, venue  # noqa: F401
+ from btc15.live_automation import LiveAutomation
+ 
+ 
++@pytest.fixture(autouse=True)
++def outside_entry_blackout(monkeypatch):
++    # These tests create a holding to exercise exits, independently of wall time.
++    monkeypatch.setattr("btc15.live_automation.entry_blackout", lambda now: None)
++
++
+ async def held_position(live):
+     worker, state, manual, control, data, clock = live
+     member = worker.members[control["asset"]]
+@@ -37,11 +43,12 @@ async def test_stop_reuses_one_preflight_and_cannot_double_sell(live, monkeypatc
+     assert len(state["posts"]) == 2
+     assert state["posts"][-1]["reduce_only"]
+     assert state["posts"][-1]["price"] == "0.0100"
+-    assert state["reads"].count("series/KXETH15M") == 1
+-    assert state["reads"].count("markets/" + TICKER) == 1
++    assert state["reads"].count("series/KXETH15M") == 0
++    assert state["reads"].count("markets/" + TICKER) == 0
+     assert len(reads) == 1
+     timing = manual.rows()[0]["timing"]
+     assert timing["stop_bid"] == 0.50
++    assert timing["metadata_cache_hit"] is True
+     assert timing["stop_detected_at"] <= timing["submitted_at"]
+ 
+ 
+@@ -243,3 +250,73 @@ async def test_stop_submission_reserves_read_priority_and_restores_context(live,
+     assert seen == [True]
+     assert manual.rows()[0]["state"] == "unknown"
+     assert not stop_reads.get()
++
++
++@pytest.mark.anyio
++@pytest.mark.parametrize('cache_state', ['cold', 'expired'])
++async def test_stop_cache_miss_fetches_metadata_and_still_checks_holdings(live, cache_state):
++    worker, state, manual, control, data, clock = await held_position(live)
++    if cache_state == 'cold':
++        manual._stop_metadata.clear()
++    else:
++        manual._stop_metadata[TICKER]['expires_at'] = 0
++    data['bid'] = .49
++    state['position'] = '3'
++    state['reads'].clear()
++    await worker.step_market(control)
++    assert state['reads'].count('series/KXETH15M') == 1
++    assert state['reads'].count('markets/' + TICKER) == 1
++    assert state['posts'][-1]['count'] == '3.00'
++    assert state['posts'][-1]['reduce_only'] is True
++    assert manual.rows()[0]['timing']['metadata_cache_hit'] is False
++
++
++@pytest.mark.anyio
++async def test_cached_stop_checks_fresh_holdings_and_zero_blocks_sale(live):
++    worker, state, manual, control, data, clock = await held_position(live)
++    data['bid'] = .49
++    state['position'] = '0'
++    await worker.step_market(control)
++    assert len(state['posts']) == 1
++    assert manual.rows()[0]['timing']['metadata_cache_hit'] is True
++    assert 'zero holdings' in manual.rows()[0]['message']
++
++
++@pytest.mark.anyio
++async def test_stop_rejection_invalidates_metadata_without_post_retry(live):
++    worker, state, manual, control, data, clock = await held_position(live)
++    data['bid'] = .49
++    state['post_error'] = 422
++    await worker.step_market(control)
++    assert len(state['posts']) == 2
++    assert TICKER not in manual._stop_metadata
++    assert manual.rows()[0]['state'] == 'rejected'
++
++
++@pytest.mark.anyio
++async def test_fresh_market_refresh_invalidates_cache_on_closed_market(live):
++    from fastapi import HTTPException
++    worker, state, manual, control, data, clock = await held_position(live)
++    assert manual.stop_metadata(TICKER)
++    state['status'] = 'closed'
++    async with manual.client() as client:
++        with pytest.raises(HTTPException):
++            await manual.market(client, TICKER)
++    assert manual.stop_metadata(TICKER) is None
++
++
++@pytest.mark.anyio
++async def test_stop_records_processing_and_first_publication_times(live, monkeypatch):
++    worker, state, manual, control, data, clock = await held_position(live)
++    def book(control, now, trace=None):
++        trace['book_snapshot'] = dict(published_at=100, market=dict(
++            book_received=95, book_processing_started_at=96,
++            book_processed_at=97, book_first_published_at=98))
++        return dict(yes_bid=.49)
++    monkeypatch.setattr(worker, 'book', book)
++    worker.detect_stops()
++    timing = worker.control(TICKER)['stop_timing']
++    assert timing['quote_processing_started_at'] == 96
++    assert timing['quote_processed_at'] == 97
++    assert timing['quote_first_published_at'] == 98
++    assert timing['quote_published_at'] == 100
+diff --git a/src/btc15/runner.py b/src/btc15/runner.py
+index 01669b8..dfdebd6 100644
+--- a/src/btc15/runner.py
++++ b/src/btc15/runner.py
+@@ -310,6 +310,7 @@ async def collect(
+         display_reference = None
+         receipt_reference = None
+         display_tickers = {}
++        display_book_timing = {}
+         last_recovery_status = None
+         last_history_save = time.monotonic()
+ 
+@@ -395,9 +396,19 @@ async def collect(
+                     entries_stopped = True
+                 if not engine.executor.risk.halted and (Path(settings.data_dir) / "HALT").exists():
+                     engine.executor.halt(row["received"])
++                processing_started_at = time.time()
+                 row_valid = engine.ingest(row)
+                 valid = row_valid and valid
+                 payload = json.loads(row["payload"])
++                if payload.get("type") in ("orderbook_snapshot", "orderbook_delta"):
++                    ticker = payload.get("msg", {}).get("market_ticker")
++                    book = engine.books.get(ticker)
++                    if row_valid and book is not None and book.received == row["received"]:
++                        display_book_timing[ticker] = dict(
++                            book_processing_started_at=processing_started_at,
++                            book_processed_at=time.time(),
++                            book_first_published_at=None,
++                        )
+                 if research_log:
+                     research_log.capture(engine, row, payload)
+                 if not stop.is_set():
+@@ -464,6 +475,9 @@ async def collect(
+                     if not market.tradable(now):
+                         continue
+                     book = engine.books[ticker]
++                    book_timing = display_book_timing.get(ticker, {})
++                    if book_timing and book_timing["book_first_published_at"] is None:
++                        book_timing["book_first_published_at"] = now
+                     fresh = connected and book.valid and 0 <= now - book.received <= config.book_max_age
+                     markets.append(
+                         dict(
+@@ -484,6 +498,7 @@ async def collect(
+                                 else {}
+                             ),
+                             book_received=book.received,
++                            **book_timing,
+                             **({"book_version": engine._research_books.get(ticker)} if research_log else {}),
+                             fresh=fresh,
+                             volume_fp=display_tickers.get(ticker, {}).get(
+@@ -504,6 +519,9 @@ async def collect(
+                     )
+                 )
+                 last_display = time.monotonic()
++                for ticker in list(display_book_timing):
++                    if ticker not in engine.books:
++                        del display_book_timing[ticker]
+                 if (paper or live_signals) and store.engine.dialect.name == "sqlite":
+                     notify_quote(store.engine.url.database)
+             # The executor gates entries on this status, not the recovery journal.

@@ -1,0 +1,20 @@
+{
+  "served_hash_verified": true,
+  "mobile_width": 390,
+  "scope": {
+    "BTC": true,
+    "ETH": true,
+    "SOL": true,
+    "XRP": true,
+    "BNB": true,
+    "HYPE": true,
+    "DOGE": true,
+    "ETHD": false,
+    "XRPD": false,
+    "HYPED": false,
+    "GOLD": false,
+    "SILVER": false,
+    "WTI": false
+  },
+  "browser_errors": []
+}

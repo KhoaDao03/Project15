@@ -17,7 +17,7 @@ from .collector_recovery import CollectorRecovery
 from .decision_notifications import notify_decision, notify_quote
 from .domain import Book, dumps, parse_market
 from .engine import Engine
-from .hourly import entry_obligations, publish_candidates, select_markets
+from .hourly import entry_obligations, publish_candidates, publish_probability_display, select_markets
 from .models import guard_archived_exposure, require_single_run
 from .reference_history import load_history, save_history
 from .research_log import start_research_log
@@ -310,6 +310,7 @@ async def collect(
         display_reference = None
         receipt_reference = None
         display_tickers = {}
+        display_book_timing = {}
         last_recovery_status = None
         last_history_save = time.monotonic()
 
@@ -395,9 +396,19 @@ async def collect(
                     entries_stopped = True
                 if not engine.executor.risk.halted and (Path(settings.data_dir) / "HALT").exists():
                     engine.executor.halt(row["received"])
+                processing_started_at = time.time()
                 row_valid = engine.ingest(row)
                 valid = row_valid and valid
                 payload = json.loads(row["payload"])
+                if payload.get("type") in ("orderbook_snapshot", "orderbook_delta"):
+                    ticker = payload.get("msg", {}).get("market_ticker")
+                    book = engine.books.get(ticker)
+                    if row_valid and book is not None and book.received == row["received"]:
+                        display_book_timing[ticker] = dict(
+                            book_processing_started_at=processing_started_at,
+                            book_processed_at=time.time(),
+                            book_first_published_at=None,
+                        )
                 if research_log:
                     research_log.capture(engine, row, payload)
                 if not stop.is_set():
@@ -464,6 +475,9 @@ async def collect(
                     if not market.tradable(now):
                         continue
                     book = engine.books[ticker]
+                    book_timing = display_book_timing.get(ticker, {})
+                    if book_timing and book_timing["book_first_published_at"] is None:
+                        book_timing["book_first_published_at"] = now
                     fresh = connected and book.valid and 0 <= now - book.received <= config.book_max_age
                     markets.append(
                         dict(
@@ -484,6 +498,7 @@ async def collect(
                                 else {}
                             ),
                             book_received=book.received,
+                            **book_timing,
                             **({"book_version": engine._research_books.get(ticker)} if research_log else {}),
                             fresh=fresh,
                             volume_fp=display_tickers.get(ticker, {}).get(
@@ -504,6 +519,9 @@ async def collect(
                     )
                 )
                 last_display = time.monotonic()
+                for ticker in list(display_book_timing):
+                    if ticker not in engine.books:
+                        del display_book_timing[ticker]
                 if (paper or live_signals) and store.engine.dialect.name == "sqlite":
                     notify_quote(store.engine.url.database)
             # The executor gates entries on this status, not the recovery journal.
@@ -589,6 +607,8 @@ async def collect(
                             latest["ticker"],
                             engine._last_op[latest["ticker"]],
                         )
+                if config.asset_spec.hourly:
+                    publish_probability_display(engine)
                 last_status = now
             if publish_live:
                 store.publish_record(
