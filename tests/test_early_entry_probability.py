@@ -10,7 +10,7 @@ from btc15.strategies.settlement_edge.bleep import model_name
 from btc15.strategies.settlement_edge.model import Tick
 from btc15.strategies.settlement_edge.rules import evaluate
 
-THRESHOLDS = {"BTC": .85, "ETH": .89, "SOL": .86, "XRP": .87, "DOGE": .83, "BNB": .91, "HYPE": .87}
+THRESHOLDS = {"BTC": .86, "ETH": .89, "SOL": .86, "XRP": .85, "DOGE": .83, "BNB": .85, "HYPE": .88}
 
 
 @pytest.mark.parametrize("asset,early", THRESHOLDS.items())
@@ -21,7 +21,7 @@ def test_signal_and_paper_submission_agree_on_schedule(store, market, asset, ear
     suffix = "active" if asset == "BTC" else asset.lower()
     config = Strategy.load(f"config/settlement-edge-{suffix}-paper.json")
     now = market.close_time - remaining
-    start = 420 if asset == "ETH" else 600
+    start = 600
     floor = early if 420 < remaining <= start else .83
     assert config.probability_floor(remaining <= 120, remaining=remaining) == floor
     book = make_book(side, ".89", ".90", now)

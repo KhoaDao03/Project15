@@ -60,7 +60,7 @@ async def test_stop_detector_requires_fresh_managed_holdings(live, block):
     if block == "stale":
         data["fresh"] = False
     elif block == "above":
-        data["bid"] = 0.51
+        data["bid"] = 0.56
     elif block == "paused":
         worker.takeover(TICKER)
     elif block == "closed":

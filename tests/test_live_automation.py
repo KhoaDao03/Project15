@@ -107,7 +107,7 @@ async def test_buy_full_quantity_once_and_restart(live):
     assert len(state["posts"]) == 1
     assert state["posts"][0]["time_in_force"] == "fill_or_kill"
     assert state["posts"][0]["count"] == "10.00"
-    assert state["posts"][0]["price"] == ("0.9300" if control["asset"] == "HYPE" else "0.9600")
+    assert state["posts"][0]["price"] == "0.9600"
     assert manual.rows()[0]["origin"] == "bot"
     state["position"] = "10"
     restarted = LiveAutomation(manual, worker.members, worker.stores)
@@ -568,7 +568,7 @@ async def test_live_take_profit_99_cent_boundary(live, side, bid, exits):
 @pytest.mark.parametrize("live", ["BTC", "ETH", "SOL", "XRP", "BNB", "HYPE", "DOGE", "GOLD", "SILVER", "WTI"], indirect=True)
 async def test_live_buy_limit_matches_asset_entry_filter(live, side):
     worker, state, manual, control, data, clock = live
-    cap = .93 if control["asset"] == "HYPE" else .96
+    cap = .96
     data.update(side=side, bid=cap-.01, ask=cap+.001)
     with pytest.raises(HTTPException, match="entry price"):
         await worker.step_market(control)
@@ -679,13 +679,13 @@ async def test_disabled_take_profit_holds_at_99_but_keeps_stop(live, side):
     assert state["posts"][-1]["reduce_only"]
 
 
-@pytest.mark.parametrize("live,early", [("BTC", .85), ("ETH", .89), ("SOL", .86), ("XRP", .87), ("DOGE", .83), ("BNB", .91), ("HYPE", .87)], indirect=["live"])
+@pytest.mark.parametrize("live,early", [("BTC", .86), ("ETH", .89), ("SOL", .86), ("XRP", .85), ("DOGE", .83), ("BNB", .85), ("HYPE", .88)], indirect=["live"])
 @pytest.mark.parametrize("remaining", [600.001, 600, 599.999, 480, 420.001, 420, 419.999, 120, 1])
 @pytest.mark.parametrize("delta", [0, -.001])
 def test_live_entry_uses_current_time_probability_schedule(live, early, remaining, delta):
     worker, state, manual, control, data, clock = live
     clock[0] = control["close_time"] - remaining
-    start = 420 if control["asset"] == "ETH" else 600
+    start = 600
     floor = early if 420 < remaining <= start else .83
     data["probability"] = floor + delta
     if remaining > start or remaining <= 1 or delta < 0:

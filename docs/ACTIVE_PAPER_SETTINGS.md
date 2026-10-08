@@ -1,6 +1,6 @@
 # Active crypto presets
 
-BTC, ETH, SOL, XRP, BNB, HYPE and DOGE use the same Bleep strategy settings except `asset`, `early_min_probability`, `fixed_stop_price`, `entry_window_start`, and `max_entry_price`; fixed volatility multipliers and market-cap premiums depend on asset identity.
+BTC, ETH, SOL, XRP, BNB, HYPE and DOGE use the same Bleep strategy settings except `asset` and `early_min_probability`; fixed volatility multipliers and market-cap premiums depend on asset identity.
 The tracked files are `config/settlement-edge-{active,eth,sol,xrp,bnb,hype,doge}-paper.json`.
 Despite their filenames, these are also the source for fresh cloud signal configs.
 `prepare_cloud.py` freezes them into `data/cloud/{BTC,ETH,SOL,XRP,BNB,HYPE,DOGE}.json`.
@@ -8,22 +8,22 @@ Despite their filenames, these are also the source for fresh cloud signal config
 | Setting | Shared value |
 | --- | --- |
 | Model | Bleep ATR finish estimate |
-| Early window | `420 < seconds_remaining <= 600`; disabled for ETH, which starts at 420 seconds |
-| Early probability floor | BTC 85%; ETH disabled (89% saved but inactive); SOL 86%; XRP 87%; DOGE 83%; BNB 91%; HYPE 87% |
+| Early window | `420 < seconds_remaining <= 600` for all seven cryptos |
+| Early probability floor | BTC 86%; ETH 89%; SOL 86%; XRP 85%; DOGE 83%; BNB 85%; HYPE 88% |
 | Standard window | `120 < seconds_remaining <= 420` |
 | Late window | `1 < seconds_remaining <= 120` |
 | Standard / late probability floor | `min_probability=0.83`, `late_min_probability=0.83` |
-| ATR sigma multiplier | BTC 0.95; ETH 1.05; SOL 1.00; XRP 1.05; BNB 1.10; HYPE 1.15; DOGE 1.10 |
+| ATR sigma multiplier | BTC 0.95; ETH 0.95; SOL 1.00; XRP 1.15; BNB 1.25; HYPE 0.90; DOGE 1.10 |
 | Market-respect cap | Selected-side mid +6pp BTC/ETH/BNB/HYPE/DOGE; +10pp SOL/XRP; maximum 98% |
 | Spread filter | Disabled for all bots; zero spreads allowed. Missing/invalid/crossed quotes still fail validation. Legacy `max_spread` is ignored. |
-| Purchase range | BNB 86–96¢; HYPE 80–93¢; other cryptos 80–96¢ |
+| Purchase range | 80–96¢ for all seven cryptos |
 | Same-side confirmations | 1 standard; 1 late |
 | Normalized lead minimum | Disabled; fresh side confirmation remains |
 | Directional Bollinger entry filter | Disabled |
 | Net-edge / expected-value vetoes | Disabled |
 | Paper sizing | 10 contracts, all or none within the price cap |
 | Take-profit / resting profit orders | Disabled (`take_profit=null`) |
-| Hard stop | Held-side bid ≤55¢ for BTC; ≤50¢ for the other six cryptos |
+| Hard stop | Held-side bid ≤55¢ for all seven cryptos |
 | Model probability / hold-value exits | Disabled |
 | Standard cashout / profit-value exits | Disabled |
 | Paper post-close cooldown | 60 seconds |
@@ -47,7 +47,7 @@ histories and portfolios must not be reset or relabeled to claim they ran Bleep.
 ## BNB and HYPE
 
 Added presets use ETH's settings, including its +6pp market-respect cap, with the early probability thresholds listed above.
-ATR sigma multipliers are BNB **1.10** and HYPE **1.15**.
+ATR sigma multipliers are BNB **1.25** and HYPE **0.90**.
 Kalshi public metadata captured on September 26, 2026 confirms the same
 60-second CF Benchmarks settlement average, with BNB rounded to two decimal
 places and HYPE to four. HYPE uses `HYPEUSD_RTI`, not the retired
